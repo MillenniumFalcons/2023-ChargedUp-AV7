@@ -5,7 +5,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class AutoConstants {
-    public static double kMaxSpeedMetersPerSecond = SwerveDriveConstants.kDrivePossibleMaxSpeedMPS;
+    public static double kMaxSpeedMetersPerSecond = 2;
     public static double kMaxRotSpeedRadPerSec = SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec;
 
     public static double kMaxAccelerationMetersPerSecSq = 2;
@@ -31,9 +31,8 @@ public class AutoConstants {
             new PIDController(kXControllerP, kXControllerI, kXControllerD);
     public static final PIDController kYController =
             new PIDController(kYControllerP, kYControllerI, kYControllerD);
-    public static final ProfiledPIDController kRotController =
-            new ProfiledPIDController(
-                    xRotControllerP, xRotControllerI, xRotControllerD, kRotControllerConstraints);
+    public static final PIDController kRotController =
+            new PIDController(xRotControllerP, xRotControllerI, xRotControllerD);
 
     static {
         kRotController.enableContinuousInput(-Math.PI, Math.PI);

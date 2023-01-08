@@ -4,8 +4,7 @@ package team3647.frc2023.subsystems;
 import java.util.function.BooleanSupplier;
 
 public class Superstructure {
-    public Superstructure(
-            BooleanSupplier drivetrainStopped) {
+    public Superstructure() {
     }
 
     public void periodic(double timestamp) {

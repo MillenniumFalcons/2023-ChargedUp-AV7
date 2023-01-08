@@ -3,16 +3,22 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.pathplanner.lib.PathPoint;
+
+import team3647.frc2023.commands.AutoCommands;
+import team3647.frc2023.commands.PathPlannerTrajectories;
 import team3647.frc2023.commands.SwerveDriveNoAim;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.Superstructure;
@@ -45,16 +51,20 @@ public class RobotContainer {
         // rot 2d is the rotation of the robot relative to field during auto
         // m_swerve.setOdometry(startPosition, startPosition.getRotation());
 
-        // m_swerve.setOdometry(
-        //         PathPlannerTrajectories.startStateStraight,
-        //         new Rotation2d(Units.degreesToRadians(-45)));
+        m_swerve.setOdometry(
+                PathPlannerTrajectories.spinStartPose,
+                new Rotation2d(Units.degreesToRadians(0)));
         // m_swerve.setOdometry(
         //         PathPlannerTrajectories.startStateSixBallBump1,
         //         new Rotation2d(Units.degreesToRadians(45)));
     }
-
+    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(), new Rotation2d());
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
+        mainController.buttonB.onTrue(
+            new InstantCommand(
+        () -> {    
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(kOriginPoint)).withTimeout(5)).schedule();}));
      }
 
     private void configureDefaultCommands() {
@@ -75,7 +85,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return null;
+        return autoCommands.getPathCommand();
     }
 
     public void updateTapeTranslations(List<Translation2d> translations) {
@@ -95,7 +105,9 @@ public class RobotContainer {
                     SwerveDriveConstants.kGyro);
 
     final Superstructure m_superstructure =
-            new Superstructure(m_swerve::isStopped);
+            new Superstructure();
+
+    private final AutoCommands autoCommands = new AutoCommands(this.m_swerve);
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
 

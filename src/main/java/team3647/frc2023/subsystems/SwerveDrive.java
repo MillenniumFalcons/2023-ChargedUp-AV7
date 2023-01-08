@@ -1,6 +1,12 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.team254.util.MovingAverage;
@@ -95,6 +102,8 @@ public class SwerveDrive implements PeriodicSubsystem {
         frontRightAverageSpeed.add(periodicIO.frontRightState.speedMetersPerSecond);
         backLeftAverageSpeed.add(periodicIO.backLeftState.speedMetersPerSecond);
         backRightAverageSpeed.add(periodicIO.backRightState.speedMetersPerSecond);
+
+        
 
         odometry.update(
                 getRotation2d(),
@@ -362,28 +371,28 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.backRightOutputState = desiredStates[3];
     }
 
+    public void setChasisSpeeds(ChassisSpeeds speeds) {
+        SwerveModuleState[] swerveModuleStates = SwerveDriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+        setModuleStates(swerveModuleStates);
+    }
+
     public void setModulesAngle(double angle) {
         SwerveModuleState state = new SwerveModuleState(0.1, Rotation2d.fromDegrees(angle));
         SwerveModuleState[] states = {state, state, state, state};
         setModuleStates(states);
     }
 
-    // public boolean isStopped(double threshold) {
-    //     return Math.abs(rightAverageSpeed.getAverage()) < threshold
-    //             && Math.abs(leftAverageSpeed.getAverage()) < threshold;
-    // }
-
-    public boolean isStopped(double threshold) {
-        // return Math.abs(frontLeftAverageSpeed.getAverage()) < threshold
-        //         && Math.abs(frontRightAverageSpeed.getAverage()) < threshold
-        //         && Math.abs(backLeftAverageSpeed.getAverage()) < threshold
-        //         && Math.abs(backRightAverageSpeed.getAverage()) < threshold;
-        return true;
+    public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
+        return PathPlanner.generatePath(new PathConstraints(2,2), 
+        
+        PathPoint.fromCurrentHolonomicState(getPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
+        endpoint);
     }
 
-    public boolean isStopped() {
-        return isStopped(0.0127);
+    public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
+        return new PPSwerveControllerCommand(trajectory, this::getPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, this::setChasisSpeeds, this);
     }
+    
 
     @Override
     public String getName() {
