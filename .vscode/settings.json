@@ -25,5 +25,14 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests"
+  
+  "java.test.defaultConfig": "WPIlibUnitTests",
+  "[java]": {
+    "spotlessGradle.format.enable": true,
+    "spotlessGradle.diagnostics.enable": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.spotlessGradle": true
+    },
+    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
+  }
 }
