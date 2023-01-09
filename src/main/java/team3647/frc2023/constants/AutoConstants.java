@@ -1,7 +1,6 @@
 package team3647.frc2023.constants;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class AutoConstants {

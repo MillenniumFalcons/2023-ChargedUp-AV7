@@ -64,7 +64,7 @@ public class RobotContainer {
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(kOriginPoint)).withTimeout(5)).schedule();}));
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(kOriginPoint)).withTimeout(5)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
 
     private void configureDefaultCommands() {
