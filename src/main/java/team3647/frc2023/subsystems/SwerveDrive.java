@@ -125,10 +125,10 @@ public class SwerveDrive implements PeriodicSubsystem {
         // update pose estimator
         poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         periodicIO.timestamp = Timer.getFPGATimestamp();
-        Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        var camPose = result.getFirst();
-        var camPoseObsTime = result.getSecond();
-        poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+        // Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        // var camPose = result.getFirst();
+        // var camPoseObsTime = result.getSecond();
+        // poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
     }
 
     @Override

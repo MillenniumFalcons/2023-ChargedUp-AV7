@@ -29,7 +29,7 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     private final PeriodicIO periodicIO = new PeriodicIO();
     private final AprilTag tag01 =
                 new AprilTag(
-                        01,
+                        1,
                         new Pose3d(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0))));
     private final ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
 
@@ -88,7 +88,6 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return null;
     }
 }
