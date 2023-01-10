@@ -1,11 +1,13 @@
 package team3647.frc2023.subsystems.vision;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +32,11 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     private RobotPoseEstimator robotPoseEstimator;
     private AprilTagFieldLayout aprilTagFieldLayout;
     private final PeriodicIO periodicIO = new PeriodicIO();
+    private final AprilTag tag01 =
+                new AprilTag(
+                        01,
+                        new Pose3d(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0))));
+    private final ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
 
     private static final class PeriodicIO {
         double lastTimestamp = 0.0;
@@ -45,15 +52,10 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
 
     public PhotonVisionCamera(PhotonCamera camera) {
         this.camera = camera;
+        this.atList.add(tag01);
+        aprilTagFieldLayout = new AprilTagFieldLayout(atList, 6.09, 3.00);
         var camList = new ArrayList<Pair<PhotonCamera, Transform3d>>();
         camList.add(new Pair<PhotonCamera, Transform3d>(this.camera, PhotonVisionConstants.robotToCam));
-
-        try {
-            this.aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.kDefaultField.m_resourceFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         robotPoseEstimator = new RobotPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camList);
     }
 
