@@ -7,6 +7,8 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.subsystems.vision.PhotonVisionCamera;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.team254.util.MovingAverage;
 
@@ -28,12 +31,15 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final SwerveModule backLeft;
     private final SwerveModule backRight;
 
+    public final SwerveDrivePoseEstimator poseEstimator;
+
     private final MovingAverage frontLeftAverageSpeed = new MovingAverage(10);
     private final MovingAverage frontRightAverageSpeed = new MovingAverage(10);
     private final MovingAverage backLeftAverageSpeed = new MovingAverage(10);
     private final MovingAverage backRightAverageSpeed = new MovingAverage(10);
 
     private final Pigeon2 gyro;
+    private final PhotonVisionCamera camera;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -62,12 +68,15 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            Pigeon2 gyro) {
+            Pigeon2 gyro,
+            PhotonVisionCamera camera) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
         this.gyro = gyro;
+        this.camera = camera;
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveDriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePositions(),new Pose2d());
 
         this.odometry =
                 new SwerveDriveOdometry(
@@ -114,7 +123,13 @@ public class SwerveDrive implements PeriodicSubsystem {
                     backRight.getPosition()
                 });
 
+        // update pose estimator
+        poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         periodicIO.timestamp = Timer.getFPGATimestamp();
+        Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        var camPose = result.getFirst();
+        var camPoseObsTime = result.getSecond();
+        poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
     }
 
     @Override
@@ -124,99 +139,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         frontRight.setDesiredState(periodicIO.frontRightOutputState, periodicIO.isOpenLoop);
         backLeft.setDesiredState(periodicIO.backLeftOutputState, periodicIO.isOpenLoop);
         backRight.setDesiredState(periodicIO.backRightOutputState, periodicIO.isOpenLoop);
-
-        // SmartDashboard.putNumber(
-        //         "Swerve Turn Demand", periodicIO.backLeftOutputState.angle.getDegrees());
-
-        SmartDashboard.putNumber("Robot Rotation", getHeading());
-        SmartDashboard.putNumber(
-                "FL ABS", frontLeft.getAbsEncoderPos().getDegrees() - frontLeft.absOffsetDeg);
-        SmartDashboard.putNumber(
-                "FR ABS", frontRight.getAbsEncoderPos().getDegrees() - frontRight.absOffsetDeg);
-        SmartDashboard.putNumber(
-                "BL ABS", backLeft.getAbsEncoderPos().getDegrees() - backLeft.absOffsetDeg);
-        SmartDashboard.putNumber(
-                "BR ABS", backRight.getAbsEncoderPos().getDegrees() - backRight.absOffsetDeg);
-
-        SmartDashboard.putNumber("FL INT", frontLeft.getTurnAngle());
-        SmartDashboard.putNumber("FR INT", frontRight.getTurnAngle());
-        SmartDashboard.putNumber("BL INT", backLeft.getTurnAngle());
-        SmartDashboard.putNumber("BR INT", backRight.getTurnAngle());
-        SmartDashboard.putString("Robot XY", getPose().getTranslation().toString());
-
-        SmartDashboard.putNumber("FL speed real", frontLeft.getDriveVelocity());
-        SmartDashboard.putNumber(
-                "FL speed demand", periodicIO.frontLeftOutputState.speedMetersPerSecond);
-
-        SmartDashboard.putNumber("FR speed real", frontRight.getDriveVelocity());
-        SmartDashboard.putNumber(
-                "FR speed demand", periodicIO.frontRightOutputState.speedMetersPerSecond);
-
-        SmartDashboard.putNumber("BL speed real", backLeft.getDriveVelocity());
-        SmartDashboard.putNumber(
-                "BL speed demand", periodicIO.backLeftOutputState.speedMetersPerSecond);
-
-        SmartDashboard.putNumber("BR speed real", backRight.getDriveVelocity());
-        SmartDashboard.putNumber(
-                "BR speed demand", periodicIO.backRightOutputState.speedMetersPerSecond);
-
-        SmartDashboard.putNumber("FL Output Voltage", frontLeft.getVoltage());
-
-        SmartDashboard.putNumber("FR Output Voltage", frontRight.getVoltage());
-
-        SmartDashboard.putNumber("BL Output Voltage", backLeft.getVoltage());
-
-        SmartDashboard.putNumber("BR Output Voltage", backRight.getVoltage());
-
-        // SmartDashboard.putNumber(
-        //         "front left, ABS Angle", frontLeft.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("front left, INT Angle", frontLeft.getTurnAngle());
-        // SmartDashboard.putNumber("front left, Drive Velocity", frontLeft.getDriveVelocity());
-        // SmartDashboard.putNumber(
-        //         "front left diff",
-        //         frontLeft.getDriveVelocity()
-        //                 - periodicIO.frontLeftOutputState.speedMetersPerSecond);
-
-        // SmartDashboard.putNumber(
-        //         "front right, ABS Angle", frontRight.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("front right, INT Angle", frontRight.getTurnAngle());
-        // SmartDashboard.putNumber("front right, Drive Velocity", frontRight.getDriveVelocity());
-        // SmartDashboard.putNumber(
-        //         "front right diff",
-        //         frontRight.getDriveVelocity()
-        //                 - periodicIO.frontRightOutputState.speedMetersPerSecond);
-
-        // SmartDashboard.putNumber("back left, ABS Angle",
-        // backLeft.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("back left, INT Angle", backLeft.getTurnAngle());
-        // SmartDashboard.putNumber("back left, Drive Velocity", backLeft.getDriveVelocity());
-        // SmartDashboard.putNumber(
-        //         "back left diff",
-        //         backLeft.getDriveVelocity() -
-        // periodicIO.backLeftOutputState.speedMetersPerSecond);
-
-        // SmartDashboard.putNumber(
-        //         "back right, ABS Angle", backRight.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("back right, INT Angle", backRight.getTurnAngle());
-        // SmartDashboard.putNumber("back right, Drive Velocity", backRight.getDriveVelocity());
-        // SmartDashboard.putNumber(
-        //         "back right diff",
-        //         backRight.getDriveVelocity()
-        //                 - periodicIO.backRightOutputState.speedMetersPerSecond);
-
-        // SmartDashboard.putString("Mod 0 demand State",
-        // periodicIO.frontRightOutputState.toString());
-        // SmartDashboard.putString("Mod 1 demand State",
-        // periodicIO.frontLeftOutputState.toString());
-        // SmartDashboard.putString("Mod 2 demand State",
-        // periodicIO.backRightOutputState.toString());
-        // SmartDashboard.putString("Mod 3 demand State",
-        // periodicIO.backLeftOutputState.toString());
-
-        // SmartDashboard.putNumber("Percent Out 0", frontRight.percentOut);
-        // SmartDashboard.putNumber("Percent Out 1", frontLeft.percentOut);
-        // SmartDashboard.putNumber("Percent Out 2", backRight.percentOut);
-        // SmartDashboard.putNumber("Percent Out 3", backLeft.percentOut);
     }
 
     @Override
@@ -224,43 +146,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         // readPeriodicInputs();
         writePeriodicOutputs();
     }
-
-    // public void setAbsoluteZeros() {
-    //     System.out.println(
-    //             "front left Setting Zero "
-    //                     + frontLeft.absEncoder.configGetMagnetOffset()
-    //                     + " -> 0");
-    //     frontLeft.absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    //     frontLeft.absEncoder.configMagnetOffset(
-    //             -(frontLeft.absEncoder.getAbsolutePosition()
-    //                     - frontLeft.absEncoder.configGetMagnetOffset()));
-
-    //     System.out.println(
-    //             "front right Setting Zero "
-    //                     + frontRight.absEncoder.configGetMagnetOffset()
-    //                     + " -> 0");
-    //     frontRight.absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    //     frontRight.absEncoder.configMagnetOffset(
-    //             -(frontRight.absEncoder.getAbsolutePosition()
-    //                     - frontRight.absEncoder.configGetMagnetOffset()));
-
-    //     System.out.println(
-    //             "back left Setting Zero " + backLeft.absEncoder.configGetMagnetOffset() + " ->
-    // 0");
-    //     backLeft.absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    //     backLeft.absEncoder.configMagnetOffset(
-    //             -(backLeft.absEncoder.getAbsolutePosition()
-    //                     - backLeft.absEncoder.configGetMagnetOffset()));
-
-    //     System.out.println(
-    //             "back right Setting Zero "
-    //                     + backRight.absEncoder.configGetMagnetOffset()
-    //                     + " -> 0");
-    //     backRight.absEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    //     backRight.absEncoder.configMagnetOffset(
-    //             -(backRight.absEncoder.getAbsolutePosition()
-    //                     - backRight.absEncoder.configGetMagnetOffset()));
-    // }
 
     public void setOdometry(Pose2d pose, Rotation2d swerveHeading) {
         odometry.resetPosition(pose.getRotation(),
@@ -315,6 +200,19 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public Pose2d getPose() {
         return odometry.getPoseMeters();
+    }
+
+    public Pose2d getEstimPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
+    public SwerveModulePosition[] getSwerveModulePositions() {
+        return new SwerveModulePosition[]{
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()
+        };
     }
 
     public void resetOdometry() {

@@ -20,9 +20,11 @@ import com.pathplanner.lib.PathPoint;
 import team3647.frc2023.commands.AutoCommands;
 import team3647.frc2023.commands.PathPlannerTrajectories;
 import team3647.frc2023.commands.SwerveDriveNoAim;
+import team3647.frc2023.constants.PhotonVisionConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
+import team3647.frc2023.subsystems.vision.PhotonVisionCamera;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 // import team3647.lib.tracking.RobotTracker;
@@ -41,7 +43,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         scheduler.registerSubsystem(
-                m_swerve,
+                m_swerve, photonVisionCamera,
                 m_printer);
 
         configureButtonBindings();
@@ -80,6 +82,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         m_printer.addPose("Robot", m_swerve::getPose);
+        m_printer.addPose("ESTIMTATED POSE", m_swerve::getEstimPose);
         // m_printer.addDouble("intake velocity brr", () -> m_intake.getVelocity()););
     }
 
@@ -88,13 +91,8 @@ public class RobotContainer {
         return autoCommands.getPathCommand();
     }
 
-    public void updateTapeTranslations(List<Translation2d> translations) {
-        List<Pose2d> poses = new LinkedList<>();
-        translations.stream()
-                .map((translation) -> new Pose2d(translation, new Rotation2d()))
-                .forEach(poses::add);
-        m_printer.getField().getObject("Tapes").setPoses(poses);
-    }
+    private final PhotonVisionCamera photonVisionCamera =
+                    new PhotonVisionCamera(PhotonVisionConstants.camera);
 
     public final SwerveDrive m_swerve =
             new SwerveDrive(
@@ -102,10 +100,11 @@ public class RobotContainer {
                     SwerveDriveConstants.kFrontRightModule,
                     SwerveDriveConstants.kBackLeftModule,
                     SwerveDriveConstants.kBackRightModule,
-                    SwerveDriveConstants.kGyro);
+                    SwerveDriveConstants.kGyro,
+                    photonVisionCamera);
 
     final Superstructure m_superstructure =
-            new Superstructure();
+            new Superstructure(m_swerve);
 
     private final AutoCommands autoCommands = new AutoCommands(this.m_swerve);
 
