@@ -285,9 +285,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
-        return PathPlanner.generatePath(new PathConstraints(2,2), 
-        
-        PathPoint.fromCurrentHolonomicState(getEstimPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
+        return PathPlanner.generatePath(new PathConstraints(2,2), PathPoint.fromCurrentHolonomicState(getEstimPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
         endpoint);
     }
 

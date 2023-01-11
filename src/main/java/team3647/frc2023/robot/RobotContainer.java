@@ -52,7 +52,7 @@ public class RobotContainer {
                 PathPlannerTrajectories.spinStartPose,
                 new Rotation2d(Units.degreesToRadians(180)));
     }
-    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(19), Units.inchesToMeters(23)), new Rotation2d());
+    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d());
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.buttonB.onTrue(
