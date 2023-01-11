@@ -76,7 +76,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.gyro = gyro;
         this.camera = camera;
         this.poseEstimator = new SwerveDrivePoseEstimator(SwerveDriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePositions(),new Pose2d());
-
         this.odometry =
                 new SwerveDriveOdometry(
                         SwerveDriveConstants.kDriveKinematics,
@@ -93,7 +92,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     public void init() {
         System.out.println("init-ed swerve bruh i wanna die");
         resetEncoders();
-        resetOdometry();
+        // resetOdometry();
         zeroHeading();
     }
 
@@ -125,10 +124,12 @@ public class SwerveDrive implements PeriodicSubsystem {
         // update pose estimator
         poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         periodicIO.timestamp = Timer.getFPGATimestamp();
-        // Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        // var camPose = result.getFirst();
-        // var camPoseObsTime = result.getSecond();
-        // poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+        Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        var camPose = result.getFirst();
+        var camPoseObsTime = result.getSecond();
+        if (camPose != null) {
+            poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+        }
     }
 
     @Override
@@ -155,6 +156,11 @@ public class SwerveDrive implements PeriodicSubsystem {
             backRight.getPosition()},pose);
         gyro.setYaw(swerveHeading.getDegrees());
 
+        poseEstimator.resetPosition(swerveHeading, new SwerveModulePosition[]{
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()}, pose);
         periodicIO = new PeriodicIO();
     }
 
@@ -171,15 +177,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         backLeft.resetToAbsolute();
         backRight.resetToAbsolute();
     }
-
-    // public void setAbsoluteZeros() {
-    //     System.out.println(i + " Setting Zero " + swerveCanCoder.configGetMagnetOffset() + " ->
-    // 0");
-    //     frontLeft..configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
-    //     swerveCanCoder.configMagnetOffset(
-    //             -(swerveCanCoder.getAbsolutePosition() -
-    // swerveCanCoder.configGetMagnetOffset()));
-    // }
 
     public void zeroHeading() {
         gyro.setYaw(0);
@@ -203,6 +200,14 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public Pose2d getEstimPose() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public double getEstimX() {
+        return poseEstimator.getEstimatedPosition().getX();
+    }
+
+    public double getEstimY() {
+        return poseEstimator.getEstimatedPosition().getY();
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -282,12 +287,12 @@ public class SwerveDrive implements PeriodicSubsystem {
     public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
         return PathPlanner.generatePath(new PathConstraints(2,2), 
         
-        PathPoint.fromCurrentHolonomicState(getPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
+        PathPoint.fromCurrentHolonomicState(getEstimPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
         endpoint);
     }
 
     public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
-        return new PPSwerveControllerCommand(trajectory, this::getPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, this::setChasisSpeeds, this);
+        return new PPSwerveControllerCommand(trajectory, this::getEstimPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, this::setChasisSpeeds, this);
     }
     
 

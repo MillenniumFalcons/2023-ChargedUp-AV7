@@ -50,9 +50,9 @@ public class RobotContainer {
 
         m_swerve.setOdometry(
                 PathPlannerTrajectories.spinStartPose,
-                new Rotation2d(Units.degreesToRadians(0)));
+                new Rotation2d(Units.degreesToRadians(180)));
     }
-    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(), new Rotation2d());
+    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(19), Units.inchesToMeters(23)), new Rotation2d());
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.buttonB.onTrue(
@@ -75,6 +75,8 @@ public class RobotContainer {
     public void configureSmartDashboardLogging() {
         // m_printer.addPose("Robot", m_swerve::getPose);
         m_printer.addPose("ESTIMTATED POSE", m_swerve::getEstimPose);
+        m_printer.addDouble("ESTIMTATED X", m_swerve::getEstimX);
+        m_printer.addDouble("ESTIMTATED Y", m_swerve::getEstimY);
     }
 
     public Command getAutonomousCommand() {

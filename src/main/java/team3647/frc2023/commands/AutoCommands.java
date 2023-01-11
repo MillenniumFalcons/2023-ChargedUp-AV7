@@ -14,6 +14,6 @@ public class AutoCommands {
 
     public PPSwerveControllerCommand getPathCommand() {
         PathPlannerTrajectory trajectory = PathPlannerTrajectories.spinPath;
-        return new PPSwerveControllerCommand(trajectory, drive::getPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, drive::setChasisSpeeds, drive);
+        return new PPSwerveControllerCommand(trajectory, drive::getEstimPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, drive::setChasisSpeeds, drive);
     }
 }

@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -30,7 +31,7 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     private final AprilTag tag01 =
                 new AprilTag(
                         1,
-                        new Pose3d(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0))));
+                        new Pose3d(new Pose2d(0, Units.inchesToMeters(0), Rotation2d.fromDegrees(0.0))));
     private final ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
 
     private static final class PeriodicIO {
@@ -66,7 +67,7 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
             periodicIO.avgSkew = result.getSkew();
             periodicIO.avgArea = result.getArea();
             periodicIO.avgPose = result.getBestCameraToTarget();
-            SmartDashboard.putNumber("X ROBOT TO CAM", periodicIO.avgPose.getX());
+            SmartDashboard.putNumber("DISTANCE TO TAG", periodicIO.avgPose.getX());
         }
     }
 
@@ -80,7 +81,11 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
         double currentTime = Timer.getFPGATimestamp();
         Optional<Pair<Pose3d, Double>> result = robotPoseEstimator.update();
         if (result.isPresent()) {
-            return new Pair<Pose2d, Double>(result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
+            try {
+                return new Pair<Pose2d, Double>(result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
+            } catch (NullPointerException e){
+                return new Pair<Pose2d, Double>(null, 0.0);
+            }
         } else {
             return new Pair<Pose2d, Double>(null, 0.0);
         }
