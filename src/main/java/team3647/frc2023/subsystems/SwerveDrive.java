@@ -293,8 +293,7 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
         return new PPSwerveControllerCommand(trajectory, this::getPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, this::setChasisSpeeds, this);
-    }
-    
+    }    
 
     @Override
     public String getName() {

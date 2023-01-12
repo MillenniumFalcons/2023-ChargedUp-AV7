@@ -1,8 +1,11 @@
 package team3647.frc2023.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -52,7 +55,25 @@ public class RobotContainer {
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(kOriginPoint)).withTimeout(5)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(Units.inchesToMeters(24)))).withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+     }
+     // left and right of tag (meters)
+     private PathPoint getCalculatedTargetPose(double tagOffsetSideway) {
+        double cameraToTagX = photonVisionCamera.getCameraToTagX();
+        double cameraToTagY = photonVisionCamera.getCameraToTagY();
+        double robotToFlushX = 0;
+        double robotToFlushY = 0;
+        double tagOffsetDepth = PhotonVisionConstants.offsetAprilTagToCenterOfRobotFlush;
+        robotToFlushX = cameraToTagX - tagOffsetDepth + Math.abs(Math.sin((Units.degreesToRadians(90 - m_swerve.getHeading()))) * PhotonVisionConstants.robotToCam.getX());
+        robotToFlushY = cameraToTagY + tagOffsetSideway + Math.abs(Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
+        double xSetPoint = m_swerve.getPose().getX() - robotToFlushX;
+        double ySetPoint = m_swerve.getPose().getY() + robotToFlushY;
+        SmartDashboard.putNumber("x", Math.sin(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getX());
+        SmartDashboard.putNumber("y", Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
+        SmartDashboard.putNumber("robot flush y", robotToFlushY);
+        SmartDashboard.putNumber("angle", m_swerve.getHeading());
+        SmartDashboard.putNumber("robot flush x", robotToFlushX);
+        return new PathPoint(new Translation2d(xSetPoint, ySetPoint), new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
      }
 
     private void configureDefaultCommands() {
@@ -67,11 +88,7 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        // m_printer.addPose("Robot", m_swerve::getPose);
-        // m_printer.addPose("ESTIMTATED POSE", m_swerve::getEstimPose);
-        // m_printer.addDouble("ESTIMTATED X", m_swerve::getEstimX);
-        // m_printer.addDouble("ESTIMTATED Y", m_swerve::getEstimY);
-        m_printer.addPose("Robot Pose", m_swerve::getPose);
+
     }
 
     public Command getAutonomousCommand() {
