@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.vision.PhotonVisionCamera;
@@ -147,16 +148,17 @@ public class SwerveDrive implements PeriodicSubsystem {
         writePeriodicOutputs();
     }
 
-    public void setOdometry(Pose2d pose, Rotation2d swerveHeading) {
-        odometry.resetPosition(pose.getRotation(),
+    public void setOdometry(Pose2d pose, Rotation2d rot) {
+        SmartDashboard.putNumber("rot", rot.getDegrees());
+        odometry.resetPosition(rot,
         new SwerveModulePosition[]{
             frontLeft.getPosition(),
             frontRight.getPosition(),
             backLeft.getPosition(),
             backRight.getPosition()},pose);
-        gyro.setYaw(swerveHeading.getDegrees());
+        gyro.setYaw(pose.getRotation().getDegrees());
 
-        poseEstimator.resetPosition(swerveHeading, new SwerveModulePosition[]{
+        poseEstimator.resetPosition(rot, new SwerveModulePosition[]{
             frontLeft.getPosition(),
             frontRight.getPosition(),
             backLeft.getPosition(),
@@ -285,12 +287,12 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
-        return PathPlanner.generatePath(new PathConstraints(2,2), PathPoint.fromCurrentHolonomicState(getEstimPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
+        return PathPlanner.generatePath(new PathConstraints(1,1), PathPoint.fromCurrentHolonomicState(getPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
         endpoint);
     }
 
     public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
-        return new PPSwerveControllerCommand(trajectory, this::getEstimPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, this::setChasisSpeeds, this);
+        return new PPSwerveControllerCommand(trajectory, this::getPose, AutoConstants.kXController, AutoConstants.kYController, AutoConstants.kRotController, this::setChasisSpeeds, this);
     }
     
 

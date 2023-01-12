@@ -3,15 +3,11 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-// import edu.wpi.first.math.util.Units;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-
 import com.pathplanner.lib.PathPoint;
-
 import team3647.frc2023.commands.AutoCommands;
 import team3647.frc2023.commands.PathPlannerTrajectories;
 import team3647.frc2023.commands.SwerveDriveNoAim;
@@ -22,7 +18,6 @@ import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.vision.PhotonVisionCamera;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
-// import team3647.lib.tracking.RobotTracker;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,10 +44,9 @@ public class RobotContainer {
         // m_swerve.setOdometry(startPosition, startPosition.getRotation());
 
         m_swerve.setOdometry(
-                PathPlannerTrajectories.spinStartPose,
-                new Rotation2d(Units.degreesToRadians(180)));
+                PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
     }
-    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d());
+    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d(Units.degreesToRadians(0)), new Rotation2d(Units.degreesToRadians(180)));
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.buttonB.onTrue(
@@ -74,9 +68,10 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         // m_printer.addPose("Robot", m_swerve::getPose);
-        m_printer.addPose("ESTIMTATED POSE", m_swerve::getEstimPose);
-        m_printer.addDouble("ESTIMTATED X", m_swerve::getEstimX);
-        m_printer.addDouble("ESTIMTATED Y", m_swerve::getEstimY);
+        // m_printer.addPose("ESTIMTATED POSE", m_swerve::getEstimPose);
+        // m_printer.addDouble("ESTIMTATED X", m_swerve::getEstimX);
+        // m_printer.addDouble("ESTIMTATED Y", m_swerve::getEstimY);
+        m_printer.addPose("Robot Pose", m_swerve::getPose);
     }
 
     public Command getAutonomousCommand() {
