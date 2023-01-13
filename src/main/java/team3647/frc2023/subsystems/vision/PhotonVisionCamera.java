@@ -42,6 +42,8 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
         double avgPitch = 0.0;
         double avgArea = 0.0;
         double avgSkew = 0.0;
+        double cameraToTag = 0.0;
+        double cameraToTagAngle = 0.0;
         double cameraToTagY = 0.0;
         double cameraToTagX = 0.0;
         Transform3d avgPose = null;
@@ -66,6 +68,8 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
             periodicIO.poseAmbiguity = result.getPoseAmbiguity();
             periodicIO.avgYaw = result.getYaw();
             periodicIO.avgPose = result.getBestCameraToTarget();
+            periodicIO.cameraToTag = periodicIO.avgPose.getX();
+            periodicIO.cameraToTagAngle = Units.degreesToRadians(result.getYaw());
             periodicIO.cameraToTagX = periodicIO.avgPose.getX() * Math.cos(Units.degreesToRadians(result.getYaw()));
             periodicIO.cameraToTagY = periodicIO.avgPose.getX() * Math.sin(Units.degreesToRadians((result.getYaw())));
             SmartDashboard.putNumber("Distance", periodicIO.avgPose.getX());
@@ -73,6 +77,14 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
             SmartDashboard.putNumber("camera to tag y", periodicIO.cameraToTagY);
             SmartDashboard.putNumber("camera to tag x", periodicIO.cameraToTagX);
         }
+    }
+
+    public double getCameraToTag(){
+        return periodicIO.cameraToTag;
+    }
+
+    public double getCameraToTagAngle(){
+        return periodicIO.cameraToTagAngle;
     }
 
     public double getCameraToTagX() {
