@@ -99,7 +99,8 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
-        periodicIO.heading = Math.IEEEremainder(gyro.getYaw(), 360);
+        // periodicIO.heading = Math.IEEEremainder(gyro.getYaw(), 360);
+        periodicIO.heading = gyro.getYaw();
         periodicIO.rawHeading = gyro.getYaw();
         periodicIO.frontLeftState = frontLeft.getState();
         periodicIO.frontRightState = frontRight.getState();
@@ -120,12 +121,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         SmartDashboard.putNumber("FR", frontRight.getTurnAngle());
         SmartDashboard.putNumber("BL", backLeft.getTurnAngle());
         SmartDashboard.putNumber("BR", backRight.getTurnAngle());
-
-
-
-
-
-        
 
         odometry.update(
                 getRotation2d(),

@@ -50,12 +50,18 @@ public class RobotContainer {
                 PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
     }
     private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d(Units.degreesToRadians(0)), new Rotation2d(Units.degreesToRadians(180)));
+
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
         new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(Units.inchesToMeters(24)))).withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+
+        mainController.buttonX.onTrue(
+            new InstantCommand(
+        () -> {    
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(kOriginPoint)).withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
      // left and right of tag (meters)
      private PathPoint getCalculatedTargetPose(double tagOffsetSideway) {
@@ -79,6 +85,11 @@ public class RobotContainer {
         return new PathPoint(new Translation2d(xSetPoint, ySetPoint), new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
      }
 
+     private PathPoint getZeroPath() {
+        Translation2d currentTranslation = new Translation2d(m_swerve.getPose().getX(), m_swerve.getPose().getY());
+        return new PathPoint(currentTranslation, new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
+     }
+
     private void configureDefaultCommands() {
         m_swerve.setDefaultCommand(
                 new SwerveDriveNoAim(
@@ -86,7 +97,6 @@ public class RobotContainer {
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
-                        // () -> new Pose2d(),
                         () -> true));
     }
 
