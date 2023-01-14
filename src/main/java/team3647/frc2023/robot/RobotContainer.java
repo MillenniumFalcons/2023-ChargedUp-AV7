@@ -1,9 +1,13 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,33 +60,30 @@ public class RobotContainer {
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(Units.inchesToMeters(24)))).withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
-
-        mainController.buttonX.onTrue(
-            new InstantCommand(
-        () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(kOriginPoint)).withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
+        .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
+
+     public Pose2d getTagPose() {
+        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+        var robotPose3d = new Pose3d(m_swerve.getPose());
+        
+        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+        var fieldToTag2d = new Pose2d(new Translation2d(fieldToTag.getX(), fieldToTag.getY()), new Rotation2d(fieldToTag.getRotation().getAngle()));
+        return fieldToTag2d;
+     }
+
      // left and right of tag (meters)
-     private PathPoint getCalculatedTargetPose(double tagOffsetSideway) {
-        double cameraToTagX = photonVisionCamera.getCameraToTag() * Math.cos(-Units.degreesToRadians(m_swerve.getRawHeading()) + photonVisionCamera.getCameraToTagAngle());
-        double cameraToTagY = photonVisionCamera.getCameraToTag() * Math.sin(-Units.degreesToRadians(m_swerve.getRawHeading()) + photonVisionCamera.getCameraToTagAngle());
-        double robotToFlushX = 0;
-        double robotToFlushY = 0;
-        double tagOffsetDepth = PhotonVisionConstants.offsetAprilTagToCenterOfRobotFlush;
-        robotToFlushX = cameraToTagX - tagOffsetDepth + 0.288 * Math.sin(-Units.degreesToRadians(m_swerve.getRawHeading()) - Math.atan(0.1 / 0.27));
-        robotToFlushY = cameraToTagY + tagOffsetSideway + 0.288 * Math.cos(-Units.degreesToRadians(m_swerve.getRawHeading()) - Math.atan(0.1 / 0.27));
-        //robotToFlushX = cameraToTagX - tagOffsetDepth + Math.abs(Math.sin((Units.degreesToRadians(90 - m_swerve.getHeading()))) * PhotonVisionConstants.robotToCam.getX());
-        //robotToFlushY = cameraToTagY + tagOffsetSideway + Math.abs(Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
-        double xSetPoint = m_swerve.getPose().getX() - robotToFlushX;
-        double ySetPoint = m_swerve.getPose().getY() + robotToFlushY;
-        SmartDashboard.putNumber("x", robotToFlushX);
-        SmartDashboard.putNumber("x set point", xSetPoint);
-        SmartDashboard.putNumber("y", robotToFlushY);
-        SmartDashboard.putNumber("y set point", ySetPoint);
-        SmartDashboard.putNumber("robot flush y", robotToFlushY);
-        SmartDashboard.putNumber("robot flush x", robotToFlushX);
-        return new PathPoint(new Translation2d(xSetPoint, ySetPoint), new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
+     private PathPoint getCalculatedTargetPose(Translation2d fromTag) {
+        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+        var robotPose3d = new Pose3d(m_swerve.getPose());
+        
+        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+
+        var pose3d = fieldToTag.transformBy(fromTag3d);
+
+        return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
      }
 
      private PathPoint getZeroPath() {
@@ -102,6 +103,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         m_printer.addDouble("rot", m_swerve::getRawHeading);
+        m_printer.addPose("tag pose", this::getTagPose);
     }
 
     public Command getAutonomousCommand() {

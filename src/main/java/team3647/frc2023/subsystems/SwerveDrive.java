@@ -22,10 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.vision.PhotonVisionCamera;
+import team3647.lib.GroupPrinter;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.team254.util.MovingAverage;
 
 public class SwerveDrive implements PeriodicSubsystem {
+    private final GroupPrinter m_printer =GroupPrinter.getInstance();
     private final SwerveModule frontLeft;
     private final SwerveModule frontRight;
     private final SwerveModule backLeft;
@@ -140,6 +142,8 @@ public class SwerveDrive implements PeriodicSubsystem {
         if (camPose != null) {
             poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
         }
+
+        m_printer.getField().setRobotPose(getPose());
     }
 
     @Override

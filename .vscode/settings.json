@@ -30,7 +30,7 @@
     "spotlessGradle.format.enable": true,
     "spotlessGradle.diagnostics.enable": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll.spotlessGradle": true
+      "source.fixAll.spotlessGradle": false
     },
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },

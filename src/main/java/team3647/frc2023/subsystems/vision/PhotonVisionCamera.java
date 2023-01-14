@@ -95,6 +95,10 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
         return periodicIO.cameraToTagY;
     }
 
+    public Transform3d getCameraToTagTransform() {
+        return periodicIO.avgPose;
+    }
+
     public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
     
