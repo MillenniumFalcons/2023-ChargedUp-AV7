@@ -59,19 +59,22 @@ public class RobotContainer {
      }
      // left and right of tag (meters)
      private PathPoint getCalculatedTargetPose(double tagOffsetSideway) {
-        double cameraToTagX = photonVisionCamera.getCameraToTagX();
-        double cameraToTagY = photonVisionCamera.getCameraToTagY();
+        double cameraToTagX = photonVisionCamera.getCameraToTag() * Math.cos(-Units.degreesToRadians(m_swerve.getRawHeading()) + photonVisionCamera.getCameraToTagAngle());
+        double cameraToTagY = photonVisionCamera.getCameraToTag() * Math.sin(-Units.degreesToRadians(m_swerve.getRawHeading()) + photonVisionCamera.getCameraToTagAngle());
         double robotToFlushX = 0;
         double robotToFlushY = 0;
         double tagOffsetDepth = PhotonVisionConstants.offsetAprilTagToCenterOfRobotFlush;
-        robotToFlushX = cameraToTagX - tagOffsetDepth + Math.abs(Math.sin((Units.degreesToRadians(90 - m_swerve.getHeading()))) * PhotonVisionConstants.robotToCam.getX());
-        robotToFlushY = cameraToTagY + tagOffsetSideway + Math.abs(Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
+        robotToFlushX = cameraToTagX - tagOffsetDepth + 0.288 * Math.sin(-Units.degreesToRadians(m_swerve.getRawHeading()) - Math.atan(0.1 / 0.27));
+        robotToFlushY = cameraToTagY + tagOffsetSideway + 0.288 * Math.cos(-Units.degreesToRadians(m_swerve.getRawHeading()) - Math.atan(0.1 / 0.27));
+        //robotToFlushX = cameraToTagX - tagOffsetDepth + Math.abs(Math.sin((Units.degreesToRadians(90 - m_swerve.getHeading()))) * PhotonVisionConstants.robotToCam.getX());
+        //robotToFlushY = cameraToTagY + tagOffsetSideway + Math.abs(Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
         double xSetPoint = m_swerve.getPose().getX() - robotToFlushX;
         double ySetPoint = m_swerve.getPose().getY() + robotToFlushY;
-        SmartDashboard.putNumber("x", Math.sin(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getX());
-        SmartDashboard.putNumber("y", Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
+        SmartDashboard.putNumber("x", robotToFlushX);
+        SmartDashboard.putNumber("x set point", xSetPoint);
+        SmartDashboard.putNumber("y", robotToFlushY);
+        SmartDashboard.putNumber("y set point", ySetPoint);
         SmartDashboard.putNumber("robot flush y", robotToFlushY);
-        SmartDashboard.putNumber("angle", m_swerve.getHeading());
         SmartDashboard.putNumber("robot flush x", robotToFlushX);
         return new PathPoint(new Translation2d(xSetPoint, ySetPoint), new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
      }
@@ -88,7 +91,7 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-
+        m_printer.addDouble("rot", m_swerve::getRawHeading);
     }
 
     public Command getAutonomousCommand() {
