@@ -111,6 +111,20 @@ public class SwerveDrive implements PeriodicSubsystem {
         backLeftAverageSpeed.add(periodicIO.backLeftState.speedMetersPerSecond);
         backRightAverageSpeed.add(periodicIO.backRightState.speedMetersPerSecond);
 
+        SmartDashboard.putNumber("ABS FL", frontLeft.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("ABS FR", frontRight.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("ABS BL", backLeft.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("ABS BR", backRight.getAbsEncoderPos().getDegrees());
+
+        SmartDashboard.putNumber("FL", frontLeft.getTurnAngle());
+        SmartDashboard.putNumber("FR", frontRight.getTurnAngle());
+        SmartDashboard.putNumber("BL", backLeft.getTurnAngle());
+        SmartDashboard.putNumber("BR", backRight.getTurnAngle());
+
+
+
+
+
         
 
         odometry.update(
