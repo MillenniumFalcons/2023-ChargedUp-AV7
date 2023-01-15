@@ -35,6 +35,7 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     private final ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
 
     private static final class PeriodicIO {
+        boolean hasTarget = false;
         double lastTimestamp = 0.0;
         int tagID = -1;
         double poseAmbiguity = 0;
@@ -63,6 +64,7 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     public void readPeriodicInputs() {
         PeriodicSubsystem.super.readPeriodicInputs();
         var result = camera.getLatestResult().getBestTarget();
+        periodicIO.hasTarget = camera.getLatestResult().hasTargets();
         if (camera.getLatestResult().hasTargets()) {
             periodicIO.tagID = result.getFiducialId();
             periodicIO.poseAmbiguity = result.getPoseAmbiguity();
@@ -97,6 +99,10 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
 
     public Transform3d getCameraToTagTransform() {
         return periodicIO.avgPose;
+    }
+
+    public boolean getHasTarget() {
+        return periodicIO.hasTarget;
     }
 
     public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {

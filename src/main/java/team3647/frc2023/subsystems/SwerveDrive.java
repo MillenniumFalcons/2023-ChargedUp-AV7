@@ -143,7 +143,7 @@ public class SwerveDrive implements PeriodicSubsystem {
             poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
         }
 
-        m_printer.getField().setRobotPose(getPose());
+        m_printer.addPose("robot pose", this::getPose);
     }
 
     @Override
@@ -300,7 +300,8 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
-        return PathPlanner.generatePath(new PathConstraints(1,1), PathPoint.fromCurrentHolonomicState(getPose(), SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
+        return PathPlanner.generatePath(new PathConstraints(1,1), PathPoint.fromCurrentHolonomicState(getPose(), 
+        SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(periodicIO.frontLeftState, periodicIO.frontRightState, periodicIO.backLeftState, periodicIO.backRightState)),
         endpoint);
     }
 

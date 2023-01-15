@@ -12,6 +12,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import com.pathplanner.lib.PathPoint;
@@ -34,6 +35,7 @@ import team3647.lib.inputs.Joysticks;
  */
 public class RobotContainer {
     private final Joysticks mainController = new Joysticks(0);
+    private Pose2d target = new Pose2d();
 //     private final Joysticks coController = new Joysticks(1);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -46,17 +48,21 @@ public class RobotContainer {
         configureButtonBindings();
         configureDefaultCommands();
         configureSmartDashboardLogging();
+        m_printer.addPose("Target Pose", () -> this.target);
         // chooseAuto();
         // rot 2d is the rotation of the robot relative to field during auto
         // m_swerve.setOdometry(startPosition, startPosition.getRotation());
 
+        // m_swerve.setOdometry(
+        //         PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
         m_swerve.setOdometry(
-                PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
+                new Pose2d(5, 5, new Rotation2d(Units.degreesToRadians(180))), new Rotation2d(Units.degreesToRadians(180)));
     }
     private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d(Units.degreesToRadians(0)), new Rotation2d(Units.degreesToRadians(180)));
 
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
+        mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
@@ -65,12 +71,15 @@ public class RobotContainer {
      }
 
      public Pose2d getTagPose() {
-        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-        var robotPose3d = new Pose3d(m_swerve.getPose());
-        
-        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-        var fieldToTag2d = new Pose2d(new Translation2d(fieldToTag.getX(), fieldToTag.getY()), new Rotation2d(fieldToTag.getRotation().getAngle()));
-        return fieldToTag2d;
+        if (photonVisionCamera.getHasTarget()) {
+            var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+            var robotPose3d = new Pose3d(m_swerve.getPose());
+            
+            var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+            var fieldToTag2d = new Pose2d(new Translation2d(fieldToTag.getX(), fieldToTag.getY()), new Rotation2d(fieldToTag.getRotation().getAngle()));
+            return fieldToTag2d;
+        }
+        return new Pose2d();
      }
 
      // left and right of tag (meters)
@@ -84,6 +93,19 @@ public class RobotContainer {
         var pose3d = fieldToTag.transformBy(fromTag3d);
 
         return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
+     }
+
+     private Pose2d getTargetPose() {
+        Translation2d fromTag = new Translation2d(1, 1);
+        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+        var robotPose3d = new Pose3d(m_swerve.getPose());
+        
+        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+
+        var pose3d = fieldToTag.transformBy(fromTag3d);
+
+        return new Pose2d(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d());
      }
 
      private PathPoint getZeroPath() {
