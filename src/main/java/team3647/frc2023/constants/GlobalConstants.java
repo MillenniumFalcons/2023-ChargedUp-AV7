@@ -50,10 +50,6 @@ public final class GlobalConstants {
         public static final int kTopSensorPin = 4;
     }
 
-    public static final class TurretIds {
-        public static final int kMotorId = 16;
-    }
-
     public static final class HoodIds {
         public static final int kMotorId = 17;
     }

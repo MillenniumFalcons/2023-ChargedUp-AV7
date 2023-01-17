@@ -9,12 +9,16 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+
 import com.pathplanner.lib.PathPoint;
 import team3647.frc2023.commands.AutoCommands;
 import team3647.frc2023.commands.PathPlannerTrajectories;
@@ -49,10 +53,6 @@ public class RobotContainer {
         configureDefaultCommands();
         configureSmartDashboardLogging();
         m_printer.addPose("Target Pose", () -> this.target);
-        // chooseAuto();
-        // rot 2d is the rotation of the robot relative to field during auto
-        // m_swerve.setOdometry(startPosition, startPosition.getRotation());
-
         // m_swerve.setOdometry(
         //         PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
         m_swerve.setOdometry(
@@ -62,12 +62,14 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
-        mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
-        mainController.buttonB.onTrue(
-            new InstantCommand(
-        () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
-        .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+        mainController.leftBumper.onTrue(new InstantCommand(m_swerve::extend));
+        mainController.rightBumper.onTrue(new InstantCommand(m_swerve::retract));
+        // mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
+        // mainController.buttonB.onTrue(
+        //     new InstantCommand(
+        // () -> {    
+        // new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
+        // .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
 
      public Pose2d getTagPose() {
@@ -143,7 +145,7 @@ public class RobotContainer {
                     SwerveDriveConstants.kBackLeftModule,
                     SwerveDriveConstants.kBackRightModule,
                     SwerveDriveConstants.kGyro,
-                    photonVisionCamera);
+                    photonVisionCamera, new Solenoid(PneumaticsModuleType.CTREPCM, 1));
 
     final Superstructure m_superstructure =
             new Superstructure(m_swerve);

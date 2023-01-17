@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.AutoConstants;
@@ -46,6 +47,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final SwerveDriveOdometry odometry;
+    private final Solenoid solenoid;
 
     public static class PeriodicIO {
         // inputs
@@ -53,6 +55,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         public boolean isOpenLoop = true;
         public double heading = 0;
         public double rawHeading = 0;
+        public boolean solenoidState = false;
 
         public SwerveModuleState frontLeftState = new SwerveModuleState();
         public SwerveModuleState frontRightState = new SwerveModuleState();
@@ -71,7 +74,9 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule backLeft,
             SwerveModule backRight,
             Pigeon2 gyro,
-            PhotonVisionCamera camera) {
+            PhotonVisionCamera camera,
+            Solenoid solenoid) {
+        this.solenoid = solenoid;
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
@@ -148,11 +153,19 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     @Override
     public void writePeriodicOutputs() {
-
+        solenoid.set(periodicIO.solenoidState);
         frontLeft.setDesiredState(periodicIO.frontLeftOutputState, periodicIO.isOpenLoop);
         frontRight.setDesiredState(periodicIO.frontRightOutputState, periodicIO.isOpenLoop);
         backLeft.setDesiredState(periodicIO.backLeftOutputState, periodicIO.isOpenLoop);
         backRight.setDesiredState(periodicIO.backRightOutputState, periodicIO.isOpenLoop);
+    }
+
+    public void extend() {
+        periodicIO.solenoidState = true;
+    }
+
+    public void retract() {
+        periodicIO.solenoidState = false;
     }
 
     @Override
