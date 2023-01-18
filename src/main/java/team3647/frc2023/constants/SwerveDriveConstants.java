@@ -165,7 +165,7 @@ public class SwerveDriveConstants {
 
     public static final double kTurnP = 0.8;
     public static final double kTurnI = 0.0;
-    public static final double kTurnD = 12.0; // 1;
+    public static final double kTurnD = 10.0; // 1;
 
     // is stored as reference?
     public static final SwerveModule kFrontLeftModule =

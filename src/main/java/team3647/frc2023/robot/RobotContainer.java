@@ -64,12 +64,12 @@ public class RobotContainer {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.leftBumper.onTrue(new InstantCommand(m_swerve::extend));
         mainController.rightBumper.onTrue(new InstantCommand(m_swerve::retract));
-        // mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
-        // mainController.buttonB.onTrue(
-        //     new InstantCommand(
-        // () -> {    
-        // new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
-        // .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+        mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
+        mainController.buttonB.onTrue(
+            new InstantCommand(
+        () -> {    
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(Units.inchesToMeters(23), Units.inchesToMeters(48)))))
+        .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
 
      public Pose2d getTagPose() {
@@ -88,7 +88,6 @@ public class RobotContainer {
      private PathPoint getCalculatedTargetPose(Translation2d fromTag) {
         var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
         var robotPose3d = new Pose3d(m_swerve.getPose());
-        
         var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
         var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
 

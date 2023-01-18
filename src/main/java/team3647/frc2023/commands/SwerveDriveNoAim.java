@@ -63,11 +63,13 @@ public class SwerveDriveNoAim extends CommandBase {
         translation =
                 new Translation2d(xComponent, yComponent)
                         .times(SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
-        rotation =
-                -turnSpeedFunction.getAsDouble()
-                        * SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec
-                        * rotationMultiplier;
-        rotation = rotation * rotation * Math.signum(rotation) * 0.8;
+        // rotation =
+        //         -turnSpeedFunction.getAsDouble()
+        //                 * SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec
+        //                 * rotationMultiplier;
+        // rotation = rotation * rotation * Math.signum(rotation);
+
+        rotation = -turnSpeedFunction.getAsDouble();
 
         swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
     }

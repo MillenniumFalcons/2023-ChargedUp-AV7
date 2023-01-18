@@ -119,15 +119,25 @@ public class SwerveDrive implements PeriodicSubsystem {
         backLeftAverageSpeed.add(periodicIO.backLeftState.speedMetersPerSecond);
         backRightAverageSpeed.add(periodicIO.backRightState.speedMetersPerSecond);
 
-        SmartDashboard.putNumber("ABS FL", frontLeft.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("ABS FR", frontRight.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("ABS BL", backLeft.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("ABS BR", backRight.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("ABS FL", frontLeft.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("ABS FR", frontRight.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("ABS BL", backLeft.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("ABS BR", backRight.getAbsEncoderPos().getDegrees());
 
-        SmartDashboard.putNumber("FL", frontLeft.getTurnAngle());
-        SmartDashboard.putNumber("FR", frontRight.getTurnAngle());
-        SmartDashboard.putNumber("BL", backLeft.getTurnAngle());
-        SmartDashboard.putNumber("BR", backRight.getTurnAngle());
+        // SmartDashboard.putNumber("FL", frontLeft.getTurnAngle());
+        // SmartDashboard.putNumber("FR", frontRight.getTurnAngle());
+        // SmartDashboard.putNumber("BL", backLeft.getTurnAngle());
+        // SmartDashboard.putNumber("BR", backRight.getTurnAngle());
+
+        SmartDashboard.putNumber("FL speed", periodicIO.frontLeftState.speedMetersPerSecond);
+        SmartDashboard.putNumber("FR speed", periodicIO.frontRightState.speedMetersPerSecond);
+        SmartDashboard.putNumber("BL speed", periodicIO.backLeftState.speedMetersPerSecond);
+        SmartDashboard.putNumber("BR speed", periodicIO.backRightState.speedMetersPerSecond);
+
+        SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
+        SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
+        SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
+        SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
 
         odometry.update(
                 getRotation2d(),
@@ -153,7 +163,7 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        solenoid.set(periodicIO.solenoidState);
+        // solenoid.set(periodicIO.solenoidState);
         frontLeft.setDesiredState(periodicIO.frontLeftOutputState, periodicIO.isOpenLoop);
         frontRight.setDesiredState(periodicIO.frontRightOutputState, periodicIO.isOpenLoop);
         backLeft.setDesiredState(periodicIO.backLeftOutputState, periodicIO.isOpenLoop);
