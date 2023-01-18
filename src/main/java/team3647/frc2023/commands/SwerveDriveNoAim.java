@@ -52,17 +52,17 @@ public class SwerveDriveNoAim extends CommandBase {
     @Override
     public void execute() {
         double xComponent = ySpeedFunction.getAsDouble() * translateMultiplier;
-        xComponent =
-                m_x_accelerationLimiter.calculate(
-                        xComponent * xComponent * Math.signum(xComponent));
+        // xComponent =
+        //         m_x_accelerationLimiter.calculate(
+        //                 xComponent * xComponent * Math.signum(xComponent));
         double yComponent = -xSpeedFunction.getAsDouble() * translateMultiplier;
-        yComponent =
-                m_y_accelerationLimiter.calculate(
-                        yComponent * yComponent * Math.signum(yComponent));
+        // yComponent =
+        //         m_y_accelerationLimiter.calculate(
+        //                 yComponent * yComponent * Math.signum(yComponent));
 
         translation =
-                new Translation2d(xComponent, yComponent)
-                        .times(SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
+                new Translation2d(xComponent, yComponent);
+                        //.times(SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
         // rotation =
         //         -turnSpeedFunction.getAsDouble()
         //                 * SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec
