@@ -127,6 +127,7 @@ public class RobotContainer {
     public void configureSmartDashboardLogging() {
         m_printer.addDouble("rot", m_swerve::getRawHeading);
         m_printer.addPose("tag pose", this::getTagPose);
+        m_printer.addDouble("Joystick", mainController::getLeftStickY);
     }
 
     public Command getAutonomousCommand() {

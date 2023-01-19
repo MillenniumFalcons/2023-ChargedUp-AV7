@@ -15,8 +15,8 @@ import java.util.function.DoubleSupplier;
 
 public class SwerveDriveNoAim extends CommandBase {
     private final SwerveDrive swerve;
-    private final SlewRateLimiter m_x_accelerationLimiter = new SlewRateLimiter(2);
-    private final SlewRateLimiter m_y_accelerationLimiter = new SlewRateLimiter(2);
+    private final SlewRateLimiter m_x_accelerationLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_y_accelerationLimiter = new SlewRateLimiter(3);
 
     private final DoubleSupplier xSpeedFunction;
     private final DoubleSupplier ySpeedFunction;
@@ -51,27 +51,26 @@ public class SwerveDriveNoAim extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double xComponent = ySpeedFunction.getAsDouble() * translateMultiplier;
+        double xComponent = ySpeedFunction.getAsDouble();
         // xComponent =
         //         m_x_accelerationLimiter.calculate(
         //                 xComponent * xComponent * Math.signum(xComponent));
-        double yComponent = -xSpeedFunction.getAsDouble() * translateMultiplier;
+        double yComponent = -xSpeedFunction.getAsDouble();
         // yComponent =
         //         m_y_accelerationLimiter.calculate(
         //                 yComponent * yComponent * Math.signum(yComponent));
 
         translation =
-                new Translation2d(xComponent, yComponent);
-                        //.times(SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
-        // rotation =
-        //         -turnSpeedFunction.getAsDouble()
-        //                 * SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec
-        //                 * rotationMultiplier;
+                new Translation2d(xComponent, yComponent)
+                        .times(SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
+        rotation =
+                -turnSpeedFunction.getAsDouble()
+                        * SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec;
+                        // * rotationMultiplier;
         // rotation = rotation * rotation * Math.signum(rotation);
 
-        rotation = -turnSpeedFunction.getAsDouble();
-
-        swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
+        swerve.drive(translation, 
+        rotation, getIsFieldOriented.getAsBoolean(), true);
     }
 
     // Called once the command ends or is interrupted.
