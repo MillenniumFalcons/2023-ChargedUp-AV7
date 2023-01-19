@@ -29,10 +29,10 @@ public class Robot extends TimedRobot {
                 m_robotContainer.m_swerve::readPeriodicInputs,
                 kTenMSLoopTime,
                 .004); // 2.5MS offset
-        addPeriodic(
-                () -> m_robotContainer.m_superstructure.periodic(Timer.getFPGATimestamp()),
-                kTwentyMSLoopTime,
-                0.019);
+        // addPeriodic(
+        //         () -> m_robotContainer.m_superstructure.periodic(Timer.getFPGATimestamp()),
+        //         kTwentyMSLoopTime,
+        //         0.019);
     }
 
     /**
@@ -45,8 +45,8 @@ public class Robot extends TimedRobot {
         LiveWindow.setEnabled(false);
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our
-        // autonomous chooser on the dashboard.
-        m_robotContainer.m_swerve.resetModuleAngle();
+        // // autonomous chooser on the dashboard.
+        // m_robotContainer.m_swerve.resetModuleAngle();
     }
 
     /**

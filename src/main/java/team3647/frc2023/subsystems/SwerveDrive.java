@@ -42,13 +42,10 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final MovingAverage backRightAverageSpeed = new MovingAverage(10);
 
     private final Pigeon2 gyro;
-    private final PhotonVisionCamera camera;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final SwerveDriveOdometry odometry;
-    private final Solenoid solenoid;
-
     public static class PeriodicIO {
         // inputs
         public double timestamp = 0;
@@ -73,16 +70,12 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            Pigeon2 gyro,
-            PhotonVisionCamera camera,
-            Solenoid solenoid) {
-        this.solenoid = solenoid;
+            Pigeon2 gyro) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
         this.gyro = gyro;
-        this.camera = camera;
         this.poseEstimator = new SwerveDrivePoseEstimator(SwerveDriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePositions(),new Pose2d());
         this.odometry =
                 new SwerveDriveOdometry(
@@ -151,14 +144,14 @@ public class SwerveDrive implements PeriodicSubsystem {
         // update pose estimator
         poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         periodicIO.timestamp = Timer.getFPGATimestamp();
-        Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        var camPose = result.getFirst();
-        var camPoseObsTime = result.getSecond();
-        if (camPose != null) {
-            poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-        }
+    //     Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+    //     var camPose = result.getFirst();
+    //     var camPoseObsTime = result.getSecond();
+    //     if (camPose != null) {
+    //         poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+    //     }
 
-        m_printer.addPose("robot pose", this::getPose);
+    //     m_printer.addPose("robot pose", this::getPose);
     }
 
     @Override
