@@ -173,7 +173,7 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     @Override
     public void periodic() {
-        // readPeriodicInputs();
+        readPeriodicInputs();
         writePeriodicOutputs();
     }
 
@@ -227,6 +227,14 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public Pose2d getPose() {
         return odometry.getPoseMeters();
+    }
+
+    public double getPoseX() {
+        return odometry.getPoseMeters().getX();
+    }
+
+    public double getPoseY() {
+        return odometry.getPoseMeters().getY();
     }
 
     public Pose2d getEstimPose() {

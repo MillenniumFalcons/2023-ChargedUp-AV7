@@ -25,10 +25,10 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         super(.02);
-        addPeriodic(
-                m_robotContainer.m_swerve::readPeriodicInputs,
-                kTenMSLoopTime,
-                .004); // 2.5MS offset
+        // addPeriodic(
+        //         m_robotContainer.m_swerve::readPeriodicInputs,
+        //         kTenMSLoopTime,
+        //         .004); // 2.5MS offset
         // addPeriodic(
         //         () -> m_robotContainer.m_superstructure.periodic(Timer.getFPGATimestamp()),
         //         kTwentyMSLoopTime,

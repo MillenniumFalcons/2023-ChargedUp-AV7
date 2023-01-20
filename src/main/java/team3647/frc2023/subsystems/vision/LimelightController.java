@@ -2,7 +2,6 @@ package team3647.frc2023.subsystems.vision;
 
 import javax.crypto.interfaces.PBEKey;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PhotonVisionConstants;
@@ -31,7 +30,6 @@ public class LimelightController implements PeriodicSubsystem {
     }
 
     public LimelightController() {
-
     }
 
     @Override
@@ -44,8 +42,8 @@ public class LimelightController implements PeriodicSubsystem {
             periodicIO.avgArea = limelight.getDouble(Data.AREA);
             periodicIO.latency = limelight.getDouble(Data.LATNECY_MS);
             periodicIO.tagID = (int) limelight.getDouble(Data.TAG_ID);
-            periodicIO.cameraToTagX = limelight.getDoubleArray(Data.CAM_TRANS)[0];
-            periodicIO.cameraToTagY = limelight.getDoubleArray(Data.CAM_TRANS)[2];
+            periodicIO.cameraToTagX = limelight.getDoubleArray(Data.CAM_TRANS)[2];
+            periodicIO.cameraToTagY = limelight.getDoubleArray(Data.CAM_TRANS)[0];
         } else {
             periodicIO.hasTarget = false;
             periodicIO.tagID = -1;
