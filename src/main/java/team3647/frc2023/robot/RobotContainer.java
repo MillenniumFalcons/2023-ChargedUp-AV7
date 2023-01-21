@@ -70,11 +70,11 @@ public class RobotContainer {
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(Units.inchesToMeters(23))))
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPosePhoton(new Translation2d())))
         .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
 
-     public Pose2d getTagPose() {
+     public Pose2d getTagPoseLimelight() {
         Translation2d fromTag = new Translation2d(Units.inchesToMeters(-23), Units.inchesToMeters(48));
         var cameraToTagTransform = new Transform3d(limelightController.getCameraToTag(), new Rotation3d());
         var robotPose3d = new Pose3d(m_swerve.getPose());
@@ -87,7 +87,7 @@ public class RobotContainer {
      }
 
      // left and right of tag (meters)
-     private PathPoint getCalculatedTargetPose(double fromTag) {
+     private PathPoint getCalculatedTargetPoseLimelight(double fromTag) {
 
         double cameraToTagX = limelightController.getCameraToTagX();
         double cameraToTagY = limelightController.getCameraToTagY();
@@ -118,23 +118,47 @@ public class RobotContainer {
         // return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
      }
 
-    //  private Pose2d getTargetPose() {
-    //     Translation2d fromTag = new Translation2d(1, 1);
-    //     var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-    //     var robotPose3d = new Pose3d(m_swerve.getPose());
+     public Pose2d getTagPosePhoton() {
+        if (photonVisionCamera.getHasTarget()) {
+            var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+            var robotPose3d = new Pose3d(m_swerve.getPose());
+            
+            var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+            var fieldToTag2d = new Pose2d(new Translation2d(fieldToTag.getX(), fieldToTag.getY()), new Rotation2d(fieldToTag.getRotation().getAngle()));
+            return fieldToTag2d;
+        }
+        return new Pose2d();
+     }
+
+     // left and right of tag (meters)
+     private PathPoint getCalculatedTargetPosePhoton(Translation2d fromTag) {
+        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+        var robotPose3d = new Pose3d(m_swerve.getPose());
+        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+
+        var pose3d = fieldToTag.transformBy(fromTag3d);
+
+        return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
+     }
+
+     private Pose2d getTargetPose() {
+        Translation2d fromTag = new Translation2d(1, 1);
+        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+        var robotPose3d = new Pose3d(m_swerve.getPose());
         
-    //     var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
-    //     var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
 
-    //     var pose3d = fieldToTag.transformBy(fromTag3d);
+        var pose3d = fieldToTag.transformBy(fromTag3d);
 
-    //     return new Pose2d(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d());
-    //  }
+        return new Pose2d(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d());
+     }
 
-    //  private PathPoint getZeroPath() {
-    //     Translation2d currentTranslation = new Translation2d(m_swerve.getPose().getX(), m_swerve.getPose().getY());
-    //     return new PathPoint(currentTranslation, new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
-    //  }
+     private PathPoint getZeroPath() {
+        Translation2d currentTranslation = new Translation2d(m_swerve.getPose().getX(), m_swerve.getPose().getY());
+        return new PathPoint(currentTranslation, new Rotation2d(0), new Rotation2d(Units.degreesToRadians(180)));
+     }
 
     private void configureDefaultCommands() {
         m_swerve.setDefaultCommand(
@@ -148,7 +172,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         m_printer.addDouble("rot", m_swerve::getRawHeading);
-        m_printer.addPose("tag pose", this::getTagPose);
+        m_printer.addPose("tag pose", this::getTagPosePhoton);
         m_printer.addDouble("Joystick", mainController::getLeftStickY);
         m_printer.addBoolean("Has Target", limelightController::hasTarget);
         m_printer.addDouble("Tag ID", limelightController::getTagID);
@@ -170,7 +194,7 @@ public class RobotContainer {
     //                 new PhotonVisionCamera(PhotonVisionConstants.camera);
 
     private final LimelightController limelightController = new LimelightController();
-    private final PhotonVisionCamera camera = new PhotonVisionCamera(PhotonVisionConstants.camera);
+    private final PhotonVisionCamera photonVisionCamera = new PhotonVisionCamera(PhotonVisionConstants.camera);
 
     public final SwerveDrive m_swerve =
             new SwerveDrive(
@@ -179,7 +203,7 @@ public class RobotContainer {
                     SwerveDriveConstants.kBackLeftModule,
                     SwerveDriveConstants.kBackRightModule,
                     SwerveDriveConstants.kGyro,
-                    camera);
+                    photonVisionCamera);
 
     // private final AutoCommands autoCommands = new AutoCommands(this.m_swerve);
     
