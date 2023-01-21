@@ -42,8 +42,8 @@ public class LimelightController implements PeriodicSubsystem {
             periodicIO.avgArea = limelight.getDouble(Data.AREA);
             periodicIO.latency = limelight.getDouble(Data.LATNECY_MS);
             periodicIO.tagID = (int) limelight.getDouble(Data.TAG_ID);
-            periodicIO.cameraToTagX = limelight.getDoubleArray(Data.CAM_TRANS)[2];
-            periodicIO.cameraToTagY = limelight.getDoubleArray(Data.CAM_TRANS)[0];
+            periodicIO.cameraToTagX = -limelight.getDoubleArray(Data.CAM_TRANS)[2];
+            periodicIO.cameraToTagY = -limelight.getDoubleArray(Data.CAM_TRANS)[0];
         } else {
             periodicIO.hasTarget = false;
             periodicIO.tagID = -1;

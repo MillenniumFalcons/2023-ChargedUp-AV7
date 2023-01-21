@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
+import org.opencv.photo.Photo;
+
 import com.pathplanner.lib.PathPoint;
 import team3647.frc2023.commands.AutoCommands;
 import team3647.frc2023.commands.PathPlannerTrajectories;
@@ -58,70 +60,42 @@ public class RobotContainer {
         m_swerve.setOdometry(
                 new Pose2d(5, 5, new Rotation2d(Units.degreesToRadians(180))), new Rotation2d(Units.degreesToRadians(180)));
     }
-    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(23), Units.inchesToMeters(48)), new Rotation2d(Units.degreesToRadians(0)), new Rotation2d(Units.degreesToRadians(180)));
+    private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d(Units.degreesToRadians(0)), new Rotation2d(Units.degreesToRadians(180)));
 
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.leftBumper.onTrue(new InstantCommand(m_swerve::extend));
         mainController.rightBumper.onTrue(new InstantCommand(m_swerve::retract));
         //mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
-        mainController.buttonB.onTrue(new InstantCommand(() -> m_printer.addDouble("tag pose x", this::getTagPoseX)));
-        mainController.buttonB.onTrue(new InstantCommand(() -> m_printer.addDouble("tag pose y", this::getTagPoseY))); 
-        mainController.buttonB.onTrue(new InstantCommand(() -> m_printer.addDouble("target pose x", this::getTargetPoseX)));
-        mainController.buttonB.onTrue(new InstantCommand(() -> m_printer.addDouble("target pose y", this::getTargetPoseY)));         
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(48)))
-        .withTimeout(8)).schedule();}));
-     }
-
-     public Pose2d getTargetPose() {
-        var offset = new Transform3d(new Translation3d(Units.inchesToMeters(-23), Units.inchesToMeters(-48), 0), new Rotation3d());
-        var cameraToTagTransform = new Transform3d(limelightController.getCameraToTag(), new Rotation3d());
-        var robotPose3d = new Pose3d(m_swerve.getPose());
-        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam.times(-1.0)).transformBy(cameraToTagTransform);
-
-        var pose3d = fieldToTag.transformBy(offset);
-
-        return new Pose2d(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d());
-     }
-
-     public double getTargetPoseX() {
-        return getTargetPose().getX();
-     }
-
-     public double getTargetPoseY() {
-        return getTargetPose().getY();
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(Units.inchesToMeters(23))))
+        .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
 
      public Pose2d getTagPose() {
+        Translation2d fromTag = new Translation2d(Units.inchesToMeters(-23), Units.inchesToMeters(48));
         var cameraToTagTransform = new Transform3d(limelightController.getCameraToTag(), new Rotation3d());
         var robotPose3d = new Pose3d(m_swerve.getPose());
+        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
         var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
 
-        var pose3d = fieldToTag;
+        var pose3d = fieldToTag.transformBy(fromTag3d);
 
-        return new Pose2d(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d());
-     }
-
-     public double getTagPoseX() {
-        return getTagPose().getX();
-     }
-
-     public double getTagPoseY() {
-        return getTagPose().getY();
+        return new Pose2d(pose3d.getX(), pose3d.getY(), new Rotation2d());
      }
 
      // left and right of tag (meters)
      private PathPoint getCalculatedTargetPose(double fromTag) {
+
         double cameraToTagX = limelightController.getCameraToTagX();
         double cameraToTagY = limelightController.getCameraToTagY();
         double robotToFlushX = 0;
         double robotToFlushY = 0;
         double tagOffsetDepth = PhotonVisionConstants.offsetAprilTagToCenterOfRobotFlush;
-        robotToFlushX = cameraToTagX - tagOffsetDepth + 0.288 * Math.sin(-Units.degreesToRadians(m_swerve.getRawHeading()) - Math.atan(0.1 / 0.27));
-        robotToFlushY = cameraToTagY + fromTag + 0.288 * Math.cos(-Units.degreesToRadians(m_swerve.getRawHeading()) - Math.atan(0.1 / 0.27));
+        robotToFlushX = cameraToTagX - tagOffsetDepth + 0.295 * Math.sin(Units.degreesToRadians(m_swerve.getRawHeading() - 180) + Math.atan(0.1 / 0.27));
+        robotToFlushY = cameraToTagY + fromTag + 0.295 * Math.cos(Units.degreesToRadians(m_swerve.getRawHeading() - 180) + Math.atan(0.1 / 0.27));
         //robotToFlushX = cameraToTagX - tagOffsetDepth + Math.abs(Math.sin((Units.degreesToRadians(90 - m_swerve.getHeading()))) * PhotonVisionConstants.robotToCam.getX());
         //robotToFlushY = cameraToTagY + tagOffsetSideway + Math.abs(Math.cos(Units.degreesToRadians(m_swerve.getHeading())) * PhotonVisionConstants.robotToCam.getY());
         double xSetPoint = m_swerve.getPose().getX() - robotToFlushX;
@@ -137,15 +111,9 @@ public class RobotContainer {
         // var robotPose3d = new Pose3d(m_swerve.getPose());
         // var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
         // var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-
         // var pose3d = fieldToTag.transformBy(fromTag3d);
-
-        // return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
-        // var cameraToTagTransform = new Transform3d(limelightController.getCameraToTag(), new Rotation3d());
-        // var robotPose3d = new Pose3d(m_swerve.getPose());
-        // var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
-        // var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-        // var pose3d = fieldToTag.transformBy(fromTag3d);
+        // m_printer.addDouble("calculated x", pose3d::getX);
+        // m_printer.addDouble("calculated y", pose3d::getY);
 
         // return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
      }
@@ -178,15 +146,18 @@ public class RobotContainer {
                         () -> true));
     }
 
-    private final LimelightController limelightController = new LimelightController();
-
     public void configureSmartDashboardLogging() {
-        // m_printer.addDouble("rot", m_swerve::getRawHeading);
-        m_printer.addDouble("robot to tag x", limelightController::getCameraToTagX);
-        m_printer.addDouble("robot to tag y", limelightController::getCameraToTagY);
-        m_printer.addDouble("robot to tag rot", limelightController::getYaw);
-        m_printer.addDouble("robot x", m_swerve::getPoseX);
-        m_printer.addDouble("robot y", m_swerve::getPoseY);
+        m_printer.addDouble("rot", m_swerve::getRawHeading);
+        m_printer.addPose("tag pose", this::getTagPose);
+        m_printer.addDouble("Joystick", mainController::getLeftStickY);
+        m_printer.addBoolean("Has Target", limelightController::hasTarget);
+        m_printer.addDouble("Tag ID", limelightController::getTagID);
+        m_printer.addDouble("robutt x", m_swerve::getPoseX);
+        m_printer.addDouble("robutt y", m_swerve::getPoseY);
+        m_printer.addDouble("Distance to Tag", limelightController::getDistance);
+        m_printer.addDouble("camera to tag x", limelightController::getCameraToTagX);
+        m_printer.addDouble("camera to tag y", limelightController::getCameraToTagY);
+        m_printer.addDouble("heading", m_swerve::getRawHeading);
     }
 
     public Command getAutonomousCommand() {
@@ -197,6 +168,8 @@ public class RobotContainer {
 
     // private final PhotonVisionCamera photonVisionCamera =
     //                 new PhotonVisionCamera(PhotonVisionConstants.camera);
+
+    private final LimelightController limelightController = new LimelightController();
 
     public final SwerveDrive m_swerve =
             new SwerveDrive(
