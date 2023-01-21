@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
-import org.opencv.photo.Photo;
+import org.photonvision.PhotonTargetSortMode;
 
 import com.pathplanner.lib.PathPoint;
 import team3647.frc2023.commands.AutoCommands;
@@ -170,6 +170,7 @@ public class RobotContainer {
     //                 new PhotonVisionCamera(PhotonVisionConstants.camera);
 
     private final LimelightController limelightController = new LimelightController();
+    private final PhotonVisionCamera camera = new PhotonVisionCamera(PhotonVisionConstants.camera);
 
     public final SwerveDrive m_swerve =
             new SwerveDrive(
@@ -177,8 +178,8 @@ public class RobotContainer {
                     SwerveDriveConstants.kFrontRightModule,
                     SwerveDriveConstants.kBackLeftModule,
                     SwerveDriveConstants.kBackRightModule,
-                    SwerveDriveConstants.kGyro
-                    );
+                    SwerveDriveConstants.kGyro,
+                    camera);
 
     // private final AutoCommands autoCommands = new AutoCommands(this.m_swerve);
     

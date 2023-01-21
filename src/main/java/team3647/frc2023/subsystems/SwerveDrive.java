@@ -42,6 +42,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final MovingAverage backRightAverageSpeed = new MovingAverage(10);
 
     private final Pigeon2 gyro;
+    private final PhotonVisionCamera camera;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -70,7 +71,9 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            Pigeon2 gyro) {
+            Pigeon2 gyro,
+            PhotonVisionCamera camera) {
+        this.camera = camera;
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
@@ -144,14 +147,14 @@ public class SwerveDrive implements PeriodicSubsystem {
         // update pose estimator
         poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         periodicIO.timestamp = Timer.getFPGATimestamp();
-    //     Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-    //     var camPose = result.getFirst();
-    //     var camPoseObsTime = result.getSecond();
-    //     if (camPose != null) {
-    //         poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-    //     }
+        Pair<Pose2d, Double> result = camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+        var camPose = result.getFirst();
+        var camPoseObsTime = result.getSecond();
+        if (camPose != null) {
+            poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+        }
 
-    //     m_printer.addPose("robot pose", this::getPose);
+        m_printer.addPose("robot pose", this::getPose);
     }
 
     @Override
