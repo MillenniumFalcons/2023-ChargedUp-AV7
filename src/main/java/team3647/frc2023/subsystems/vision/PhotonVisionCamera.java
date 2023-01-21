@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.photonvision.PhotonCamera;
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.RobotPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
 import team3647.frc2023.constants.PhotonVisionConstants;
@@ -35,19 +36,21 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     private final ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
 
     private static final class PeriodicIO {
+        List<PhotonTrackedTarget> targets = null;
+
         boolean hasTarget = false;
         double lastTimestamp = 0.0;
-        int tagID = -1;
-        double poseAmbiguity = 0;
-        double avgYaw = 0.0;
-        double avgPitch = 0.0;
-        double avgArea = 0.0;
-        double avgSkew = 0.0;
-        double cameraToTag = 0.0;
-        double cameraToTagAngle = 0.0;
-        double cameraToTagY = 0.0;
-        double cameraToTagX = 0.0;
-        Transform3d avgPose = null;
+        int bestTagID = -1;
+        double bestPoseAmbiguity = 0;
+        double bestAvgYaw = 0.0;
+        double bestAvgPitch = 0.0;
+        double bestAvgArea = 0.0;
+        double bestAvgSkew = 0.0;
+        double bestCameraToTag = 0.0;
+        double bestCameraToTagAngle = 0.0;
+        double bestCameraToTagY = 0.0;
+        double bestCameraToTagX = 0.0;
+        Transform3d bestAvgPose = null;
         List<TargetCorner> corners = null;
     }
 
@@ -63,42 +66,49 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     @Override
     public void readPeriodicInputs() {
         PeriodicSubsystem.super.readPeriodicInputs();
-        var result = camera.getLatestResult().getBestTarget();
+        var results = camera.getLatestResult();
+        var bestResult = results.getBestTarget();
         periodicIO.hasTarget = camera.getLatestResult().hasTargets();
         if (camera.getLatestResult().hasTargets()) {
-            periodicIO.tagID = result.getFiducialId();
-            periodicIO.poseAmbiguity = result.getPoseAmbiguity();
-            periodicIO.avgYaw = result.getYaw();
-            periodicIO.avgPose = result.getBestCameraToTarget();
-            periodicIO.cameraToTag = periodicIO.avgPose.getX();
-            periodicIO.cameraToTagAngle = Units.degreesToRadians(result.getYaw());
-            periodicIO.cameraToTagX = periodicIO.avgPose.getX() * Math.cos(Units.degreesToRadians(result.getYaw()));
-            periodicIO.cameraToTagY = periodicIO.avgPose.getX() * Math.sin(Units.degreesToRadians((result.getYaw())));
-            SmartDashboard.putNumber("Distance", periodicIO.avgPose.getX());
-            SmartDashboard.putNumber("Angle to Target", periodicIO.avgYaw);
-            SmartDashboard.putNumber("camera to tag y", periodicIO.cameraToTagY);
-            SmartDashboard.putNumber("camera to tag x", periodicIO.cameraToTagX);
+            periodicIO.targets = results.targets;
+            periodicIO.bestTagID = bestResult.getFiducialId();
+            periodicIO.bestPoseAmbiguity = bestResult.getPoseAmbiguity();
+            periodicIO.bestAvgYaw = bestResult.getYaw();
+            periodicIO.bestAvgPose = bestResult.getBestCameraToTarget();
+            periodicIO.bestCameraToTag = periodicIO.bestAvgPose.getX();
+            periodicIO.bestCameraToTagAngle = Units.degreesToRadians(bestResult.getYaw());
+            periodicIO.bestCameraToTagX = periodicIO.bestAvgPose.getX() * Math.cos(Units.degreesToRadians(bestResult.getYaw()));
+            periodicIO.bestCameraToTagY = periodicIO.bestAvgPose.getX() * Math.sin(Units.degreesToRadians((bestResult.getYaw())));
+        }
+
+        for (PhotonTrackedTarget target : periodicIO.targets) {
+            String targetID = target.getFiducialId() + "";
+            SmartDashboard.putNumber(targetID, target.getBestCameraToTarget().getX());
         }
     }
 
+    public List<PhotonTrackedTarget> getAllTargets() {
+        return periodicIO.targets;
+    }
+
     public double getCameraToTag(){
-        return periodicIO.cameraToTag;
+        return periodicIO.bestCameraToTag;
     }
 
     public double getCameraToTagAngle(){
-        return periodicIO.cameraToTagAngle;
+        return periodicIO.bestCameraToTagAngle;
     }
 
     public double getCameraToTagX() {
-        return periodicIO.cameraToTagX;
+        return periodicIO.bestCameraToTagX;
     }
 
     public double getCameraToTagY() {
-        return periodicIO.cameraToTagY;
+        return periodicIO.bestCameraToTagY;
     }
 
     public Transform3d getCameraToTagTransform() {
-        return periodicIO.avgPose;
+        return periodicIO.bestAvgPose;
     }
 
     public boolean getHasTarget() {
