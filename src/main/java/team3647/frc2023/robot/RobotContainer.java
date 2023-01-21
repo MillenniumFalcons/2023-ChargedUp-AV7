@@ -70,7 +70,7 @@ public class RobotContainer {
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
-        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPosePhoton(new Translation2d())))
+        new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPosePhoton(new Translation2d(Units.inchesToMeters(23), Units.inchesToMeters(48)))))
         .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
      }
 
@@ -132,14 +132,16 @@ public class RobotContainer {
 
      // left and right of tag (meters)
      private PathPoint getCalculatedTargetPosePhoton(Translation2d fromTag) {
-        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-        var robotPose3d = new Pose3d(m_swerve.getPose());
-        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
-        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-
-        var pose3d = fieldToTag.transformBy(fromTag3d);
-
-        return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
+        if (photonVisionCamera.getHasTarget()) {
+            var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
+            var robotPose3d = new Pose3d(m_swerve.getPose());
+            var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+            var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+            var pose3d = fieldToTag.transformBy(fromTag3d);
+            return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
+        }
+        
+        return new PathPoint(new Translation2d(), new Rotation2d());
      }
 
      private Pose2d getTargetPose() {
