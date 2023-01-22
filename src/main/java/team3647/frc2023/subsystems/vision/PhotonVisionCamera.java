@@ -75,15 +75,9 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
             periodicIO.bestPoseAmbiguity = bestResult.getPoseAmbiguity();
             periodicIO.bestAvgYaw = bestResult.getYaw();
             periodicIO.bestAvgPose = bestResult.getBestCameraToTarget();
-            periodicIO.bestCameraToTag = periodicIO.bestAvgPose.getX();
             periodicIO.bestCameraToTagAngle = Units.degreesToRadians(bestResult.getYaw());
             periodicIO.bestCameraToTagX = periodicIO.bestAvgPose.getX() * Math.cos(Units.degreesToRadians(bestResult.getYaw()));
             periodicIO.bestCameraToTagY = periodicIO.bestAvgPose.getX() * Math.sin(Units.degreesToRadians((bestResult.getYaw())));
-        }
-
-        for (PhotonTrackedTarget target : periodicIO.targets) {
-            String targetID = target.getFiducialId() + "";
-            SmartDashboard.putNumber(targetID, target.getBestCameraToTarget().getX());
         }
     }
 

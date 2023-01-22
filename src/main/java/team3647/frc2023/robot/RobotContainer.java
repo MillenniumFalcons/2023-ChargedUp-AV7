@@ -56,7 +56,6 @@ public class RobotContainer {
         configureButtonBindings();
         configureDefaultCommands();
         configureSmartDashboardLogging();
-        m_printer.addPose("Target Pose", () -> this.target);
         // m_swerve.setOdometry(
         //         PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
         m_swerve.setOdometry(
@@ -67,45 +66,53 @@ public class RobotContainer {
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
+        mainController.buttonB.onTrue(new InstantCommand(() -> getTagPose()));
+        mainController.buttonB.onTrue(new InstantCommand(() -> m_printer.addPose("target pose", () -> target)));
         mainController.buttonB.onTrue(
             new InstantCommand(
         () -> {    
         new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
-        .withTimeout(8)).schedule();}).until(() -> {return mainController.getLeftStickX() != 0 || mainController.getLeftStickY() != 0 || mainController.getRightStickX() != 0;}));
+        .withTimeout(8)).schedule();}));
      }
 
-     public Pose2d getTagPose() {
+     public void getTagPose() {
         if (photonVisionCamera.getHasTarget()) {
-            var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-            var robotPose3d = new Pose3d(m_swerve.getPose());
-            
-            var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-            var fieldToTag2d = new Pose2d(new Translation2d(fieldToTag.getX(), fieldToTag.getY()), new Rotation2d(fieldToTag.getRotation().getAngle()));
-            return fieldToTag2d;
+            for (PhotonTrackedTarget target : photonVisionCamera.getAllTargets()) {
+                var cameraToTagTransform = target.getBestCameraToTarget();
+                var robotPose3d = new Pose3d(m_swerve.getPose());
+                var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+                var fieldToTag2d = new Pose2d(new Translation2d(fieldToTag.getX(), fieldToTag.getY()), new Rotation2d(fieldToTag.getRotation().getAngle()));
+
+                String id = target.getFiducialId() + "";
+                m_printer.addPose(id, () -> fieldToTag2d);
+            }        
         }
-        return new Pose2d();
      }
 
      // left and right of tag (meters)
      private PathPoint getCalculatedTargetPose(Translation2d fromTag) {
         ArrayList<Pose3d> calculatedPoses = new ArrayList<Pose3d>();
-        for (PhotonTrackedTarget target : photonVisionCamera.getAllTargets()) {
-            var pose3d = new Pose3d();
-            if (target.getFiducialId() == 3) {
-                var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-                var robotPose3d = new Pose3d(m_swerve.getPose());
-                var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
-                var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-                pose3d = fieldToTag.transformBy(fromTag3d);
-            } else if (target.getFiducialId() == 2) {
-                var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-                var robotPose3d = new Pose3d(m_swerve.getPose());
-                // negative y for to the left since its a different tag pose
-                var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), -fromTag.getY(), 0), new Rotation3d());
-                var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-                pose3d = fieldToTag.transformBy(fromTag3d);
+        if (photonVisionCamera.getHasTarget()) {
+            for (PhotonTrackedTarget target : photonVisionCamera.getAllTargets()) {
+                var pose3d = new Pose3d();
+                if (target.getFiducialId() == 3) {
+                    var cameraToTagTransform = target.getBestCameraToTarget();
+                    var robotPose3d = new Pose3d(m_swerve.getPose());
+                    var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+                    var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+                    pose3d = fieldToTag.transformBy(fromTag3d);
+                } 
+    
+                if (target.getFiducialId() == 2) {
+                    var cameraToTagTransform = target.getBestCameraToTarget();
+                    var robotPose3d = new Pose3d(m_swerve.getPose());
+                    // negative y for to the left since its a different tag pose
+                    var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), -fromTag.getY(), 0), new Rotation3d());
+                    var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+                    pose3d = fieldToTag.transformBy(fromTag3d);
+                }
+                calculatedPoses.add(pose3d);
             }
-            calculatedPoses.add(pose3d);
         }
             
         double sumX  = 0;
@@ -120,21 +127,48 @@ public class RobotContainer {
 
         Translation2d avgTargetPose = new Translation2d(avgX, avgY);
         
-
         return new PathPoint(new Translation2d(avgTargetPose.getX(), avgTargetPose.getY()), new Rotation2d(), Rotation2d.fromDegrees(180));
      }
 
      private Pose2d getTargetPose() {
         Translation2d fromTag = new Translation2d(1, 1);
-        var cameraToTagTransform = photonVisionCamera.getCameraToTagTransform();
-        var robotPose3d = new Pose3d(m_swerve.getPose());
+        ArrayList<Pose3d> calculatedPoses = new ArrayList<Pose3d>();
+        if (photonVisionCamera.getHasTarget()) {
+            for (PhotonTrackedTarget target : photonVisionCamera.getAllTargets()) {
+                var pose3d = new Pose3d();
+                if (target.getFiducialId() == 3) {
+                    var cameraToTagTransform = target.getBestCameraToTarget();
+                    var robotPose3d = new Pose3d(m_swerve.getPose());
+                    var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
+                    var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+                    pose3d = fieldToTag.transformBy(fromTag3d);
+                } 
+    
+                if (target.getFiducialId() == 2) {
+                    var cameraToTagTransform = target.getBestCameraToTarget();
+                    var robotPose3d = new Pose3d(m_swerve.getPose());
+                    // negative y for to the left since its a different tag pose
+                    var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), -fromTag.getY(), 0), new Rotation3d());
+                    var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
+                    pose3d = fieldToTag.transformBy(fromTag3d);
+                }
+                calculatedPoses.add(pose3d);
+            }
+        }
+            
+        double sumX  = 0;
+        double sumY = 0;
+        for (Pose3d calculatedPose : calculatedPoses) {
+            sumX += calculatedPose.getX();
+            sumY += calculatedPose.getY();
+        }
+
+        double avgX = (sumX * 1.0) / calculatedPoses.size();
+        double avgY = (sumY * 1.0) / calculatedPoses.size();
+
+        Translation2d avgTargetPose = new Translation2d(avgX, avgY);
         
-        var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
-        var fieldToTag = robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-
-        var pose3d = fieldToTag.transformBy(fromTag3d);
-
-        return new Pose2d(new Translation2d(pose3d.getX(), pose3d.getY()), new Rotation2d());
+        return new Pose2d(avgTargetPose.getX(), avgTargetPose.getY(), Rotation2d.fromDegrees(180));
      }
 
     //  public Pose2d getTagPoseLimelight() {
@@ -198,7 +232,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         m_printer.addDouble("rot", m_swerve::getRawHeading);
-        m_printer.addPose("tag pose", this::getTagPose);
+        m_printer.addPose("robot pose", m_swerve::getPose);
         m_printer.addDouble("Joystick", mainController::getLeftStickY);
     }
 
