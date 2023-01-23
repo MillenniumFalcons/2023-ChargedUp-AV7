@@ -2,6 +2,7 @@ package team3647.frc2023.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -9,7 +10,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,14 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
                 new AprilTag(
                         1,
                         new Pose3d(new Pose2d(0, Units.inchesToMeters(0), Rotation2d.fromDegrees(0.0))));
+    private final AprilTag tag02 =
+                new AprilTag(
+                                2,
+                                new Pose3d(new Pose2d(0, Units.inchesToMeters(0), Rotation2d.fromDegrees(0.0))));
+    private final AprilTag tag03 =
+                            new AprilTag(
+                                                3,
+                                                new Pose3d(new Pose2d(0, Units.inchesToMeters(0), Rotation2d.fromDegrees(0.0))));
     private final ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
 
     private static final class PeriodicIO {
@@ -57,10 +65,13 @@ public class PhotonVisionCamera implements PeriodicSubsystem {
     public PhotonVisionCamera(PhotonCamera camera) {
         this.camera = camera;
         this.atList.add(tag01);
-        aprilTagFieldLayout = new AprilTagFieldLayout(atList, 6.09, 3.00);
+        aprilTagFieldLayout = new AprilTagFieldLayout(atList, Units.feetToMeters(54), Units.feetToMeters(27));
         var camList = new ArrayList<Pair<PhotonCamera, Transform3d>>();
         camList.add(new Pair<PhotonCamera, Transform3d>(this.camera, PhotonVisionConstants.robotToCam));
-        robotPoseEstimator = new RobotPoseEstimator(aprilTagFieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camList);
+        // AprilTagFields.k2022RapidReact
+        
+        // avg bets targets strategy --> so that multiple tags (average of all targets)
+        robotPoseEstimator = new RobotPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camList);
     }
 
     @Override

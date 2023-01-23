@@ -79,7 +79,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.backLeft = backLeft;
         this.backRight = backRight;
         this.gyro = gyro;
-        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveDriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePositions(),new Pose2d());
+        this.poseEstimator = new SwerveDrivePoseEstimator(SwerveDriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePositions(), new Pose2d());
         this.odometry =
                 new SwerveDriveOdometry(
                         SwerveDriveConstants.kDriveKinematics,
@@ -153,8 +153,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         if (camPose != null) {
             poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
         }
-
-        m_printer.addPose("robot pose", this::getPose);
     }
 
     @Override
@@ -242,14 +240,6 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public Pose2d getEstimPose() {
         return poseEstimator.getEstimatedPosition();
-    }
-
-    public double getEstimX() {
-        return poseEstimator.getEstimatedPosition().getX();
-    }
-
-    public double getEstimY() {
-        return poseEstimator.getEstimatedPosition().getY();
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {

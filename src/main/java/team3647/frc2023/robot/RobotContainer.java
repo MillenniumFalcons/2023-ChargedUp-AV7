@@ -90,12 +90,14 @@ public class RobotContainer {
      }
 
      // left and right of tag (meters)
+     // should weight with ambiguity for average
      private PathPoint getCalculatedTargetPose(Translation2d fromTag) {
         ArrayList<Pose3d> calculatedPoses = new ArrayList<Pose3d>();
         if (photonVisionCamera.getHasTarget()) {
             for (PhotonTrackedTarget target : photonVisionCamera.getAllTargets()) {
                 var pose3d = new Pose3d();
-                if (target.getFiducialId() == 3) {
+                // ensure target is good, higher than 0.2 ambiguity is garbage
+                if (target.getFiducialId() == 3 && target.getPoseAmbiguity() < 0.15) {
                     var cameraToTagTransform = target.getBestCameraToTarget();
                     var robotPose3d = new Pose3d(m_swerve.getPose());
                     var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new Rotation3d());
@@ -103,7 +105,7 @@ public class RobotContainer {
                     pose3d = fieldToTag.transformBy(fromTag3d);
                 } 
     
-                if (target.getFiducialId() == 2) {
+                if (target.getFiducialId() == 2 && target.getPoseAmbiguity() < 0.15) {
                     var cameraToTagTransform = target.getBestCameraToTarget();
                     var robotPose3d = new Pose3d(m_swerve.getPose());
                     // negative y for to the left since its a different tag pose
@@ -233,6 +235,7 @@ public class RobotContainer {
     public void configureSmartDashboardLogging() {
         m_printer.addDouble("rot", m_swerve::getRawHeading);
         m_printer.addPose("robot pose", m_swerve::getPose);
+        m_printer.addPose("ESTIMATED", m_swerve::getEstimPose);
         m_printer.addDouble("Joystick", mainController::getLeftStickY);
     }
 
