@@ -63,9 +63,10 @@ public class SwerveDriveConstants {
     // config swerve module reversed here, module class doens't reverse for you
 
     // distance between right and left wheels
-    public static final double kTrackWidth = Units.inchesToMeters(21.75);
+    public static final double kTrackWidth = Units.inchesToMeters(20.75);
     // distance between front and back wheels
-    public static final double kWheelBase = Units.inchesToMeters(21.75);
+    
+    public static final double kWheelBase = Units.inchesToMeters(20.75);
     // translations are locations of each module wheel
     // 0 --> ++ --> front left
     // 1 --> +- --> front right
