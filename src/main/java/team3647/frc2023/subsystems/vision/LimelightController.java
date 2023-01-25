@@ -1,7 +1,9 @@
 package team3647.frc2023.subsystems.vision;
 
-import javax.crypto.interfaces.PBEKey;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PhotonVisionConstants;
@@ -27,6 +29,9 @@ public class LimelightController implements PeriodicSubsystem {
         double cameraToTagAngle = 0.0;
         double cameraToTagY = 0.0;
         double cameraToTagX = 0.0;
+        Pose3d robotPose = new Pose3d();
+        double[] rawRobotPoseArray = {};
+        
     }
 
     public LimelightController() {
@@ -36,19 +41,35 @@ public class LimelightController implements PeriodicSubsystem {
     public void readPeriodicInputs() {
         if(limelight.getDouble(Data.VALID_TARGET) == 1) {
             periodicIO.hasTarget = true;
-            periodicIO.avgYaw = limelight.getDoubleArray(Data.CAM_TRANS)[4];
-            periodicIO.avgPitch = limelight.getDoubleArray(Data.CAM_TRANS)[3];
-            periodicIO.avgSkew = limelight.getDoubleArray(Data.CAM_TRANS)[5];
+            periodicIO.avgYaw = limelight.getDoubleArray(Data.CAM_POSE)[4];
+            periodicIO.avgPitch = limelight.getDoubleArray(Data.CAM_POSE)[3];
+            periodicIO.avgSkew = limelight.getDoubleArray(Data.CAM_POSE)[5];
             periodicIO.avgArea = limelight.getDouble(Data.AREA);
             periodicIO.latency = limelight.getDouble(Data.LATNECY_MS);
             periodicIO.tagID = (int) limelight.getDouble(Data.TAG_ID);
-            periodicIO.cameraToTagX = -limelight.getDoubleArray(Data.CAM_TRANS)[2];
-            periodicIO.cameraToTagY = -limelight.getDoubleArray(Data.CAM_TRANS)[0];
+            periodicIO.cameraToTagX = -limelight.getDoubleArray(Data.CAM_POSE)[2];
+            periodicIO.cameraToTagY = -limelight.getDoubleArray(Data.CAM_POSE)[0];
+            periodicIO.robotPose = new Pose3d(new Translation3d(limelight.getDoubleArray(Data.ROBOT_POSE)[0],
+            limelight.getDoubleArray(Data.ROBOT_POSE)[1], limelight.getDoubleArray(Data.ROBOT_POSE)[2]), new Rotation3d(limelight.getDoubleArray(Data.ROBOT_POSE)[3],
+            limelight.getDoubleArray(Data.ROBOT_POSE)[4], limelight.getDoubleArray(Data.ROBOT_POSE)[5]));
+            periodicIO.rawRobotPoseArray = limelight.getDoubleArray(Data.ROBOT_POSE);
         } else {
             periodicIO.hasTarget = false;
             periodicIO.tagID = -1;
         }
-        
+    }
+
+    public double[] getRobotPoseArray() {
+        return periodicIO.rawRobotPoseArray;
+    }
+
+    public Pose2d getRobotPose2d() {
+        return new Pose2d(periodicIO.robotPose.getX(), periodicIO.robotPose.getY(), 
+        new Rotation2d(periodicIO.robotPose.getRotation().getAngle()));
+    }
+
+    public double getRobotPose2dX() {
+        return periodicIO.robotPose.getX();
     }
 
     public boolean hasTarget() {

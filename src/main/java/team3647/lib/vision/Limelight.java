@@ -37,7 +37,8 @@ public class Limelight implements IVisionCamera {
         LATNECY_MS("tl"),
         RAW_CORNERS("tcornxy"),
         TAG_ID("tid"),
-        CAM_TRANS("camtran");
+        CAM_POSE("campose"),
+        ROBOT_POSE("botpose");
 
         public final String str;
 
