@@ -31,32 +31,32 @@ public class SwerveDriveConstants {
     public static final NeutralMode kDriveNeutralMode = NeutralMode.Brake;
 
     public static final TalonFX kFrontLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "rio");
     public static final TalonFX kFrontLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "rio");
     public static final CANCoder kFrontLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "drive");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "rio");
 
     public static final TalonFX kFrontRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "rio");
     public static final TalonFX kFrontRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "rio");
     public static final CANCoder kFrontRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "drive");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "rio");
 
     public static final TalonFX kBackLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "rio");
     public static final TalonFX kBackLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "rio");
     public static final CANCoder kBackLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "drive");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "rio");
 
     public static final TalonFX kBackRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "rio");
     public static final TalonFX kBackRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "rio");
     public static final CANCoder kBackRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "drive");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "rio");
 
     public static final Pigeon2Configuration kGyroConfig = new Pigeon2Configuration();
 
@@ -127,10 +127,10 @@ public class SwerveDriveConstants {
     public static final double kMaxCurrent = 60;
 
     // find
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 329.589; // 35.66 - 2.8767;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 123.574; // 333.28 + 0.0866;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 35.068; // 36.39 - 0.1725;
-    public static final double kAbsBackRightEncoderOffsetDeg = 60.117; // 148.97 + 0.8740;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 38.43;//329.589; // 35.66 - 2.8767;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 294.17;//123.574; // 333.28 + 0.0866;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 347.91;//35.068; // 36.39 - 0.1725;
+    public static final double kAbsBackRightEncoderOffsetDeg = 246.22;//60.117; // 148.97 + 0.8740;
 
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
@@ -164,7 +164,7 @@ public class SwerveDriveConstants {
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0;
 
-    public static final double kTurnP = 0.5;
+    public static final double kTurnP = 0.4;
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0;//10.0; // 1;
 

@@ -21,23 +21,23 @@ public final class GlobalConstants {
     public static double kDistanceFarToGoalCenter = Units.feetToMeters(14) + kCenterOffsetMeters;
 
     public static final class SwerveDriveIds {
-        public static final int kFrontLeftDriveId = 17;
-        public static final int kFrontLeftTurnId = 18;
+        public static final int kFrontLeftDriveId = 1;
+        public static final int kFrontLeftTurnId = 2;
         public static final int kFrontLeftAbsEncoderPort = 9;
 
-        public static final int kFrontRightDriveId = 14;
-        public static final int kFrontRightTurnId = 13;
+        public static final int kFrontRightDriveId = 3;
+        public static final int kFrontRightTurnId = 4;
         public static final int kFrontRightAbsEncoderPort = 10;
 
-        public static final int kBackLeftDriveId = 16;
+        public static final int kBackLeftDriveId = 5;
         public static final int kBackLeftTurnId = 6;
         public static final int kBackLeftAbsEncoderPort = 11;
-
-        public static final int kBackRightDriveId = 20;
-        public static final int kBackRightTurnId = 7;
+        
+        public static final int kBackRightDriveId = 7;
+        public static final int kBackRightTurnId = 8;
         public static final int kBackRightAbsEncoderPort = 12;
 
-        public static final int gyroPin = 0;
+        public static final int gyroPin = 20;
     }
 
     public static final class IntakeIds {

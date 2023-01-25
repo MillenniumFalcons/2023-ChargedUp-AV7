@@ -125,10 +125,16 @@ public class SwerveDrive implements PeriodicSubsystem {
         // SmartDashboard.putNumber("BL", backLeft.getTurnAngle());
         // SmartDashboard.putNumber("BR", backRight.getTurnAngle());
 
-        SmartDashboard.putNumber("FL speed", periodicIO.frontLeftState.speedMetersPerSecond);
-        SmartDashboard.putNumber("FR speed", periodicIO.frontRightState.speedMetersPerSecond);
-        SmartDashboard.putNumber("BL speed", periodicIO.backLeftState.speedMetersPerSecond);
-        SmartDashboard.putNumber("BR speed", periodicIO.backRightState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("FL speed", periodicIO.frontLeftState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("FR speed", periodicIO.frontRightState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("BL speed", periodicIO.backLeftState.speedMetersPerSecond);
+        // SmartDashboard.putNumber("BR speed", periodicIO.backRightState.speedMetersPerSecond);
+
+        SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
+
 
         SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
         SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
