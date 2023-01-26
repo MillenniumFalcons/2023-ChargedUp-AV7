@@ -170,9 +170,9 @@ public class SwerveDriveConstants {
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0;//10.0; // 1;
 
-    // PID constants for pitch and roll
+    // PID constants for roll and yaw
 
-    public static final double kRollP = 0.05;
+    public static final double kRollP = 0.03;
     public static final double kRollI = 0.0;
     public static final double kRollD = 0.00;
 
