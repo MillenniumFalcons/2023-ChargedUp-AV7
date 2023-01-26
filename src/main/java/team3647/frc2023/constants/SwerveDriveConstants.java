@@ -163,7 +163,7 @@ public class SwerveDriveConstants {
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0;
 
-    public static final double kTurnP = 0.5;
+    public static final double kTurnP = 0.45;
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0;//10.0; // 1;
 

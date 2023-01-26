@@ -236,10 +236,9 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         // m_printer.addDouble("rot", m_swerve::getRawHeading);
-        m_printer.addPose("robot odometry pose", m_swerve::getOdometryPose);
-        m_printer.addPose("camera Estimated pose", camera::getRobotPose2d);
-        m_printer.addPose("robot estimated pose", m_swerve::getEstimPose);
-        // m_printer.addPose("ESTIMATED", m_swerve::getEstimPose);
+        m_printer.addPose("ESTIMATED", m_swerve::getEstimatedPose);
+        // m_printer.addPose("VISION", m_swerve::getVisionPose);
+        m_printer.addPose("ODOMETRY", m_swerve::getOdometryPose);
         // m_printer.addDouble("Joystick", mainController::getLeftStickY);
     }
 

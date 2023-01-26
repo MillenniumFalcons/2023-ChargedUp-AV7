@@ -10,8 +10,11 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -51,6 +54,10 @@ public class SwerveDrive implements PeriodicSubsystem {
         public double heading = 0;
         public double rawHeading = 0;
         public boolean solenoidState = false;
+
+        public double[] visionRobotPoseArray = {0, 0, 0, 0, 0, 0};
+        public Pose3d visionRobotPose3d = new Pose3d();
+        public Pose2d visionRobotPose2d = new Pose2d();
 
         public SwerveModuleState frontLeftState = new SwerveModuleState();
         public SwerveModuleState frontRightState = new SwerveModuleState();
@@ -108,6 +115,18 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
 
+        periodicIO.visionRobotPoseArray = camera.getRobotPoseArray();
+
+        if (periodicIO.visionRobotPoseArray.length > 0) {
+            periodicIO.visionRobotPose3d = new Pose3d(new Translation3d(periodicIO.visionRobotPoseArray[0],
+            periodicIO.visionRobotPoseArray[1], periodicIO.visionRobotPoseArray[2]), new Rotation3d(periodicIO.visionRobotPoseArray[3],
+            periodicIO.visionRobotPoseArray[4], periodicIO.visionRobotPoseArray[5]));
+        }
+        
+
+        periodicIO.visionRobotPose2d = new Pose2d(periodicIO.visionRobotPose3d.getX(), periodicIO.visionRobotPose3d.getY(), 
+        new Rotation2d(periodicIO.visionRobotPose3d.getRotation().getAngle()));
+
         // SmartDashboard.putNumber("ABS FL", frontLeft.getAbsEncoderPos().getDegrees());
         // SmartDashboard.putNumber("ABS FR", frontRight.getAbsEncoderPos().getDegrees());
         // SmartDashboard.putNumber("ABS BL", backLeft.getAbsEncoderPos().getDegrees());
@@ -137,7 +156,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                     backRight.getPosition()
                 });
         
-        poseEstimator.addVisionMeasurement(camera.getRobotPose2d(), camera.getLatency());
+        poseEstimator.addVisionMeasurement(periodicIO.visionRobotPose2d, camera.getLatency());
         poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         // update pose estimator
         // poseEstimator.update(getRotation2d(), getSwerveModulePositions());
@@ -174,11 +193,11 @@ public class SwerveDrive implements PeriodicSubsystem {
             backRight.getPosition()},pose);
         gyro.setYaw(pose.getRotation().getDegrees());
 
-        poseEstimator.resetPosition(rot, new SwerveModulePosition[]{
-            frontLeft.getPosition(),
-            frontRight.getPosition(),
-            backLeft.getPosition(),
-            backRight.getPosition()}, pose);
+        // poseEstimator.resetPosition(rot, new SwerveModulePosition[]{
+        //     frontLeft.getPosition(),
+        //     frontRight.getPosition(),
+        //     backLeft.getPosition(),
+        //     backRight.getPosition()}, pose);
         periodicIO = new PeriodicIO();
     }
 
@@ -220,8 +239,8 @@ public class SwerveDrive implements PeriodicSubsystem {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Pose2d getEstimPose() {
-        return poseEstimator.getEstimatedPosition();
+    public Pose2d getVisionPose() {
+        return periodicIO.visionRobotPose2d;
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
