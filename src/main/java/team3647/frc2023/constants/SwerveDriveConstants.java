@@ -10,6 +10,8 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -168,6 +170,13 @@ public class SwerveDriveConstants {
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0;//10.0; // 1;
 
+    //PID constants for pitch
+
+    public static final double kRollP = 0.05;
+    public static final double kRollI = 0.0;
+    public static final double kRollD = 0.0;
+
+
     // is stored as reference?
     public static final SwerveModule kFrontLeftModule =
             new SwerveModule(
@@ -219,6 +228,8 @@ public class SwerveDriveConstants {
                     kNominalVoltage);
 
     public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin);
+    
+    public static final PIDController krollController = new PIDController(kRollP, kRollI, kRollD);
 
     private static void setTurnMotorConfig(TalonFXConfiguration config) {
         config.slot0.kP = kTurnP;

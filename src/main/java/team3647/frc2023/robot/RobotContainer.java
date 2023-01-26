@@ -20,11 +20,13 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
 import java.util.ArrayList;
+import java.util.function.DoubleSupplier;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.pathplanner.lib.PathPoint;
 import team3647.frc2023.commands.AutoCommands;
+import team3647.frc2023.commands.Balance;
 import team3647.frc2023.commands.PathPlannerTrajectories;
 import team3647.frc2023.commands.SwerveDriveNoAim;
 import team3647.frc2023.constants.PhotonVisionConstants;
@@ -63,6 +65,8 @@ public class RobotContainer {
     }
     private final PathPoint kOriginPoint = new PathPoint(new Translation2d(Units.inchesToMeters(0), Units.inchesToMeters(0)), new Rotation2d(Units.degreesToRadians(0)), new Rotation2d(Units.degreesToRadians(180)));
 
+    private final PathPoint chargeStationFront = new PathPoint(new Translation2d(0, 0), new Rotation2d(0));
+
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(new InstantCommand(() -> m_swerve.zeroHeading()));
         mainController.buttonB.onTrue(Commands.runOnce(() -> this.target = getTargetPose()));
@@ -73,6 +77,7 @@ public class RobotContainer {
         () -> {    
         new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
         .withTimeout(8)).schedule();}));
+        mainController.buttonX.toggleOnTrue(new Balance(m_swerve, () -> false));
      }
 
      public void getTagPose() {
@@ -234,6 +239,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         m_printer.addDouble("rot", m_swerve::getRawHeading);
+        m_printer.addDouble("robot pitch", m_swerve::getRoll);
         m_printer.addPose("robot pose", m_swerve::getPose);
         m_printer.addPose("ESTIMATED", m_swerve::getEstimPose);
         m_printer.addDouble("Joystick", mainController::getLeftStickY);

@@ -8,6 +8,7 @@ import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -52,6 +53,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         public double timestamp = 0;
         public boolean isOpenLoop = true;
         public double heading = 0;
+        public double roll = 0;
         public double rawHeading = 0;
         public boolean solenoidState = false;
 
@@ -103,6 +105,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     @Override
     public void readPeriodicInputs() {
         // periodicIO.heading = Math.IEEEremainder(gyro.getYaw(), 360);
+        periodicIO.roll = gyro.getRoll();
         periodicIO.heading = gyro.getYaw();
         periodicIO.rawHeading = gyro.getYaw();
         periodicIO.frontLeftState = frontLeft.getState();
@@ -222,6 +225,10 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public double getHeading() {
         return periodicIO.heading;
+    }
+
+    public double getRoll() {
+        return periodicIO.roll;
     }
 
     public double getRawHeading() {
