@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.SwerveDrive;
 
@@ -21,7 +22,8 @@ public class Balance extends CommandBase {
 
     private final BooleanSupplier getIsFieldOriented;
 
-    private final PIDController rollControl = SwerveDriveConstants.krollController;
+    private final PIDController rollControl = SwerveDriveConstants.kRollController;
+    private final PIDController yawControl = SwerveDriveConstants.kYawController;
 
     private double rotation;
     private Translation2d translation;
@@ -45,6 +47,7 @@ public class Balance extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        rotation = -yawControl.calculate(swerve.getHeading(), 0);
         translation = new Translation2d(-rollControl.calculate(swerve.getRoll(), 0), 0);
         swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), false);
     }

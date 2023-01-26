@@ -77,7 +77,7 @@ public class RobotContainer {
         () -> {    
         new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
         .withTimeout(8)).schedule();}));
-        mainController.buttonX.toggleOnTrue(new Balance(m_swerve, () -> false));
+        mainController.buttonX.toggleOnTrue(new Balance(m_swerve, () -> false).until(() -> Math.abs(mainController.getLeftStickX()) > 0 || Math.abs(mainController.getLeftStickY()) > 0 || Math.abs(mainController.getRightStickX()) > 0));
      }
 
      public void getTagPose() {

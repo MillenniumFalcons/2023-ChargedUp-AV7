@@ -284,6 +284,24 @@ public class SwerveDrive implements PeriodicSubsystem {
         backRight.stop();
     }
 
+    public void spin() {
+        SwerveModuleState[] swerveModuleStates = null;
+        swerveModuleStates =
+                SwerveDriveConstants.kDriveKinematics.toSwerveModuleStates(
+                        ChassisSpeeds.fromFieldRelativeSpeeds(
+                                        0,
+                                        0,
+                                        0,
+                                        getRotation2d()));
+
+        periodicIO.frontLeftOutputState = swerveModuleStates[0];
+        periodicIO.frontRightOutputState = swerveModuleStates[1];
+        periodicIO.backLeftOutputState = swerveModuleStates[2];
+        periodicIO.backRightOutputState = swerveModuleStates[3];
+
+        periodicIO.isOpenLoop = false;
+    }
+
     public void drive(
             Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates = null;

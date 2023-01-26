@@ -170,11 +170,15 @@ public class SwerveDriveConstants {
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0;//10.0; // 1;
 
-    //PID constants for pitch
+    // PID constants for pitch and roll
 
     public static final double kRollP = 0.05;
     public static final double kRollI = 0.0;
-    public static final double kRollD = 0.0;
+    public static final double kRollD = 0.00;
+
+    public static final double kYawP = 0.05;
+    public static final double kYawI = 0.00;
+    public static final double kYawD = 0.00;
 
 
     // is stored as reference?
@@ -229,7 +233,9 @@ public class SwerveDriveConstants {
 
     public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin);
     
-    public static final PIDController krollController = new PIDController(kRollP, kRollI, kRollD);
+    public static final PIDController kRollController = new PIDController(kRollP, kRollI, kRollD);
+
+    public static final PIDController kYawController = new PIDController(kYawP, kYawI, kYawD);
 
     private static void setTurnMotorConfig(TalonFXConfiguration config) {
         config.slot0.kP = kTurnP;
