@@ -17,8 +17,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 
@@ -77,7 +80,8 @@ public class RobotContainer {
         () -> {    
         new PrintCommand("Starting!").andThen(m_swerve.getTrajectoryCommand(m_swerve.getToPointATrajectory(getCalculatedTargetPose(new Translation2d(1, 1))))
         .withTimeout(8)).schedule();}));
-        mainController.buttonX.toggleOnTrue(new Balance(m_swerve, () -> false).until(() -> Math.abs(mainController.getLeftStickX()) > 0 || Math.abs(mainController.getLeftStickY()) > 0 || Math.abs(mainController.getRightStickX()) > 0));
+        mainController.buttonX.whileTrue((new Balance(m_swerve, () -> false).until(() -> Math.abs(mainController.getLeftStickX()) > 0 || Math.abs(mainController.getLeftStickY()) > 0 || Math.abs(mainController.getRightStickX()) > 0))).onFalse(new SwerveDriveNoAim(m_swerve, () -> 0, () -> 0, () -> 0.1, () -> false).withTimeout(0.1));
+        mainController.buttonY.onTrue(new SwerveDriveNoAim(m_swerve, () -> 0, () -> 0, () -> 0.1, () -> false).withTimeout(0.1));
      }
 
      public void getTagPose() {

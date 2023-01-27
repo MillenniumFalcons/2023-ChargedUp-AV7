@@ -47,9 +47,11 @@ public class Balance extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        if(Math.abs(swerve.getRoll()) > 1) {
         rotation = -yawControl.calculate(swerve.getHeading(), 0);
         translation = new Translation2d(-rollControl.calculate(swerve.getRoll(), 0), 0);
-        swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), false);
+            swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), false);
+        }
     }
 
     // Called once the command ends or is interrupted.
