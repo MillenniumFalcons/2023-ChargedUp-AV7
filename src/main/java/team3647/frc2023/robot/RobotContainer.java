@@ -59,7 +59,8 @@ public class RobotContainer {
         configureDefaultCommands();
         configureSmartDashboardLogging();
         // m_swerve.setOdometry(
-        //         PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));
+        //         PathPlannerTrajectories.spinStartPose, new Rotation2d(Units.degreesToRadians(180)));/
+        // Need actaul field starting point to work, right now the odometry pose estimation (arbitary) is clashing with the vision controll pose estimation (field)
         m_swerve.setOdometry(
                 new Pose2d(2, 2, new Rotation2d(Units.degreesToRadians(180))), new Rotation2d(Units.degreesToRadians(180)));
     }

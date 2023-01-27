@@ -193,11 +193,11 @@ public class SwerveDrive implements PeriodicSubsystem {
             backRight.getPosition()},pose);
         gyro.setYaw(pose.getRotation().getDegrees());
 
-        // poseEstimator.resetPosition(rot, new SwerveModulePosition[]{
-        //     frontLeft.getPosition(),
-        //     frontRight.getPosition(),
-        //     backLeft.getPosition(),
-        //     backRight.getPosition()}, pose);
+        poseEstimator.resetPosition(rot, new SwerveModulePosition[]{
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()}, pose);
         periodicIO = new PeriodicIO();
     }
 
