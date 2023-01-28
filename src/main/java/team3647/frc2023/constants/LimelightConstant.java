@@ -10,4 +10,6 @@ public class LimelightConstant {
     public static final double kVPW = 2.0 * Math.tan(Math.toRadians(59.8) / 2.0);
     public static final CamConstants kCamConstatnts =
             new CamConstants(kCameraHeightMeters, kHorizontalToLens, kVPH, kVPW);
+
+    private LimelightConstant() {}
 }

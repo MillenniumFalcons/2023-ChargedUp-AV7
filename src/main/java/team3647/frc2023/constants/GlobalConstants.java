@@ -1,6 +1,5 @@
 package team3647.frc2023.constants;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
@@ -16,9 +15,6 @@ public final class GlobalConstants {
     public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
     public static final double kDt = 0.02;
     public static final int kTimeoutMS = 255;
-    public static double kCenterOffsetMeters = Units.inchesToMeters(34);
-    public static double kDistanceTarmacToGoalCenter = Units.inchesToMeters(84);
-    public static double kDistanceFarToGoalCenter = Units.feetToMeters(14) + kCenterOffsetMeters;
 
     public static final class SwerveDriveIds {
         public static final int kFrontLeftDriveId = 1;
@@ -38,25 +34,8 @@ public final class GlobalConstants {
         public static final int kBackRightAbsEncoderPort = 12;
 
         public static final int gyroPin = 20;
-    }
 
-    public static final class IntakeIds {
-        public static final int kIntakeMotorId = 13;
-        public static final int kDeployMotorId = 14;
-    }
-
-    public static final class ColumnIds {
-        public static final int kMasterMotorId = 15;
-        public static final int kTopSensorPin = 4;
-    }
-
-    public static final class HoodIds {
-        public static final int kMotorId = 17;
-    }
-
-    public static final class FlywheelIds {
-        public static final int kMasterId = 18;
-        public static final int kFollowerId = 19;
+        private SwerveDriveIds() {}
     }
 
     private GlobalConstants() {}

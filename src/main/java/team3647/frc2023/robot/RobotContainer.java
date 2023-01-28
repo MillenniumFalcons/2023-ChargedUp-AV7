@@ -33,8 +33,9 @@ import team3647.lib.inputs.Joysticks;
  */
 public class RobotContainer {
     private final Joysticks mainController = new Joysticks(0);
+    private final Joysticks coController = new Joysticks(1);
+
     private Pose2d target = new Pose2d();
-    //     private final Joysticks coController = new Joysticks(1);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -230,65 +231,6 @@ public class RobotContainer {
         return new Pose2d(avgTargetPose.getX(), avgTargetPose.getY(), Rotation2d.fromDegrees(180));
     }
 
-    //  public Pose2d getTagPoseLimelight() {
-    //     Translation2d fromTag = new Translation2d(Units.inchesToMeters(-23),
-    // Units.inchesToMeters(48));
-    //     var cameraToTagTransform = new Transform3d(limelightController.getCameraToTag(), new
-    // Rotation3d());
-    //     var robotPose3d = new Pose3d(m_swerve.getPose());
-    //     var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0), new
-    // Rotation3d());
-    //     var fieldToTag =
-    // robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-
-    //     var pose3d = fieldToTag.transformBy(fromTag3d);
-
-    //     return new Pose2d(pose3d.getX(), pose3d.getY(), new Rotation2d());
-    //  }
-
-    // left and right of tag (meters)
-    //  private PathPoint getCalculatedTargetPoseLimelight(double fromTag) {
-
-    //     double cameraToTagX = limelightController.getCameraToTagX();
-    //     double cameraToTagY = limelightController.getCameraToTagY();
-    //     double robotToFlushX = 0;
-    //     double robotToFlushY = 0;
-    //     double tagOffsetDepth = PhotonVisionConstants.offsetAprilTagToCenterOfRobotFlush;
-    //     robotToFlushX = cameraToTagX - tagOffsetDepth + 0.295 *
-    // Math.sin(Units.degreesToRadians(m_swerve.getRawHeading() - 180) + Math.atan(0.1 / 0.27));
-    //     robotToFlushY = cameraToTagY + fromTag + 0.295 *
-    // Math.cos(Units.degreesToRadians(m_swerve.getRawHeading() - 180) + Math.atan(0.1 / 0.27));
-    //     //robotToFlushX = cameraToTagX - tagOffsetDepth +
-    // Math.abs(Math.sin((Units.degreesToRadians(90 - m_swerve.getHeading()))) *
-    // PhotonVisionConstants.robotToCam.getX());
-    //     //robotToFlushY = cameraToTagY + tagOffsetSideway +
-    // Math.abs(Math.cos(Units.degreesToRadians(m_swerve.getHeading())) *
-    // PhotonVisionConstants.robotToCam.getY());
-    //     double xSetPoint = m_swerve.getPose().getX() - robotToFlushX;
-    //     double ySetPoint = m_swerve.getPose().getY() + robotToFlushY;
-    //     // SmartDashboard.putNumber("x", robotToFlushX);
-    //     // SmartDashboard.putNumber("x set point", xSetPoint);
-    //     // SmartDashboard.putNumber("y", robotToFlushY);
-    //     // SmartDashboard.putNumber("y set point", ySetPoint);
-    //     // SmartDashboard.putNumber("robot flush y", robotToFlushY);
-    //     // SmartDashboard.putNumber("robot flush x", robotToFlushX);
-    //     return new PathPoint(new Translation2d(xSetPoint, ySetPoint), new Rotation2d(0), new
-    // Rotation2d(Units.degreesToRadians(180)));
-    //     // var cameraToTagTransform = new Transform3d(limelightController.getCameraToTag(), new
-    // Rotation3d());
-    //     // var robotPose3d = new Pose3d(m_swerve.getPose());
-    //     // var fromTag3d = new Transform3d(new Translation3d(fromTag.getX(), fromTag.getY(), 0),
-    // new Rotation3d());
-    //     // var fieldToTag =
-    // robotPose3d.transformBy(PhotonVisionConstants.robotToCam).transformBy(cameraToTagTransform);
-    //     // var pose3d = fieldToTag.transformBy(fromTag3d);
-    //     // m_printer.addDouble("calculated x", pose3d::getX);
-    //     // m_printer.addDouble("calculated y", pose3d::getY);
-
-    //     // return new PathPoint(new Translation2d(pose3d.getX(), pose3d.getY()), new
-    // Rotation2d(), Rotation2d.fromDegrees(180));
-    //  }
-
     private PathPoint getZeroPath() {
         Translation2d currentTranslation =
                 new Translation2d(m_swerve.getPose().getX(), m_swerve.getPose().getY());
@@ -315,8 +257,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return null;
+        return new InstantCommand();
     }
 
     private final PhotonVisionCamera photonVisionCamera =

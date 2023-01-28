@@ -3,28 +3,29 @@ package team3647.lib.inputs;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Joysticks wrapper to provide easier access to buttons, triggers and sticks. */
 public class Joysticks {
 
-    public final JoystickTrigger leftTrigger;
-    public final JoystickTrigger rightTrigger;
+    public final Trigger leftTrigger;
+    public final Trigger rightTrigger;
 
-    public final JoystickButton rightJoyStickPress;
-    public final JoystickButton leftJoyStickPress;
-    public final JoystickButton leftMidButton;
-    public final JoystickButton rightMidButton;
+    public final Trigger rightJoyStickPress;
+    public final Trigger leftJoyStickPress;
+    public final Trigger leftMidButton;
+    public final Trigger rightMidButton;
 
-    public final JoystickButton rightBumper;
-    public final JoystickButton leftBumper;
-    public final JoystickButton buttonA;
-    public final JoystickButton buttonB;
-    public final JoystickButton buttonY;
-    public final JoystickButton buttonX;
-    public final POVButton dPadDown;
-    public final POVButton dPadLeft;
-    public final POVButton dPadRight;
-    public final POVButton dPadUp;
+    public final Trigger rightBumper;
+    public final Trigger leftBumper;
+    public final Trigger buttonA;
+    public final Trigger buttonB;
+    public final Trigger buttonY;
+    public final Trigger buttonX;
+    public final Trigger dPadDown;
+    public final Trigger dPadLeft;
+    public final Trigger dPadRight;
+    public final Trigger dPadUp;
 
     /** XboxController Object for Controller; contains all Xbox Controller Functions */
     private final XboxController controller;
@@ -35,9 +36,8 @@ public class Joysticks {
         controller = new XboxController(controllerPin);
         this.controllerPin = controllerPin;
 
-        leftTrigger = new JoystickTrigger(controller, XboxController.Axis.kLeftTrigger.value, .15);
-        rightTrigger =
-                new JoystickTrigger(controller, XboxController.Axis.kRightTrigger.value, .15);
+        leftTrigger = new Trigger(() -> this.getLeftTriggerValue() > 0.15);
+        rightTrigger = new Trigger(() -> this.getRightTriggerValue() > 0.15);
 
         rightJoyStickPress =
                 new JoystickButton(controller, XboxController.Button.kRightStick.value);
