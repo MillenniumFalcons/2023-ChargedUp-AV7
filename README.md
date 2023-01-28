@@ -1,3 +1,5 @@
 # 2023-ChargedUp-AV7
 
-![Anti-Vehicle](av7.jpg)
+<p align="center">
+  <img src="av7.jpg" />
+</p>
