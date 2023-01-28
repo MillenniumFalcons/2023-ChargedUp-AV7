@@ -3,7 +3,6 @@ package team3647.frc2023.constants;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import org.photonvision.PhotonCamera;
 
 public class PhotonVisionConstants {
@@ -19,7 +18,6 @@ public class PhotonVisionConstants {
                             0, 0,
                             0)); // Cam mounted facing forward, half a meter forward of center, half
     // a meter up from center.
-    public static final double offsetAprilTagToCenterOfRobotFlush = Units.inchesToMeters(32);
     public static final PhotonCamera camera = new PhotonCamera("gloworm");
 
     private PhotonVisionConstants() {}

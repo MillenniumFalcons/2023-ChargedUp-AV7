@@ -1,12 +1,6 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,15 +12,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.frc2023.subsystems.vision.PhotonVisionCamera;
-import team3647.lib.GroupPrinter;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.team254.util.MovingAverage;
 
 public class SwerveDrive implements PeriodicSubsystem {
-    private final GroupPrinter m_printer = GroupPrinter.getInstance();
     private final SwerveModule frontLeft;
     private final SwerveModule frontRight;
     private final SwerveModule backLeft;
@@ -40,7 +30,6 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final MovingAverage backRightAverageSpeed = new MovingAverage(10);
 
     private final Pigeon2 gyro;
-    private final PhotonVisionCamera camera;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -52,6 +41,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         public boolean isOpenLoop = true;
         public double heading = 0;
         public double roll = 0;
+        public double pitch = 0;
         public double rawHeading = 0;
         public boolean solenoidState = false;
 
@@ -71,9 +61,7 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            Pigeon2 gyro,
-            PhotonVisionCamera camera) {
-        this.camera = camera;
+            Pigeon2 gyro) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
@@ -83,7 +71,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                 new SwerveDrivePoseEstimator(
                         SwerveDriveConstants.kDriveKinematics,
                         getRotation2d(),
-                        getSwerveModulePositions(),
+                        getModulePositions(),
                         new Pose2d());
         this.odometry =
                 new SwerveDriveOdometry(
@@ -99,17 +87,15 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     @Override
     public void init() {
-        System.out.println("init-ed swerve bruh i wanna die");
         resetEncoders();
-        // resetOdometry();
         zeroHeading();
     }
 
     @Override
     public void readPeriodicInputs() {
-        // periodicIO.heading = Math.IEEEremainder(gyro.getYaw(), 360);
         periodicIO.roll = gyro.getRoll();
         periodicIO.heading = gyro.getYaw();
+        periodicIO.pitch = gyro.getPitch();
         periodicIO.rawHeading = gyro.getYaw();
         periodicIO.frontLeftState = frontLeft.getState();
         periodicIO.frontRightState = frontRight.getState();
@@ -120,21 +106,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         frontRightAverageSpeed.add(periodicIO.frontRightState.speedMetersPerSecond);
         backLeftAverageSpeed.add(periodicIO.backLeftState.speedMetersPerSecond);
         backRightAverageSpeed.add(periodicIO.backRightState.speedMetersPerSecond);
-
-        // SmartDashboard.putNumber("ABS FL", frontLeft.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("ABS FR", frontRight.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("ABS BL", backLeft.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("ABS BR", backRight.getAbsEncoderPos().getDegrees());
-
-        // SmartDashboard.putNumber("FL", frontLeft.getTurnAngle());
-        // SmartDashboard.putNumber("FR", frontRight.getTurnAngle());
-        // SmartDashboard.putNumber("BL", backLeft.getTurnAngle());
-        // SmartDashboard.putNumber("BR", backRight.getTurnAngle());
-
-        // SmartDashboard.putNumber("FL speed", periodicIO.frontLeftState.speedMetersPerSecond);
-        // SmartDashboard.putNumber("FR speed", periodicIO.frontRightState.speedMetersPerSecond);
-        // SmartDashboard.putNumber("BL speed", periodicIO.backLeftState.speedMetersPerSecond);
-        // SmartDashboard.putNumber("BR speed", periodicIO.backRightState.speedMetersPerSecond);
 
         SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
         SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
@@ -156,20 +127,12 @@ public class SwerveDrive implements PeriodicSubsystem {
                 });
 
         // update pose estimator
-        poseEstimator.update(getRotation2d(), getSwerveModulePositions());
         periodicIO.timestamp = Timer.getFPGATimestamp();
-        Pair<Pose2d, Double> result =
-                camera.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-        var camPose = result.getFirst();
-        var camPoseObsTime = result.getSecond();
-        if (camPose != null) {
-            poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-        }
+        poseEstimator.update(getRotation2d(), getModulePositions());
     }
 
     @Override
     public void writePeriodicOutputs() {
-        // solenoid.set(periodicIO.solenoidState);
         frontLeft.setDesiredState(periodicIO.frontLeftOutputState, periodicIO.isOpenLoop);
         frontRight.setDesiredState(periodicIO.frontRightOutputState, periodicIO.isOpenLoop);
         backLeft.setDesiredState(periodicIO.backLeftOutputState, periodicIO.isOpenLoop);
@@ -241,6 +204,22 @@ public class SwerveDrive implements PeriodicSubsystem {
         return periodicIO.roll;
     }
 
+    public double getPitch() {
+        return periodicIO.pitch;
+    }
+
+    public void addVisionMeasurment(Double timestamp, Pose2d robotPose) {
+        if (timestamp == null) {
+            return;
+        }
+        this.poseEstimator.addVisionMeasurement(robotPose, timestamp);
+    }
+
+    // Probably want to moving average filter pitch and roll.
+    public boolean isBalanced(double thresholdDeg) {
+        return Math.abs(getRoll()) < thresholdDeg && Math.abs(getPitch()) < thresholdDeg;
+    }
+
     public double getRawHeading() {
         return periodicIO.rawHeading;
     }
@@ -265,7 +244,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public SwerveModulePosition[] getSwerveModulePositions() {
+    public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
             frontLeft.getPosition(),
             frontRight.getPosition(),
@@ -357,33 +336,17 @@ public class SwerveDrive implements PeriodicSubsystem {
         setModuleStates(states);
     }
 
-    public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
-        return PathPlanner.generatePath(
-                new PathConstraints(1, 1),
-                PathPoint.fromCurrentHolonomicState(
-                        getPose(),
-                        SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(
-                                periodicIO.frontLeftState,
-                                periodicIO.frontRightState,
-                                periodicIO.backLeftState,
-                                periodicIO.backRightState)),
-                endpoint);
-    }
-
-    public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
-        return new PPSwerveControllerCommand(
-                trajectory,
-                this::getPose,
-                AutoConstants.kXController,
-                AutoConstants.kYController,
-                AutoConstants.kRotController,
-                this::setChasisSpeeds,
-                this);
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            periodicIO.frontLeftState,
+            periodicIO.frontRightState,
+            periodicIO.backLeftState,
+            periodicIO.backRightState
+        };
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return "Swerve Drivetrain";
     }
 }

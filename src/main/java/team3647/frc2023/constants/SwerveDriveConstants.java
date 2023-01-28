@@ -32,32 +32,32 @@ public class SwerveDriveConstants {
     public static final NeutralMode kDriveNeutralMode = NeutralMode.Brake;
 
     public static final TalonFX kFrontLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId);
     public static final TalonFX kFrontLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId);
     public static final CANCoder kFrontLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "rio");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort);
 
     public static final TalonFX kFrontRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId);
     public static final TalonFX kFrontRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId);
     public static final CANCoder kFrontRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "rio");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort);
 
     public static final TalonFX kBackLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId);
     public static final TalonFX kBackLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId);
     public static final CANCoder kBackLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "rio");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort);
 
     public static final TalonFX kBackRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId);
     public static final TalonFX kBackRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "rio");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId);
     public static final CANCoder kBackRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "rio");
+            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort);
 
     public static final Pigeon2Configuration kGyroConfig = new Pigeon2Configuration();
 
@@ -173,14 +173,6 @@ public class SwerveDriveConstants {
 
     // PID constants for roll and yaw
 
-    public static final double kRollP = 0.03;
-    public static final double kRollI = 0.0;
-    public static final double kRollD = 0.00;
-
-    public static final double kYawP = 0.05;
-    public static final double kYawI = 0.00;
-    public static final double kYawD = 0.00;
-
     // is stored as reference?
     public static final SwerveModule kFrontLeftModule =
             new SwerveModule(
@@ -233,7 +225,15 @@ public class SwerveDriveConstants {
 
     public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin);
 
+    public static final double kRollP = 0.03;
+    public static final double kRollI = 0.0;
+    public static final double kRollD = 0.00;
+
+    public static final double kYawP = 0.05;
+    public static final double kYawI = 0.00;
+    public static final double kYawD = 0.00;
     public static final PIDController kRollController = new PIDController(kRollP, kRollI, kRollD);
+    public static final PIDController kPitchController = new PIDController(kRollP, kRollI, kRollD);
 
     public static final PIDController kYawController = new PIDController(kYawP, kYawI, kYawD);
 

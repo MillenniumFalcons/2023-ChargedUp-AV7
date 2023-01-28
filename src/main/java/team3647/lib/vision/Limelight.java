@@ -1,5 +1,6 @@
 package team3647.lib.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -8,7 +9,7 @@ import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
 import team3647.lib.vision.IVisionCamera.LEDMode;
 
-public class Limelight implements IVisionCamera {
+public class Limelight implements AprilTagCamera {
 
     // NetworkTable is the class used to grab values from the Limelight Network
     // Table
@@ -55,8 +56,6 @@ public class Limelight implements IVisionCamera {
         this.ip = ip;
         this.extraLatencySec = extraLatencySec;
         this.kCamConstants = camConstants;
-        // table.getEntry(Data.LATNECY_MS.str)
-        //         .addListener(this::processNTEvent, EntryListenerFlags.kUpdate);
         table.getEntry(Data.LATNECY_MS.str);
     }
 
@@ -69,31 +68,9 @@ public class Limelight implements IVisionCamera {
         inputs.pitchToVisionCenter = ty;
     }
 
-    // private void processNTEvent(EntryNotification notification) {
-    //     double[] latestRawCorners = getDoubleArray(Data.RAW_CORNERS);
-    //     if (latestRawCorners == emptyDoubleArray) {
-    //         return;
-    //     }
-    //     validEntry = getDouble(Data.VALID_TARGET) == 1.0;
-    //     if (!validEntry) {
-    //         return;
-    //     }
-    //     skew = getDouble(Data.SKEW);
-    //     tx = getDouble(Data.X);
-    //     ty = getDouble(Data.Y);
-    //     double timestamp =
-    //             Timer.getFPGATimestamp()
-    //                     - getDouble(Data.LATNECY_MS) / 1000.0
-    //                     - 0.011
-    //                     - extraLatencySec;
-    //     synchronized (Limelight.this) {
-    //         captureTimestamp = timestamp;
-    //         corners = new LinkedList<>();
-    //         for (int i = 0; i < latestRawCorners.length - 1; i += 2) {
-    //             corners.add(new VisionPoint(latestRawCorners[i], latestRawCorners[i + 1]));
-    //         }
-    //     }
-    // }
+    public StampedPose getRobotPose() {
+        return new StampedPose(new Pose2d(), captureTimestamp);
+    }
 
     @Override
     public void setLED(LEDMode ledMode) {
