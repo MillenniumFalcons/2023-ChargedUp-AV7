@@ -169,12 +169,16 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         master.setSelectedSensorPosition(position / positionConversion);
     }
 
-    /** @return the velocity in the output units */
+    /**
+     * @return the velocity in the output units
+     */
     public double getVelocity() {
         return periodicIO.velocity;
     }
 
-    /** @return ths position in the output units */
+    /**
+     * @return ths position in the output units
+     */
     public double getPosition() {
         return periodicIO.position;
     }
@@ -183,7 +187,9 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         return periodicIO.demand * positionConversion;
     }
 
-    /** @return the timestamp for the position and velocity measurements */
+    /**
+     * @return the timestamp for the position and velocity measurements
+     */
     public double getTimestamp() {
         return periodicIO.timestamp;
     }

@@ -7,11 +7,10 @@ package team3647.frc2023.commands;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.frc2023.subsystems.SwerveDrive;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.subsystems.SwerveDrive;
 
 public class SwerveDriveNoAim extends CommandBase {
     private final SwerveDrive swerve;
@@ -66,11 +65,10 @@ public class SwerveDriveNoAim extends CommandBase {
         rotation =
                 -turnSpeedFunction.getAsDouble()
                         * SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec;
-                        // * rotationMultiplier;
+        // * rotationMultiplier;
         // rotation = rotation * rotation * Math.signum(rotation);
 
-        swerve.drive(translation, 
-        rotation, getIsFieldOriented.getAsBoolean(), true);
+        swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
     }
 
     // Called once the command ends or is interrupted.

@@ -28,7 +28,6 @@ public class SwerveModule {
     private final double turnVelocityConversion;
     private final double turnPositionConversion;
 
-
     private double lastAngle;
 
     public double percentOut = 0;
@@ -83,9 +82,9 @@ public class SwerveModule {
         return new SwerveModuleState(
                 getDriveVelocity(), new Rotation2d(Units.degreesToRadians(getTurnAngle())));
     }
+
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(
-            getDrivePos(), Rotation2d.fromDegrees((getTurnAngle())));
+        return new SwerveModulePosition(getDrivePos(), Rotation2d.fromDegrees((getTurnAngle())));
     }
 
     public double getVoltage() {

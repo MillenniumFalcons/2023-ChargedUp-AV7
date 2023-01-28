@@ -32,7 +32,7 @@ public final class GlobalConstants {
         public static final int kBackLeftDriveId = 5;
         public static final int kBackLeftTurnId = 6;
         public static final int kBackLeftAbsEncoderPort = 11;
-        
+
         public static final int kBackRightDriveId = 7;
         public static final int kBackRightTurnId = 8;
         public static final int kBackRightAbsEncoderPort = 12;

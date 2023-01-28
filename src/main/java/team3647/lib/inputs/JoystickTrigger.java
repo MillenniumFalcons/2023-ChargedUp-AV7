@@ -23,7 +23,9 @@ public class JoystickTrigger extends Trigger {
         maxisNumber = axisNumber;
     }
 
-    /** @return the triggerValue */
+    /**
+     * @return the triggerValue
+     */
     public double getTriggerValue() {
         return mjoystick.getRawAxis(maxisNumber);
     }

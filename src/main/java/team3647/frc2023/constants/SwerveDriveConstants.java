@@ -10,7 +10,6 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -67,7 +66,7 @@ public class SwerveDriveConstants {
     // distance between right and left wheels
     public static final double kTrackWidth = Units.inchesToMeters(20.75);
     // distance between front and back wheels
-    
+
     public static final double kWheelBase = Units.inchesToMeters(20.75);
     // translations are locations of each module wheel
     // 0 --> ++ --> front left
@@ -129,10 +128,12 @@ public class SwerveDriveConstants {
     public static final double kMaxCurrent = 60;
 
     // find
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 38.43;//329.589; // 35.66 - 2.8767;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 294.17;//123.574; // 333.28 + 0.0866;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 347.91;//35.068; // 36.39 - 0.1725;
-    public static final double kAbsBackRightEncoderOffsetDeg = 246.22;//60.117; // 148.97 + 0.8740;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 38.43; // 329.589; // 35.66 - 2.8767;
+    public static final double kAbsFrontRightEncoderOffsetDeg =
+            294.17; // 123.574; // 333.28 + 0.0866;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 347.91; // 35.068; // 36.39 - 0.1725;
+    public static final double kAbsBackRightEncoderOffsetDeg =
+            246.22; // 60.117; // 148.97 + 0.8740;
 
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
@@ -168,7 +169,7 @@ public class SwerveDriveConstants {
 
     public static final double kTurnP = 0.4;
     public static final double kTurnI = 0.0;
-    public static final double kTurnD = 0;//10.0; // 1;
+    public static final double kTurnD = 0; // 10.0; // 1;
 
     // PID constants for roll and yaw
 
@@ -179,7 +180,6 @@ public class SwerveDriveConstants {
     public static final double kYawP = 0.05;
     public static final double kYawI = 0.00;
     public static final double kYawD = 0.00;
-
 
     // is stored as reference?
     public static final SwerveModule kFrontLeftModule =
@@ -232,7 +232,7 @@ public class SwerveDriveConstants {
                     kNominalVoltage);
 
     public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin);
-    
+
     public static final PIDController kRollController = new PIDController(kRollP, kRollI, kRollD);
 
     public static final PIDController kYawController = new PIDController(kYawP, kYawI, kYawD);

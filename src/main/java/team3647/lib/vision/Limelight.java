@@ -3,8 +3,6 @@ package team3647.lib.vision;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
-import java.util.LinkedList;
 import java.util.List;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;

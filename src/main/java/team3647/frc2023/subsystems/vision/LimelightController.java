@@ -1,7 +1,5 @@
 package team3647.frc2023.subsystems.vision;
 
-import javax.crypto.interfaces.PBEKey;
-
 import edu.wpi.first.math.geometry.Translation3d;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PhotonVisionConstants;
@@ -11,7 +9,8 @@ import team3647.lib.vision.Limelight.Data;
 
 public class LimelightController implements PeriodicSubsystem {
 
-    private final Limelight limelight = new Limelight(PhotonVisionConstants.kLimelightIP, 0, LimelightConstant.kCamConstatnts);
+    private final Limelight limelight =
+            new Limelight(PhotonVisionConstants.kLimelightIP, 0, LimelightConstant.kCamConstatnts);
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private static final class PeriodicIO {
@@ -29,12 +28,11 @@ public class LimelightController implements PeriodicSubsystem {
         double cameraToTagX = 0.0;
     }
 
-    public LimelightController() {
-    }
+    public LimelightController() {}
 
     @Override
     public void readPeriodicInputs() {
-        if(limelight.getDouble(Data.VALID_TARGET) == 1) {
+        if (limelight.getDouble(Data.VALID_TARGET) == 1) {
             periodicIO.hasTarget = true;
             periodicIO.avgYaw = limelight.getDoubleArray(Data.CAM_TRANS)[4];
             periodicIO.avgPitch = limelight.getDoubleArray(Data.CAM_TRANS)[3];
@@ -48,7 +46,6 @@ public class LimelightController implements PeriodicSubsystem {
             periodicIO.hasTarget = false;
             periodicIO.tagID = -1;
         }
-        
     }
 
     public boolean hasTarget() {
@@ -84,12 +81,13 @@ public class LimelightController implements PeriodicSubsystem {
     }
 
     public double getDistance() {
-        return Math.sqrt(periodicIO.cameraToTagX * periodicIO.cameraToTagX + periodicIO.cameraToTagY * periodicIO.cameraToTagY);
+        return Math.sqrt(
+                periodicIO.cameraToTagX * periodicIO.cameraToTagX
+                        + periodicIO.cameraToTagY * periodicIO.cameraToTagY);
     }
 
     @Override
     public String getName() {
         return "Limelight";
     }
-    
 }

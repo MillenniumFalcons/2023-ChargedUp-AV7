@@ -8,9 +8,7 @@ public class Superstructure {
     }
 
     public void periodic(double timestamp) {
-            // Add (opposite) of tangential velocity about goal + angular velocity in local frame.
-            
+        // Add (opposite) of tangential velocity about goal + angular velocity in local frame.
+
     }
 }
-
-

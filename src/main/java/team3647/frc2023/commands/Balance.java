@@ -8,12 +8,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import team3647.frc2023.constants.AutoConstants;
+import java.util.function.BooleanSupplier;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.SwerveDrive;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 public class Balance extends CommandBase {
     private final SwerveDrive swerve;
@@ -32,9 +29,7 @@ public class Balance extends CommandBase {
     private final double rotationMultiplier = 1.0; // 0.1;
 
     /** Creates a new SwerveDriveTeleopBaseFalcon. */
-    public Balance(
-            SwerveDrive swerve,
-            BooleanSupplier getIsFieldOriented) {
+    public Balance(SwerveDrive swerve, BooleanSupplier getIsFieldOriented) {
         this.swerve = swerve;
         this.getIsFieldOriented = getIsFieldOriented;
         addRequirements(swerve);
@@ -47,9 +42,9 @@ public class Balance extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if(Math.abs(swerve.getRoll()) > 1) {
-        rotation = -yawControl.calculate(swerve.getHeading(), 0);
-        translation = new Translation2d(-rollControl.calculate(swerve.getRoll(), 0), 0);
+        if (Math.abs(swerve.getRoll()) > 1) {
+            rotation = -yawControl.calculate(swerve.getHeading(), 0);
+            translation = new Translation2d(-rollControl.calculate(swerve.getRoll(), 0), 0);
             swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), false);
         }
     }
