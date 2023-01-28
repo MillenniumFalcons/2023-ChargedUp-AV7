@@ -86,7 +86,7 @@ public class RobotContainer {
             new VisionController(
                     new Limelight(
                             PhotonVisionConstants.kLimelightIP,
-                            "limelight1",
+                            "limelight",
                             0,
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurment);
