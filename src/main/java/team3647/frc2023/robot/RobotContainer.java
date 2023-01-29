@@ -2,6 +2,8 @@ package team3647.frc2023.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,8 +28,8 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-
-        scheduler.registerSubsystem(swerve, printer, visionController);
+        Pdh.clearStickyFaults();
+        scheduler.registerSubsystem(swerve, printer); // visionController);
 
         configureButtonBindings();
         configureDefaultCommands();
@@ -90,6 +92,8 @@ public class RobotContainer {
                             0,
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurment);
+
+    private final PowerDistribution Pdh = new PowerDistribution(1, ModuleType.kRev);
 
     private final Superstructure superstructure = new Superstructure(swerve);
 

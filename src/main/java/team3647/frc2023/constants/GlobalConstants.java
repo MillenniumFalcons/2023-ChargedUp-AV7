@@ -33,9 +33,20 @@ public final class GlobalConstants {
         public static final int kBackRightTurnId = 8;
         public static final int kBackRightAbsEncoderPort = 12;
 
-        public static final int gyroPin = 20;
+        public static final int gyroPin = 16;
 
         private SwerveDriveIds() {}
+    }
+
+    public static final class PivotIds {
+        public static final int kMasterId = 17;
+        public static final int kSlaveId = 18;
+
+        private PivotIds() {}
+    }
+
+    public static final class ExtenderId {
+        public static final int kMasterId = 0;
     }
 
     private GlobalConstants() {}
