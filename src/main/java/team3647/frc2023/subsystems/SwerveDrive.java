@@ -12,8 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.lib.PeriodicSubsystem;
+import team3647.lib.SwerveModule;
 import team3647.lib.team254.util.MovingAverage;
 
 public class SwerveDrive implements PeriodicSubsystem {
@@ -29,7 +29,11 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final MovingAverage backLeftAverageSpeed = new MovingAverage(10);
     private final MovingAverage backRightAverageSpeed = new MovingAverage(10);
 
+    private final SwerveDriveKinematics kinematics;
+
     private final Pigeon2 gyro;
+
+    private final double maxSpeedMpS;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -43,7 +47,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         public double roll = 0;
         public double pitch = 0;
         public double rawHeading = 0;
-        public boolean solenoidState = false;
 
         public SwerveModuleState frontLeftState = new SwerveModuleState();
         public SwerveModuleState frontRightState = new SwerveModuleState();
@@ -61,28 +64,24 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            Pigeon2 gyro) {
+            Pigeon2 gyro,
+            SwerveDriveKinematics kinematics,
+            double maxSpeedMpS) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
         this.gyro = gyro;
+        this.kinematics = kinematics;
+        this.maxSpeedMpS = maxSpeedMpS;
         this.poseEstimator =
                 new SwerveDrivePoseEstimator(
-                        SwerveDriveConstants.kDriveKinematics,
-                        getRotation2d(),
-                        getModulePositions(),
-                        new Pose2d());
+                        this.kinematics, getRotation2d(), getModulePositions(), new Pose2d());
         this.odometry =
                 new SwerveDriveOdometry(
-                        SwerveDriveConstants.kDriveKinematics,
+                        this.kinematics,
                         Rotation2d.fromDegrees(periodicIO.heading),
-                        new SwerveModulePosition[] {
-                            frontLeft.getPosition(),
-                            frontRight.getPosition(),
-                            backLeft.getPosition(),
-                            backRight.getPosition()
-                        });
+                        getModulePositions());
     }
 
     @Override
@@ -117,14 +116,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
         SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
 
-        odometry.update(
-                getRotation2d(),
-                new SwerveModulePosition[] {
-                    frontLeft.getPosition(),
-                    frontRight.getPosition(),
-                    backLeft.getPosition(),
-                    backRight.getPosition()
-                });
+        odometry.update(getRotation2d(), getModulePositions());
 
         // update pose estimator
         periodicIO.timestamp = Timer.getFPGATimestamp();
@@ -139,14 +131,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         backRight.setDesiredState(periodicIO.backRightOutputState, periodicIO.isOpenLoop);
     }
 
-    public void extend() {
-        periodicIO.solenoidState = true;
-    }
-
-    public void retract() {
-        periodicIO.solenoidState = false;
-    }
-
     @Override
     public void periodic() {
         readPeriodicInputs();
@@ -155,26 +139,10 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public void setOdometry(Pose2d pose, Rotation2d rot) {
         SmartDashboard.putNumber("rot", rot.getDegrees());
-        odometry.resetPosition(
-                rot,
-                new SwerveModulePosition[] {
-                    frontLeft.getPosition(),
-                    frontRight.getPosition(),
-                    backLeft.getPosition(),
-                    backRight.getPosition()
-                },
-                pose);
+        odometry.resetPosition(rot, getModulePositions(), pose);
         gyro.setYaw(pose.getRotation().getDegrees());
 
-        poseEstimator.resetPosition(
-                rot,
-                new SwerveModulePosition[] {
-                    frontLeft.getPosition(),
-                    frontRight.getPosition(),
-                    backLeft.getPosition(),
-                    backRight.getPosition()
-                },
-                pose);
+        poseEstimator.resetPosition(rot, getModulePositions(), pose);
         periodicIO = new PeriodicIO();
     }
 
@@ -209,7 +177,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void addVisionMeasurment(Double timestamp, Pose2d robotPose) {
-        if (timestamp == null) {
+        if (timestamp == null || robotPose == null) {
             return;
         }
         this.poseEstimator.addVisionMeasurement(robotPose, timestamp);
@@ -277,9 +245,8 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void spin() {
-        SwerveModuleState[] swerveModuleStates = null;
-        swerveModuleStates =
-                SwerveDriveConstants.kDriveKinematics.toSwerveModuleStates(
+        SwerveModuleState[] swerveModuleStates =
+                this.kinematics.toSwerveModuleStates(
                         ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, getRotation2d()));
 
         periodicIO.frontLeftOutputState = swerveModuleStates[0];
@@ -295,7 +262,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         SwerveModuleState[] swerveModuleStates = null;
 
         swerveModuleStates =
-                SwerveDriveConstants.kDriveKinematics.toSwerveModuleStates(
+                this.kinematics.toSwerveModuleStates(
                         fieldRelative
                                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                         translation.getX(),
@@ -304,8 +271,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                                         getRotation2d())
                                 : new ChassisSpeeds(
                                         translation.getX(), translation.getY(), rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                swerveModuleStates, SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, this.maxSpeedMpS);
 
         periodicIO.frontLeftOutputState = swerveModuleStates[0];
         periodicIO.frontRightOutputState = swerveModuleStates[1];
@@ -316,8 +282,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                desiredStates, SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, this.maxSpeedMpS);
         periodicIO.frontLeftOutputState = desiredStates[0];
         periodicIO.frontRightOutputState = desiredStates[1];
         periodicIO.backLeftOutputState = desiredStates[2];
@@ -325,8 +290,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void setChasisSpeeds(ChassisSpeeds speeds) {
-        SwerveModuleState[] swerveModuleStates =
-                SwerveDriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+        SwerveModuleState[] swerveModuleStates = this.kinematics.toSwerveModuleStates(speeds);
         setModuleStates(swerveModuleStates);
     }
 

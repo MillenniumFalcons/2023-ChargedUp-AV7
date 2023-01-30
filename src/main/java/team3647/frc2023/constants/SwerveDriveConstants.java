@@ -15,7 +15,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import team3647.frc2023.subsystems.SwerveModule;
+import team3647.lib.SwerveModule;
 
 public class SwerveDriveConstants {
     // default falcon rotates counter clockwise (CCW)

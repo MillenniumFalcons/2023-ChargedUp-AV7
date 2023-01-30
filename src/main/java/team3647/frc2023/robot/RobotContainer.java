@@ -82,7 +82,9 @@ public class RobotContainer {
                     SwerveDriveConstants.kFrontRightModule,
                     SwerveDriveConstants.kBackLeftModule,
                     SwerveDriveConstants.kBackRightModule,
-                    SwerveDriveConstants.kGyro);
+                    SwerveDriveConstants.kGyro,
+                    SwerveDriveConstants.kDriveKinematics,
+                    SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
 
     private final VisionController visionController =
             new VisionController(
