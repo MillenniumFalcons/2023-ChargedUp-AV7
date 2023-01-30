@@ -8,13 +8,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     private final TalonFX master;
-    private final List<TalonFX> followers = new LinkedList<>();
+    private final List<TalonFX> followers = new ArrayList<>();
     private final double positionConversion;
     private final double velocityConversion;
     private final double nominalVoltage;
