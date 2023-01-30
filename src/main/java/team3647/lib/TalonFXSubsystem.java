@@ -123,11 +123,6 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         periodicIO.demand = velocity / velocityConversion;
     }
 
-    protected void setPercentOutput(double percent) {
-        periodicIO.controlMode = ControlMode.PercentOutput;
-        periodicIO.demand = percent;
-    }
-
     /** Sets all motors to brake mode */
     public void setToBrake() {
         setNeutralMode(NeutralMode.Brake);
@@ -165,7 +160,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      *
      * @param position position in output units
      */
-    public void setEncoder(double position) {
+    protected void setEncoder(double position) {
         master.setSelectedSensorPosition(position / positionConversion);
     }
 
@@ -181,10 +176,6 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      */
     public double getPosition() {
         return periodicIO.position;
-    }
-
-    public double getDemand() {
-        return periodicIO.demand * positionConversion;
     }
 
     /**
