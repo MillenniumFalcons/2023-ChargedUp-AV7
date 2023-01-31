@@ -63,7 +63,8 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addDouble("rot", swerve::getRawHeading);
-        printer.addDouble("robot pitch", swerve::getRoll);
+        printer.addDouble("robot roll", swerve::getRoll);
+        printer.addDouble("robot pitch", swerve::getPitch);
         printer.addPose("robot pose", swerve::getPose);
         printer.addPose("ESTIMATED", swerve::getEstimPose);
         printer.addDouble("Joystick", mainController::getLeftStickY);
