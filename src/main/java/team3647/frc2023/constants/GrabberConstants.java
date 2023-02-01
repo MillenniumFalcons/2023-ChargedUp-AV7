@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 public class GrabberConstants {
-    public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderId.kMasterId);
+    public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderIds.kMasterId);
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 

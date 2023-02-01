@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import team3647.frc2023.commands.Drive;
-import team3647.frc2023.commands.PivotOpenLoop;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.LimelightConstant;
@@ -36,7 +34,7 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        Pdh.clearStickyFaults();
+        pdh.clearStickyFaults();
         scheduler.registerSubsystem(swerve, printer, pivot, extender); // visionController);
 
         configureButtonBindings();
@@ -60,13 +58,12 @@ public class RobotContainer {
 
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
-                new Drive(
-                        swerve,
+                superstructure.drivetrainCommands.drive(
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         () -> true));
-        pivot.setDefaultCommand(new PivotOpenLoop(pivot, coController::getLeftStickY));
+        pivot.setDefaultCommand(superstructure.pivotCommands.openloop(coController::getLeftStickY));
     }
 
     public void configureSmartDashboardLogging() {
@@ -96,7 +93,8 @@ public class RobotContainer {
                     SwerveDriveConstants.kBackRightModule,
                     SwerveDriveConstants.kGyro,
                     SwerveDriveConstants.kDriveKinematics,
-                    SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
+                    SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
+                    SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
 
     public final Pivot pivot =
             new Pivot(
@@ -127,9 +125,9 @@ public class RobotContainer {
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurment);
 
-    private final PowerDistribution Pdh = new PowerDistribution(1, ModuleType.kRev);
+    private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
-    private final Superstructure superstructure = new Superstructure(swerve);
+    private final Superstructure superstructure = new Superstructure(swerve, pivot);
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
 

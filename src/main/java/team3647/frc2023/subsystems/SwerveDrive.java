@@ -34,6 +34,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final Pigeon2 gyro;
 
     private final double maxSpeedMpS;
+    private final double maxRotRadPerSec;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -66,7 +67,8 @@ public class SwerveDrive implements PeriodicSubsystem {
             SwerveModule backRight,
             Pigeon2 gyro,
             SwerveDriveKinematics kinematics,
-            double maxSpeedMpS) {
+            double maxSpeedMpS,
+            double maxRotRadPerSec) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
@@ -74,6 +76,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.gyro = gyro;
         this.kinematics = kinematics;
         this.maxSpeedMpS = maxSpeedMpS;
+        this.maxRotRadPerSec = maxRotRadPerSec;
         this.poseEstimator =
                 new SwerveDrivePoseEstimator(
                         this.kinematics, getRotation2d(), getModulePositions(), new Pose2d());
@@ -307,6 +310,14 @@ public class SwerveDrive implements PeriodicSubsystem {
             periodicIO.backLeftState,
             periodicIO.backRightState
         };
+    }
+
+    public double getMaxSpeedMpS() {
+        return this.maxSpeedMpS;
+    }
+
+    public double getMaxRotationRadpS() {
+        return this.maxRotRadPerSec;
     }
 
     @Override

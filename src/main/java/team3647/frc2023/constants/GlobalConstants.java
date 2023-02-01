@@ -45,8 +45,10 @@ public final class GlobalConstants {
         private PivotIds() {}
     }
 
-    public static final class ExtenderId {
+    public static final class ExtenderIds {
         public static final int kMasterId = 19;
+
+        private ExtenderIds() {}
     }
 
     private GlobalConstants() {}
