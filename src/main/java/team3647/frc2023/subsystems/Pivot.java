@@ -26,8 +26,16 @@ public class Pivot extends TalonFXSubsystem {
         this.feedforward = feedforward;
     }
 
+    public void setOpenLoop(double percentOut) {
+        super.setOpenloop(percentOut);
+    }
+
     public void setAngle(double angle) {
         super.setPositionMotionMagic(angle, 0);
+    }
+
+    public double getAngle() {
+        return super.getPosition();
     }
 
     @Override

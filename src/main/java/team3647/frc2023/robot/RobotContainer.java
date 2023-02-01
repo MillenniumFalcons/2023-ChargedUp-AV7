@@ -1,5 +1,7 @@
 package team3647.frc2023.robot;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -7,10 +9,16 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import team3647.frc2023.commands.SwerveDriveNoAim;
+import team3647.frc2023.commands.Drive;
+import team3647.frc2023.commands.PivotOpenLoop;
+import team3647.frc2023.constants.ExtenderConstants;
+import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PhotonVisionConstants;
+import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.subsystems.Extender;
+import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
@@ -29,7 +37,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         Pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer); // visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender); // visionController);
 
         configureButtonBindings();
         configureDefaultCommands();
@@ -41,7 +49,6 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         mainController.buttonA.onTrue(Commands.runOnce(swerve::zeroHeading));
-
         mainController.buttonX.whileTrue(
                 superstructure
                         .drivetrainCommands
@@ -53,12 +60,13 @@ public class RobotContainer {
 
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
-                new SwerveDriveNoAim(
+                new Drive(
                         swerve,
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         () -> true));
+        pivot.setDefaultCommand(new PivotOpenLoop(pivot, coController::getLeftStickY));
     }
 
     public void configureSmartDashboardLogging() {
@@ -68,6 +76,9 @@ public class RobotContainer {
         printer.addPose("robot pose", swerve::getPose);
         printer.addPose("ESTIMATED", swerve::getEstimPose);
         printer.addDouble("Joystick", mainController::getLeftStickY);
+        printer.addDouble("Pivot Deg", pivot::getAngle);
+        printer.addDouble("Extender Distance", extender::getDistance);
+        printer.addString("UR MOM", () -> "UR MOM");
     }
 
     public Command getAutonomousCommand() {
@@ -86,6 +97,26 @@ public class RobotContainer {
                     SwerveDriveConstants.kGyro,
                     SwerveDriveConstants.kDriveKinematics,
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS);
+
+    public final Pivot pivot =
+            new Pivot(
+                    PivotConstants.kMaster,
+                    PivotConstants.kSlave,
+                    () -> 0,
+                    new ArmFeedforward(0, 0, 0),
+                    PivotConstants.kNativeVelToDPS,
+                    PivotConstants.kNativePosToDegrees,
+                    PivotConstants.nominalVoltage,
+                    GlobalConstants.kDt);
+
+    public final Extender extender =
+            new Extender(
+                    ExtenderConstants.kMaster,
+                    new SimpleMotorFeedforward(0, 0, 0),
+                    ExtenderConstants.kNativeVelToMpS,
+                    ExtenderConstants.kNativePosToMeters,
+                    ExtenderConstants.nominalVoltage,
+                    GlobalConstants.kDt);
 
     private final VisionController visionController =
             new VisionController(

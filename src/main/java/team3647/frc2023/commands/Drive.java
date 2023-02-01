@@ -12,7 +12,7 @@ import java.util.function.DoubleSupplier;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.SwerveDrive;
 
-public class SwerveDriveNoAim extends CommandBase {
+public class Drive extends CommandBase {
     private final SwerveDrive swerve;
     private final SlewRateLimiter m_x_accelerationLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter m_y_accelerationLimiter = new SlewRateLimiter(3);
@@ -29,7 +29,7 @@ public class SwerveDriveNoAim extends CommandBase {
     private final double rotationMultiplier = 1.0; // 0.1;
 
     /** Creates a new SwerveDriveTeleopBaseFalcon. */
-    public SwerveDriveNoAim(
+    public Drive(
             SwerveDrive swerve,
             DoubleSupplier xSpeedFunction,
             DoubleSupplier ySpeedFunction,

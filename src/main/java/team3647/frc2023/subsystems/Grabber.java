@@ -4,35 +4,31 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import team3647.lib.TalonFXSubsystem;
 
-public class Extender extends TalonFXSubsystem {
+public class Grabber extends TalonFXSubsystem {
     private final SimpleMotorFeedforward feedforward;
 
-    public Extender(
+    public Grabber(
             TalonFX master,
             SimpleMotorFeedforward feedforward,
-            double ticksToMetersPerSec,
-            double ticksToMeters,
+            double ticksToDegsPerSec,
+            double ticksToDegs,
             double nominalVoltage,
             double kDt) {
-        super(master, ticksToMetersPerSec, ticksToMeters, nominalVoltage, kDt);
+        super(master, ticksToDegsPerSec, ticksToDegs, nominalVoltage, kDt);
         this.feedforward = feedforward;
     }
 
-    public void setOpenLoop(double percentOut) {
-        super.setOpenloop(percentOut);
+    public void setAngle(double degrees) {
+        super.setPositionMotionMagic(degrees, 0);
     }
 
-    public void setLength(double meters) {
-        super.setPositionMotionMagic(meters, 0);
-    }
-
-    public double getDistance() {
+    public double getAngle() {
         return super.getPosition();
     }
 
     @Override
     public String getName() {
         // TODO Auto-generated method stub
-        return "Externder";
+        return "Grabber";
     }
 }

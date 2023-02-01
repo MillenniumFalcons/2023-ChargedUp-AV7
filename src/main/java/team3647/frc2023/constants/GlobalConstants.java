@@ -46,7 +46,7 @@ public final class GlobalConstants {
     }
 
     public static final class ExtenderId {
-        public static final int kMasterId = 0;
+        public static final int kMasterId = 19;
     }
 
     private GlobalConstants() {}

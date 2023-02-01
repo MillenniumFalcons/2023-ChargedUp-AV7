@@ -21,6 +21,8 @@ public class PivotConstants {
     private static final double masterKI = 0;
     private static final double masterKD = 0;
 
+    public static final double nominalVoltage = 11.0;
+
     static {
         kMaster.configFactoryDefault();
         kSlave.configFactoryDefault();

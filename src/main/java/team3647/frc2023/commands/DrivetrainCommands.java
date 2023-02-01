@@ -19,24 +19,24 @@ public class DrivetrainCommands {
                         return;
                     }
 
-                    if(Math.abs(swerve.getRawHeading()) > 5) {
+                    if (Math.abs(swerve.getRawHeading()) > 5) {
 
-                    
-
-                    var translation =
-                            new Translation2d(
-                                    Math.cos(Units.degreesToRadians(swerve.getRawHeading())) * rollController.calculate(-swerve.getRoll(), 0),
-                                    Math.sin(Units.degreesToRadians(swerve.getRawHeading())) * rollController.calculate(swerve.getRoll(), 0));// + pitchController.calculate(-swerve.getPitch(), 0));
-                    swerve.drive(translation, 0, false, false);
-
-                    }
-
-                    else {
                         var translation =
-                        new Translation2d(
-                                rollController.calculate(-swerve.getRoll(), 0),
-                                0);// + pitchController.calculate(-swerve.getPitch(), 0));
-                swerve.drive(translation, 0, false, false);
+                                new Translation2d(
+                                        Math.cos(Units.degreesToRadians(swerve.getRawHeading()))
+                                                * rollController.calculate(-swerve.getRoll(), 0),
+                                        Math.sin(Units.degreesToRadians(swerve.getRawHeading()))
+                                                * rollController.calculate(
+                                                        swerve.getRoll(), 0)); // +
+                        // pitchController.calculate(-swerve.getPitch(), 0));
+                        swerve.drive(translation, 0, false, false);
+
+                    } else {
+                        var translation =
+                                new Translation2d(
+                                        rollController.calculate(-swerve.getRoll(), 0),
+                                        0); // + pitchController.calculate(-swerve.getPitch(), 0));
+                        swerve.drive(translation, 0, false, false);
                     }
                 },
                 swerve::stopModules,

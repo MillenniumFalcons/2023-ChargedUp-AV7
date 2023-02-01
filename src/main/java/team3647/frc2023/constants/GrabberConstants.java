@@ -4,19 +4,17 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
-public class ExtenderConstants {
+public class GrabberConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderId.kMasterId);
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    private static final double kGearBoxRatio = 14.0 / 48.0 * 30.0 / 40.0 * 18.0 / 24.0;
-    private static final double kDrumDiameterMeters = 0.02032;
+    private static final double kGearBoxRatio = 14.0 / 64.0 * 24.0 / 64.0;
 
-    public static final double kOutputRotationMeters =
-            kDrumDiameterMeters * Math.PI * kGearBoxRatio;
-    public static final double kNativePosToMeters =
-            kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
-    public static final double kNativeVelToMpS = 10 * kNativePosToMeters;
+    public static final double kNativePosToDegrees =
+            kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
+
+    public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
     private static final double kP = 0.0;
     private static final double kI = 0.0;
