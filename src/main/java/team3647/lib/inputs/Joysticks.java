@@ -1,8 +1,6 @@
 package team3647.lib.inputs;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Joysticks wrapper to provide easier access to buttons, triggers and sticks. */
@@ -28,58 +26,57 @@ public class Joysticks {
     public final Trigger dPadUp;
 
     /** XboxController Object for Controller; contains all Xbox Controller Functions */
-    private final XboxController controller;
+    private final CommandXboxController controller;
 
     private final int controllerPin;
 
     public Joysticks(int controllerPin) {
-        controller = new XboxController(controllerPin);
         this.controllerPin = controllerPin;
+        controller = new CommandXboxController(controllerPin);
 
-        leftTrigger = new Trigger(() -> this.getLeftTriggerValue() > 0.15);
-        rightTrigger = new Trigger(() -> this.getRightTriggerValue() > 0.15);
+        leftTrigger = controller.leftTrigger(0.15);
+        rightTrigger = controller.rightTrigger(0.15);
 
-        rightJoyStickPress =
-                new JoystickButton(controller, XboxController.Button.kRightStick.value);
-        leftJoyStickPress = new JoystickButton(controller, XboxController.Button.kLeftStick.value);
-        leftMidButton = new JoystickButton(controller, XboxController.Button.kBack.value);
-        rightMidButton = new JoystickButton(controller, XboxController.Button.kStart.value);
+        rightJoyStickPress = controller.rightStick();
+        leftJoyStickPress = controller.leftStick();
+        leftMidButton = controller.back();
+        rightMidButton = controller.start();
 
-        rightBumper = new JoystickButton(controller, XboxController.Button.kRightBumper.value);
-        leftBumper = new JoystickButton(controller, XboxController.Button.kLeftBumper.value);
-        buttonA = new JoystickButton(controller, XboxController.Button.kA.value);
-        buttonB = new JoystickButton(controller, XboxController.Button.kB.value);
-        buttonY = new JoystickButton(controller, XboxController.Button.kY.value);
-        buttonX = new JoystickButton(controller, XboxController.Button.kX.value);
+        rightBumper = controller.rightBumper();
+        leftBumper = controller.leftBumper();
+        buttonA = controller.a();
+        buttonB = controller.b();
+        buttonY = controller.y();
+        buttonX = controller.x();
 
-        dPadDown = new POVButton(controller, 180);
-        dPadLeft = new POVButton(controller, 270);
-        dPadRight = new POVButton(controller, 90);
-        dPadUp = new POVButton(controller, 0);
+        dPadDown = controller.povDown();
+        dPadLeft = controller.povLeft();
+        dPadRight = controller.povRight();
+        dPadUp = controller.povUp();
     }
 
     public double getLeftStickX() {
-        return applyDeadband(controller.getRawAxis(XboxController.Axis.kLeftX.value));
+        return applyDeadband(controller.getLeftX());
     }
 
     public double getLeftStickY() {
-        return applyDeadband(-controller.getRawAxis(XboxController.Axis.kLeftY.value));
+        return applyDeadband(-controller.getLeftY());
     }
 
     public double getRightStickX() {
-        return applyDeadband(controller.getRawAxis(XboxController.Axis.kRightX.value));
+        return applyDeadband(controller.getRightX());
     }
 
     public double getRightStickY() {
-        return applyDeadband(-controller.getRawAxis(XboxController.Axis.kRightY.value));
+        return applyDeadband(-controller.getRightY());
     }
 
     public double getRightTriggerValue() {
-        return applyDeadband(controller.getRawAxis(XboxController.Axis.kRightTrigger.value));
+        return applyDeadband(controller.getRightTriggerAxis());
     }
 
     public double getLeftTriggerValue() {
-        return applyDeadband(controller.getRawAxis(XboxController.Axis.kLeftTrigger.value));
+        return applyDeadband(controller.getLeftTriggerAxis());
     }
 
     public boolean anyStickMoved() {
@@ -97,15 +94,14 @@ public class Joysticks {
      * @param deadband range around zero
      */
     private double applyDeadband(double value, double deadband) {
-        if (Math.abs(value) > deadband) {
-            if (value > 0.0) {
-                return (value - deadband) / (1.0 - deadband);
-            } else {
-                return (value + deadband) / (1.0 - deadband);
-            }
-        } else {
+        if (Math.abs(value) < deadband) {
             return 0.0;
         }
+
+        if (value > 0.0) {
+            return (value - deadband) / (1.0 - deadband);
+        }
+        return (value + deadband) / (1.0 - deadband);
     }
 
     /**
