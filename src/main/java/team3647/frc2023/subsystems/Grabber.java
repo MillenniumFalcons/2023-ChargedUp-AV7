@@ -6,6 +6,7 @@ import team3647.lib.TalonFXSubsystem;
 
 public class Grabber extends TalonFXSubsystem {
     private final SimpleMotorFeedforward feedforward;
+    private final double ticksToDegsPerSec;
 
     public Grabber(
             TalonFX master,
@@ -16,10 +17,17 @@ public class Grabber extends TalonFXSubsystem {
             double kDt) {
         super(master, ticksToDegsPerSec, ticksToDegs, nominalVoltage, kDt);
         this.feedforward = feedforward;
+        this.ticksToDegsPerSec = ticksToDegsPerSec;
+        super.resetEncoder();
     }
 
     public void setAngle(double degrees) {
-        super.setPositionMotionMagic(degrees, 0);
+        super.setPositionMotionMagic(degrees, feedforward.calculate(100 / ticksToDegsPerSec));
+        // super.setPosition(degrees, feedforward.calculate(90 / ticksToDegsPerSec));
+    }
+
+    public void setOpenloop(double demand) {
+        super.setOpenloop(demand);
     }
 
     public double getAngle() {

@@ -8,7 +8,7 @@ import team3647.frc2023.subsystems.Pivot;
 public class PivotCommands {
 
     public Command openloop(DoubleSupplier demand) {
-        return Commands.run(() -> pivot.setOpenLoop(demand.getAsDouble()), this.pivot);
+        return Commands.run(() -> pivot.setOpenloop(demand.getAsDouble()), this.pivot);
     }
 
     private final Pivot pivot;

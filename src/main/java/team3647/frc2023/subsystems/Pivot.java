@@ -26,7 +26,7 @@ public class Pivot extends TalonFXSubsystem {
         this.feedforward = feedforward;
     }
 
-    public void setOpenLoop(double percentOut) {
+    public void setOpenloop(double percentOut) {
         super.setOpenloop(percentOut);
     }
 

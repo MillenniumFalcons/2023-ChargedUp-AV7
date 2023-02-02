@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 public class PivotConstants {
+    // positive is swinging towards the front of the robot
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.PivotIds.kMasterId);
     public static final TalonFX kSlave = new TalonFX(GlobalConstants.PivotIds.kSlaveId);
 
@@ -32,6 +33,9 @@ public class PivotConstants {
         kMasterConfig.slot0.kD = masterKD;
 
         kSlave.follow(kMaster);
+        kMaster.configAllSettings(kMasterConfig);
+        kSlave.configAllSettings(kMasterConfig);
+
         kMaster.setNeutralMode(NeutralMode.Brake);
         kSlave.setNeutralMode(NeutralMode.Brake);
     }

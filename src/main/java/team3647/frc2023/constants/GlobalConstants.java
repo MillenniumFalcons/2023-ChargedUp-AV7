@@ -51,5 +51,9 @@ public final class GlobalConstants {
         private ExtenderIds() {}
     }
 
+    public static final class GrabberIds {
+        public static final int kMasterId = 20;
+    }
+
     private GlobalConstants() {}
 }

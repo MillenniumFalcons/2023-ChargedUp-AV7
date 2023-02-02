@@ -3,6 +3,7 @@ package team3647.frc2023.constants;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class ExtenderConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderIds.kMasterId);
@@ -18,6 +19,12 @@ public class ExtenderConstants {
             kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS = 10 * kNativePosToMeters;
 
+    public static final double kS = 0.0;
+    public static final double kV = 0.0;
+    public static final double kA = 0.0;
+
+    public static final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
+
     private static final double kP = 0.0;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
@@ -31,6 +38,8 @@ public class ExtenderConstants {
         kMasterConfig.slot0.kI = kI;
         kMasterConfig.slot0.kD = kD;
 
-        kMaster.setNeutralMode(NeutralMode.Coast);
+        kMaster.configAllSettings(kMasterConfig);
+
+        kMaster.setNeutralMode(NeutralMode.Brake);
     }
 }

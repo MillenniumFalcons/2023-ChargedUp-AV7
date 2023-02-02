@@ -6,16 +6,19 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
+import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PhotonVisionConstants;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.Extender;
+import team3647.frc2023.subsystems.Grabber;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
@@ -54,6 +57,7 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
+        mainController.buttonB.onTrue(superstructure.grabberCommands.closeOnCone());
     }
 
     private void configureDefaultCommands() {
@@ -63,7 +67,12 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         () -> true));
-        pivot.setDefaultCommand(superstructure.pivotCommands.openloop(coController::getLeftStickY));
+        // TODO delete later
+        pivot.setDefaultCommand(
+                superstructure.pivotCommands.openloop(coController::getRightStickX));
+        extender.setDefaultCommand(
+                superstructure.extenderCommands.openloop(coController::getRightStickY));
+        grabber.setDefaultCommand(superstructure.grabberCommands.openloop(this::getGrabberOut));
     }
 
     public void configureSmartDashboardLogging() {
@@ -75,7 +84,17 @@ public class RobotContainer {
         printer.addDouble("Joystick", mainController::getLeftStickY);
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Distance", extender::getDistance);
-        printer.addString("UR MOM", () -> "UR MOM");
+        printer.addDouble("Grabber Deg", grabber::getAngle);
+        printer.addDouble("GRABBDER DIFF", this::getGrabberDiff);
+        SmartDashboard.putNumber("Grabber POUT", 0);
+    }
+
+    public double getGrabberDiff() {
+        return grabber.getAngle() - 40;
+    }
+
+    public double getGrabberOut() {
+        return SmartDashboard.getNumber("Grabber POUT", 0);
     }
 
     public Command getAutonomousCommand() {
@@ -95,6 +114,15 @@ public class RobotContainer {
                     SwerveDriveConstants.kDriveKinematics,
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
+
+    public final Grabber grabber =
+            new Grabber(
+                    GrabberConstants.kMaster,
+                    GrabberConstants.feedforward,
+                    GrabberConstants.kNativeVelToDPS,
+                    GrabberConstants.kNativePosToDegrees,
+                    GrabberConstants.nominalVoltage,
+                    GlobalConstants.kDt);
 
     public final Pivot pivot =
             new Pivot(
@@ -127,7 +155,8 @@ public class RobotContainer {
 
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
-    private final Superstructure superstructure = new Superstructure(swerve, pivot);
+    private final Superstructure superstructure =
+            new Superstructure(swerve, pivot, extender, grabber);
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
 
