@@ -57,7 +57,8 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.buttonB.onTrue(superstructure.grabberCommands.closeOnCone());
+        mainController.buttonB.onTrue(superstructure.grabberCommands.setAngle(166));
+        mainController.buttonY.onTrue(superstructure.grabberCommands.setAngle(0));
     }
 
     private void configureDefaultCommands() {
@@ -85,12 +86,7 @@ public class RobotContainer {
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Distance", extender::getDistance);
         printer.addDouble("Grabber Deg", grabber::getAngle);
-        printer.addDouble("GRABBDER DIFF", this::getGrabberDiff);
         SmartDashboard.putNumber("Grabber POUT", 0);
-    }
-
-    public double getGrabberDiff() {
-        return grabber.getAngle() - 40;
     }
 
     public double getGrabberOut() {

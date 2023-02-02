@@ -17,8 +17,8 @@ public class GrabberConstants {
 
     public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
-    public static final double kMaxVelocityTicks = 100.0 / kNativeVelToDPS;
-    public static final double kMaxAccelerationTicks = 100.0 / kNativeVelToDPS;
+    public static final double kMaxVelocityTicks = 360.0 / kNativeVelToDPS;
+    public static final double kMaxAccelerationTicks = 360.0 / kNativeVelToDPS;
 
     private static final double kS = 0.715;
     private static final double kV = 0.0;
@@ -31,8 +31,8 @@ public class GrabberConstants {
     private static final double kD = 0.0;
 
     public static final double nominalVoltage = 11.0;
-    public static final double kStallCurrent = 30;
-    public static final double kMaxCurrent = 60;
+    public static final double kStallCurrent = 30.0;
+    public static final double kMaxCurrent = 60.0;
 
     static {
         kMaster.configFactoryDefault();
@@ -43,10 +43,10 @@ public class GrabberConstants {
         // in native units/100ms
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
-
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.configStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, 50, 3));
         kMaster.setNeutralMode(NeutralMode.Brake);
+        kMaster.enableVoltageCompensation(true);
     }
 }

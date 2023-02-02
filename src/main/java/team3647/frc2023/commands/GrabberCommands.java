@@ -12,12 +12,12 @@ public class GrabberCommands {
         return Commands.run(() -> grabber.setOpenloop(demand.getAsDouble()), this.grabber);
     }
 
-    public Command closeOnCone() {
+    public Command setAngle(double degSetpoint) {
         return new FunctionalCommand(
                 () -> {},
-                () -> grabber.setAngle(166),
+                () -> grabber.setAngle(degSetpoint),
                 interrupted -> {},
-                () -> Math.abs(grabber.getAngle() - 166) < 0.05,
+                () -> Math.abs(grabber.getAngle() - degSetpoint) < 0.05,
                 grabber);
     }
 
