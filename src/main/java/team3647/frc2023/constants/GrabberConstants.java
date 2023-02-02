@@ -17,8 +17,8 @@ public class GrabberConstants {
 
     public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
-    public static final double kMaxVelocityTicks = 360.0 / kNativeVelToDPS;
-    public static final double kMaxAccelerationTicks = 360.0 / kNativeVelToDPS;
+    public static final double kMaxVelocityTicks = 6000.0 / kNativeVelToDPS;
+    public static final double kMaxAccelerationTicks = 6000.0 / kNativeVelToDPS;
 
     private static final double kS = 0.715;
     private static final double kV = 0.0;

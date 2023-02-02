@@ -22,7 +22,7 @@ public class Grabber extends TalonFXSubsystem {
     }
 
     public void setAngle(double degrees) {
-        super.setPositionMotionMagic(degrees, feedforward.calculate(360.0 / ticksToDegsPerSec));
+        super.setPositionMotionMagic(degrees, feedforward.calculate(6000.0 / ticksToDegsPerSec));
         // super.setPosition(degrees, feedforward.calculate(90 / ticksToDegsPerSec));
     }
 
