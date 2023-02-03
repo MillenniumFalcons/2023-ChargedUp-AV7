@@ -22,11 +22,11 @@ public class Extender extends TalonFXSubsystem {
         super.setOpenloop(percentOut);
     }
 
-    public void setLength(double meters) {
+    public void setLengthMeters(double meters) {
         super.setPositionMotionMagic(meters, 0);
     }
 
-    public double getDistance() {
+    public double getLengthMeters() {
         return super.getPosition();
     }
 

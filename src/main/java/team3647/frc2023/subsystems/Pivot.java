@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.DoubleSupplier;
 import team3647.lib.TalonFXSubsystem;
 
 public class Pivot extends TalonFXSubsystem {
@@ -27,9 +28,9 @@ public class Pivot extends TalonFXSubsystem {
         super.setOpenloop(percentOut);
     }
 
-    public void setAngle(double angle, double feedforward) {
+    public void setAngle(double angle, DoubleSupplier feedforward) {
         super.setPositionMotionMagic(angle, kG);
-        SmartDashboard.putNumber("KG", feedforward);
+        SmartDashboard.putNumber("KG", feedforward.getAsDouble());
     }
 
     public double getAngle() {

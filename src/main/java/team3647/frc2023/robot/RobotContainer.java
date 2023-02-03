@@ -68,7 +68,7 @@ public class RobotContainer {
                         mainController::getRightStickX,
                         () -> true));
         // TODO delete later
-        pivot.setDefaultCommand(superstructure.pivotCommands.setAngle(this::getPivotOutput));
+        pivot.setDefaultCommand(superstructure.setPivotAngle(this::getPivotOutput));
         // extender.setDefaultCommand(
         //         superstructure.extenderCommands.openloop(coController::getRightStickY));
     }
@@ -81,7 +81,7 @@ public class RobotContainer {
         printer.addPose("ESTIMATED", swerve::getEstimPose);
         printer.addDouble("Joystick", mainController::getLeftStickY);
         printer.addDouble("Pivot Deg", pivot::getAngle);
-        printer.addDouble("Extender Distance", extender::getDistance);
+        printer.addDouble("Extender Distance", extender::getLengthMeters);
         printer.addDouble("Grabber Deg", grabber::getAngle);
         SmartDashboard.putNumber("Pivot", 0);
     }

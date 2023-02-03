@@ -13,13 +13,11 @@ public class PivotCommands {
     }
 
     public Command setAngle(DoubleSupplier setpoint) {
-        double degSetpoint = setpoint.getAsDouble();
-        System.out.println(degSetpoint);
         return new FunctionalCommand(
                 () -> {},
-                () -> pivot.setAngle(setpoint.getAsDouble(), 0),
+                () -> pivot.setAngle(setpoint.getAsDouble(), () -> 0),
                 interrupted -> {},
-                () -> Math.abs(pivot.getAngle() - degSetpoint) < 0.05,
+                () -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 0.05,
                 pivot);
     }
 

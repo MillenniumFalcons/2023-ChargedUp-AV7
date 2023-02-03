@@ -1,5 +1,8 @@
 package team3647.frc2023.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import java.util.function.DoubleSupplier;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
@@ -25,7 +28,14 @@ public class Superstructure {
         grabberCommands = new GrabberCommands(grabber);
     }
 
-    public void setPivotAngle() {}
+    public Command setPivotAngle(DoubleSupplier setpoint) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> pivot.setAngle(setpoint.getAsDouble(), extender::getLengthMeters),
+                interrupted -> {},
+                () -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 0.05,
+                pivot);
+    }
 
     private final SwerveDrive drive;
     private final Pivot pivot;
