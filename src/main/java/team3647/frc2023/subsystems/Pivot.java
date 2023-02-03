@@ -3,35 +3,33 @@ package team3647.frc2023.subsystems;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import java.util.function.DoubleSupplier;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.TalonFXSubsystem;
 
 public class Pivot extends TalonFXSubsystem {
-    private final DoubleSupplier armGetLength;
-    private final ArmFeedforward feedforward;
+    private final double kG;
 
     public Pivot(
             TalonFX master,
             TalonFX slave,
-            DoubleSupplier armGetLength,
-            ArmFeedforward feedforward,
             double ticksToDegsPerSec,
             double ticksToDegs,
             double nominalVoltage,
+            double kG,
             double kDt) {
         super(master, ticksToDegsPerSec, ticksToDegs, nominalVoltage, kDt);
         super.addFollower(slave, FollowerType.PercentOutput, InvertType.FollowMaster);
-        this.armGetLength = armGetLength;
-        this.feedforward = feedforward;
+        this.kG = kG;
+        super.resetEncoder();
     }
 
     public void setOpenloop(double percentOut) {
         super.setOpenloop(percentOut);
     }
 
-    public void setAngle(double angle) {
-        super.setPositionMotionMagic(angle, 0);
+    public void setAngle(double angle, double feedforward) {
+        super.setPositionMotionMagic(angle, kG);
+        SmartDashboard.putNumber("KG", feedforward);
     }
 
     public double getAngle() {

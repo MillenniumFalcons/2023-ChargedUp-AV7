@@ -25,6 +25,8 @@ public class Superstructure {
         grabberCommands = new GrabberCommands(grabber);
     }
 
+    public void setPivotAngle() {}
+
     private final SwerveDrive drive;
     private final Pivot pivot;
     private final Extender extender;

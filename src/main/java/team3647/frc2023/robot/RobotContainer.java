@@ -1,6 +1,5 @@
 package team3647.frc2023.robot;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -57,7 +56,7 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.buttonB.onTrue(superstructure.grabberCommands.setAngle(166));
+        mainController.buttonB.onTrue(superstructure.grabberCommands.setAngle(165));
         mainController.buttonY.onTrue(superstructure.grabberCommands.setAngle(0));
     }
 
@@ -69,11 +68,9 @@ public class RobotContainer {
                         mainController::getRightStickX,
                         () -> true));
         // TODO delete later
-        pivot.setDefaultCommand(
-                superstructure.pivotCommands.openloop(coController::getRightStickX));
-        extender.setDefaultCommand(
-                superstructure.extenderCommands.openloop(coController::getRightStickY));
-        grabber.setDefaultCommand(superstructure.grabberCommands.openloop(this::getGrabberOut));
+        pivot.setDefaultCommand(superstructure.pivotCommands.setAngle(this::getPivotOutput));
+        // extender.setDefaultCommand(
+        //         superstructure.extenderCommands.openloop(coController::getRightStickY));
     }
 
     public void configureSmartDashboardLogging() {
@@ -86,11 +83,11 @@ public class RobotContainer {
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Distance", extender::getDistance);
         printer.addDouble("Grabber Deg", grabber::getAngle);
-        SmartDashboard.putNumber("Grabber POUT", 0);
+        SmartDashboard.putNumber("Pivot", 0);
     }
 
-    public double getGrabberOut() {
-        return SmartDashboard.getNumber("Grabber POUT", 0);
+    public double getPivotOutput() {
+        return SmartDashboard.getNumber("Pivot", 0);
     }
 
     public Command getAutonomousCommand() {
@@ -124,11 +121,10 @@ public class RobotContainer {
             new Pivot(
                     PivotConstants.kMaster,
                     PivotConstants.kSlave,
-                    () -> 0,
-                    new ArmFeedforward(0, 0, 0),
                     PivotConstants.kNativeVelToDPS,
                     PivotConstants.kNativePosToDegrees,
                     PivotConstants.nominalVoltage,
+                    PivotConstants.kG,
                     GlobalConstants.kDt);
 
     public final Extender extender =

@@ -45,7 +45,7 @@ public class GrabberConstants {
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.configStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(true, kStallCurrent, 50, 3));
+                new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
         kMaster.setNeutralMode(NeutralMode.Brake);
         kMaster.enableVoltageCompensation(true);
     }
