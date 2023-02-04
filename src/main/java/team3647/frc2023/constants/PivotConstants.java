@@ -1,5 +1,6 @@
 package team3647.frc2023.constants;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -13,6 +14,9 @@ public class PivotConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.PivotIds.kMasterId);
     public static final TalonFX kSlave = new TalonFX(GlobalConstants.PivotIds.kSlaveId);
 
+    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    public static final InvertType kSlaveInvert = InvertType.FollowMaster;
+
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
     private static final double kGearBoxRatio = 1 / 126.0;
@@ -24,6 +28,9 @@ public class PivotConstants {
 
     public static final double kMaxVelocityTicks = 45.0 / kNativeVelToDPS;
     public static final double kMaxAccelerationTicks = 45.0 / kNativeVelToDPS;
+
+    public static final double kMinDegree = -30;
+    public static final double kMaxDegree = 210;
 
     public static final double kG = 0.55;
 
@@ -40,6 +47,7 @@ public class PivotConstants {
 
     public static final InterpolatingTreeMap<Double, Double> kLengthGravityVoltageMap =
             new InterpolatingTreeMap<Double, Double>();
+    public static double kInitialAngle = 90.0;
 
     static {
         kMaster.configFactoryDefault();
@@ -51,16 +59,21 @@ public class PivotConstants {
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
-
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kSlave.follow(kMaster);
+        kMaster.setInverted(kMasterInvert);
+        kSlave.setInverted(kSlaveInvert);
         kMaster.configGetStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
 
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kSlave.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
+        kSlave.setNeutralMode(NeutralMode.Coast);
         kMaster.enableVoltageCompensation(true);
         kSlave.enableVoltageCompensation(true);
+
+        for (double[] pair : kVoltageGravity) {
+            kLengthGravityVoltageMap.put(pair[0], pair[1]);
+        }
     }
 
     public static double getkGFromLength(double length) {

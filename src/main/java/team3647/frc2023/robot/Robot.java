@@ -5,6 +5,7 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,6 +25,10 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         super(.02);
+        addPeriodic(
+                () -> robotContainer.superstructure.periodic(Timer.getFPGATimestamp()),
+                kTwentyMSLoopTime,
+                0.019);
     }
 
     /**
@@ -89,6 +94,7 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
+
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
@@ -102,6 +108,8 @@ public class Robot extends TimedRobot {
     public void testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll();
+        robotContainer.setToCoast();
+        robotContainer.configTestCommands();
     }
 
     /** This function is called periodically during test mode. */

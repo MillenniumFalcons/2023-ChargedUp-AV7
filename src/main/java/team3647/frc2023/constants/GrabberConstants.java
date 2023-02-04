@@ -12,6 +12,8 @@ public class GrabberConstants {
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     private static final double kGearBoxRatio = 14.0 / 64.0 * 24.0 / 64.0;
 
+    public static final double kRevDegreesSoftLimit = 0;
+
     public static final double kNativePosToDegrees =
             kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
 
@@ -31,8 +33,8 @@ public class GrabberConstants {
     private static final double kD = 0.0;
 
     public static final double nominalVoltage = 11.0;
-    public static final double kStallCurrent = 30.0;
-    public static final double kMaxCurrent = 60.0;
+    public static final double kStallCurrent = 10.0;
+    public static final double kMaxCurrent = 20.0;
 
     static {
         kMaster.configFactoryDefault();
@@ -40,9 +42,14 @@ public class GrabberConstants {
         kMasterConfig.slot0.kI = kI;
         kMasterConfig.slot0.kD = kD;
         kMasterConfig.voltageCompSaturation = nominalVoltage;
+
+        kMasterConfig.reverseSoftLimitEnable = true;
+        kMasterConfig.reverseSoftLimitThreshold = kRevDegreesSoftLimit / kNativePosToDegrees;
+
         // in native units/100ms
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
+
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.configStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));

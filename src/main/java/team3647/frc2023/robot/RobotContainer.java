@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
@@ -20,6 +21,7 @@ import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.Grabber;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Superstructure;
+import team3647.frc2023.subsystems.Superstructure.Level;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
 import team3647.lib.GroupPrinter;
@@ -37,12 +39,13 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender); // visionController);
+        scheduler.registerSubsystem(
+                swerve, printer, pivot, extender, grabber); // visionController);
 
-        configureButtonBindings();
         configureDefaultCommands();
+        configureButtonBindings();
         configureSmartDashboardLogging();
-
+        pivot.setEncoder(PivotConstants.kInitialAngle);
         swerve.setOdometry(
                 new Pose2d(2, 2, Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
     }
@@ -56,8 +59,20 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.buttonB.onTrue(superstructure.grabberCommands.setAngle(165));
-        mainController.buttonY.onTrue(superstructure.grabberCommands.setAngle(0));
+        mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(160));
+
+        coController.buttonY.whileTrue(superstructure.goToLevel(Level.one));
+        coController.buttonB.whileTrue(superstructure.goToLevel(Level.two));
+        coController.buttonA.whileTrue(superstructure.goToLevel(Level.three));
+
+        var leftStickYGreaterPoint15 =
+                new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
+
+        leftStickYGreaterPoint15.onTrue(
+                superstructure
+                        .extenderCommands
+                        .openloop(coController::getLeftStickY)
+                        .until(leftStickYGreaterPoint15.negate().debounce(0.5)));
     }
 
     private void configureDefaultCommands() {
@@ -67,10 +82,32 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         () -> true));
-        // TODO delete later
-        pivot.setDefaultCommand(superstructure.setPivotAngle(this::getPivotOutput));
-        // extender.setDefaultCommand(
-        //         superstructure.extenderCommands.openloop(coController::getRightStickY));
+        grabber.setDefaultCommand(superstructure.grabberCommands.initClose());
+        pivot.setDefaultCommand(
+                superstructure
+                        .pivotCommands
+                        .setAngle(() -> PivotConstants.kInitialAngle)
+                        .repeatedly());
+        extender.setDefaultCommand(
+                superstructure.extenderCommands.length(ExtenderConstants.kMinimumPositionMeters));
+    }
+
+    void configTestCommands() {
+        Commands.run(() -> {}, extender).schedule();
+        Commands.run(() -> {}, pivot).schedule();
+        Commands.run(() -> {}, grabber).schedule();
+    }
+
+    public void setToCoast() {
+        pivot.setToCoast();
+        extender.setToCoast();
+        grabber.setToCoast();
+    }
+
+    public double getPivotFFVoltage() {
+        return PivotConstants.kG
+                * (extender.getLengthMeters() - ExtenderConstants.kMinimumPositionMeters)
+                / ExtenderConstants.kMaximumPositionMeters;
     }
 
     public void configureSmartDashboardLogging() {
@@ -81,7 +118,9 @@ public class RobotContainer {
         printer.addPose("ESTIMATED", swerve::getEstimPose);
         printer.addDouble("Joystick", mainController::getLeftStickY);
         printer.addDouble("Pivot Deg", pivot::getAngle);
-        printer.addDouble("Extender Distance", extender::getLengthMeters);
+        printer.addDouble("Extender Ticks", extender::getNativePos);
+        printer.addDouble("Extender Distance", extender::getPosition);
+
         printer.addDouble("Grabber Deg", grabber::getAngle);
         SmartDashboard.putNumber("Pivot", 0);
     }
@@ -123,8 +162,10 @@ public class RobotContainer {
                     PivotConstants.kSlave,
                     PivotConstants.kNativeVelToDPS,
                     PivotConstants.kNativePosToDegrees,
+                    PivotConstants.kMinDegree,
+                    PivotConstants.kMaxDegree,
                     PivotConstants.nominalVoltage,
-                    PivotConstants.kG,
+                    this::getPivotFFVoltage,
                     GlobalConstants.kDt);
 
     public final Extender extender =
@@ -133,6 +174,8 @@ public class RobotContainer {
                     new SimpleMotorFeedforward(0, 0, 0),
                     ExtenderConstants.kNativeVelToMpS,
                     ExtenderConstants.kNativePosToMeters,
+                    ExtenderConstants.kMinimumPositionMeters,
+                    ExtenderConstants.kMaximumPositionMeters,
                     ExtenderConstants.nominalVoltage,
                     GlobalConstants.kDt);
 
@@ -147,10 +190,9 @@ public class RobotContainer {
 
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
-    private final Superstructure superstructure =
-            new Superstructure(swerve, pivot, extender, grabber);
+    final Superstructure superstructure = new Superstructure(swerve, pivot, extender, grabber);
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
 
-    private final GroupPrinter printer = GroupPrinter.getInstance();
+    final GroupPrinter printer = GroupPrinter.getInstance();
 }

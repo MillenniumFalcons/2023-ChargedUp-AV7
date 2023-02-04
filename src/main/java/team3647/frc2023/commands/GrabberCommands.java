@@ -12,6 +12,10 @@ public class GrabberCommands {
         return Commands.run(() -> grabber.setOpenloop(demand.getAsDouble()), this.grabber);
     }
 
+    public Command initClose() {
+        return setAngle(100);
+    }
+
     public Command setAngle(double degSetpoint) {
         return new FunctionalCommand(
                 () -> {},

@@ -11,6 +11,10 @@ public class ExtenderCommands {
         return Commands.run(() -> extender.setOpenloop(demand.getAsDouble()), this.extender);
     }
 
+    public Command length(double length) {
+        return Commands.run(() -> extender.setLengthMeters(length), extender);
+    }
+
     private final Extender extender;
 
     public ExtenderCommands(Extender extender) {
