@@ -28,7 +28,7 @@ public class GrabberConstants {
 
     public static final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
-    private static final double kP = 0.15;
+    private static final double kP = 1;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
 

@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
 import team3647.lib.team254.util.MovingAverage;
@@ -119,6 +120,23 @@ public class SwerveDrive implements PeriodicSubsystem {
         SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
         SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
 
+        SmartDashboard.putNumber(
+                "fl diff",
+                frontLeft.getAbsEncoderPos().getDegrees()
+                        - SwerveDriveConstants.kAbsFrontLeftEncoderOffsetDeg);
+        SmartDashboard.putNumber(
+                "fr diff",
+                frontRight.getAbsEncoderPos().getDegrees()
+                        - SwerveDriveConstants.kAbsFrontRightEncoderOffsetDeg);
+        SmartDashboard.putNumber(
+                "bl diff",
+                backLeft.getAbsEncoderPos().getDegrees()
+                        - SwerveDriveConstants.kAbsBackLeftEncoderOffsetDeg);
+        SmartDashboard.putNumber(
+                "br diff",
+                backRight.getAbsEncoderPos().getDegrees()
+                        - SwerveDriveConstants.kAbsBackRightEncoderOffsetDeg);
+
         odometry.update(getRotation2d(), getModulePositions());
 
         // update pose estimator
@@ -164,8 +182,9 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void zeroHeading() {
-        setOdometry(getPose(), new Rotation2d(0));
-        // gyro.setYaw(0);
+        var pose = getPose();
+        var newPose = new Pose2d(pose.getTranslation(), new Rotation2d());
+        setOdometry(newPose, new Rotation2d(0));
     }
 
     public double getHeading() {

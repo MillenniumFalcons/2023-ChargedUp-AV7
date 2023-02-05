@@ -87,17 +87,17 @@ public class SwerveModule {
     }
 
     public void resetToAbsolute() {
-        double absolutePosition =
-                (getCanCoder().getDegrees() - absOffsetDeg) / turnPositionConversion;
-        turnMotor.setSelectedSensorPosition(absolutePosition);
+        double absolutePosition = (getCanCoder() - absOffsetDeg) / turnPositionConversion;
+        var error = turnMotor.setSelectedSensorPosition(absolutePosition, 0, 255);
+        System.out.println(error);
 
         // double absoluteAngle = (getAbsEncoderPos().getDegrees() - absOffsetDeg);
         // double adjustedAngle = CTREModuleState.optimizeAngle(absoluteAngle, getTurnAngle());
         // turnMotor.setSelectedSensorPosition(adjustedAngle / turnPositionConversion);
     }
 
-    public Rotation2d getCanCoder() {
-        return Rotation2d.fromDegrees(absEncoder.getAbsolutePosition());
+    public double getCanCoder() {
+        return absEncoder.getAbsolutePosition();
     }
 
     public CANCoder getCanCoderObject() {

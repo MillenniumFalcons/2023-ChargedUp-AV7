@@ -1,5 +1,6 @@
 package team3647.frc2023.constants;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -128,11 +129,10 @@ public class SwerveDriveConstants {
     public static final double kMaxCurrent = 60;
 
     // find
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 38.43; // 35.77; //
-    public static final double kAbsFrontRightEncoderOffsetDeg = 250.22; // 256.98; //
-    public static final double kAbsBackLeftEncoderOffsetDeg = 347.91; // 347.96; //
-    public static final double kAbsBackRightEncoderOffsetDeg = 246.22; // 248.38; //
-
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 35.77; // 38.43;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 183.34; // 250.22;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 348.39; // 347.91 - 180;
+    public static final double kAbsBackRightEncoderOffsetDeg = 248.6; // 246.22 - 180;
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
     public static final double kTeleopDriveMaxAngularAccelUnitsPerSec =
@@ -150,7 +150,10 @@ public class SwerveDriveConstants {
     public static final TalonFXConfiguration kBackRightDriveConfig = new TalonFXConfiguration();
     public static final TalonFXConfiguration kBackRightTurnConfig = new TalonFXConfiguration();
 
-    public static final CANCoderConfiguration kMasterCancoderConfig = new CANCoderConfiguration();
+    public static final CANCoderConfiguration kFrontLeftAbsConfig = new CANCoderConfiguration();
+    public static final CANCoderConfiguration kFrontRightAbsConfig = new CANCoderConfiguration();
+    public static final CANCoderConfiguration kBackLeftAbsConfig = new CANCoderConfiguration();
+    public static final CANCoderConfiguration kBackRightAbsConfig = new CANCoderConfiguration();
 
     // master FF for drive for all modules
     public static final double kS = (0.56744 / 12); // 0.56744; // Volts
@@ -257,27 +260,35 @@ public class SwerveDriveConstants {
         config.voltageCompSaturation = kNominalVoltage;
     }
 
-    private static void setCancoderConfig(CANCoderConfiguration config) {
-        config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        config.sensorDirection = canCoderInvert;
-        config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-        config.sensorTimeBase = SensorTimeBase.PerSecond;
+    private static void printError(ErrorCode error) {
+        if (error.value == 0) {
+            return;
+        }
+
+        System.out.println(error);
     }
+
+    //     private static void setCancoderConfig(CANCoderConfiguration config) {
+    //         config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+    //         config.sensorDirection = canCoderInvert;
+    //         config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
+    //         config.sensorTimeBase = SensorTimeBase.PerSecond;
+    //     }
 
     static {
         kGyro.configFactoryDefault();
         kGyroConfig.ZAxisGyroError = 0.3;
-        kGyro.configAllSettings(kGyroConfig);
+        printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
         // encoder feedback alredy continous for turn motor?
-        kFrontLeftDrive.configFactoryDefault();
-        kFrontRightDrive.configFactoryDefault();
-        kBackLeftDrive.configFactoryDefault();
-        kBackRightDrive.configFactoryDefault();
+        // kFrontLeftDrive.configFactoryDefault();
+        // kFrontRightDrive.configFactoryDefault();
+        // kBackLeftDrive.configFactoryDefault();
+        // kBackRightDrive.configFactoryDefault();
 
-        kFrontLeftTurn.configFactoryDefault();
-        kFrontRightTurn.configFactoryDefault();
-        kBackLeftTurn.configFactoryDefault();
-        kBackRightTurn.configFactoryDefault();
+        // kFrontLeftTurn.configFactoryDefault();
+        // kFrontRightTurn.configFactoryDefault();
+        // kBackLeftTurn.configFactoryDefault();
+        // kBackRightTurn.configFactoryDefault();
 
         setTurnMotorConfig(kFrontLeftTurnConfig);
         setTurnMotorConfig(kFrontRightTurnConfig);
@@ -289,26 +300,74 @@ public class SwerveDriveConstants {
         setDriveMotorConfig(kBackLeftDriveConfig);
         setDriveMotorConfig(kBackRightDriveConfig);
 
-        kFrontLeftAbsEncoder.configFactoryDefault();
-        kFrontRightAbsEncoder.configFactoryDefault();
-        kBackLeftAbsEncoder.configFactoryDefault();
-        kBackRightAbsEncoder.configFactoryDefault();
+        // kFrontLeftAbsEncoder.configFactoryDefault();
+        // kFrontRightAbsEncoder.configFactoryDefault();
+        // kBackLeftAbsEncoder.configFactoryDefault();
+        // kBackRightAbsEncoder.configFactoryDefault();
 
-        setCancoderConfig(kMasterCancoderConfig);
-        kFrontLeftAbsEncoder.configAllSettings(kMasterCancoderConfig);
-        kFrontRightAbsEncoder.configAllSettings(kMasterCancoderConfig);
-        kBackLeftAbsEncoder.configAllSettings(kMasterCancoderConfig);
-        kBackRightAbsEncoder.configAllSettings(kMasterCancoderConfig);
+        kFrontLeftAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        kFrontLeftAbsConfig.sensorDirection = canCoderInvert;
+        kFrontLeftAbsConfig.initializationStrategy =
+                SensorInitializationStrategy.BootToAbsolutePosition;
+        kFrontLeftAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+        kFrontLeftAbsConfig.magnetOffsetDegrees = 0.0;
 
-        kFrontLeftTurn.configAllSettings(kFrontLeftTurnConfig, GlobalConstants.kTimeoutMS);
-        kFrontRightTurn.configAllSettings(kFrontRightTurnConfig, GlobalConstants.kTimeoutMS);
-        kBackLeftTurn.configAllSettings(kBackLeftTurnConfig, GlobalConstants.kTimeoutMS);
-        kBackRightTurn.configAllSettings(kBackRightTurnConfig, GlobalConstants.kTimeoutMS);
+        kFrontRightAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        kFrontRightAbsConfig.sensorDirection = canCoderInvert;
+        kFrontRightAbsConfig.initializationStrategy =
+                SensorInitializationStrategy.BootToAbsolutePosition;
+        kFrontRightAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+        kFrontRightAbsConfig.magnetOffsetDegrees = 0.0;
 
-        kFrontLeftDrive.configAllSettings(kFrontLeftDriveConfig, GlobalConstants.kTimeoutMS);
-        kFrontRightDrive.configAllSettings(kFrontRightDriveConfig, GlobalConstants.kTimeoutMS);
-        kBackLeftDrive.configAllSettings(kBackLeftDriveConfig, GlobalConstants.kTimeoutMS);
-        kBackRightDrive.configAllSettings(kBackRightDriveConfig, GlobalConstants.kTimeoutMS);
+        kBackLeftAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        kBackLeftAbsConfig.sensorDirection = canCoderInvert;
+        kBackLeftAbsConfig.initializationStrategy =
+                SensorInitializationStrategy.BootToAbsolutePosition;
+        kBackLeftAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+        kBackLeftAbsConfig.magnetOffsetDegrees = 0.0;
+        kBackLeftAbsConfig.sensorCoefficient = 0;
+
+        kBackRightAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        kBackRightAbsConfig.sensorDirection = canCoderInvert;
+        kBackRightAbsConfig.initializationStrategy =
+                SensorInitializationStrategy.BootToAbsolutePosition;
+        kBackRightAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+        kBackRightAbsConfig.magnetOffsetDegrees = 0.0;
+
+        printError(
+                kFrontLeftAbsEncoder.configAllSettings(
+                        kFrontLeftAbsConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kFrontRightAbsEncoder.configAllSettings(
+                        kFrontRightAbsConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kBackLeftAbsEncoder.configAllSettings(
+                        kBackLeftAbsConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kBackRightAbsEncoder.configAllSettings(
+                        kBackRightAbsConfig, GlobalConstants.kTimeoutMS));
+
+        printError(
+                kFrontLeftTurn.configAllSettings(kFrontLeftTurnConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kFrontRightTurn.configAllSettings(
+                        kFrontRightTurnConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kBackLeftTurn.configAllSettings(kBackLeftTurnConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kBackRightTurn.configAllSettings(kBackRightTurnConfig, GlobalConstants.kTimeoutMS));
+
+        printError(
+                kFrontLeftDrive.configAllSettings(
+                        kFrontLeftDriveConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kFrontRightDrive.configAllSettings(
+                        kFrontRightDriveConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kBackLeftDrive.configAllSettings(kBackLeftDriveConfig, GlobalConstants.kTimeoutMS));
+        printError(
+                kBackRightDrive.configAllSettings(
+                        kBackRightDriveConfig, GlobalConstants.kTimeoutMS));
 
         // set invert, same for all b/c all motors facing same direction
         kFrontLeftTurn.setInverted(kTurnMotorInverted);
