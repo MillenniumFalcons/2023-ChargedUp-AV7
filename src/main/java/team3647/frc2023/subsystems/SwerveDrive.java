@@ -13,9 +13,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.lib.GroupPrinter;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
-import team3647.lib.team254.util.MovingAverage;
 
 public class SwerveDrive implements PeriodicSubsystem {
     private final SwerveModule frontLeft;
@@ -24,12 +24,6 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final SwerveModule backRight;
 
     public final SwerveDrivePoseEstimator poseEstimator;
-
-    private final MovingAverage frontLeftAverageSpeed = new MovingAverage(10);
-    private final MovingAverage frontRightAverageSpeed = new MovingAverage(10);
-    private final MovingAverage backLeftAverageSpeed = new MovingAverage(10);
-    private final MovingAverage backRightAverageSpeed = new MovingAverage(10);
-
     private final SwerveDriveKinematics kinematics;
 
     private final Pigeon2 gyro;
@@ -104,11 +98,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.frontRightState = frontRight.getState();
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
-
-        frontLeftAverageSpeed.add(periodicIO.frontLeftState.speedMetersPerSecond);
-        frontRightAverageSpeed.add(periodicIO.frontRightState.speedMetersPerSecond);
-        backLeftAverageSpeed.add(periodicIO.backLeftState.speedMetersPerSecond);
-        backRightAverageSpeed.add(periodicIO.backRightState.speedMetersPerSecond);
 
         SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
         SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
@@ -199,11 +188,19 @@ public class SwerveDrive implements PeriodicSubsystem {
         return periodicIO.pitch;
     }
 
-    public void addVisionMeasurment(Double timestamp, Pose2d robotPose) {
-        if (timestamp == null || robotPose == null) {
+    public void addVisionMeasurment(Double timestamp, Pose2d visionBotPose2d) {
+        if (timestamp == null || visionBotPose2d == null) {
             return;
         }
-        this.poseEstimator.addVisionMeasurement(robotPose, timestamp);
+        GroupPrinter.getInstance().getField().getObject("vision pose").setPose(visionBotPose2d);
+
+        if (poseEstimator
+                        .getEstimatedPosition()
+                        .getTranslation()
+                        .minus(visionBotPose2d.getTranslation())
+                        .getNorm()
+                > 1) return;
+        this.poseEstimator.addVisionMeasurement(visionBotPose2d, timestamp);
     }
 
     // Probably want to moving average filter pitch and roll.

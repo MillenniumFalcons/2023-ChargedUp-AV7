@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,7 +43,7 @@ public class RobotContainer {
     public RobotContainer() {
         pdh.clearStickyFaults();
         scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, grabber); // visionController);
+                swerve, printer, pivot, extender, grabber, visionController); // visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -50,7 +51,11 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
         swerve.setOdometry(
-                new Pose2d(2, 2, Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
+                new Pose2d(
+                        Units.inchesToMeters(506),
+                        Units.inchesToMeters(169),
+                        Rotation2d.fromDegrees(180)),
+                Rotation2d.fromDegrees(180));
     }
 
     private void configureButtonBindings() {
@@ -129,14 +134,12 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addDouble("rot", swerve::getRawHeading);
-        printer.addDouble("robot roll", swerve::getRoll);
-        printer.addDouble("robot pitch", swerve::getPitch);
-        printer.addPose("robot pose", swerve::getPose);
-        printer.addPose("ESTIMATED", swerve::getEstimPose);
-        printer.addDouble("Joystick", mainController::getLeftStickY);
+
+        printer.addPose("odo", swerve::getPose);
+        printer.addPose("estim", swerve::getEstimPose);
+
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
-
         printer.addDouble("Grabber Deg", grabber::getAngle);
         SmartDashboard.putNumber("Pivot", 0);
     }
@@ -199,7 +202,6 @@ public class RobotContainer {
             new VisionController(
                     new Limelight(
                             PhotonVisionConstants.kLimelightIP,
-                            "limelight",
                             0,
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurment);

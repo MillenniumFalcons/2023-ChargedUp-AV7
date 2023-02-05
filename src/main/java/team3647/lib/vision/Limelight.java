@@ -1,7 +1,11 @@
 package team3647.lib.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.List;
@@ -36,7 +40,8 @@ public class Limelight implements AprilTagCamera {
         LATNECY_MS("tl"),
         RAW_CORNERS("tcornxy"),
         TAG_ID("tid"),
-        CAM_TRANS("camtran");
+        CAM_TRANS("camtran"),
+        ROBOT_POSE("botpose_wpiblue");
 
         public final String str;
 
@@ -69,7 +74,22 @@ public class Limelight implements AprilTagCamera {
     }
 
     public StampedPose getRobotPose() {
-        return new StampedPose(new Pose2d(), captureTimestamp);
+        var arr = getDoubleArray(Data.ROBOT_POSE);
+        System.out.println(arr);
+        if (arr.length < 5) {
+            return AprilTagCamera.KNoAnswer;
+        }
+
+        Pose3d robotPose =
+                new Pose3d(
+                        new Translation3d(arr[0], arr[1], arr[2]),
+                        new Rotation3d(arr[3], arr[4], arr[5]));
+
+        return new StampedPose(
+                new Pose2d(
+                        new Translation2d(robotPose.getX(), robotPose.getY()),
+                        new Rotation2d(robotPose.getRotation().getX())),
+                captureTimestamp);
     }
 
     @Override

@@ -1,0 +1,46 @@
+{
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "Field": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "Robot": {
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "estim": {
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "image": "/home/edwardsun/Downloads/2023-field.png",
+        "odo": {
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT3)",
+    "serverTeam": "3647"
+  }
+}
