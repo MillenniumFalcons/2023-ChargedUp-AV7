@@ -13,7 +13,7 @@ public class GrabberCommands {
     }
 
     public Command initClose() {
-        return setAngle(100);
+        return setAngle(160);
     }
 
     public Command setAngle(double degSetpoint) {

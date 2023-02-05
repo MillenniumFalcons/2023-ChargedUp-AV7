@@ -17,7 +17,19 @@ public class Superstructure {
 
     public Command goToLevel(Level level) {
         return Commands.parallel(
-                pivotCommands.setAngle(level.angle), extenderCommands.length(level.length));
+                pivotCommands.setAngle(level.angle),
+                Commands.waitUntil(() -> pivot.getAngle() > level.angle * 0.5)
+                        .andThen(extenderCommands.length(level.length)));
+    }
+
+    public Command loadingStation() {
+        return Commands.parallel(
+                        grabberCommands.setAngle(100),
+                        pivotCommands.setAngle(Level.station.angle),
+                        Commands.waitUntil(() -> pivot.getAngle() > Level.station.angle * 0.9)
+                                .andThen(extenderCommands.length(Level.station.length)))
+                .finallyDo(
+                        interrupted -> Commands.run(() -> {}, pivot).withTimeout(0.5).schedule());
     }
 
     // keep this at the bottom
@@ -54,10 +66,19 @@ public class Superstructure {
             this.length = length;
         }
 
-        public static final Level one = new Level(-25, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level two = new Level(135, ExtenderConstants.kLevelTwoExtend);
-        public static final Level three = new Level(0, ExtenderConstants.kLevelThreeExtend);
+        public static final Level one_cone =
+                new Level(140, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level two_cone = new Level(138, ExtenderConstants.kLevelTwoExtendCone);
+        public static final Level three_cone =
+                new Level(138, ExtenderConstants.kLevelThreeExtendCone);
+
+        public static final Level one_cube =
+                new Level(145, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level two_cube = new Level(154, ExtenderConstants.kLevelTwoExtendCube);
+        public static final Level three_cube =
+                new Level(147, ExtenderConstants.kLevelThreeExtendCube);
+
         public static final Level station =
-                new Level(135, ExtenderConstants.kMinimumPositionMeters);
+                new Level(139, ExtenderConstants.kMinimumPositionMeters);
     }
 }

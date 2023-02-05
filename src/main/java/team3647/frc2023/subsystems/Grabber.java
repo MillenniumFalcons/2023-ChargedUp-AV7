@@ -26,6 +26,10 @@ public class Grabber extends TalonFXSubsystem {
         // super.setPosition(degrees, feedforward.calculate(90 / ticksToDegsPerSec));
     }
 
+    public boolean isClosed() {
+        return super.getPosition() > 155;
+    }
+
     public void setOpenloop(double demand) {
         super.setOpenloop(demand);
     }

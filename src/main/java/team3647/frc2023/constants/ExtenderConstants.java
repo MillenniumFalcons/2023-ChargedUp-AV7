@@ -20,15 +20,15 @@ public class ExtenderConstants {
 
     public static final double kOutputRotationMeters =
             kDrumDiameterMeters * Math.PI * kGearBoxRatio;
-    public static final double kNativePosToMeters =
-            kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
+    public static final double kNativePosToMeters = 1;
+    // kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS = 10 * kNativePosToMeters;
 
-    public static final double kMaxVelocityTicks = 0.5 / kNativeVelToMpS;
-    public static final double kMaxAccelerationTicks = 0.5 / kNativeVelToMpS;
+    public static final double kMaxVelocityTicks = 19000.0 / 2;
+    public static final double kMaxAccelerationTicks = 19000.0 / 2;
 
     public static final double kMinimumPositionMeters = 0;
-    public static final double kMaximumPositionMeters = 0.7;
+    public static final double kMaximumPositionMeters = 60000.0;
 
     public static final double kS = 0.0;
     public static final double kV = 0.0;
@@ -42,10 +42,14 @@ public class ExtenderConstants {
 
     public static final double nominalVoltage = 11.0;
 
-    /** meters */
-    public static final double kLevelTwoExtend = 0.5;
-    /** meters */
-    public static final double kLevelThreeExtend = 0.65;
+    /** ticks */
+    public static final double kLevelTwoExtendCone = 19624;
+    /** ticks */
+    public static final double kLevelThreeExtendCone = 53749;
+    /** ticks */
+    public static final double kLevelTwoExtendCube = 10757;
+    /** ticks */
+    public static final double kLevelThreeExtendCube = 41796;
 
     static {
         kMaster.configFactoryDefault();

@@ -25,6 +25,10 @@ public class Extender extends TalonFXSubsystem {
         this.minLengthMeters = minLengthMeters;
     }
 
+    public void setEncoder(double ticks) {
+        super.setEncoder(ticks);
+    }
+
     public void setOpenloop(double percentOut) {
         super.setOpenloop(percentOut);
     }

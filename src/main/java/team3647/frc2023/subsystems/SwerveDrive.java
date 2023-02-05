@@ -164,7 +164,8 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void zeroHeading() {
-        gyro.setYaw(0);
+        setOdometry(getPose(), new Rotation2d(0));
+        // gyro.setYaw(0);
     }
 
     public double getHeading() {
@@ -238,6 +239,11 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public double getTimestamp() {
         return periodicIO.timestamp;
+    }
+
+    @Override
+    public void end() {
+        stopModules();
     }
 
     public void stopModules() {

@@ -55,10 +55,16 @@ public class DrivetrainCommands {
                                             ySpeedFunction.getAsDouble(),
                                             -xSpeedFunction.getAsDouble())
                                     .times(swerve.getMaxSpeedMpS());
-                    var rotation = -turnSpeedFunction.getAsDouble() * swerve.getMaxRotationRadpS();
+                    var rotation = turnSpeedFunction.getAsDouble() * swerve.getMaxRotationRadpS();
                     swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
                 },
                 swerve);
+    }
+
+    public Command robotRelativeDrive(Translation2d t, double seconds) {
+        return Commands.run(() -> swerve.drive(t, 0, false, true), swerve)
+                .finallyDo(interupted -> swerve.end())
+                .withTimeout(seconds);
     }
 
     private final SwerveDrive swerve;

@@ -29,6 +29,7 @@ public class Pivot extends TalonFXSubsystem {
         this.getKG = getKGFromExtender;
         this.minDegree = minDegree;
         this.maxDegree = maxDegree;
+        // setToBrake();
     }
 
     public void setEncoder(double degree) {

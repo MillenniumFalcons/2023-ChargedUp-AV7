@@ -3,12 +3,14 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
@@ -46,6 +48,7 @@ public class RobotContainer {
         configureButtonBindings();
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
+        extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
         swerve.setOdometry(
                 new Pose2d(2, 2, Rotation2d.fromDegrees(180)), Rotation2d.fromDegrees(180));
     }
@@ -59,11 +62,25 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(160));
+        mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(100));
+        mainController
+                .rightTrigger
+                .whileTrue(superstructure.loadingStation())
+                .onFalse(
+                        new WaitCommand(0.5)
+                                .andThen(
+                                        superstructure
+                                                .drivetrainCommands
+                                                .robotRelativeDrive(new Translation2d(-0.8, 0), 0.5)
+                                                .until(mainController::anyStickMoved)));
 
-        coController.buttonY.whileTrue(superstructure.goToLevel(Level.one));
-        coController.buttonB.whileTrue(superstructure.goToLevel(Level.two));
-        coController.buttonA.whileTrue(superstructure.goToLevel(Level.three));
+        coController.buttonY.whileTrue(superstructure.goToLevel(Level.one_cone));
+        coController.buttonB.whileTrue(superstructure.goToLevel(Level.two_cone));
+        coController.buttonA.whileTrue(superstructure.goToLevel(Level.three_cone));
+
+        coController.dPadUp.whileTrue(superstructure.goToLevel(Level.one_cube));
+        coController.dPadRight.whileTrue(superstructure.goToLevel(Level.two_cube));
+        coController.dPadDown.whileTrue(superstructure.goToLevel(Level.three_cube));
 
         var leftStickYGreaterPoint15 =
                 new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
@@ -119,7 +136,6 @@ public class RobotContainer {
         printer.addDouble("Joystick", mainController::getLeftStickY);
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
-        printer.addDouble("Extender Distance", extender::getPosition);
 
         printer.addDouble("Grabber Deg", grabber::getAngle);
         SmartDashboard.putNumber("Pivot", 0);
