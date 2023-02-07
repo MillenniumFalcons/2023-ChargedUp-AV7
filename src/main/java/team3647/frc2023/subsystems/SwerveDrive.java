@@ -188,7 +188,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         return periodicIO.pitch;
     }
 
-    public void addVisionMeasurment(Double timestamp, Pose2d visionBotPose2d) {
+    public void addVisionMeasurement(Double timestamp, Pose2d visionBotPose2d) {
         if (timestamp == null || visionBotPose2d == null) {
             return;
         }
@@ -200,7 +200,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .minus(visionBotPose2d.getTranslation())
                         .getNorm()
                 > 1) return;
-        this.poseEstimator.addVisionMeasurement(visionBotPose2d, timestamp);
+        this.poseEstimator.addVisionMeasurement(visionBotPose2d, this.getTimestamp());
     }
 
     // Probably want to moving average filter pitch and roll.

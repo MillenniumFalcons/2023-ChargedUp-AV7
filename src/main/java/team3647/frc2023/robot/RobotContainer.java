@@ -54,8 +54,8 @@ public class RobotContainer {
                 new Pose2d(
                         Units.inchesToMeters(506),
                         Units.inchesToMeters(169),
-                        Rotation2d.fromDegrees(180)),
-                Rotation2d.fromDegrees(180));
+                        Rotation2d.fromDegrees(0)),
+                Rotation2d.fromDegrees(0));
     }
 
     private void configureButtonBindings() {
@@ -204,7 +204,7 @@ public class RobotContainer {
                             PhotonVisionConstants.kLimelightIP,
                             0,
                             LimelightConstant.kCamConstatnts),
-                    swerve::addVisionMeasurment);
+                    swerve::addVisionMeasurement);
 
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
