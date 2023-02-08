@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.List;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
@@ -88,8 +89,10 @@ public class Limelight implements AprilTagCamera {
                 new Pose2d(
                         new Translation2d(robotPose.getX(), robotPose.getY()),
                         new Rotation2d(robotPose.getRotation().getX())),
-                captureTimestamp);
-        // return new StampedPose(new Pose2d(), captureTimestamp);
+                Timer.getFPGATimestamp()
+                        - getDouble(Data.LATNECY_MS) / 1000
+                        - 0.011
+                        - extraLatencySec);
     }
 
     @Override

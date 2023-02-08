@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,8 +41,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, grabber, visionController); // visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -51,11 +49,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
         swerve.setOdometry(
-                new Pose2d(
-                        Units.inchesToMeters(506),
-                        Units.inchesToMeters(169),
-                        Rotation2d.fromDegrees(0)),
-                Rotation2d.fromDegrees(0));
+                new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)), Rotation2d.fromDegrees(0));
     }
 
     private void configureButtonBindings() {

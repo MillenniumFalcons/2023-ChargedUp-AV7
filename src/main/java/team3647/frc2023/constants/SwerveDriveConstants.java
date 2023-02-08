@@ -22,7 +22,7 @@ public class SwerveDriveConstants {
     // default falcon rotates counter clockwise (CCW)
 
     public static final boolean canCoderInvert = false;
-    public static final boolean kDriveMotorInverted = true;
+    public static final boolean kDriveMotorInverted = false;
     public static final boolean kTurnMotorInverted = true;
 
     // physical possible max speed

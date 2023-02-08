@@ -1,6 +1,11 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -10,8 +15,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.lib.GroupPrinter;
 import team3647.lib.PeriodicSubsystem;
@@ -37,7 +42,6 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public static class PeriodicIO {
         // inputs
-        public double timestamp = 0;
         public boolean isOpenLoop = true;
         public double heading = 0;
         public double roll = 0;
@@ -129,7 +133,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         odometry.update(getRotation2d(), getModulePositions());
 
         // update pose estimator
-        periodicIO.timestamp = Timer.getFPGATimestamp();
         poseEstimator.update(getRotation2d(), getModulePositions());
     }
 
@@ -149,9 +152,8 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public void setOdometry(Pose2d pose, Rotation2d rot) {
         SmartDashboard.putNumber("rot", rot.getDegrees());
-        odometry.resetPosition(rot, getModulePositions(), pose);
         gyro.setYaw(pose.getRotation().getDegrees());
-
+        odometry.resetPosition(rot, getModulePositions(), pose);
         poseEstimator.resetPosition(rot, getModulePositions(), pose);
         periodicIO = new PeriodicIO();
     }
@@ -192,6 +194,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         if (timestamp == null || visionBotPose2d == null) {
             return;
         }
+
         GroupPrinter.getInstance().getField().getObject("vision pose").setPose(visionBotPose2d);
 
         if (poseEstimator
@@ -200,7 +203,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .minus(visionBotPose2d.getTranslation())
                         .getNorm()
                 > 1) return;
-        this.poseEstimator.addVisionMeasurement(visionBotPose2d, this.getTimestamp());
+        this.poseEstimator.addVisionMeasurement(visionBotPose2d, timestamp.doubleValue());
     }
 
     // Probably want to moving average filter pitch and roll.
@@ -251,10 +254,6 @@ public class SwerveDrive implements PeriodicSubsystem {
                     new SwerveModulePosition()
                 },
                 new Pose2d());
-    }
-
-    public double getTimestamp() {
-        return periodicIO.timestamp;
     }
 
     @Override
@@ -332,6 +331,30 @@ public class SwerveDrive implements PeriodicSubsystem {
             periodicIO.backLeftState,
             periodicIO.backRightState
         };
+    }
+
+    public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
+        return PathPlanner.generatePath(
+                new PathConstraints(1, 1),
+                PathPoint.fromCurrentHolonomicState(
+                        getEstimPose(),
+                        SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(
+                                periodicIO.frontLeftState,
+                                periodicIO.frontRightState,
+                                periodicIO.backLeftState,
+                                periodicIO.backRightState)),
+                endpoint);
+    }
+
+    public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
+        return new PPSwerveControllerCommand(
+                trajectory,
+                this::getEstimPose,
+                AutoConstants.kXController,
+                AutoConstants.kYController,
+                AutoConstants.kRotController,
+                this::setChasisSpeeds,
+                this);
     }
 
     public double getMaxSpeedMpS() {
