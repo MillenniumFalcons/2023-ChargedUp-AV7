@@ -67,6 +67,17 @@ public class DrivetrainCommands {
                 .withTimeout(seconds);
     }
 
+    // public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
+    //     return new PPSwerveControllerCommand(
+    //             trajectory,
+    //             swerve::getEstimPose,
+    //             AutoConstants.kXController,
+    //             AutoConstants.kYController,
+    //             AutoConstants.kRotController,
+    //             swerve::setChasisSpeeds,
+    //             swerve);
+    // }
+
     private final SwerveDrive swerve;
 
     public DrivetrainCommands(SwerveDrive swerve) {

@@ -41,7 +41,10 @@ public class Pivot extends TalonFXSubsystem {
     }
 
     public void setAngle(double angle) {
-        var ffVolts = getKG.getAsDouble() * Math.cos(Units.degreesToRadians(angle));
+        var ffVolts =
+                getKG.getAsDouble()
+                        * Math.cos(Units.degreesToRadians(angle))
+                        * Math.signum(angle - 90.0);
         super.setPositionMotionMagic(MathUtil.clamp(angle, minDegree, maxDegree), 0);
         SmartDashboard.putNumber("Pivot ff volts", ffVolts);
     }

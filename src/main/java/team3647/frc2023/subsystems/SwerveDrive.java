@@ -80,16 +80,14 @@ public class SwerveDrive implements PeriodicSubsystem {
                 new SwerveDrivePoseEstimator(
                         this.kinematics, getRotation2d(), getModulePositions(), new Pose2d());
         this.odometry =
-                new SwerveDriveOdometry(
-                        this.kinematics,
-                        Rotation2d.fromDegrees(periodicIO.heading),
-                        getModulePositions());
+                new SwerveDriveOdometry(this.kinematics, getRotation2d(), getModulePositions());
+        zeroGyro();
     }
 
     @Override
     public void init() {
         resetEncoders();
-        zeroHeading();
+        zeroGyro();
     }
 
     @Override
@@ -103,32 +101,34 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
 
-        SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
 
-        SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
-        SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
-        SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
-        SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
+        // SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
+        // SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
+        // SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
+        // SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
 
-        SmartDashboard.putNumber(
-                "fl diff",
-                frontLeft.getAbsEncoderPos().getDegrees()
-                        - SwerveDriveConstants.kAbsFrontLeftEncoderOffsetDeg);
-        SmartDashboard.putNumber(
-                "fr diff",
-                frontRight.getAbsEncoderPos().getDegrees()
-                        - SwerveDriveConstants.kAbsFrontRightEncoderOffsetDeg);
-        SmartDashboard.putNumber(
-                "bl diff",
-                backLeft.getAbsEncoderPos().getDegrees()
-                        - SwerveDriveConstants.kAbsBackLeftEncoderOffsetDeg);
-        SmartDashboard.putNumber(
-                "br diff",
-                backRight.getAbsEncoderPos().getDegrees()
-                        - SwerveDriveConstants.kAbsBackRightEncoderOffsetDeg);
+        // SmartDashboard.putNumber(
+        //         "fl diff",
+        //         frontLeft.getAbsEncoderPos().getDegrees()
+        //                 - SwerveDriveConstants.kAbsFrontLeftEncoderOffsetDeg);
+        // SmartDashboard.putNumber(
+        //         "fr diff",
+        //         frontRight.getAbsEncoderPos().getDegrees()
+        //                 - SwerveDriveConstants.kAbsFrontRightEncoderOffsetDeg);
+        // SmartDashboard.putNumber(
+        //         "bl diff",
+        //         backLeft.getAbsEncoderPos().getDegrees()
+        //                 - SwerveDriveConstants.kAbsBackLeftEncoderOffsetDeg);
+        // SmartDashboard.putNumber(
+        //         "br diff",
+        //         backRight.getAbsEncoderPos().getDegrees()
+        //                 - SwerveDriveConstants.kAbsBackRightEncoderOffsetDeg);
+
+        // SmartDashboard.putNumber(getName(), maxRotRadPerSec)
 
         odometry.update(getRotation2d(), getModulePositions());
 
@@ -150,9 +150,8 @@ public class SwerveDrive implements PeriodicSubsystem {
         writePeriodicOutputs();
     }
 
-    public void setOdometry(Pose2d pose, Rotation2d rot) {
+    public void setRobotPose(Pose2d pose, Rotation2d rot) {
         SmartDashboard.putNumber("rot", rot.getDegrees());
-        gyro.setYaw(pose.getRotation().getDegrees());
         odometry.resetPosition(rot, getModulePositions(), pose);
         poseEstimator.resetPosition(rot, getModulePositions(), pose);
         periodicIO = new PeriodicIO();
@@ -172,10 +171,8 @@ public class SwerveDrive implements PeriodicSubsystem {
         backRight.resetToAbsolute();
     }
 
-    public void zeroHeading() {
-        var pose = getPose();
-        var newPose = new Pose2d(pose.getTranslation(), new Rotation2d());
-        setOdometry(newPose, new Rotation2d(0));
+    public void zeroGyro() {
+        gyro.setYaw(0.0);
     }
 
     public double getHeading() {

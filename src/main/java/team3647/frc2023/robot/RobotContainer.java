@@ -48,12 +48,12 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        swerve.setOdometry(
+        swerve.setRobotPose(
                 new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)), Rotation2d.fromDegrees(0));
     }
 
     private void configureButtonBindings() {
-        mainController.buttonA.onTrue(Commands.runOnce(swerve::zeroHeading));
+        mainController.buttonA.onTrue(Commands.runOnce(swerve::zeroGyro));
         mainController.buttonX.whileTrue(
                 superstructure
                         .drivetrainCommands
@@ -64,7 +64,7 @@ public class RobotContainer {
         mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(100));
         mainController
                 .rightTrigger
-                .whileTrue(superstructure.loadingStation())
+                .onTrue(superstructure.loadingStation())
                 .onFalse(
                         new WaitCommand(0.5)
                                 .andThen(

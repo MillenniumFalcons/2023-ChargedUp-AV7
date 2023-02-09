@@ -8,12 +8,24 @@ import team3647.frc2023.commands.GrabberCommands;
 import team3647.frc2023.commands.PivotCommands;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.PivotConstants;
+import team3647.lib.GroupPrinter;
 
 public class Superstructure {
 
     public void periodic(double timestamp) {
         this.kGPivot = PivotConstants.getkGFromLength(extender.getLengthMeters());
     }
+
+    //     public PPSwerveControllerCommand goToTestScore() {
+    //         Pose2d pose = new Pose2d(new Translation2d(12.75 + 1.9, 4.3 - 1.7), new
+    // Rotation2d(0.0));
+    //         printer.addPose("Target", () -> pose);
+    //         return drivetrainCommands.getTrajectoryCommand(
+    //                 drive.getPPTrajectoryToPoint(
+    //                         new PathPoint(
+    //                                 new Translation2d(12.75 + 1.9, 4.3 - 1.7), new
+    // Rotation2d(0.0))));
+    //     }
 
     public Command goToLevel(Level level) {
         return Commands.parallel(
@@ -50,6 +62,7 @@ public class Superstructure {
     private final Pivot pivot;
     private final Extender extender;
     private final Grabber grabber;
+    private final GroupPrinter printer = GroupPrinter.getInstance();
     public final DrivetrainCommands drivetrainCommands;
     public final PivotCommands pivotCommands;
     public final ExtenderCommands extenderCommands;
@@ -67,13 +80,13 @@ public class Superstructure {
         }
 
         public static final Level one_cone =
-                new Level(140, ExtenderConstants.kMinimumPositionMeters);
+                new Level(200, ExtenderConstants.kMinimumPositionMeters);
         public static final Level two_cone = new Level(138, ExtenderConstants.kLevelTwoExtendCone);
         public static final Level three_cone =
                 new Level(138, ExtenderConstants.kLevelThreeExtendCone);
 
         public static final Level one_cube =
-                new Level(260, ExtenderConstants.kMinimumPositionMeters);
+                new Level(200, ExtenderConstants.kMinimumPositionMeters);
         public static final Level two_cube = new Level(154, ExtenderConstants.kLevelTwoExtendCube);
         public static final Level three_cube =
                 new Level(147, ExtenderConstants.kLevelThreeExtendCube);
