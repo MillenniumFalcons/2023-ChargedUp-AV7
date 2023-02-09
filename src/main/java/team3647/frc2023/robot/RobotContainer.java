@@ -127,10 +127,14 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        printer.addDouble("rot", swerve::getRawHeading);
+        printer.addDouble("rot", swerve::getHeading);
+        printer.addDouble("drive y control", mainController::getLeftStickY);
+        printer.addDouble("drive x control", mainController::getLeftStickX);
+        printer.addDouble("rot control", mainController::getRightStickX);
 
         printer.addPose("odo", swerve::getPose);
         printer.addPose("estim", swerve::getEstimPose);
+
 
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
