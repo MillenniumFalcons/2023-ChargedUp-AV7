@@ -135,7 +135,6 @@ public class RobotContainer {
         printer.addPose("odo", swerve::getPose);
         printer.addPose("estim", swerve::getEstimPose);
 
-
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
         printer.addDouble("Grabber Deg", grabber::getAngle);
