@@ -80,13 +80,13 @@ public class Superstructure {
         }
 
         public static final Level one_cone =
-                new Level(200, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level two_cone = new Level(138, ExtenderConstants.kLevelTwoExtendCone);
+                new Level(-6, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level two_cone = new Level(36, ExtenderConstants.kLevelTwoExtendCone);
         public static final Level three_cone =
-                new Level(138, ExtenderConstants.kLevelThreeExtendCone);
+                new Level(40, ExtenderConstants.kLevelThreeExtendCone);
 
         public static final Level one_cube =
-                new Level(200, ExtenderConstants.kMinimumPositionMeters);
+                new Level(-6, ExtenderConstants.kMinimumPositionMeters);
         public static final Level two_cube = new Level(154, ExtenderConstants.kLevelTwoExtendCube);
         public static final Level three_cube =
                 new Level(147, ExtenderConstants.kLevelThreeExtendCube);

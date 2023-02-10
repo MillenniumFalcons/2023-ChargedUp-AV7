@@ -55,7 +55,7 @@ public class DrivetrainCommands {
                                             ySpeedFunction.getAsDouble(),
                                             -xSpeedFunction.getAsDouble())
                                     .times(swerve.getMaxSpeedMpS());
-                    var rotation = turnSpeedFunction.getAsDouble() * swerve.getMaxRotationRadpS();
+                    var rotation = -turnSpeedFunction.getAsDouble() * swerve.getMaxRotationRadpS();
                     swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
                 },
                 swerve);
