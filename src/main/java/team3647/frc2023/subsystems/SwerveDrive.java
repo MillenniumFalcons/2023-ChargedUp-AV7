@@ -101,6 +101,9 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
 
+        SmartDashboard.putNumber("gyro", getHeading());
+        SmartDashboard.putNumber("robot pose rot", getEstimPose().getRotation().getDegrees());
+
         // SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
         // SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
         // SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
@@ -131,8 +134,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         // SmartDashboard.putNumber(getName(), maxRotRadPerSec)
 
         odometry.update(getRotation2d(), getModulePositions());
-
-        // update pose estimator
         poseEstimator.update(getRotation2d(), getModulePositions());
     }
 
@@ -150,10 +151,9 @@ public class SwerveDrive implements PeriodicSubsystem {
         writePeriodicOutputs();
     }
 
-    public void setRobotPose(Pose2d pose, Rotation2d rot) {
-        SmartDashboard.putNumber("rot", rot.getDegrees());
-        odometry.resetPosition(rot, getModulePositions(), pose);
-        poseEstimator.resetPosition(rot, getModulePositions(), pose);
+    public void setRobotPose(Pose2d pose) {
+        odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
+        poseEstimator.resetPosition(getRotation2d(), getModulePositions(), pose);
         periodicIO = new PeriodicIO();
     }
 

@@ -20,9 +20,9 @@ import team3647.lib.SwerveModule;
 
 public class SwerveDriveConstants {
     // default falcon rotates counter clockwise (CCW)
-
+    // make sure gyro -CW, +CCW
     public static final boolean canCoderInvert = false;
-    public static final boolean kDriveMotorInverted = true;
+    public static final boolean kDriveMotorInverted = false;
     public static final boolean kTurnMotorInverted = true;
 
     // physical possible max speed
@@ -276,7 +276,6 @@ public class SwerveDriveConstants {
     //     }
 
     static {
-        kGyro.configFactoryDefault();
         kGyroConfig.ZAxisGyroError = 0.3;
         printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
         // encoder feedback alredy continous for turn motor?
