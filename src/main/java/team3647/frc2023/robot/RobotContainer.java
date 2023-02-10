@@ -1,6 +1,5 @@
 package team3647.frc2023.robot;
 
-import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -11,11 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ExtenderConstants;
+import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
@@ -65,21 +63,8 @@ public class RobotContainer {
                         .until(mainController::anyStickMoved));
         mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(100));
 
-        mainController.leftTrigger.onTrue(
-                new InstantCommand(
-                        () -> {
-                            new PrintCommand("Starting!")
-                                    .andThen(
-                                            swerve.getTrajectoryCommand(
-                                                            swerve.getToPointATrajectory(
-                                                                    new PathPoint(
-                                                                            new Translation2d(
-                                                                                    12.75 + 1.9,
-                                                                                    4.3 - 1.7),
-                                                                            new Rotation2d(180.0))))
-                                                    .withTimeout(8))
-                                    .schedule();
-                        }));
+        mainController.rightBumper.onTrue(
+                superstructure.drivetrainCommands.getToPointCommand(FieldConstants.middle_cones));
 
         mainController
                 .rightTrigger

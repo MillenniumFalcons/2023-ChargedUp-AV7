@@ -1,10 +1,13 @@
 package team3647.frc2023.commands;
 
+import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import team3647.frc2023.subsystems.SwerveDrive;
@@ -67,16 +70,16 @@ public class DrivetrainCommands {
                 .withTimeout(seconds);
     }
 
-    // public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
-    //     return new PPSwerveControllerCommand(
-    //             trajectory,
-    //             swerve::getEstimPose,
-    //             AutoConstants.kXController,
-    //             AutoConstants.kYController,
-    //             AutoConstants.kRotController,
-    //             swerve::setChasisSpeeds,
-    //             swerve);
-    // }
+    public Command getToPointCommand(PathPoint point) {
+        return new InstantCommand(
+                () -> {
+                    new PrintCommand("Starting!")
+                            .andThen(
+                                    swerve.getTrajectoryCommand(swerve.getToPointATrajectory(point))
+                                            .withTimeout(8))
+                            .schedule();
+                });
+    }
 
     private final SwerveDrive swerve;
 
