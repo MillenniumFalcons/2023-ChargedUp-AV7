@@ -26,7 +26,7 @@ public class SwerveDriveConstants {
     public static final boolean kTurnMotorInverted = true;
 
     // physical possible max speed
-    public static final double kDrivePossibleMaxSpeedMPS = 3.5; // 4.5;
+    public static final double kDrivePossibleMaxSpeedMPS = 5; // 4.5;
     public static final double kRotPossibleMaxSpeedRadPerSec = 10; // 10;
 
     public static final NeutralMode kTurnNeutralMode = NeutralMode.Coast;

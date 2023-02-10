@@ -51,7 +51,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(180)));
     }
 
     private void configureButtonBindings() {
@@ -76,7 +76,7 @@ public class RobotContainer {
                                                                             new Translation2d(
                                                                                     12.75 + 1.9,
                                                                                     4.3 - 1.7),
-                                                                            new Rotation2d(0.0))))
+                                                                            new Rotation2d(180.0))))
                                                     .withTimeout(8))
                                     .schedule();
                         }));
