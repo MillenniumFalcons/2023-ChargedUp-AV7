@@ -49,7 +49,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(180)));
+        swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
     }
 
     private void configureButtonBindings() {
@@ -101,7 +101,8 @@ public class RobotContainer {
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
-                        () -> true));
+                        () -> true,
+                        AllianceFlipUtil::shouldFlip));
         grabber.setDefaultCommand(superstructure.grabberCommands.initClose());
         pivot.setDefaultCommand(
                 superstructure

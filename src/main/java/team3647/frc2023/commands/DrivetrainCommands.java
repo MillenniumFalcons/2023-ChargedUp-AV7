@@ -2,6 +2,7 @@ package team3647.frc2023.commands;
 
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,12 +34,10 @@ public class DrivetrainCommands {
                                                         swerve.getRoll(), 0)); // +
                         // pitchController.calculate(-swerve.getPitch(), 0));
                         swerve.drive(translation, 0, false, false);
-
                     } else {
                         var translation =
                                 new Translation2d(
-                                        rollController.calculate(-swerve.getRoll(), 0),
-                                        0); // + pitchController.calculate(-swerve.getPitch(), 0));
+                                        rollController.calculate(-swerve.getRoll(), 0), 0);
                         swerve.drive(translation, 0, false, false);
                     }
                 },
@@ -50,7 +49,8 @@ public class DrivetrainCommands {
             DoubleSupplier xSpeedFunction, // X axis on joystick is Left/Right
             DoubleSupplier ySpeedFunction, // Y axis on Joystick is Front/Back
             DoubleSupplier turnSpeedFunction,
-            BooleanSupplier getIsFieldOriented) {
+            BooleanSupplier getIsFieldOriented,
+            BooleanSupplier shouldFlip) {
         return Commands.run(
                 () -> {
                     var translation =
@@ -58,6 +58,11 @@ public class DrivetrainCommands {
                                             ySpeedFunction.getAsDouble(),
                                             -xSpeedFunction.getAsDouble())
                                     .times(swerve.getMaxSpeedMpS());
+                    translation =
+                            shouldFlip.getAsBoolean()
+                                    ? translation.rotateBy(
+                                            new Rotation2d(Units.degreesToRadians(180)))
+                                    : translation;
                     var rotation = -turnSpeedFunction.getAsDouble() * swerve.getMaxRotationRadpS();
                     swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
                 },

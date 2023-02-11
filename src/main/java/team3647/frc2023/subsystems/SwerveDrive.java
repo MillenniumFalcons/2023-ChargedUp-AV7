@@ -192,8 +192,6 @@ public class SwerveDrive implements PeriodicSubsystem {
             return;
         }
 
-        GroupPrinter.getInstance().getField().getObject("vision pose").setPose(visionBotPose2d);
-
         if (poseEstimator
                         .getEstimatedPosition()
                         .getTranslation()
@@ -201,6 +199,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .getNorm()
                 > 1) return;
         Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), this.getRotation2d());
+        GroupPrinter.getInstance().getField().getObject("vision pose").setPose(acutalPose2d);
         this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp.doubleValue());
     }
 
