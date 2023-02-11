@@ -101,6 +101,7 @@ public class RobotContainer {
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
+                        mainController::getLeftTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
         grabber.setDefaultCommand(superstructure.grabberCommands.initClose());

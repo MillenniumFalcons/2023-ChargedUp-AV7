@@ -226,17 +226,11 @@ public class SwerveDriveConstants {
 
     public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin);
 
-    public static final double kRollP = 0.03;
+    public static final double kRollP = 0.025;
     public static final double kRollI = 0.0;
-    public static final double kRollD = 0.00;
-
-    public static final double kYawP = 0.05;
-    public static final double kYawI = 0.00;
-    public static final double kYawD = 0.00;
+    public static final double kRollD = 0.000025;
     public static final PIDController kRollController = new PIDController(kRollP, kRollI, kRollD);
     public static final PIDController kPitchController = new PIDController(kRollP, kRollI, kRollD);
-
-    public static final PIDController kYawController = new PIDController(kYawP, kYawI, kYawD);
 
     private static void setTurnMotorConfig(TalonFXConfiguration config) {
         config.slot0.kP = kTurnP;
@@ -277,6 +271,8 @@ public class SwerveDriveConstants {
 
     static {
         kGyroConfig.ZAxisGyroError = 0.3;
+        // remove later
+        kGyroConfig.MountPoseYaw = 90;
         printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
         // encoder feedback alredy continous for turn motor?
         // kFrontLeftDrive.configFactoryDefault();

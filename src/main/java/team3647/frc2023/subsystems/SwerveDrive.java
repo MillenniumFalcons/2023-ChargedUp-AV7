@@ -101,7 +101,9 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
 
-        SmartDashboard.putNumber("gyro", getHeading());
+        SmartDashboard.putNumber("yaw", getHeading());
+        SmartDashboard.putNumber("pitch", periodicIO.pitch);
+        SmartDashboard.putNumber("roll", periodicIO.roll);
         SmartDashboard.putNumber("robot pose rot", getEstimPose().getRotation().getDegrees());
 
         // SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
