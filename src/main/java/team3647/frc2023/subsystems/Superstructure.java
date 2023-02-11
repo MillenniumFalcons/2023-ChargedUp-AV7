@@ -1,7 +1,10 @@
 package team3647.frc2023.subsystems;
 
+import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import java.util.function.Supplier;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
@@ -16,16 +19,17 @@ public class Superstructure {
         this.kGPivot = PivotConstants.getkGFromLength(extender.getLengthMeters());
     }
 
-    //     public PPSwerveControllerCommand goToTestScore() {
-    //         Pose2d pose = new Pose2d(new Translation2d(12.75 + 1.9, 4.3 - 1.7), new
-    // Rotation2d(0.0));
-    //         printer.addPose("Target", () -> pose);
-    //         return drivetrainCommands.getTrajectoryCommand(
-    //                 drive.getPPTrajectoryToPoint(
-    //                         new PathPoint(
-    //                                 new Translation2d(12.75 + 1.9, 4.3 - 1.7), new
-    // Rotation2d(0.0))));
-    //     }
+    public Command driveAndArm(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
+        return Commands.parallel(driveToScore(getPoint), arm(getLevel));
+    }
+
+    public Command arm(Supplier<Level> getLevel) {
+        return new ProxyCommand(() -> goToLevel(getLevel.get()));
+    }
+
+    public Command driveToScore(Supplier<PathPoint> getPoint) {
+        return drivetrainCommands.toPointCommand(getPoint);
+    }
 
     public Command goToLevel(Level level) {
         return Commands.parallel(
@@ -79,16 +83,14 @@ public class Superstructure {
             this.length = length;
         }
 
-        public static final Level one_cone =
-                new Level(-6, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level two_cone = new Level(36, ExtenderConstants.kLevelTwoExtendCone);
-        public static final Level three_cone =
+        public static final Level coneOne = new Level(-6, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level coneTwo = new Level(36, ExtenderConstants.kLevelTwoExtendCone);
+        public static final Level coneThree =
                 new Level(40, ExtenderConstants.kLevelThreeExtendCone);
 
-        public static final Level one_cube =
-                new Level(-6, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level two_cube = new Level(154, ExtenderConstants.kLevelTwoExtendCube);
-        public static final Level three_cube =
+        public static final Level cubeOne = new Level(-6, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level cubeTwo = new Level(154, ExtenderConstants.kLevelTwoExtendCube);
+        public static final Level cubeThree =
                 new Level(147, ExtenderConstants.kLevelThreeExtendCube);
 
         public static final Level station =

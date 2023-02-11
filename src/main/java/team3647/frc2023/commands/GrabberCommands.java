@@ -25,6 +25,10 @@ public class GrabberCommands {
                 grabber);
     }
 
+    public Command open() {
+        return setAngle(100);
+    }
+
     private final Grabber grabber;
 
     public GrabberCommands(Grabber grabber) {
