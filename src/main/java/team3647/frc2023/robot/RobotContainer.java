@@ -63,7 +63,7 @@ public class RobotContainer {
                         .until(mainController::anyStickMoved));
         mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(100));
 
-        mainController.rightBumper.onTrue(
+        mainController.leftBumper.onTrue(
                 superstructure.drivetrainCommands.getToPointCommand(FieldConstants.middle_cones));
 
         mainController
@@ -74,7 +74,7 @@ public class RobotContainer {
                                 .andThen(
                                         superstructure
                                                 .drivetrainCommands
-                                                .robotRelativeDrive(new Translation2d(-0.8, 0), 0.5)
+                                                .robotRelativeDrive(new Translation2d(0.8, 0), 0.5)
                                                 .until(mainController::anyStickMoved)));
 
         coController.buttonY.whileTrue(superstructure.goToLevel(Level.one_cone));
