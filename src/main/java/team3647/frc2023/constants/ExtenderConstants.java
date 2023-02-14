@@ -11,12 +11,12 @@ public class ExtenderConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderIds.kMasterId);
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    public static final InvertType kMasterInvert = InvertType.None;
 
     public static final double kRevMetersSoftLimit = 0;
 
     private static final double kGearBoxRatio = 14.0 / 48.0 * 30.0 / 40.0 * 18.0 / 24.0;
-    private static final double kDrumDiameterMeters = Units.inchesToMeters(1.5);
+    private static final double kDrumDiameterMeters = Units.inchesToMeters(1.2);
 
     public static final double kOutputRotationMeters =
             kDrumDiameterMeters * Math.PI * kGearBoxRatio;

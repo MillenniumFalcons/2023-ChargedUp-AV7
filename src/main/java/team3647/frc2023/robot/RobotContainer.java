@@ -43,8 +43,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        // scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
-        scheduler.registerSubsystem(grabber);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
