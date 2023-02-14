@@ -25,13 +25,13 @@ public final class GlobalConstants {
         public static final int kFrontRightTurnId = 4;
         public static final int kFrontRightAbsEncoderPort = 10;
 
-        public static final int kBackLeftDriveId = 5;
-        public static final int kBackLeftTurnId = 6;
-        public static final int kBackLeftAbsEncoderPort = 11;
+        public static final int kBackRightDriveId = 5;
+        public static final int kBackRightTurnId = 6;
+        public static final int kBackRightAbsEncoderPort = 11;
 
-        public static final int kBackRightDriveId = 7;
-        public static final int kBackRightTurnId = 8;
-        public static final int kBackRightAbsEncoderPort = 12;
+        public static final int kBackLeftDriveId = 7;
+        public static final int kBackLeftTurnId = 8;
+        public static final int kBackLeftAbsEncoderPort = 12;
 
         public static final int gyroPin = 16;
 
