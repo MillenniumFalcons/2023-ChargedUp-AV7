@@ -4,9 +4,7 @@
 
 package team3647.frc2023.constants;
 
-import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.List;
@@ -17,12 +15,15 @@ import team3647.frc2023.util.Scoring;
 public class FieldConstants {
     public static final double fieldLength = Units.inchesToMeters(651.25);
     public static final double fieldWidth = Units.inchesToMeters(315.5);
-    public static final PathPoint middle_cones =
-            new PathPoint(new Translation2d(12.75 + 1.9, 4.3 - 1.7), new Rotation2d(0));
 
-    public static final Translation2d oneBlueT = new Translation2d();
-    public static final Translation2d twoBlueT = new Translation2d();
-    public static final Translation2d threeBlueT = new Translation2d();
+    public static final double blueXLineUpDistance = Units.inchesToMeters(70.5);
+
+    public static final Translation2d oneBlueT =
+            new Translation2d(blueXLineUpDistance, Units.inchesToMeters(42));
+    public static final Translation2d twoBlueT =
+            new Translation2d(blueXLineUpDistance, Units.inchesToMeters(108));
+    public static final Translation2d threeBlueT =
+            new Translation2d(blueXLineUpDistance, Units.inchesToMeters(174));
 
     public static final Translation2d oneRedT = flip(oneBlueT);
     public static final Translation2d twoRedT = flip(twoBlueT);
