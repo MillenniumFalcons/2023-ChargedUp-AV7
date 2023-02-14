@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,7 +43,8 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
+        // scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
+        scheduler.registerSubsystem(grabber);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -61,7 +63,6 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.rightBumper.whileTrue(superstructure.grabberCommands.setAngle(100));
 
         mainController.leftBumper.onTrue(
                 superstructure.drivetrainCommands.getToPointCommand(FieldConstants.middle_cones));
@@ -76,6 +77,9 @@ public class RobotContainer {
                                                 .drivetrainCommands
                                                 .robotRelativeDrive(new Translation2d(0.8, 0), 0.5)
                                                 .until(mainController::anyStickMoved)));
+
+        coController.leftTrigger.onTrue(superstructure.grabberCommands.openGrabber());
+        coController.leftTrigger.onFalse(superstructure.grabberCommands.closeGrabber());
 
         coController.buttonY.whileTrue(superstructure.goToLevel(Level.one_cone));
         coController.buttonB.whileTrue(superstructure.goToLevel(Level.two_cone));
@@ -104,12 +108,12 @@ public class RobotContainer {
                         mainController::getLeftTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
-        grabber.setDefaultCommand(superstructure.grabberCommands.initClose());
         pivot.setDefaultCommand(
                 superstructure
                         .pivotCommands
                         .setAngle(() -> PivotConstants.kInitialAngle)
                         .repeatedly());
+        grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
         extender.setDefaultCommand(
                 superstructure.extenderCommands.length(ExtenderConstants.kMinimumPositionMeters));
     }
@@ -123,7 +127,6 @@ public class RobotContainer {
     public void setToCoast() {
         pivot.setToCoast();
         extender.setToCoast();
-        grabber.setToCoast();
     }
 
     public double getPivotFFVoltage() {
@@ -143,7 +146,6 @@ public class RobotContainer {
 
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
-        printer.addDouble("Grabber Deg", grabber::getAngle);
         SmartDashboard.putNumber("Pivot", 0);
     }
 
@@ -169,14 +171,7 @@ public class RobotContainer {
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
 
-    public final Grabber grabber =
-            new Grabber(
-                    GrabberConstants.kMaster,
-                    GrabberConstants.feedforward,
-                    GrabberConstants.kNativeVelToDPS,
-                    GrabberConstants.kNativePosToDegrees,
-                    GrabberConstants.nominalVoltage,
-                    GlobalConstants.kDt);
+    public final Grabber grabber = new Grabber(GrabberConstants.pistons);
 
     public final Pivot pivot =
             new Pivot(
@@ -209,9 +204,12 @@ public class RobotContainer {
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurement);
 
+    private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
+
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
 
-    final Superstructure superstructure = new Superstructure(swerve, pivot, extender, grabber);
+    final Superstructure superstructure =
+            new Superstructure(swerve, pivot, extender, grabber, compressor);
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
 

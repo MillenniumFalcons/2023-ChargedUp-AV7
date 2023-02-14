@@ -52,7 +52,7 @@ public final class GlobalConstants {
     }
 
     public static final class GrabberIds {
-        public static final int kMasterId = 20;
+        public static final int pistonChannel = 2;
     }
 
     private GlobalConstants() {}

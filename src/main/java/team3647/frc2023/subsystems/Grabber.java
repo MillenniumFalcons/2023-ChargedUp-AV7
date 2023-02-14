@@ -1,46 +1,21 @@
 package team3647.frc2023.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import team3647.lib.TalonFXSubsystem;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Grabber extends TalonFXSubsystem {
-    private final SimpleMotorFeedforward feedforward;
-    private final double ticksToDegsPerSec;
+public class Grabber extends SubsystemBase {
+    private final Solenoid pistons;
 
-    public Grabber(
-            TalonFX master,
-            SimpleMotorFeedforward feedforward,
-            double ticksToDegsPerSec,
-            double ticksToDegs,
-            double nominalVoltage,
-            double kDt) {
-        super(master, ticksToDegsPerSec, ticksToDegs, nominalVoltage, kDt);
-        this.feedforward = feedforward;
-        this.ticksToDegsPerSec = ticksToDegsPerSec;
-        super.resetEncoder();
+    public Grabber(Solenoid pistons) {
+        this.pistons = pistons;
+        close();
     }
 
-    public void setAngle(double degrees) {
-        // super.setPositionMotionMagic(degrees, feedforward.calculate(6000.0 / ticksToDegsPerSec));
-        super.setPosition(degrees, 0);
+    public void open() {
+        pistons.set(true);
     }
 
-    public boolean isClosed() {
-        return super.getPosition() > 155;
-    }
-
-    public void setOpenloop(double demand) {
-        super.setOpenloop(demand);
-    }
-
-    public double getAngle() {
-        return super.getPosition();
-    }
-
-    @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        return "Grabber";
+    public void close() {
+        pistons.set(false);
     }
 }

@@ -1,7 +1,9 @@
 package team3647.frc2023.subsystems;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
@@ -36,7 +38,7 @@ public class Superstructure {
 
     public Command loadingStation() {
         return Commands.parallel(
-                        grabberCommands.setAngle(100),
+                        grabberCommands.openGrabber(),
                         pivotCommands.setAngle(Level.station.angle),
                         Commands.waitUntil(() -> pivot.getAngle() > Level.station.angle * 0.9)
                                 .andThen(extenderCommands.length(Level.station.length)))
@@ -44,12 +46,26 @@ public class Superstructure {
                         interrupted -> Commands.run(() -> {}, pivot).withTimeout(0.5).schedule());
     }
 
+    public Command disableCompressor() {
+        return new InstantCommand(compressor::disable);
+    }
+
+    public Command enableCompressor() {
+        return new InstantCommand(compressor::enableDigital);
+    }
+
     // keep this at the bottom
-    public Superstructure(SwerveDrive drive, Pivot pivot, Extender extender, Grabber grabber) {
+    public Superstructure(
+            SwerveDrive drive,
+            Pivot pivot,
+            Extender extender,
+            Grabber grabber,
+            Compressor compressor) {
         this.drive = drive;
         this.pivot = pivot;
         this.extender = extender;
         this.grabber = grabber;
+        this.compressor = compressor;
 
         drivetrainCommands = new DrivetrainCommands(drive);
         pivotCommands = new PivotCommands(pivot);
@@ -58,6 +74,7 @@ public class Superstructure {
     }
 
     private double kGPivot;
+    private final Compressor compressor;
     private final SwerveDrive drive;
     private final Pivot pivot;
     private final Extender extender;

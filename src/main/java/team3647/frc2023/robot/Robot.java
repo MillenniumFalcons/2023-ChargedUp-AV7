@@ -98,6 +98,7 @@ public class Robot extends TimedRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        robotContainer.superstructure.enableCompressor().schedule();
     }
 
     /** This function is called periodically during operator control. */
