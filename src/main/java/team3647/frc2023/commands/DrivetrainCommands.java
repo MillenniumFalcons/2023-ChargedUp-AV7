@@ -4,14 +4,13 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import team3647.frc2023.subsystems.SwerveDrive;
 
 public class DrivetrainCommands {
@@ -54,8 +53,7 @@ public class DrivetrainCommands {
                                     .times(triggerSlow);
                     translation =
                             shouldFlip.getAsBoolean()
-                                    ? translation.rotateBy(
-                                            new Rotation2d(Units.degreesToRadians(180)))
+                                    ? translation.rotateBy(OneEightyRotation)
                                     : translation;
                     var rotation =
                             -turnSpeedFunction.getAsDouble()
@@ -72,18 +70,16 @@ public class DrivetrainCommands {
                 .withTimeout(seconds);
     }
 
-    public Command getToPointCommand(PathPoint point) {
-        return new InstantCommand(
+    public Command toPointCommand(Supplier<PathPoint> selectedPoint) {
+        return new ProxyCommand(
                 () -> {
-                    new PrintCommand("Starting!")
-                            .andThen(
-                                    swerve.getTrajectoryCommand(swerve.getToPointATrajectory(point))
-                                            .withTimeout(8))
-                            .schedule();
+                    var point = selectedPoint.get();
+                    return swerve.getTrajectoryCommand(swerve.getToPointATrajectory(point));
                 });
     }
 
     private final SwerveDrive swerve;
+    private static final Rotation2d OneEightyRotation = Rotation2d.fromDegrees(180);
 
     public DrivetrainCommands(SwerveDrive swerve) {
         this.swerve = swerve;

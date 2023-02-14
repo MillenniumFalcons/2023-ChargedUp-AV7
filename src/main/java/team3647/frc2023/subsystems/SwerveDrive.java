@@ -106,15 +106,15 @@ public class SwerveDrive implements PeriodicSubsystem {
         SmartDashboard.putNumber("roll", periodicIO.roll);
         SmartDashboard.putNumber("robot pose rot", getEstimPose().getRotation().getDegrees());
 
-        SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
-        SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
+        // SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
 
-        SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
-        SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
-        SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
-        SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
+        // SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
+        // SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
+        // SmartDashboard.putNumber("BL angle", periodicIO.backLeftState.angle.getDegrees());
+        // SmartDashboard.putNumber("BR angle", periodicIO.backRightState.angle.getDegrees());
 
         // SmartDashboard.putNumber(
         //         "fl diff",

@@ -20,7 +20,7 @@ import team3647.frc2023.constants.FieldConstants;
  * poses in {@link FieldConstants} are stored with the origin at the rightmost point on the blue
  * alliance wall.
  */
-public class AllianceFlipUtil {
+public final class AllianceFlipUtil {
     /** Flips a translation to the correct side of the field based on the current alliance color. */
     public static Translation2d apply(Translation2d translation) {
         if (shouldFlip()) {
@@ -88,4 +88,6 @@ public class AllianceFlipUtil {
     public static boolean shouldFlip() {
         return DriverStation.getAlliance() == Alliance.Red;
     }
+
+    private AllianceFlipUtil() {}
 }
