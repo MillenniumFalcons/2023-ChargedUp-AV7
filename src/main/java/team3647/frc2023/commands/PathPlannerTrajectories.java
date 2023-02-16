@@ -9,7 +9,7 @@ import team3647.frc2023.constants.AutoConstants;
 public class PathPlannerTrajectories {
     public static final PathPlannerTrajectory spinPath =
             PathPlanner.loadPath(
-                    "spin",
+                    "bottom S-P1",
                     AutoConstants.kMaxSpeedMetersPerSecond,
                 AutoConstants.kMaxAccelerationMetersPerSecSq);
     public static final Pose2d spinStartPose = spinPath.getInitialPose();
