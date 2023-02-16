@@ -13,7 +13,7 @@ public class ExtenderConstants {
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final InvertType kMasterInvert = InvertType.None;
 
-    public static final double kRevMetersSoftLimit = 0;
+    public static final double kRevMetersSoftLimit = 1000;
 
     private static final double kGearBoxRatio = 14.0 / 48.0 * 30.0 / 40.0 * 18.0 / 24.0;
     private static final double kDrumDiameterMeters = Units.inchesToMeters(1.2);
@@ -27,7 +27,7 @@ public class ExtenderConstants {
     public static final double kMaxVelocityTicks = 27000.0 / 2;
     public static final double kMaxAccelerationTicks = 27000.0 / 2;
 
-    public static final double kMinimumPositionMeters = 0;
+    public static final double kMinimumPositionMeters = 1500;
     public static final double kMaximumPositionMeters = 60000.0;
 
     public static final double kS = 0.0;
@@ -43,13 +43,13 @@ public class ExtenderConstants {
     public static final double nominalVoltage = 11.0;
 
     /** ticks */
-    public static final double kLevelTwoExtendCone = 19624;
+    public static final double kLevelTwoExtendCone = 32143;
     /** ticks */
-    public static final double kLevelThreeExtendCone = 53749;
+    public static final double kLevelThreeExtendCone = 75877;
     /** ticks */
-    public static final double kLevelTwoExtendCube = 10757;
+    public static final double kLevelTwoExtendCube = 24682;
     /** ticks */
-    public static final double kLevelThreeExtendCube = 41796;
+    public static final double kLevelThreeExtendCube = 66380;
 
     static {
         kMaster.configFactoryDefault();
@@ -67,6 +67,6 @@ public class ExtenderConstants {
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);
         kMaster.enableVoltageCompensation(true);
-        kMaster.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
     }
 }

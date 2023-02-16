@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ColorSensorConstants;
@@ -61,11 +62,14 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
+        mainController.buttonY.whileTrue(
+                Commands.run(() -> {}, pivot).alongWith(Commands.run(() -> {}, extender)));
         // left bumper intake
         // left trigger slow
         // right bumper release
         // right trigger auto drive
         mainController.rightBumper.whileTrue(superstructure.grabberCommands.openGrabber());
+
         mainController
                 .leftBumper
                 .onTrue(superstructure.loadingStation())
@@ -74,12 +78,19 @@ public class RobotContainer {
                                 .andThen(
                                         superstructure
                                                 .drivetrainCommands
-                                                .robotRelativeDrive(new Translation2d(0.8, 0), 0.5)
+                                                .robotRelativeDrive(new Translation2d(-0.8, 0), 0.5)
                                                 .until(mainController::anyStickMoved)));
 
-        mainController.rightBumper.onTrue(
-                superstructure.driveAndArm(
-                        scoreStateFinder::getScorePoint, scoreStateFinder::getScoreLevel));
+        mainController.rightTrigger.onTrue(
+                superstructure
+                        .driveAndArm(
+                                scoreStateFinder::getScorePoint, scoreStateFinder::getScoreLevel)
+                        .alongWith(
+                                new InstantCommand(
+                                        () ->
+                                                printer.addPose(
+                                                        "target",
+                                                        scoreStateFinder::getScorePose))));
 
         var leftStickYGreaterPoint15 =
                 new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
@@ -97,7 +108,7 @@ public class RobotContainer {
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
-                        mainController::getLeftTriggerValue,
+                        mainController::getRightTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
         pivot.setDefaultCommand(
@@ -129,7 +140,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addDouble("rot", swerve::getHeading);
-        printer.addPose("odo", swerve::getPose);
+        // printer.addPose("odo", swerve::getPose);
         printer.addPose("estim", swerve::getEstimPose);
 
         printer.addDouble("Pivot Deg", pivot::getAngle);
@@ -206,6 +217,6 @@ public class RobotContainer {
                     grabber::getGamepiece,
                     swerve::getEstimPose,
                     coController.buttonB,
-                    coController.dPadUp,
-                    coController.dPadDown);
+                    coController.dPadDown,
+                    coController.dPadUp);
 }

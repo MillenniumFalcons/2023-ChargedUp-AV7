@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure.Level;
 import team3647.frc2023.util.Scoring;
+import team3647.lib.GroupPrinter;
 import team3647.lib.NetworkColorSensor.GamePiece;
 import team3647.lib.PeriodicSubsystem;
 
@@ -18,8 +19,10 @@ public class ScoreStateFinder implements PeriodicSubsystem {
     private final BooleanSupplier goRightPosition;
     private final BooleanSupplier goTopLevel;
     private final BooleanSupplier goBottomLevel;
+    private final GroupPrinter printer = GroupPrinter.getInstance();
 
     private PathPoint scorePoint;
+    private Pose2d scorePose;
 
     private Level scoreLevel = Level.coneTwo;
 
@@ -40,6 +43,7 @@ public class ScoreStateFinder implements PeriodicSubsystem {
     public void readPeriodicInputs() {
         scorePoint =
                 getScorePointFromSection(getUsedSections(), getScorePosition(sensorGamepice.get()));
+        scorePose = getScorePose2d(getUsedSections(), getScorePosition(sensorGamepice.get()));
         scoreLevel = getScoreLevelFromPiece(sensorGamepice.get());
     }
 
@@ -60,6 +64,12 @@ public class ScoreStateFinder implements PeriodicSubsystem {
         var driveT = drivePose.get().getTranslation();
         var tt = Scoring.getClosest(sections, driveT).getPose(position);
         return new PathPoint(tt.getTranslation(), tt.getRotation());
+    }
+
+    private Pose2d getScorePose2d(List<Scoring.Section> sections, Scoring.Position position) {
+        var driveT = drivePose.get().getTranslation();
+        Pose2d tt = Scoring.getClosest(sections, driveT).getPose(position);
+        return tt;
     }
 
     private Scoring.Position getScorePosition(GamePiece heldPiece) {
@@ -97,6 +107,10 @@ public class ScoreStateFinder implements PeriodicSubsystem {
 
     public PathPoint getScorePoint() {
         return scorePoint;
+    }
+
+    public Pose2d getScorePose() {
+        return scorePose;
     }
 
     @Override

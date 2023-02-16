@@ -66,7 +66,15 @@ public class Robot extends TimedRobot {
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        // CommandScheduler.getInstance()
+        //         .schedule(
+        //                 robotContainer
+        //                         .superstructure
+        //                         .pivotCommands
+        //                         .setAngle(PivotConstants.kInitialAngle)
+        //                         .repeatedly());
+    }
 
     @Override
     public void disabledPeriodic() {}

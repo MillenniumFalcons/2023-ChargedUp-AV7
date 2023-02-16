@@ -129,10 +129,10 @@ public class SwerveDriveConstants {
     public static final double kMaxCurrent = 60;
 
     // find
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 119.62; // 38.43;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 244.42; // 250.22;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 240.91; // 347.91 - 180;
-    public static final double kAbsBackRightEncoderOffsetDeg = 304.72; // 246.22 - 180;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 302.52; // 38.43;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 244.77; // 250.22;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 121.9; // 347.91 - 180;
+    public static final double kAbsBackRightEncoderOffsetDeg = 240.3; // 246.22 - 180;
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
     public static final double kTeleopDriveMaxAngularAccelUnitsPerSec =

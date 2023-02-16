@@ -24,7 +24,8 @@ public class Grabber extends SubsystemBase {
     }
 
     public GamePiece getGamepiece() {
-        return colorSensor.getGamepiece();
+        // return colorSensor.getGamepiece();
+        return GamePiece.CONE;
     }
 
     public String getGamePieceStr() {

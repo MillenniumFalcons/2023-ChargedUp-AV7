@@ -18,7 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.lib.GroupPrinter;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
 
@@ -106,10 +105,10 @@ public class SwerveDrive implements PeriodicSubsystem {
         SmartDashboard.putNumber("roll", periodicIO.roll);
         SmartDashboard.putNumber("robot pose rot", getEstimPose().getRotation().getDegrees());
 
-        // SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
-        // SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("fl abs", frontLeft.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("fr abs", frontRight.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("bl abs", backLeft.getAbsEncoderPos().getDegrees());
+        SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
 
         // SmartDashboard.putNumber("FL angle", periodicIO.frontLeftState.angle.getDegrees());
         // SmartDashboard.putNumber("FR angle", periodicIO.frontRightState.angle.getDegrees());
@@ -201,7 +200,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .getNorm()
                 > 1) return;
         Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), this.getRotation2d());
-        GroupPrinter.getInstance().getField().getObject("vision pose").setPose(acutalPose2d);
+        // GroupPrinter.getInstance().getField().getObject("vision pose").setPose(acutalPose2d);
         this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp.doubleValue());
     }
 

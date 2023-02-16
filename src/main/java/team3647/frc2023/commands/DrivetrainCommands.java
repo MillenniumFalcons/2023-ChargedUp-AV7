@@ -44,7 +44,7 @@ public class DrivetrainCommands {
             BooleanSupplier shouldFlip) {
         return Commands.run(
                 () -> {
-                    double triggerSlow = 1.0 - (slowTriggerFunction.getAsDouble() * 0.5);
+                    double triggerSlow = 1.0 - (slowTriggerFunction.getAsDouble()) + 0.1;
                     var translation =
                             new Translation2d(
                                             ySpeedFunction.getAsDouble(),

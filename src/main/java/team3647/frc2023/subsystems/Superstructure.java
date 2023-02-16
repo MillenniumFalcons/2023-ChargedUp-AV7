@@ -100,13 +100,16 @@ public class Superstructure {
             this.length = length;
         }
 
-        public static final Level coneOne = new Level(-6, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level coneTwo = new Level(36, ExtenderConstants.kLevelTwoExtendCone);
+        public static final Level coneOne =
+                new Level(141.44, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level coneTwo =
+                new Level(141.44, ExtenderConstants.kLevelTwoExtendCone);
         public static final Level coneThree =
-                new Level(40, ExtenderConstants.kLevelThreeExtendCone);
+                new Level(141.44, ExtenderConstants.kLevelThreeExtendCone);
 
-        public static final Level cubeOne = new Level(-6, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level cubeTwo = new Level(154, ExtenderConstants.kLevelTwoExtendCube);
+        public static final Level cubeOne =
+                new Level(145, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level cubeTwo = new Level(155, ExtenderConstants.kLevelTwoExtendCube);
         public static final Level cubeThree =
                 new Level(147, ExtenderConstants.kLevelThreeExtendCube);
 

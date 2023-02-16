@@ -56,6 +56,7 @@ public class PivotConstants {
         kMasterConfig.slot0.kP = masterKP;
         kMasterConfig.slot0.kI = masterKI;
         kMasterConfig.slot0.kD = masterKD;
+        kMasterConfig.slot0.allowableClosedloopError = 100;
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
@@ -66,8 +67,8 @@ public class PivotConstants {
         kMaster.configGetStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
 
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kSlave.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
+        kSlave.setNeutralMode(NeutralMode.Coast);
         kMaster.enableVoltageCompensation(true);
         kSlave.enableVoltageCompensation(true);
 
