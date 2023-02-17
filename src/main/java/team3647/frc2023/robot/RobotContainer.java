@@ -62,8 +62,10 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.buttonY.whileTrue(
-                Commands.run(() -> {}, pivot).alongWith(Commands.run(() -> {}, extender)));
+        mainController.buttonY.onTrue(
+                Commands.run(() -> {}, pivot)
+                        .withTimeout(0.5)
+                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.5)));
         // left bumper intake
         // left trigger slow
         // right bumper release
@@ -85,6 +87,7 @@ public class RobotContainer {
                 superstructure
                         .driveAndArm(
                                 scoreStateFinder::getScorePoint, scoreStateFinder::getScoreLevel)
+                        .until(mainController::anyStickMovedStiff)
                         .alongWith(
                                 new InstantCommand(
                                         () ->
@@ -98,7 +101,7 @@ public class RobotContainer {
         leftStickYGreaterPoint15.onTrue(
                 superstructure
                         .extenderCommands
-                        .openloop(coController::getLeftStickY)
+                        .openLoopSlow(coController::getLeftStickY)
                         .until(leftStickYGreaterPoint15.negate().debounce(0.5)));
     }
 
@@ -108,7 +111,7 @@ public class RobotContainer {
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
-                        mainController::getRightTriggerValue,
+                        mainController::getLeftTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
         pivot.setDefaultCommand(
@@ -172,7 +175,9 @@ public class RobotContainer {
                     new NetworkColorSensor(
                             ColorSensorConstants.kProximityEntry,
                             ColorSensorConstants.kColorEntry,
-                            ColorSensorConstants.kMaxReadDistance));
+                            ColorSensorConstants.kMaxReadDistance),
+                    coController.rightMidButton,
+                    coController.leftMidButton);
 
     public final Pivot pivot =
             new Pivot(

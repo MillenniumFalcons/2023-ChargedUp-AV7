@@ -14,7 +14,7 @@ import team3647.lib.NetworkColorSensor.GamePiece;
 import team3647.lib.PeriodicSubsystem;
 
 public class ScoreStateFinder implements PeriodicSubsystem {
-    private final Supplier<GamePiece> sensorGamepice;
+    private final Supplier<GamePiece> sensorGamePiece;
     private final Supplier<Pose2d> drivePose;
     private final BooleanSupplier goRightPosition;
     private final BooleanSupplier goTopLevel;
@@ -23,16 +23,17 @@ public class ScoreStateFinder implements PeriodicSubsystem {
 
     private PathPoint scorePoint;
     private Pose2d scorePose;
+    private GamePiece heldPiece = GamePiece.NONE;
 
     private Level scoreLevel = Level.coneTwo;
 
     public ScoreStateFinder(
-            Supplier<GamePiece> sensorGamepice,
+            Supplier<GamePiece> sensorGamePiece,
             Supplier<Pose2d> drivePose,
             BooleanSupplier goRightPosition,
             BooleanSupplier goTopLevel,
             BooleanSupplier goBottomLevel) {
-        this.sensorGamepice = sensorGamepice;
+        this.sensorGamePiece = sensorGamePiece;
         this.drivePose = drivePose;
         this.goRightPosition = goRightPosition;
         this.goTopLevel = goTopLevel;
@@ -41,10 +42,10 @@ public class ScoreStateFinder implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
-        scorePoint =
-                getScorePointFromSection(getUsedSections(), getScorePosition(sensorGamepice.get()));
-        scorePose = getScorePose2d(getUsedSections(), getScorePosition(sensorGamepice.get()));
-        scoreLevel = getScoreLevelFromPiece(sensorGamepice.get());
+        heldPiece = sensorGamePiece.get();
+        scorePoint = getScorePointFromSection(getUsedSections(), getScorePosition(heldPiece));
+        scorePose = getScorePose2d(getUsedSections(), getScorePosition(heldPiece));
+        scoreLevel = getScoreLevelFromPiece(heldPiece);
     }
 
     private List<Scoring.Section> getUsedSections() {

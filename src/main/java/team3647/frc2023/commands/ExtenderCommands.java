@@ -11,6 +11,10 @@ public class ExtenderCommands {
         return Commands.run(() -> extender.setOpenloop(demand.getAsDouble()), this.extender);
     }
 
+    public Command openLoopSlow(DoubleSupplier demand) {
+        return Commands.run(() -> extender.setOpenloop(demand.getAsDouble() * 0.5), this.extender);
+    }
+
     public Command length(double length) {
         return Commands.run(() -> extender.setLengthMeters(length), extender);
     }
