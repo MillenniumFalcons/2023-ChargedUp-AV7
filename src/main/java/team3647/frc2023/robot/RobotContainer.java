@@ -29,6 +29,8 @@ import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.NetworkColorSensor;
+import team3647.lib.inputs.ControlPanel;
+import team3647.lib.inputs.ControlPanel.Buttons;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.vision.Limelight;
 
@@ -65,10 +67,7 @@ public class RobotContainer {
         mainController.buttonY.onTrue(
                 Commands.run(() -> {}, pivot)
                         .withTimeout(0.5)
-                        .alongWith(
-                                Commands.run(() -> {}, extender)
-                                        .withTimeout(0.5)
-                                        .alongWith(Commands.run(() -> {}, swerve))));
+                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.5)));
         // left bumper intake
         // left trigger slow
         // right bumper release
@@ -151,6 +150,8 @@ public class RobotContainer {
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
         printer.addString("Game Piece", grabber::getGamePieceStr);
+
+        printer.addBoolean("Column1 I guess", () -> coPanel.getButton(Buttons.Column1));
     }
 
     public Command getAutonomousCommand() {
@@ -159,6 +160,7 @@ public class RobotContainer {
 
     private final Joysticks mainController = new Joysticks(0);
     private final Joysticks coController = new Joysticks(1);
+    private final ControlPanel coPanel = new ControlPanel(3);
 
     public final SwerveDrive swerve =
             new SwerveDrive(
