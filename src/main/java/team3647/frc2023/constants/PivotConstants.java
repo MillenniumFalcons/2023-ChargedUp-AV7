@@ -34,7 +34,7 @@ public class PivotConstants {
 
     public static final double kG = 0.55;
 
-    private static final double masterKP = 0.1;
+    private static final double masterKP = 0.15;
     private static final double masterKI = 0;
     private static final double masterKD = 0;
 

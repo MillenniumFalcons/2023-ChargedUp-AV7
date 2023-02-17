@@ -42,12 +42,9 @@ public class Superstructure {
 
     public Command loadingStation() {
         return Commands.parallel(
-                        grabberCommands.openGrabber(),
-                        pivotCommands.setAngle(Level.station.angle),
-                        Commands.waitUntil(() -> pivot.getAngle() > Level.station.angle * 0.9)
-                                .andThen(extenderCommands.length(Level.station.length)))
-                .finallyDo(
-                        interrupted -> Commands.run(() -> {}, pivot).withTimeout(0.5).schedule());
+                pivotCommands.setAngle(Level.station.angle),
+                Commands.waitUntil(() -> pivot.getAngle() > Level.station.angle * 0.9)
+                        .andThen(extenderCommands.length(Level.station.length)));
     }
 
     public Command disableCompressor() {
@@ -105,13 +102,13 @@ public class Superstructure {
         public static final Level coneTwo =
                 new Level(141.44, ExtenderConstants.kLevelTwoExtendCone);
         public static final Level coneThree =
-                new Level(141.44, ExtenderConstants.kLevelThreeExtendCone);
+                new Level(141.44 - 3, ExtenderConstants.kLevelThreeExtendCone);
 
         public static final Level cubeOne =
                 new Level(145, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level cubeTwo = new Level(155, ExtenderConstants.kLevelTwoExtendCube);
+        public static final Level cubeTwo = new Level(153, ExtenderConstants.kLevelTwoExtendCube);
         public static final Level cubeThree =
-                new Level(147, ExtenderConstants.kLevelThreeExtendCube);
+                new Level(147 - 6, ExtenderConstants.kLevelThreeExtendCube);
 
         public static final Level noLevel =
                 new Level(PivotConstants.kInitialAngle, ExtenderConstants.kMinimumPositionMeters);
