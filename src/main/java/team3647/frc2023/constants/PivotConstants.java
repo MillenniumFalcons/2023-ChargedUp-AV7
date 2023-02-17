@@ -67,8 +67,8 @@ public class PivotConstants {
         kMaster.configGetStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
 
-        kMaster.setNeutralMode(NeutralMode.Coast);
-        kSlave.setNeutralMode(NeutralMode.Coast);
+        kMaster.setNeutralMode(NeutralMode.Brake);
+        kSlave.setNeutralMode(NeutralMode.Brake);
         kMaster.enableVoltageCompensation(true);
         kSlave.enableVoltageCompensation(true);
 

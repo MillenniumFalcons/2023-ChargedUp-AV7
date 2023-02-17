@@ -85,6 +85,10 @@ public class ScoreStateFinder implements PeriodicSubsystem {
     }
 
     private Level getScoreLevelFromPiece(GamePiece heldPiece) {
+        if (heldPiece == GamePiece.NONE) {
+            return Level.noLevel;
+        }
+
         if (heldPiece == GamePiece.CONE) {
             if (goBottomLevel.getAsBoolean()) {
                 return Level.coneOne;

@@ -113,6 +113,9 @@ public class Superstructure {
         public static final Level cubeThree =
                 new Level(147, ExtenderConstants.kLevelThreeExtendCube);
 
+        public static final Level noLevel =
+                new Level(PivotConstants.kInitialAngle, ExtenderConstants.kMinimumPositionMeters);
+
         public static final Level station =
                 new Level(139, ExtenderConstants.kMinimumPositionMeters);
     }

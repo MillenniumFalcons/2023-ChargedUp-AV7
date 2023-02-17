@@ -65,7 +65,10 @@ public class RobotContainer {
         mainController.buttonY.onTrue(
                 Commands.run(() -> {}, pivot)
                         .withTimeout(0.5)
-                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.5)));
+                        .alongWith(
+                                Commands.run(() -> {}, extender)
+                                        .withTimeout(0.5)
+                                        .alongWith(Commands.run(() -> {}, swerve))));
         // left bumper intake
         // left trigger slow
         // right bumper release
@@ -87,7 +90,6 @@ public class RobotContainer {
                 superstructure
                         .driveAndArm(
                                 scoreStateFinder::getScorePoint, scoreStateFinder::getScoreLevel)
-                        .until(mainController::anyStickMovedStiff)
                         .alongWith(
                                 new InstantCommand(
                                         () ->
@@ -169,6 +171,7 @@ public class RobotContainer {
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
 
+    // right menu button cube, left menu button cone
     public final Grabber grabber =
             new Grabber(
                     GrabberConstants.pistons,
