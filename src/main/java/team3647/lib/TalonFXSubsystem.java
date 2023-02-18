@@ -8,13 +8,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     private final TalonFX master;
-    private final List<TalonFX> followers = new LinkedList<>();
+    private final List<TalonFX> followers = new ArrayList<>();
     private final double positionConversion;
     private final double velocityConversion;
     private final double nominalVoltage;
@@ -123,11 +123,6 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         periodicIO.demand = velocity / velocityConversion;
     }
 
-    protected void setPercentOutput(double percent) {
-        periodicIO.controlMode = ControlMode.PercentOutput;
-        periodicIO.demand = percent;
-    }
-
     /** Sets all motors to brake mode */
     public void setToBrake() {
         setNeutralMode(NeutralMode.Brake);
@@ -165,25 +160,27 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      *
      * @param position position in output units
      */
-    public void setEncoder(double position) {
+    protected void setEncoder(double position) {
         master.setSelectedSensorPosition(position / positionConversion);
     }
 
-    /** @return the velocity in the output units */
+    /**
+     * @return the velocity in the output units
+     */
     public double getVelocity() {
         return periodicIO.velocity;
     }
 
-    /** @return ths position in the output units */
+    /**
+     * @return ths position in the output units
+     */
     public double getPosition() {
         return periodicIO.position;
     }
 
-    public double getDemand() {
-        return periodicIO.demand * positionConversion;
-    }
-
-    /** @return the timestamp for the position and velocity measurements */
+    /**
+     * @return the timestamp for the position and velocity measurements
+     */
     public double getTimestamp() {
         return periodicIO.timestamp;
     }

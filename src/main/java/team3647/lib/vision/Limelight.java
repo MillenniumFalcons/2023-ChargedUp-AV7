@@ -1,16 +1,20 @@
 package team3647.lib.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.LinkedList;
 import java.util.List;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
 import team3647.lib.vision.IVisionCamera.LEDMode;
 
-public class Limelight implements IVisionCamera {
+public class Limelight implements AprilTagCamera {
 
     // NetworkTable is the class used to grab values from the Limelight Network
     // Table
@@ -37,8 +41,8 @@ public class Limelight implements IVisionCamera {
         LATNECY_MS("tl"),
         RAW_CORNERS("tcornxy"),
         TAG_ID("tid"),
-        CAM_POSE("campose"),
-        ROBOT_POSE("botpose");
+        CAM_TRANS("camtran"),
+        ROBOT_POSE("botpose_wpiblue");
 
         public final String str;
 
@@ -58,8 +62,6 @@ public class Limelight implements IVisionCamera {
         this.ip = ip;
         this.extraLatencySec = extraLatencySec;
         this.kCamConstants = camConstants;
-        // table.getEntry(Data.LATNECY_MS.str)
-        //         .addListener(this::processNTEvent, EntryListenerFlags.kUpdate);
         table.getEntry(Data.LATNECY_MS.str);
     }
 
@@ -72,31 +74,26 @@ public class Limelight implements IVisionCamera {
         inputs.pitchToVisionCenter = ty;
     }
 
-    // private void processNTEvent(EntryNotification notification) {
-    //     double[] latestRawCorners = getDoubleArray(Data.RAW_CORNERS);
-    //     if (latestRawCorners == emptyDoubleArray) {
-    //         return;
-    //     }
-    //     validEntry = getDouble(Data.VALID_TARGET) == 1.0;
-    //     if (!validEntry) {
-    //         return;
-    //     }
-    //     skew = getDouble(Data.SKEW);
-    //     tx = getDouble(Data.X);
-    //     ty = getDouble(Data.Y);
-    //     double timestamp =
-    //             Timer.getFPGATimestamp()
-    //                     - getDouble(Data.LATNECY_MS) / 1000.0
-    //                     - 0.011
-    //                     - extraLatencySec;
-    //     synchronized (Limelight.this) {
-    //         captureTimestamp = timestamp;
-    //         corners = new LinkedList<>();
-    //         for (int i = 0; i < latestRawCorners.length - 1; i += 2) {
-    //             corners.add(new VisionPoint(latestRawCorners[i], latestRawCorners[i + 1]));
-    //         }
-    //     }
-    // }
+    public StampedPose getRobotPose() {
+        double[] arr = getDoubleArray(Data.ROBOT_POSE);
+        if (arr.length < 5) {
+            return AprilTagCamera.KNoAnswer;
+        }
+
+        Pose3d robotPose =
+                new Pose3d(
+                        new Translation3d(arr[0], arr[1], arr[2]),
+                        new Rotation3d(arr[3], arr[4], arr[5]));
+
+        return new StampedPose(
+                new Pose2d(
+                        new Translation2d(robotPose.getX(), robotPose.getY()),
+                        new Rotation2d(robotPose.getRotation().getX())),
+                Timer.getFPGATimestamp()
+                        - getDouble(Data.LATNECY_MS) / 1000
+                        - 0.011
+                        - extraLatencySec);
+    }
 
     @Override
     public void setLED(LEDMode ledMode) {

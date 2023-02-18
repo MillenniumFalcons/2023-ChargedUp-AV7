@@ -1,4 +1,4 @@
-package team3647.frc2023.subsystems;
+package team3647.lib;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -9,9 +9,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.lib.CTREModuleState;
 
 public class SwerveModule {
     private final TalonFX driveMotor;
@@ -27,7 +25,6 @@ public class SwerveModule {
     private final double drivePositionConversion;
     private final double turnVelocityConversion;
     private final double turnPositionConversion;
-
 
     private double lastAngle;
 
@@ -54,8 +51,6 @@ public class SwerveModule {
         this.turnVelocityConversion = kTurnVelocityConversion;
         this.turnPositionConversion = kTurnPositionConversion;
         this.lastAngle = getState().angle.getDegrees();
-        setNeutralMode(
-                SwerveDriveConstants.kTurnNeutralMode, SwerveDriveConstants.kDriveNeutralMode);
         resetToAbsolute();
     }
 
@@ -80,12 +75,11 @@ public class SwerveModule {
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(
-                getDriveVelocity(), new Rotation2d(Units.degreesToRadians(getTurnAngle())));
+        return new SwerveModuleState(getDriveVelocity(), Rotation2d.fromDegrees(getTurnAngle()));
     }
+
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(
-            getDrivePos(), Rotation2d.fromDegrees((getTurnAngle())));
+        return new SwerveModulePosition(getDrivePos(), Rotation2d.fromDegrees(getTurnAngle()));
     }
 
     public double getVoltage() {
@@ -93,17 +87,17 @@ public class SwerveModule {
     }
 
     public void resetToAbsolute() {
-        double absolutePosition =
-                (getCanCoder().getDegrees() - absOffsetDeg) / turnPositionConversion;
-        turnMotor.setSelectedSensorPosition(absolutePosition);
+        double absolutePosition = (getCanCoder() - absOffsetDeg) / turnPositionConversion;
+        var error = turnMotor.setSelectedSensorPosition(absolutePosition, 0, 255);
+        System.out.println(error);
 
         // double absoluteAngle = (getAbsEncoderPos().getDegrees() - absOffsetDeg);
         // double adjustedAngle = CTREModuleState.optimizeAngle(absoluteAngle, getTurnAngle());
         // turnMotor.setSelectedSensorPosition(adjustedAngle / turnPositionConversion);
     }
 
-    public Rotation2d getCanCoder() {
-        return Rotation2d.fromDegrees(absEncoder.getAbsolutePosition());
+    public double getCanCoder() {
+        return absEncoder.getAbsolutePosition();
     }
 
     public CANCoder getCanCoderObject() {

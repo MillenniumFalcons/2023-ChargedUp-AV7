@@ -23,7 +23,9 @@ public class JoystickAnalog extends Trigger {
         m_axisNumber = axisNumber;
     }
 
-    /** @return the triggerValue */
+    /**
+     * @return the triggerValue
+     */
     public double getValue() {
         return m_joystick.getRawAxis(m_axisNumber);
     }

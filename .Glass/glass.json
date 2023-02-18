@@ -1,0 +1,59 @@
+{
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "LiveWindow": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "Field": {
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "Robot": {
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "estim": {
+          "color": [
+            0.0,
+            1.0,
+            0.08823513984680176,
+            255.0
+          ],
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "height": 8.013699531555176,
+        "image": "/home/edwardsun/Downloads/2023-field.png",
+        "odo": {
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "vision pose": {
+          "length": 0.6349999904632568,
+          "width": 0.6349999904632568
+        },
+        "width": 16.541749954223633,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT3)",
+    "serverTeam": "3647"
+  }
+}
