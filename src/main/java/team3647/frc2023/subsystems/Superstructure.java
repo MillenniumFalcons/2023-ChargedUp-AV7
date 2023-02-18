@@ -18,7 +18,7 @@ import team3647.lib.GroupPrinter;
 public class Superstructure {
 
     public void periodic(double timestamp) {
-        this.kGPivot = PivotConstants.getkGFromLength(extender.getLengthMeters());
+        // this.kGPivot = PivotConstants.getkGFromLength(extender.getLengthMeters());
     }
 
     public Command driveAndArm(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {

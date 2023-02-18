@@ -1,5 +1,7 @@
 package team3647.frc2023.robot;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,15 +49,16 @@ public class RobotContainer {
     public RobotContainer() {
         pdh.clearStickyFaults();
         scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, grabber, visionController, scoreStateFinder);
+                swerve //printer, pivot, extender, grabber, visionController, scoreStateFinder
+                );
 
         configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
-        pivot.setEncoder(PivotConstants.kInitialAngle);
-        extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
+        //pivot.setEncoder(PivotConstants.kInitialAngle);
+        //extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
         //swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
+        //swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
     }
 
     private void configureButtonBindings() {
@@ -146,8 +149,8 @@ public class RobotContainer {
     }
 
     public void setToCoast() {
-        pivot.setToCoast();
-        extender.setToCoast();
+       // pivot.setToCoast();
+       // extender.setToCoast();
     }
 
     public double getPivotFFVoltage() {
@@ -158,14 +161,17 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addDouble("rot", swerve::getHeading);
-        // printer.addPose("odo", swerve::getPose);
-        printer.addPose("estim", swerve::getEstimPose);
+        printer.addPose("odo", swerve::getPose);
+        // printer.addPose("estim", swerve::getEstimPose);
 
-        printer.addDouble("Pivot Deg", pivot::getAngle);
-        printer.addDouble("Extender Ticks", extender::getNativePos);
-        printer.addString("Game Piece", grabber::getGamePieceStr);
+        // printer.addDouble("Pivot Deg", pivot::getAngle);
+        // printer.addDouble("Extender Ticks", extender::getNativePos);
+        // printer.addString("Game Piece", grabber::getGamePieceStr);
 
-        printer.addBoolean("Column1 I guess", () -> coPanel.getButton(Buttons.Column1));
+        // printer.addDouble("pose x", swerve::getPoseX);
+        // printer.addDouble("pose y", swerve::getPoseY);
+
+        // printer.addBoolean("Column1 I guess", () -> coPanel.getButton(Buttons.Column1));
     }
 
     public Command getAutonomousCommand() {

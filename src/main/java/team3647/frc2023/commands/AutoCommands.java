@@ -5,6 +5,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import team3647.frc2023.constants.AutoConstants;
@@ -40,12 +41,12 @@ public class AutoCommands {
             getCommand("S_P4"), 
             getCommand("P4_SB"), 
             getCommand("tSB_balance"));
-       // ParallelCommandGroup command = new ParallelCommandGroup(drivetrain);
-        return drivetrainSequence;
+        ParallelCommandGroup command = new ParallelCommandGroup(drivetrainSequence);
+        return command;
     }
      
-    public PPSwerveControllerCommand getCommand(String pathName) {
-        PathPlannerTrajectory trajectory = PathPlannerTrajectories.bottomS_P1;
+    public SequentialCommandGroup getCommand(String pathName) {
+        final PathPlannerTrajectory trajectory;
         switch (pathName) {
             case "S_P1":
                 trajectory = PathPlannerTrajectories.bottomS_P1;
@@ -59,22 +60,33 @@ public class AutoCommands {
             case "S_P4":
                 trajectory = PathPlannerTrajectories.topS_P4;
                 break;
-            case "P4_SB":
+            case "P4_SB":   
                 trajectory = PathPlannerTrajectories.topP4_SB;
                 break;
             case "tSB_balance":
                 trajectory = PathPlannerTrajectories.topSB_balance;
                 break;
+            default:
+                trajectory = PathPlannerTrajectories.bottomS_P1;
         }
 
-        return new PPSwerveControllerCommand(
-                trajectory,
-                drive::getPose,
-                driveKinematics,
-                AutoConstants.kXController,
-                AutoConstants.kYController,
-                AutoConstants.kRotController,
-                drive::setModuleStates,
-                drive);
+        return new SequentialCommandGroup(
+        new InstantCommand(() -> {
+          // Reset odometry for the first path you run during auto
+          if(true){
+              drive.setRobotPose(trajectory.getInitialHolonomicPose());
+          }
+        }),
+        new PPSwerveControllerCommand(
+            trajectory,
+            drive::getPose,
+            driveKinematics,
+            AutoConstants.kXController,
+            AutoConstants.kYController,
+            AutoConstants.kRotController,
+            drive::setModuleStates,
+            false,
+            drive)
+    );
     }
 }
