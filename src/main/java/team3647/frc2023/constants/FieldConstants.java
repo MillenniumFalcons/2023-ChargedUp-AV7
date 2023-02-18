@@ -37,6 +37,159 @@ public class FieldConstants {
     public static final Translation2d twoRedT = flip(twoBlueT);
     public static final Translation2d threeRedT = flip(threeBlueT);
 
+    //     public static final Pose2d[] allBlueStations = {
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(20 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(42 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(64 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(86 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(108 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(130 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(152 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(174 + yOffsetInches)),
+    //                 new Rotation2d()),
+    //         new Pose2d(
+    //                 new Translation2d(
+    //                         Units.inchesToMeters(70.5 + xOffsetInches),
+    //                         Units.inchesToMeters(196 + yOffsetInches)),
+    //                 new Rotation2d())
+    //     };
+
+    public static final Pose2d[] allBlueStations = {
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(196 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(174 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(152 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(130 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(108 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(86 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(64 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(42 + yOffsetInches)),
+                new Rotation2d()),
+        new Pose2d(
+                new Translation2d(
+                        Units.inchesToMeters(70.5 + xOffsetInches),
+                        Units.inchesToMeters(20 + yOffsetInches)),
+                new Rotation2d())
+    };
+
+    public static final Pose2d[] allRedStation = {
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(20 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(42 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(64 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(86 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(108 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(130 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(152 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(174 + yOffsetInches))),
+                new Rotation2d()),
+        new Pose2d(
+                flip(
+                        new Translation2d(
+                                Units.inchesToMeters(70.5 + xOffsetInches),
+                                Units.inchesToMeters(196 + yOffsetInches))),
+                new Rotation2d())
+    };
+
     public static final Scoring.Section oneBlue =
             new Scoring.Section(
                     oneBlueT,
@@ -45,13 +198,13 @@ public class FieldConstants {
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(20 + yOffsetInches)),
+                                            Units.inchesToMeters(64 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.RIGHT,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(64 + yOffsetInches)),
+                                            Units.inchesToMeters(20 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.MIDDLE,
                             new Pose2d(
@@ -67,13 +220,13 @@ public class FieldConstants {
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(86 + yOffsetInches)),
+                                            Units.inchesToMeters(130 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.RIGHT,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(130 + yOffsetInches)),
+                                            Units.inchesToMeters(86 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.MIDDLE,
                             new Pose2d(
@@ -89,13 +242,13 @@ public class FieldConstants {
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(152 + yOffsetInches)),
+                                            Units.inchesToMeters(196 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.RIGHT,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(196 + yOffsetInches)),
+                                            Units.inchesToMeters(152 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.MIDDLE,
                             new Pose2d(

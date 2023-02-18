@@ -30,6 +30,54 @@ public class ControlPanel {
         this.pin = pin;
     }
 
+    public boolean getLevelLow() {
+        return getButton(Buttons.LevelLow);
+    }
+
+    public boolean getLevelMid() {
+        return getButton(Buttons.LevelMid);
+    }
+
+    public boolean getLevelHigh() {
+        return getButton(Buttons.LevelHigh);
+    }
+
+    public boolean getColumnOne() {
+        return getButton(Buttons.Column1);
+    }
+
+    public boolean getColumnTwo() {
+        return getButton(Buttons.Column2);
+    }
+
+    public boolean getColumnThree() {
+        return getButton(Buttons.Column3);
+    }
+
+    public boolean getColumnFour() {
+        return getButton(Buttons.Column4);
+    }
+
+    public boolean getColumnFive() {
+        return getButton(Buttons.Column5);
+    }
+
+    public boolean getColumnSix() {
+        return getButton(Buttons.Column6);
+    }
+
+    public boolean getColumnSeven() {
+        return getButton(Buttons.Column7);
+    }
+
+    public boolean getColumnEight() {
+        return getButton(Buttons.Column8);
+    }
+
+    public boolean getColumnNine() {
+        return getButton(Buttons.Column9);
+    }
+
     public boolean getButton(Buttons button) {
         return DriverStation.getStickButton(this.pin, button.value);
     }

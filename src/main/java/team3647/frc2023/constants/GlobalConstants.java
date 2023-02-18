@@ -55,5 +55,10 @@ public final class GlobalConstants {
         public static final int pistonChannel = 2;
     }
 
+    public static final class RollerGrabberIds {
+        public static final int pistonChannel = 0;
+        public static final int masterId = 28;
+    }
+
     private GlobalConstants() {}
 }

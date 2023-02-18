@@ -78,6 +78,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.poseEstimator =
                 new SwerveDrivePoseEstimator(
                         this.kinematics, getRotation2d(), getModulePositions(), new Pose2d());
+        // poseEstimator.setVisionMeasurementStdDevs(null);
         this.odometry =
                 new SwerveDriveOdometry(this.kinematics, getRotation2d(), getModulePositions());
         zeroGyro();

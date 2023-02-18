@@ -92,28 +92,35 @@ public class Superstructure {
 
         public final double length;
 
-        private Level(double angle, double length) {
+        public final String name;
+
+        private Level(double angle, double length, String name) {
             this.angle = angle;
             this.length = length;
+            this.name = name;
         }
 
         public static final Level coneOne =
-                new Level(141.44, ExtenderConstants.kMinimumPositionMeters);
+                new Level(141.44, ExtenderConstants.kMinimumPositionMeters, "cone low");
         public static final Level coneTwo =
-                new Level(141.44, ExtenderConstants.kLevelTwoExtendCone);
+                new Level(141.44, ExtenderConstants.kLevelTwoExtendCone, "cone mid");
         public static final Level coneThree =
-                new Level(141.44 - 3, ExtenderConstants.kLevelThreeExtendCone);
+                new Level(141.44 - 3, ExtenderConstants.kLevelThreeExtendCone, "cone high");
 
         public static final Level cubeOne =
-                new Level(145, ExtenderConstants.kMinimumPositionMeters);
-        public static final Level cubeTwo = new Level(153, ExtenderConstants.kLevelTwoExtendCube);
+                new Level(145, ExtenderConstants.kMinimumPositionMeters, "cube low");
+        public static final Level cubeTwo =
+                new Level(153, ExtenderConstants.kLevelTwoExtendCube, "cube mid");
         public static final Level cubeThree =
-                new Level(147 - 6, ExtenderConstants.kLevelThreeExtendCube);
+                new Level(147 - 6, ExtenderConstants.kLevelThreeExtendCube, "cube high");
 
         public static final Level noLevel =
-                new Level(PivotConstants.kInitialAngle, ExtenderConstants.kMinimumPositionMeters);
+                new Level(
+                        PivotConstants.kInitialAngle,
+                        ExtenderConstants.kMinimumPositionMeters,
+                        "no level");
 
         public static final Level station =
-                new Level(139, ExtenderConstants.kMinimumPositionMeters);
+                new Level(139, ExtenderConstants.kMinimumPositionMeters, "station");
     }
 }

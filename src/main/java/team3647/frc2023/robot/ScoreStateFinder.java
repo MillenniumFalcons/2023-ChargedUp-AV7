@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure.Level;
 import team3647.frc2023.util.Scoring;
-import team3647.lib.GroupPrinter;
 import team3647.lib.NetworkColorSensor.GamePiece;
 import team3647.lib.PeriodicSubsystem;
 
@@ -19,7 +18,6 @@ public class ScoreStateFinder implements PeriodicSubsystem {
     private final BooleanSupplier goRightPosition;
     private final BooleanSupplier goTopLevel;
     private final BooleanSupplier goBottomLevel;
-    private final GroupPrinter printer = GroupPrinter.getInstance();
 
     private PathPoint scorePoint;
     private Pose2d scorePose;
