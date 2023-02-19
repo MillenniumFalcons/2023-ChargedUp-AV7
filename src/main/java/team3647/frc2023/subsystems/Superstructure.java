@@ -50,8 +50,8 @@ public class Superstructure {
 
     public Command groundIntake() {
         return Commands.parallel(
-                pivotCommands.setAngle(Level.station.angle),
-                extenderCommands.length(Level.station.length));
+                pivotCommands.setAngle(Level.groundIntake.angle),
+                extenderCommands.length(Level.groundIntake.length));
     }
 
     public Command disableCompressor() {
