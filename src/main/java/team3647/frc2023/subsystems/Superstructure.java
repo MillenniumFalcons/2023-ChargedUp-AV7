@@ -109,13 +109,20 @@ public class Superstructure {
         public static final Level coneTwo =
                 new Level(141.44, ExtenderConstants.kLevelTwoExtendCone);
         public static final Level coneThree =
-                new Level(141.44 - 3, ExtenderConstants.kLevelThreeExtendCone);
+                new Level(138, ExtenderConstants.kLevelThreeExtendCone);
 
         public static final Level cubeOne =
                 new Level(145, ExtenderConstants.kMinimumPositionMeters);
         public static final Level cubeTwo = new Level(153, ExtenderConstants.kLevelTwoExtendCube);
         public static final Level cubeThree =
-                new Level(147 - 6, ExtenderConstants.kLevelThreeExtendCube);
+                new Level(141, ExtenderConstants.kLevelThreeExtendCube);
+
+        public static final Level cubeOneReversed =
+                new Level(35, ExtenderConstants.kMinimumPositionMeters);
+        public static final Level cubeTwoReversed =
+                new Level(27, ExtenderConstants.kLevelTwoExtendCube);
+        public static final Level cubeThreeReversed =
+                new Level(39, ExtenderConstants.kLevelThreeExtendCube);
 
         public static final Level noLevel =
                 new Level(PivotConstants.kInitialAngle, ExtenderConstants.kMinimumPositionMeters);
