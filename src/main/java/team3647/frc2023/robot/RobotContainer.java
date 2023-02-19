@@ -132,14 +132,14 @@ public class RobotContainer {
                         mainController::getLeftTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
-        pivot.setDefaultCommand(
+        /*pivot.setDefaultCommand(
                 superstructure
                         .pivotCommands
                         .setAngle(() -> PivotConstants.kInitialAngle)
                         .repeatedly());
         grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
         extender.setDefaultCommand(
-                superstructure.extenderCommands.length(ExtenderConstants.kMinimumPositionMeters));
+                superstructure.extenderCommands.length(ExtenderConstants.kMinimumPositionMeters));*/
     }
 
     void configTestCommands() {
