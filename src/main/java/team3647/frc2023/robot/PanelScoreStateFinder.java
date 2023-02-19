@@ -136,7 +136,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
 
     private PathPoint findScorePoint() {
         // THIS DETERMINES DEFAULT POSE WHERE IT GOES IF ELLA DON'T PRESS ANYTHING
-        int pressedIdx = 0;
+        int pressedIdx = 4;
         for (int i = 0; i < positions.length; i++) {
             if (positions[i]) {
                 pressedIdx = i;
@@ -151,7 +151,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
     }
 
     public Pose2d findScorePose() {
-        int pressedIdx = 0;
+        int pressedIdx = 4;
         for (int i = 0; i < positions.length; i++) {
             if (positions[i]) {
                 pressedIdx = i;
@@ -177,8 +177,8 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         return scorePoint;
     }
 
-    public boolean getStuff() {
-        return levels[0];
+    public Pose2d getScorePose() {
+        return scorePose;
     }
 
     // private PathPoint getScorePointFromSection(
