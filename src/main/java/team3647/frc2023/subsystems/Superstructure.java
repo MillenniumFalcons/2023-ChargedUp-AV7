@@ -34,6 +34,7 @@ public class Superstructure {
     }
 
     public Command goToLevel(Level level) {
+
         return Commands.parallel(
                 pivotCommands.setAngle(level.angle),
                 Commands.waitUntil(() -> pivot.getAngle() > level.angle * 0.5)
@@ -45,6 +46,12 @@ public class Superstructure {
                 pivotCommands.setAngle(Level.station.angle),
                 Commands.waitUntil(() -> pivot.getAngle() > Level.station.angle * 0.9)
                         .andThen(extenderCommands.length(Level.station.length)));
+    }
+
+    public Command groundIntake() {
+        return Commands.parallel(
+                pivotCommands.setAngle(Level.station.angle),
+                extenderCommands.length(Level.station.length));
     }
 
     public Command disableCompressor() {
@@ -112,6 +119,9 @@ public class Superstructure {
 
         public static final Level noLevel =
                 new Level(PivotConstants.kInitialAngle, ExtenderConstants.kMinimumPositionMeters);
+
+        public static final Level groundIntake =
+                new Level(189, ExtenderConstants.kMinimumPositionMeters);
 
         public static final Level station =
                 new Level(139, ExtenderConstants.kMinimumPositionMeters);

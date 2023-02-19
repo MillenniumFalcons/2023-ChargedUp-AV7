@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ColorSensorConstants;
 import team3647.frc2023.constants.ExtenderConstants;
@@ -73,6 +74,7 @@ public class RobotContainer {
         // right trigger auto drive
         mainController.leftBumper.whileTrue(superstructure.grabberCommands.openGrabber());
 
+        // hold and line up, release and wait for it to drive back
         mainController
                 .rightBumper
                 .onTrue(
@@ -106,6 +108,17 @@ public class RobotContainer {
                                                 printer.addPose(
                                                         "target",
                                                         scoreStateFinder::getScorePose))));
+        coController
+                .rightTrigger
+                .whileTrue(
+                        superstructure
+                                .groundIntake()
+                                .alongWith(superstructure.grabberCommands.openGrabber()))
+                .onFalse(
+                        superstructure
+                                .grabberCommands
+                                .closeGrabber()
+                                .andThen(new WaitCommand(0.8)));
 
         var leftStickYGreaterPoint15 =
                 new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);

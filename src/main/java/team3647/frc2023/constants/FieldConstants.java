@@ -45,19 +45,19 @@ public class FieldConstants {
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(20 + yOffsetInches)),
+                                            Units.inchesToMeters(196 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.RIGHT,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(64 + yOffsetInches)),
+                                            Units.inchesToMeters(152 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.MIDDLE,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(42 + yOffsetInches)),
+                                            Units.inchesToMeters(174 + yOffsetInches)),
                                     new Rotation2d())));
     public static final Scoring.Section twoBlue =
             new Scoring.Section(
@@ -67,13 +67,13 @@ public class FieldConstants {
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(86 + yOffsetInches)),
+                                            Units.inchesToMeters(130 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.RIGHT,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(130 + yOffsetInches)),
+                                            Units.inchesToMeters(86 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.MIDDLE,
                             new Pose2d(
@@ -89,19 +89,19 @@ public class FieldConstants {
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(152 + yOffsetInches)),
+                                            Units.inchesToMeters(64 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.RIGHT,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(196 + yOffsetInches)),
+                                            Units.inchesToMeters(20 + yOffsetInches)),
                                     new Rotation2d()),
                             Scoring.Position.MIDDLE,
                             new Pose2d(
                                     new Translation2d(
                                             Units.inchesToMeters(70.5 + xOffsetInches),
-                                            Units.inchesToMeters(174 + yOffsetInches)),
+                                            Units.inchesToMeters(42 + yOffsetInches)),
                                     new Rotation2d())));
     public static final List<Scoring.Section> allBlue = List.of(oneBlue, twoBlue, threeBlue);
     public static final Scoring.Section oneRed =
