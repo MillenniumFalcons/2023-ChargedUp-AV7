@@ -21,8 +21,12 @@ public class Superstructure {
         this.kGPivot = PivotConstants.getkGFromLength(extender.getLengthMeters());
     }
 
-    public Command driveAndArm(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
+    public Command driveAndArmParallel(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
         return Commands.parallel(driveToScore(getPoint), arm(getLevel));
+    }
+
+    public Command driveAndArmSequential(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
+        return driveToScore(getPoint).andThen(arm(getLevel));
     }
 
     public Command arm(Supplier<Level> getLevel) {

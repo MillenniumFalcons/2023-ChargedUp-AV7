@@ -1,6 +1,5 @@
 package team3647.frc2023.robot;
 
-import com.google.common.base.Supplier;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -8,12 +7,10 @@ import java.util.function.BooleanSupplier;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure.Level;
 import team3647.lib.GroupPrinter;
-import team3647.lib.NetworkColorSensor.GamePiece;
 import team3647.lib.PeriodicSubsystem;
 
 public class PanelScoreStateFinder implements PeriodicSubsystem {
     private final GroupPrinter printer = GroupPrinter.getInstance();
-    private final Supplier<GamePiece> gamePieceSupplier;
     private final BooleanSupplier level1;
     private final BooleanSupplier level2;
     private final BooleanSupplier level3;
@@ -31,7 +28,6 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
     private Pose2d scorePose = new Pose2d();
     private PathPoint scorePoint;
     private Level scoreLevel = Level.coneTwo;
-    private GamePiece heldPiece;
     private boolean[] levels = new boolean[3];
     private boolean[] positions = new boolean[9];
 
@@ -47,8 +43,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
             BooleanSupplier column6,
             BooleanSupplier column7,
             BooleanSupplier column8,
-            BooleanSupplier column9,
-            Supplier<GamePiece> gamePieceSupplier) {
+            BooleanSupplier column9) {
         this.level1 = level1;
         this.level2 = level2;
         this.level3 = level3;
@@ -61,7 +56,6 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         this.column7 = column7;
         this.column8 = column8;
         this.column9 = column9;
-        this.gamePieceSupplier = gamePieceSupplier;
     }
 
     @Override
@@ -80,7 +74,6 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         positions[7] = column8.getAsBoolean();
         positions[8] = column9.getAsBoolean();
 
-        heldPiece = gamePieceSupplier.get();
         scoreLevel = findScoreLevel();
         scorePoint = findScorePoint();
         scorePose = findScorePose();
@@ -112,26 +105,6 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         }
 
         return Level.noLevel;
-
-        // if (heldPiece == GamePiece.CONE) {
-        //     if (levels[0]) {
-        //         return Level.cubeOne;
-        //     } else if (levels[1]) {
-        //         return Level.cubeTwo;
-        //     } else if (levels[2]) {
-        //         return Level.cubeThree;
-        //     }
-        // } else if (heldPiece == GamePiece.CUBE) {
-        //     if (levels[0]) {
-        //         return Level.coneOne;
-        //     } else if (levels[1]) {
-        //         return Level.coneTwo;
-        //     } else if (levels[2]) {
-        //         return Level.coneThree;
-        //     }
-        // }
-
-        // return Level.noLevel;
     }
 
     private PathPoint findScorePoint() {
@@ -180,13 +153,6 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
     public Pose2d getScorePose() {
         return scorePose;
     }
-
-    // private PathPoint getScorePointFromSection(
-    //         List<Scoring.Section> sections, Scoring.Position position) {
-    //     var driveT = drivePose.get().getTranslation();
-    //     var tt = Scoring.getClosest(sections, driveT).getPose(position);
-    //     return new PathPoint(tt.getTranslation(), tt.getRotation());
-    // }
 
     @Override
     public String getName() {

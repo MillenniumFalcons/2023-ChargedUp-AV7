@@ -77,8 +77,8 @@ public class RobotContainer {
                 .whileTrue(superstructure.grabberCommands.openGrabber())
                 .onFalse(
                         Commands.run(() -> {}, pivot)
-                                .withTimeout(0.8)
-                                .alongWith(Commands.run(() -> {}, extender).withTimeout(0.8)));
+                                .withTimeout(0.6)
+                                .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6)));
 
         mainController
                 .rightBumper
@@ -104,16 +104,21 @@ public class RobotContainer {
                                                 .until(mainController::anyStickMoved)));
 
         mainController.rightTrigger.onTrue(
-                superstructure
-                        .driveAndArm(
-                                panelScoreStateFinder::getScorePoint,
-                                panelScoreStateFinder::getScoreLevel)
-                        .alongWith(
-                                new InstantCommand(
-                                        () ->
-                                                printer.addPose(
-                                                        "target",
-                                                        panelScoreStateFinder::getScorePose))));
+                Commands.run(() -> {}, pivot)
+                        .withTimeout(0.6)
+                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6))
+                        .andThen(
+                                superstructure
+                                        .driveAndArmSequential(
+                                                panelScoreStateFinder::getScorePoint,
+                                                panelScoreStateFinder::getScoreLevel)
+                                        .alongWith(
+                                                new InstantCommand(
+                                                        () ->
+                                                                printer.addPose(
+                                                                        "target",
+                                                                        panelScoreStateFinder
+                                                                                ::getScorePose)))));
 
         var leftStickYGreaterPoint15 =
                 new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
@@ -248,13 +253,6 @@ public class RobotContainer {
             new Superstructure(swerve, pivot, extender, grabber, compressor);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
-    //     final ScoreStateFinder scoreStateFinder =
-    //             new ScoreStateFinder(
-    //                     grabber::getGamepiece,
-    //                     swerve::getEstimPose,
-    //                     coController.buttonB,
-    //                     coController.dPadDown,
-    //                     coController.dPadUp);
     final PanelScoreStateFinder panelScoreStateFinder =
             new PanelScoreStateFinder(
                     coPanel::getLevelLow,
@@ -268,6 +266,5 @@ public class RobotContainer {
                     coPanel::getColumnSix,
                     coPanel::getColumnSeven,
                     coPanel::getColumnEight,
-                    coPanel::getColumnNine,
-                    grabber::getGamepiece);
+                    coPanel::getColumnNine);
 }
