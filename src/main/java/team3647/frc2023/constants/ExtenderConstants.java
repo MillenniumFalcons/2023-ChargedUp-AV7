@@ -43,13 +43,13 @@ public class ExtenderConstants {
     public static final double nominalVoltage = 11.0;
 
     /** ticks */
-    public static final double kLevelTwoExtendCone = 32000;
+    public static final double kLevelTwoExtendCone = 32000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCone = 78500;
+    public static final double kLevelThreeExtendCone = 78500 * 0.75;
     /** ticks */
-    public static final double kLevelTwoExtendCube = 30000;
+    public static final double kLevelTwoExtendCube = 30000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCube = 74000;
+    public static final double kLevelThreeExtendCube = 74000 * 0.75;
 
     static {
         kMaster.configFactoryDefault();
