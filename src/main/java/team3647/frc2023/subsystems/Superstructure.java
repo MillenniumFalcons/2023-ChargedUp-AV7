@@ -118,6 +118,13 @@ public class Superstructure {
         public static final Level cubeThree =
                 new Level(147 - 6, ExtenderConstants.kLevelThreeExtendCube, "cube high");
 
+        public static final Level cubeOneReversed =
+                new Level(35, ExtenderConstants.kMinimumPositionMeters, "cube reversed low");
+        public static final Level cubeTwoReversed =
+                new Level(27, ExtenderConstants.kLevelTwoExtendCube, "cube reversed mid");
+        public static final Level cubeThreeReversed =
+                new Level(39, ExtenderConstants.kLevelThreeExtendCube, "cube reversed high");
+
         public static final Level noLevel =
                 new Level(
                         PivotConstants.kInitialAngle,
