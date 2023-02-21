@@ -60,7 +60,6 @@ public class ExtenderConstants {
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
         kMasterConfig.voltageCompSaturation = nominalVoltage;
-        kMasterConfig.slot0.allowableClosedloopError = 2000;
 
         kMasterConfig.reverseSoftLimitEnable = true;
         kMasterConfig.reverseSoftLimitThreshold = kRevMetersSoftLimit / kNativePosToMeters;

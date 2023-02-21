@@ -40,22 +40,26 @@ public class Superstructure {
     public Command goToLevel(Level level) {
 
         return Commands.parallel(
-                pivotCommands.setAngle(level.angle),
+                pivotCommands.setAngle(() -> level.angle),
                 Commands.waitUntil(() -> pivot.getAngle() > level.angle * 0.5)
-                        .andThen(extenderCommands.length(level.length)));
+                        .andThen(extenderCommands.length(() -> level.length)));
     }
 
     public Command loadingStation() {
         return Commands.parallel(
-                pivotCommands.setAngle(Level.station.angle),
+                pivotCommands.setAngle(() -> Level.station.angle),
                 Commands.waitUntil(() -> pivot.getAngle() > Level.station.angle * 0.9)
-                        .andThen(extenderCommands.length(Level.station.length)));
+                        .andThen(extenderCommands.length(() -> Level.station.length)));
     }
 
     public Command groundIntake() {
         return Commands.parallel(
-                pivotCommands.setAngle(Level.groundIntake.angle),
-                extenderCommands.length(Level.groundIntake.length));
+                pivotCommands.setAngle(() -> Level.groundIntake.angle),
+                extenderCommands.length(() -> Level.groundIntake.length));
+    }
+
+    public Command stow() {
+        return Commands.parallel(pivotCommands.stow(), extenderCommands.stow());
     }
 
     public Command disableCompressor() {

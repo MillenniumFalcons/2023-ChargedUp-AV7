@@ -7,7 +7,8 @@ import team3647.frc2023.subsystems.Grabber;
 public class GrabberCommands {
 
     public Command closeGrabber() {
-        return Commands.run(() -> grabber.close(), this.grabber);
+        return Commands.run(() -> grabber.close(), this.grabber)
+                .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
     }
 
     public Command openGrabber() {

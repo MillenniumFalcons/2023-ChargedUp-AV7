@@ -3,7 +3,6 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -11,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ColorSensorConstants;
 import team3647.frc2023.constants.ExtenderConstants;
@@ -63,13 +63,12 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
+
+        mainController.buttonA.onTrue(superstructure.stow());
         mainController
                 .leftBumper
                 .whileTrue(superstructure.grabberCommands.openGrabber())
-                .onFalse(
-                        Commands.run(() -> {}, pivot)
-                                .withTimeout(0.6)
-                                .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6)));
+                .onFalse(superstructure.stow());
         // left bumper intake
         // left trigger slow
         // right bumper release
@@ -88,32 +87,17 @@ public class RobotContainer {
                                 .grabberCommands
                                 .closeGrabber()
                                 .withTimeout(0.5)
-                                .andThen(
-                                        superstructure
-                                                .loadingStation()
-                                                .withTimeout(0.5)
-                                                .alongWith(
-                                                        superstructure.drivetrainCommands
-                                                                .robotRelativeDrive(
-                                                                        new Translation2d(-0.8, 0),
-                                                                        0.5))
-                                                .until(mainController::anyStickMoved)));
+                                .until(mainController::anyStickMoved));
         mainController.rightTrigger.onTrue(
-                Commands.run(() -> {}, pivot)
-                        .withTimeout(0.6)
-                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6))
-                        .andThen(
-                                superstructure
-                                        .driveAndArmSequential(
-                                                scoreStateFinder::getScorePoint,
-                                                scoreStateFinder::getScoreLevel)
-                                        .alongWith(
-                                                new InstantCommand(
-                                                        () ->
-                                                                printer.addPose(
-                                                                        "target",
-                                                                        scoreStateFinder
-                                                                                ::getScorePose)))));
+                superstructure
+                        .driveAndArmSequential(
+                                scoreStateFinder::getScorePoint, scoreStateFinder::getScoreLevel)
+                        .alongWith(
+                                new InstantCommand(
+                                        () ->
+                                                printer.addPose(
+                                                        "target",
+                                                        scoreStateFinder::getScorePose))));
 
         coController
                 .rightTrigger
@@ -123,9 +107,9 @@ public class RobotContainer {
                                 .alongWith(superstructure.grabberCommands.openGrabber()))
                 .onFalse(
                         superstructure
-                                .groundIntake()
-                                .alongWith(superstructure.grabberCommands.closeGrabber())
-                                .withTimeout(1.2));
+                                .grabberCommands
+                                .closeGrabber()
+                                .alongWith(new WaitCommand(0.7).andThen(superstructure.stow())));
 
         var leftStickYGreaterPoint15 =
                 new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
@@ -135,6 +119,15 @@ public class RobotContainer {
                         .extenderCommands
                         .openLoopSlow(coController::getLeftStickY)
                         .until(leftStickYGreaterPoint15.negate().debounce(0.5)));
+
+        var rightStickYGreaterPoint15 =
+                new Trigger(() -> Math.abs(coController.getRightStickX()) > 0.15);
+
+        rightStickYGreaterPoint15.onTrue(
+                superstructure
+                        .pivotCommands
+                        .openLoopConstant(coController::getRightStickY)
+                        .until(rightStickYGreaterPoint15.negate().debounce(0.5)));
     }
 
     private void configureDefaultCommands() {
@@ -146,14 +139,9 @@ public class RobotContainer {
                         mainController::getLeftTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
-        pivot.setDefaultCommand(
-                superstructure
-                        .pivotCommands
-                        .setAngle(() -> PivotConstants.kInitialAngle)
-                        .repeatedly());
+        pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
-        extender.setDefaultCommand(
-                superstructure.extenderCommands.length(ExtenderConstants.kMinimumPositionMeters));
+        extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
     void configTestCommands() {
