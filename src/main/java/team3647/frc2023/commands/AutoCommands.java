@@ -1,18 +1,28 @@
 package team3647.frc2023.commands;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import team3647.frc2023.constants.AutoConstants;
+import team3647.frc2023.constants.ExtenderConstants;
+import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.robot.ScoreStateFinder;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
+import team3647.frc2023.subsystems.Superstructure.Level;
 
 public class AutoCommands {
     private final SwerveDrive drive;
@@ -30,7 +40,7 @@ public class AutoCommands {
     // arm rotate for cone
     // 2 second intake overestimate?
     // 1 second score underestimate?
-    
+
     public Command bottom2C1B() {
         SequentialCommandGroup drivetrainSequence = new SequentialCommandGroup(
                 new WaitCommand(1),
@@ -46,7 +56,7 @@ public class AutoCommands {
         return new ParallelCommandGroup(drivetrainSequence);
     }
 
-    //arm rotate for cone
+    // arm rotate for cone
     public Command bottom1C2B() {
         SequentialCommandGroup drivetrainSequence = new SequentialCommandGroup(
                 new WaitCommand(1),
@@ -80,18 +90,22 @@ public class AutoCommands {
 
     public Command top1C1B() {
         SequentialCommandGroup drivetrainSequence = new SequentialCommandGroup(
-                new WaitCommand(1),
+                new WaitCommand(1), 
                 getTraj("S_P4", true),
                 new WaitCommand(2),
                 getTraj("P4_SB", false),
                 new WaitCommand(1),
                 getTraj("tSB_balance", false),
                 superstructure.drivetrainCommands
-                        .balance(
+                        .robotRelativeDrive(new Translation2d(.5, 0), 1),
+                superstructure.drivetrainCommands.balance(
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController));
 
-        return new ParallelCommandGroup(drivetrainSequence);
+        SequentialCommandGroup scoringSequence = new SequentialCommandGroup(
+                superstructure.arm(() -> Level.coneThree).withTimeout(1)
+        );
+        return drivetrainSequence;
     }
 
     public Command centerR1C() {

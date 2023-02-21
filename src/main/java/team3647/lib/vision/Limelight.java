@@ -37,12 +37,9 @@ public class Limelight implements AprilTagCamera {
         X("tx"),
         Y("ty"),
         AREA("ta"),
-        SKEW("ts"),
         LATENCY_PIPE_MS("tl"),
         LATENCY_CAP_MS("cl"),
-        RAW_CORNERS("tcornxy"),
         TAG_ID("tid"),
-        CAM_TRANS("camtran"),
         ROBOT_POSE("botpose_wpiblue");
 
         public final String str;

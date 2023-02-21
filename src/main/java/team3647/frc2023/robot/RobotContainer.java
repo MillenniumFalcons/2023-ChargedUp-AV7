@@ -49,16 +49,16 @@ public class RobotContainer {
     public RobotContainer() {
         pdh.clearStickyFaults();
         scheduler.registerSubsystem(
-                swerve //printer, pivot, extender, grabber, visionController, scoreStateFinder
+                 swerve, printer, pivot, extender, grabber, visionController, scoreStateFinder
                 );
 
         configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
-        //pivot.setEncoder(PivotConstants.kInitialAngle);
-        //extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        //swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
-        //swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
+        pivot.setEncoder(PivotConstants.kInitialAngle);
+        extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
+        //swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
     }
 
     private void configureButtonBindings() {
