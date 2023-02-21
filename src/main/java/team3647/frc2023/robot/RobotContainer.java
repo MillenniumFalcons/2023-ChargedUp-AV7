@@ -76,9 +76,10 @@ public class RobotContainer {
                 .leftBumper
                 .whileTrue(superstructure.grabberCommands.openGrabber())
                 .onFalse(
-                        Commands.run(() -> {}, pivot)
-                                .withTimeout(0.6)
-                                .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6)));
+                        superstructure
+                                .pivotCommands
+                                .stow()
+                                .alongWith(superstructure.extenderCommands.stow()));
 
         mainController
                 .rightBumper
@@ -120,14 +121,29 @@ public class RobotContainer {
                                                                         panelScoreStateFinder
                                                                                 ::getScorePose)))));
 
-        var leftStickYGreaterPoint15 =
-                new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
+        var extenderOverrideOnForward =
+                new Trigger(
+                        () ->
+                                Math.abs(ctrlPanelScoring.getJoystickFBAxis()) > 0.2
+                                        && ctrlPanelOverrides.getRedFour());
 
-        leftStickYGreaterPoint15.onTrue(
+        extenderOverrideOnForward.onTrue(
                 superstructure
                         .extenderCommands
-                        .openLoopSlow(coController::getLeftStickY)
-                        .until(leftStickYGreaterPoint15.negate().debounce(0.5)));
+                        .openloop(() -> 0.15)
+                        .until(extenderOverrideOnForward.negate().debounce(0.5)));
+
+        var pivotOverrideOnFoward =
+                new Trigger(
+                        () ->
+                                Math.abs(ctrlPanelOverrides.getJoystickFBAxis()) > 0.2
+                                        && ctrlPanelOverrides.getRedFour());
+
+        pivotOverrideOnFoward.onTrue(
+                superstructure
+                        .extenderCommands
+                        .openloop(() -> 0.15)
+                        .until(pivotOverrideOnFoward.negate().debounce(0.5)));
     }
 
     private void configureDefaultCommands() {
@@ -139,14 +155,9 @@ public class RobotContainer {
                         mainController::getLeftTriggerValue,
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
-        pivot.setDefaultCommand(
-                superstructure
-                        .pivotCommands
-                        .setAngle(() -> PivotConstants.kInitialAngle)
-                        .repeatedly());
+        pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
-        extender.setDefaultCommand(
-                superstructure.extenderCommands.length(ExtenderConstants.kMinimumPositionMeters));
+        extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
     void configTestCommands() {
@@ -175,9 +186,12 @@ public class RobotContainer {
         printer.addDouble("Extender Ticks", extender::getNativePos);
         printer.addString("Game Piece", grabber::getGamePieceStr);
 
-        printer.addBoolean("Column1 I guess", () -> coPanel.getLevelLow());
+        printer.addBoolean("Column1 I guess", () -> ctrlPanelScoring.getLevelLow());
         printer.addPose("target", panelScoreStateFinder::findScorePose);
         printer.addString("Level", panelScoreStateFinder::getScoreLevelStr);
+        printer.addDouble("Value JOYSTICK Extender", ctrlPanelScoring::getJoystickFBAxis);
+        printer.addDouble("Value JOYSTICK pivot", ctrlPanelOverrides::getJoystickFBAxis);
+        printer.addBoolean("ButtonSSS", ctrlPanelOverrides::getRedFour);
     }
 
     public Command getAutonomousCommand() {
@@ -185,8 +199,8 @@ public class RobotContainer {
     }
 
     private final Joysticks mainController = new Joysticks(0);
-    private final Joysticks coController = new Joysticks(1);
-    private final ControlPanel coPanel = new ControlPanel(3);
+    private final ControlPanel ctrlPanelScoring = new ControlPanel(1);
+    private final ControlPanel ctrlPanelOverrides = new ControlPanel(2);
 
     //     public final RollerGrabber rollerGrabber =
     //             new RollerGrabber(
@@ -211,9 +225,7 @@ public class RobotContainer {
                     new NetworkColorSensor(
                             ColorSensorConstants.kProximityEntry,
                             ColorSensorConstants.kColorEntry,
-                            ColorSensorConstants.kMaxReadDistance),
-                    coController.rightBumper,
-                    coController.leftBumper);
+                            ColorSensorConstants.kMaxReadDistance));
 
     public final Pivot pivot =
             new Pivot(
@@ -255,16 +267,16 @@ public class RobotContainer {
     final GroupPrinter printer = GroupPrinter.getInstance();
     final PanelScoreStateFinder panelScoreStateFinder =
             new PanelScoreStateFinder(
-                    coPanel::getLevelLow,
-                    coPanel::getLevelMid,
-                    coPanel::getLevelHigh,
-                    coPanel::getColumnOne,
-                    coPanel::getColumnTwo,
-                    coPanel::getColumnThree,
-                    coPanel::getColumnFour,
-                    coPanel::getColumnFive,
-                    coPanel::getColumnSix,
-                    coPanel::getColumnSeven,
-                    coPanel::getColumnEight,
-                    coPanel::getColumnNine);
+                    ctrlPanelOverrides::getLevelLow,
+                    ctrlPanelScoring::getLevelMid,
+                    ctrlPanelScoring::getLevelHigh,
+                    ctrlPanelScoring::getColumnOne,
+                    ctrlPanelScoring::getColumnTwo,
+                    ctrlPanelScoring::getColumnThree,
+                    ctrlPanelScoring::getColumnFour,
+                    ctrlPanelScoring::getColumnFive,
+                    ctrlPanelScoring::getColumnSix,
+                    ctrlPanelScoring::getColumnSeven,
+                    ctrlPanelScoring::getColumnEight,
+                    ctrlPanelScoring::getColumnNine);
 }

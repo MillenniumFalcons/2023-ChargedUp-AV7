@@ -17,7 +17,13 @@ public class ControlPanel {
         Column6(9),
         Column7(10),
         Column8(11),
-        Column9(12);
+        Column9(12),
+        Red1(8),
+        Red2(5),
+        Red3(9),
+        Red4(4),
+        White1(7),
+        White2(6);
 
         public final int value;
 
@@ -76,6 +82,14 @@ public class ControlPanel {
 
     public boolean getColumnNine() {
         return getButton(Buttons.Column9);
+    }
+
+    public boolean getRedFour() {
+        return getButton(Buttons.Red4);
+    }
+
+    public double getJoystickFBAxis() {
+        return DriverStation.getStickAxis(this.pin, 0);
     }
 
     public boolean getButton(Buttons button) {

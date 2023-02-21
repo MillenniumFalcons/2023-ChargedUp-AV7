@@ -2,7 +2,10 @@ package team3647.frc2023.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
+import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.subsystems.Extender;
 
 public class ExtenderCommands {
@@ -17,6 +20,31 @@ public class ExtenderCommands {
 
     public Command length(double length) {
         return Commands.run(() -> extender.setLengthMeters(length), extender);
+    }
+
+    public Command stow() {
+        return length(ExtenderConstants.kMinimumPositionMeters);
+    }
+
+    public Command holdPositionAtCall() {
+        return new Command() {
+            double degreeAtStart = ExtenderConstants.kMinimumPositionMeters;
+
+            @Override
+            public void initialize() {
+                degreeAtStart = extender.getPosition();
+            }
+
+            @Override
+            public void execute() {
+                extender.setLengthMeters(degreeAtStart);
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                return Set.of(extender);
+            }
+        };
     }
 
     private final Extender extender;
