@@ -38,7 +38,8 @@ public class Limelight implements AprilTagCamera {
         Y("ty"),
         AREA("ta"),
         SKEW("ts"),
-        LATNECY_MS("tl"),
+        LATENCY_PIPE_MS("tl"),
+        LATENCY_CAP_MS("cl"),
         RAW_CORNERS("tcornxy"),
         TAG_ID("tid"),
         CAM_TRANS("camtran"),
@@ -62,7 +63,8 @@ public class Limelight implements AprilTagCamera {
         this.ip = ip;
         this.extraLatencySec = extraLatencySec;
         this.kCamConstants = camConstants;
-        table.getEntry(Data.LATNECY_MS.str);
+        table.getEntry(Data.LATENCY_PIPE_MS.str);
+        table.getEntry(Data.LATENCY_CAP_MS.str);
     }
 
     public synchronized void writeToInputs(VisionInputs inputs) {
@@ -84,15 +86,13 @@ public class Limelight implements AprilTagCamera {
                 new Pose3d(
                         new Translation3d(arr[0], arr[1], arr[2]),
                         new Rotation3d(arr[3], arr[4], arr[5]));
+        double totalLatency = getDouble(Data.LATENCY_CAP_MS) + getDouble(Data.LATENCY_PIPE_MS);
 
         return new StampedPose(
                 new Pose2d(
                         new Translation2d(robotPose.getX(), robotPose.getY()),
                         new Rotation2d(robotPose.getRotation().getX())),
-                Timer.getFPGATimestamp()
-                        - getDouble(Data.LATNECY_MS) / 1000
-                        - 0.011
-                        - extraLatencySec);
+                Timer.getFPGATimestamp() - totalLatency / 1000 - 0.011 - extraLatencySec);
     }
 
     @Override

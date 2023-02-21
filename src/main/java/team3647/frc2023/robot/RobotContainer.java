@@ -69,16 +69,19 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
-        mainController.buttonY.onTrue(
-                Commands.run(() -> {}, pivot)
-                        .withTimeout(0.5)
-                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.5)));
+        mainController
+                .leftBumper
+                .whileTrue(superstructure.grabberCommands.openGrabber())
+                .onFalse(
+                        Commands.run(() -> {}, pivot)
+                                .withTimeout(0.6)
+                                .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6)));
         // left bumper intake
         // left trigger slow
         // right bumper release
         // right trigger auto drive
-        mainController.leftBumper.whileTrue(superstructure.grabberCommands.openGrabber());
 
+        // hold and line up, release and wait for it to drive back
         mainController
                 .rightBumper
                 .onTrue(
@@ -101,17 +104,34 @@ public class RobotContainer {
                                                                         new Translation2d(-0.8, 0),
                                                                         0.5))
                                                 .until(mainController::anyStickMoved)));
-
         mainController.rightTrigger.onTrue(
-                superstructure
-                        .driveAndArm(
-                                scoreStateFinder::getScorePoint, scoreStateFinder::getScoreLevel)
-                        .alongWith(
-                                new InstantCommand(
-                                        () ->
-                                                printer.addPose(
-                                                        "target",
-                                                        scoreStateFinder::getScorePose))));
+                Commands.run(() -> {}, pivot)
+                        .withTimeout(0.6)
+                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6))
+                        .andThen(
+                                superstructure
+                                        .driveAndArmSequential(
+                                                scoreStateFinder::getScorePoint,
+                                                scoreStateFinder::getScoreLevel)
+                                        .alongWith(
+                                                new InstantCommand(
+                                                        () ->
+                                                                printer.addPose(
+                                                                        "target",
+                                                                        scoreStateFinder
+                                                                                ::getScorePose)))));
+
+        coController
+                .rightTrigger
+                .whileTrue(
+                        superstructure
+                                .groundIntake()
+                                .alongWith(superstructure.grabberCommands.openGrabber()))
+                .onFalse(
+                        superstructure
+                                .groundIntake()
+                                .alongWith(superstructure.grabberCommands.closeGrabber())
+                                .withTimeout(1.2));
 
         var leftStickYGreaterPoint15 =
                 new Trigger(() -> Math.abs(coController.getLeftStickY()) > 0.15);
