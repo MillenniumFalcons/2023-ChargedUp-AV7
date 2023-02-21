@@ -3,7 +3,6 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -11,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ColorSensorConstants;
 import team3647.frc2023.constants.ExtenderConstants;
@@ -56,11 +56,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        // mainController
-        //         .rightTrigger
-        //         .whileTrue(Commands.run(() -> rollerGrabber.intake(), this.rollerGrabber))
-        //         .onFalse(Commands.run(() -> rollerGrabber.close(), rollerGrabber));
-
         mainController.buttonX.whileTrue(
                 superstructure
                         .drivetrainCommands
@@ -68,19 +63,18 @@ public class RobotContainer {
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
+
+        mainController.buttonA.onTrue(superstructure.stow());
+        mainController
+                .leftBumper
+                .whileTrue(superstructure.grabberCommands.openGrabber())
+                .onFalse(superstructure.stow());
         // left bumper intake
         // left trigger slow
         // right bumper release
         // right trigger auto drive
-        mainController
-                .leftBumper
-                .whileTrue(superstructure.grabberCommands.openGrabber())
-                .onFalse(
-                        superstructure
-                                .pivotCommands
-                                .stow()
-                                .alongWith(superstructure.extenderCommands.stow()));
 
+        // hold and line up, release and wait for it to drive back
         mainController
                 .rightBumper
                 .onTrue(
@@ -93,33 +87,31 @@ public class RobotContainer {
                                 .grabberCommands
                                 .closeGrabber()
                                 .withTimeout(0.5)
-                                .andThen(
-                                        superstructure
-                                                .loadingStation()
-                                                .withTimeout(0.5)
-                                                .alongWith(
-                                                        superstructure.drivetrainCommands
-                                                                .robotRelativeDrive(
-                                                                        new Translation2d(-0.8, 0),
-                                                                        0.5))
-                                                .until(mainController::anyStickMoved)));
-
+                                .until(mainController::anyStickMoved));
         mainController.rightTrigger.onTrue(
-                Commands.run(() -> {}, pivot)
-                        .withTimeout(0.6)
-                        .alongWith(Commands.run(() -> {}, extender).withTimeout(0.6))
-                        .andThen(
-                                superstructure
-                                        .driveAndArmSequential(
-                                                panelScoreStateFinder::getScorePoint,
-                                                panelScoreStateFinder::getScoreLevel)
-                                        .alongWith(
-                                                new InstantCommand(
-                                                        () ->
-                                                                printer.addPose(
-                                                                        "target",
-                                                                        panelScoreStateFinder
-                                                                                ::getScorePose)))));
+                superstructure
+                        .driveAndArmSequential(
+                                panelScoreStateFinder::getScorePoint,
+                                panelScoreStateFinder::getScoreLevel)
+                        .alongWith(
+                                new InstantCommand(
+                                        () ->
+                                                printer.addPose(
+                                                        "target",
+                                                        panelScoreStateFinder::getScorePose))));
+
+        var groundIntakeButton = new Trigger(() -> ctrlPanelOverrides.getRedThree());
+
+        groundIntakeButton
+                .whileTrue(
+                        superstructure
+                                .groundIntake()
+                                .alongWith(superstructure.grabberCommands.openGrabber()))
+                .onFalse(
+                        superstructure
+                                .grabberCommands
+                                .closeGrabber()
+                                .alongWith(new WaitCommand(0.7).andThen(superstructure.stow())));
 
         var extenderOverrideOnForward =
                 new Trigger(
@@ -130,7 +122,19 @@ public class RobotContainer {
         extenderOverrideOnForward.onTrue(
                 superstructure
                         .extenderCommands
-                        .openloop(() -> 0.15)
+                        .openloop(() -> 0.2)
+                        .until(extenderOverrideOnForward.negate().debounce(0.5)));
+
+        var extenderOverrideOnReverse =
+                new Trigger(
+                        () ->
+                                Math.abs(ctrlPanelScoring.getJoystickFBAxis()) < -0.2
+                                        && ctrlPanelOverrides.getRedFour());
+
+        extenderOverrideOnReverse.onTrue(
+                superstructure
+                        .extenderCommands
+                        .openloop(() -> -0.2)
                         .until(extenderOverrideOnForward.negate().debounce(0.5)));
 
         var pivotOverrideOnFoward =
@@ -143,6 +147,18 @@ public class RobotContainer {
                 superstructure
                         .extenderCommands
                         .openloop(() -> 0.15)
+                        .until(pivotOverrideOnFoward.negate().debounce(0.5)));
+
+        var pivotOverrideOnReverse =
+                new Trigger(
+                        () ->
+                                Math.abs(ctrlPanelOverrides.getJoystickFBAxis()) < -0.2
+                                        && ctrlPanelOverrides.getRedFour());
+
+        pivotOverrideOnReverse.onTrue(
+                superstructure
+                        .extenderCommands
+                        .openloop(() -> -0.15)
                         .until(pivotOverrideOnFoward.negate().debounce(0.5)));
     }
 
