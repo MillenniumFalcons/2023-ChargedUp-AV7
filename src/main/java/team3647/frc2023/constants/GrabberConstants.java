@@ -12,6 +12,7 @@ public class GrabberConstants {
     public static final DigitalInput gamePieceSensor = new DigitalInput(0);
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.GrabberIds.masterId);
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
+    // need conversion to real values (deg and m/s here)
 
     public static final double gearBoxReduction = 1.0;
     public static final double kNativePosToMeters = 1;

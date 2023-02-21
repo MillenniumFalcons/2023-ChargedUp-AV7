@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -63,6 +64,7 @@ public class RobotContainer {
                         .until(mainController::anyStickMoved));
 
         mainController.buttonA.onTrue(superstructure.stow());
+        // score need better open grabber logic
         mainController
                 .leftBumper
                 .whileTrue(superstructure.grabberCommands.openGrabber())
@@ -170,7 +172,11 @@ public class RobotContainer {
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
-        grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
+        grabber.setDefaultCommand(
+                new ConditionalCommand(
+                        superstructure.grabberCommands.closeGrabber(),
+                        superstructure.grabberCommands.closeAndRollIn(),
+                        grabber::getHasGamePiece));
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 

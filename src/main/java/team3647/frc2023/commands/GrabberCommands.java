@@ -10,6 +10,14 @@ public class GrabberCommands {
         return Commands.run(() -> grabber.close(), this.grabber);
     }
 
+    public Command closeAndRollIn() {
+        return Commands.run(() -> grabber.closeAndRoll(), this.grabber);
+    }
+
+    public Command holdCube() {
+        return Commands.run(() -> grabber.holdCube(), this.grabber);
+    }
+
     public Command openGrabber() {
         return Commands.run(() -> grabber.open(), this.grabber)
                 .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
@@ -25,10 +33,10 @@ public class GrabberCommands {
                 .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
     }
 
-    public Command holdPosition() {
-        return Commands.run(() -> grabber.holdCurrentPosition(), this.grabber)
-                .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
-    }
+    // public Command holdPosition() {
+    //     return Commands.run(() -> grabber.holdCurrentPosition(), this.grabber)
+    //             .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
+    // }
 
     private final Grabber grabber;
 

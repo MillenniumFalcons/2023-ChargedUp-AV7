@@ -35,7 +35,19 @@ public class Grabber extends TalonFXSubsystem {
         super.setOpenloop(0.0);
     }
 
+    public void closeAndRoll() {
+        periodicIO.pistonOpen = false;
+        super.setOpenloop(0.2);
+    }
+
+    public void holdCube() {
+        periodicIO.pistonOpen = true;
+        super.setOpenloop(0.3);
+    }
+
     public void open() {
+        // add check what place its at, add a suppler to the constructor --> if it is at a cube
+        // location --> then open means roller out slowly, if not, normal open
         periodicIO.pistonOpen = true;
     }
 
@@ -49,9 +61,9 @@ public class Grabber extends TalonFXSubsystem {
         super.setOpenloop(0.4);
     }
 
-    public void holdCurrentPosition() {
-        super.setPosition(super.getPosition(), 0);
-    }
+    // public void holdCurrentPosition() {
+    //     super.setPosition(super.getPosition(), 0);
+    // }
 
     public boolean getHasGamePiece() {
         return periodicIO.hasGamePiece;
