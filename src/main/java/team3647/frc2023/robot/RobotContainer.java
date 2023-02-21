@@ -121,7 +121,7 @@ public class RobotContainer {
                         .until(leftStickYGreaterPoint15.negate().debounce(0.5)));
 
         var rightStickYGreaterPoint15 =
-                new Trigger(() -> Math.abs(coController.getRightStickX()) > 0.15);
+                new Trigger(() -> Math.abs(coController.getRightStickY()) > 0.15);
 
         rightStickYGreaterPoint15.onTrue(
                 superstructure
