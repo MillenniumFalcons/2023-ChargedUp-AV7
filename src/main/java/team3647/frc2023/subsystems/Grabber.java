@@ -1,60 +1,71 @@
 package team3647.frc2023.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import team3647.frc2023.subsystems.SwerveDrive.PeriodicIO;
-import team3647.lib.NetworkColorSensor;
-import team3647.lib.NetworkColorSensor.GamePiece;
-import team3647.lib.PeriodicSubsystem;
+import team3647.lib.TalonFXSubsystem;
 
-public class Grabber implements PeriodicSubsystem {
+public class Grabber extends TalonFXSubsystem {
     private final Solenoid pistons;
-    private final NetworkColorSensor colorSensor;
+    private final DigitalInput gamePieceSensor;
     private final PeriodicIO periodicIO = new PeriodicIO();
 
     public static class PeriodicIO {
-        public GamePiece gamePiece = GamePiece.NONE;
+        public boolean hasGamePiece = false;
         public boolean pistonOpen = false;
     }
 
-    public Grabber(Solenoid pistons, NetworkColorSensor colorSensor) {
+    public Grabber(
+            TalonFX master,
+            Solenoid pistons,
+            DigitalInput gamePieceSensor,
+            double velocityConversion,
+            double positionConversion,
+            double nominalVoltage,
+            double kDt) {
+        super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.pistons = pistons;
-        this.colorSensor = colorSensor;
+        this.gamePieceSensor = gamePieceSensor;
         close();
     }
 
     public void close() {
         periodicIO.pistonOpen = false;
+        super.setOpenloop(0.0);
     }
 
     public void open() {
         periodicIO.pistonOpen = true;
     }
 
-    public GamePiece getGamepiece() {
-        // return colorSensor.getGamepiece();
-        return periodicIO.gamePiece;
+    public void intakeCone() {
+        periodicIO.pistonOpen = false;
+        super.setOpenloop(0.4);
     }
 
-    public String getGamePieceStr() {
-        return periodicIO.gamePiece.str;
+    public void intakeCube() {
+        periodicIO.pistonOpen = true;
+        super.setOpenloop(0.4);
+    }
+
+    public void holdCurrentPosition() {
+        super.setPosition(super.getPosition(), 0);
+    }
+
+    public boolean getHasGamePiece() {
+        return periodicIO.hasGamePiece;
     }
 
     @Override
     public void readPeriodicInputs() {
-        // if (isOverrideCone.getAsBoolean() == true) {
-        //     periodicIO.gamePiece = GamePiece.CONE;
-        // } else if (isOverrideCube.getAsBoolean()) {
-        //     periodicIO.gamePiece = GamePiece.CUBE;
-        // } else {
-        //     // periodicIO.gamePiece = colorSensor.getGamepiece();
-        //     // periodicIO.gamePiece = GamePiece.NONE;
-        //     periodicIO.gamePiece = GamePiece.CONE;
-        // }
-        periodicIO.gamePiece = GamePiece.CONE;
+        super.readPeriodicInputs();
+        periodicIO.hasGamePiece = gamePieceSensor.get();
     }
 
     @Override
     public void writePeriodicOutputs() {
+        super.writePeriodicOutputs();
         pistons.set(periodicIO.pistonOpen);
     }
 

@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import team3647.frc2023.constants.ColorSensorConstants;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
@@ -27,7 +26,6 @@ import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
 import team3647.lib.GroupPrinter;
-import team3647.lib.NetworkColorSensor;
 import team3647.lib.inputs.ControlPanel;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.vision.Limelight;
@@ -200,7 +198,6 @@ public class RobotContainer {
 
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
-        printer.addString("Game Piece", grabber::getGamePieceStr);
 
         printer.addBoolean("Column1 I guess", () -> ctrlPanelScoring.getLevelLow());
         printer.addPose("target", panelScoreStateFinder::findScorePose);
@@ -237,11 +234,13 @@ public class RobotContainer {
     // right menu button cube, left menu button cone
     public final Grabber grabber =
             new Grabber(
+                    GrabberConstants.kMaster,
                     GrabberConstants.pistons,
-                    new NetworkColorSensor(
-                            ColorSensorConstants.kProximityEntry,
-                            ColorSensorConstants.kColorEntry,
-                            ColorSensorConstants.kMaxReadDistance));
+                    GrabberConstants.gamePieceSensor,
+                    GrabberConstants.kNativeVelToMpS,
+                    GrabberConstants.kNativePosToMeters,
+                    GrabberConstants.kNominalVoltage,
+                    GlobalConstants.kDt);
 
     public final Pivot pivot =
             new Pivot(

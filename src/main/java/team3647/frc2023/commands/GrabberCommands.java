@@ -15,6 +15,21 @@ public class GrabberCommands {
                 .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
     }
 
+    public Command intakeCone() {
+        return Commands.run(() -> grabber.intakeCone(), this.grabber)
+                .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
+    }
+
+    public Command intakeCube() {
+        return Commands.run(() -> grabber.intakeCube(), this.grabber)
+                .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
+    }
+
+    public Command holdPosition() {
+        return Commands.run(() -> grabber.holdCurrentPosition(), this.grabber)
+                .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
+    }
+
     private final Grabber grabber;
 
     public GrabberCommands(Grabber grabber) {
