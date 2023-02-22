@@ -67,8 +67,8 @@ public class DrivetrainCommands {
 
     public Command robotRelativeDrive(Translation2d t, double seconds) {
         return Commands.run(() -> swerve.drive(t, 0, false, true), swerve)
-                .withTimeout(seconds)
-                .andThen(Commands.run(() -> swerve.end()));
+                .finallyDo(interupted -> swerve.end())
+                .withTimeout(seconds);
     }
 
     public Command toPointCommand(Supplier<PathPoint> selectedPoint) {

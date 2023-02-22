@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -50,7 +51,11 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        swerve.setRobotPose(new Pose2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(
+                new Pose2d(
+                        Units.inchesToMeters(610 - 96.5 - 16),
+                        Units.inchesToMeters(177.4 - 18.5 + 16),
+                        Rotation2d.fromDegrees(0)));
     }
 
     private void configureButtonBindings() {
@@ -62,12 +67,15 @@ public class RobotContainer {
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
 
-        mainController.buttonB.onTrue(
-                superstructure
-                        .grabberCommands
-                        .openGrabber()
-                        .withTimeout(0.5)
-                        .andThen(superstructure.stow()));
+        mainController
+                .buttonB
+                .onTrue(
+                        superstructure
+                                .grabberCommands
+                                .openGrabber()
+                                .withTimeout(0.5)
+                                .andThen(superstructure.stow()))
+                .onFalse(superstructure.grabberCommands.closeGrabber());
         mainController
                 .leftBumper
                 .whileTrue(
@@ -99,16 +107,9 @@ public class RobotContainer {
                                 .closeGrabber()
                                 .withTimeout(0.5)
                                 .andThen(
-                                        superstructure
-                                                .loadingStation()
-                                                .withTimeout(0.5)
-                                                .alongWith(
-                                                        superstructure.drivetrainCommands
-                                                                .robotRelativeDrive(
-                                                                        new Translation2d(-0.8, 0),
-                                                                        0.5))
-                                                .until(mainController::anyStickMoved)
-                                                .andThen(superstructure.stow())));
+                                        superstructure.drivetrainCommands.robotRelativeDrive(
+                                                new Translation2d(-0.8, 0), 0.5))
+                                .until(mainController::anyStickMoved));
 
         mainController.rightTrigger.onTrue(
                 superstructure
@@ -121,8 +122,8 @@ public class RobotContainer {
                                                 printer.addPose(
                                                         "target",
                                                         panelScoreStateFinder::getScorePose))));
-        // var groundIntakeButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
-        // groundIntakeButton
+        var stowButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
+        stowButton.onTrue(superstructure.stow());
 
         var extenderOverrideOnForward =
                 new Trigger(
@@ -211,7 +212,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addDouble("rot", swerve::getHeading);
-        // printer.addPose("odo", swerve::getPose);
+        printer.addPose("odo", swerve::getPose);
         printer.addPose("estim", swerve::getEstimPose);
 
         printer.addDouble("Pivot Deg", pivot::getAngle);
@@ -220,9 +221,6 @@ public class RobotContainer {
         printer.addBoolean("Column1 I guess", () -> ctrlPanelScoring.getLevelLow());
         printer.addPose("target", panelScoreStateFinder::findScorePose);
         printer.addString("Level", panelScoreStateFinder::getScoreLevelStr);
-        printer.addDouble("Value JOYSTICK Extender", ctrlPanelScoring::getJoystickFBAxis);
-        printer.addDouble("Value JOYSTICK pivot", ctrlPanelOverrides::getJoystickFBAxis);
-        printer.addBoolean("ButtonSSS", ctrlPanelOverrides::getRedFour);
     }
 
     public Command getAutonomousCommand() {

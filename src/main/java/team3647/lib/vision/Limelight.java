@@ -84,12 +84,12 @@ public class Limelight implements AprilTagCamera {
                         new Translation3d(arr[0], arr[1], arr[2]),
                         new Rotation3d(arr[3], arr[4], arr[5]));
         double totalLatency = getDouble(Data.LATENCY_CAP_MS) + getDouble(Data.LATENCY_PIPE_MS);
-
+        System.out.println(totalLatency);
         return new StampedPose(
                 new Pose2d(
                         new Translation2d(robotPose.getX(), robotPose.getY()),
                         new Rotation2d(robotPose.getRotation().getX())),
-                Timer.getFPGATimestamp() - totalLatency / 1000 - 0.011 - extraLatencySec);
+                Timer.getFPGATimestamp() - totalLatency / 1000 - extraLatencySec);
     }
 
     @Override

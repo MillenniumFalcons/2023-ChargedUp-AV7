@@ -24,7 +24,8 @@ public class ExtenderCommands {
     }
 
     public Command stow() {
-        return length(() -> ExtenderConstants.kMinimumPositionMeters);
+        return length(() -> ExtenderConstants.kMinimumPositionMeters)
+                .andThen(Commands.run(() -> {}, extender));
     }
 
     public Command holdPositionAtCall() {

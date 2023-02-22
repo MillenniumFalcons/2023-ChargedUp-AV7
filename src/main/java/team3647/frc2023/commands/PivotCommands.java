@@ -27,7 +27,7 @@ public class PivotCommands {
     }
 
     public Command stow() {
-        return setAngle(() -> PivotConstants.kInitialAngle);
+        return setAngle(() -> PivotConstants.kInitialAngle).andThen(Commands.run(() -> {}, pivot));
     }
 
     public Command holdPositionAtCall() {
