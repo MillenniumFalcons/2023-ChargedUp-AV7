@@ -112,10 +112,13 @@ public class RobotContainer {
                                 .until(mainController::anyStickMoved));
 
         mainController.rightTrigger.onTrue(
-                superstructure
-                        .driveAndArmSequential(
-                                panelScoreStateFinder::getScorePoint,
-                                panelScoreStateFinder::getScoreLevel)
+                Commands.run(() -> {}, grabber)
+                        .alongWith(Commands.run(() -> {}, extender))
+                        .withTimeout(0.2)
+                        .andThen(
+                                superstructure.driveAndArmSequential(
+                                        panelScoreStateFinder::getScorePoint,
+                                        panelScoreStateFinder::getScoreLevel))
                         .alongWith(
                                 new InstantCommand(
                                         () ->
