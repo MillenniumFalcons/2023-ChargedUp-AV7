@@ -3,6 +3,7 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -10,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
@@ -62,21 +62,56 @@ public class RobotContainer {
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
 
-        mainController.buttonA.onTrue(superstructure.stow());
+        mainController.buttonA.onTrue(
+                superstructure
+                        .grabberCommands
+                        .openGrabber()
+                        .withTimeout(0.5)
+                        .andThen(superstructure.stow()));
 
         // score need better open grabber logic
         mainController
                 .leftBumper
-                .whileTrue(superstructure.groundIntake())
-                .onFalse(new WaitCommand(0.7).andThen(superstructure.stow()));
+                .whileTrue(
+                        superstructure
+                                .groundIntake()
+                                .alongWith(superstructure.grabberCommands.openGrabber()))
+                .onFalse(
+                        superstructure
+                                .grabberCommands
+                                .closeGrabber()
+                                .withTimeout(0.5)
+                                .andThen(superstructure.stow()));
 
         // left trigger slow
         // right bumper release
         // right trigger auto drive
 
         // hold and line up, release and wait for it to drive back
-        mainController.rightBumper.onTrue(
-                superstructure.loadingStation().until(mainController::anyStickMoved));
+        mainController
+                .rightBumper
+                .onTrue(
+                        superstructure
+                                .grabberCommands
+                                .openGrabber()
+                                .alongWith(superstructure.loadingStation()))
+                .onFalse(
+                        superstructure
+                                .grabberCommands
+                                .closeGrabber()
+                                .withTimeout(0.5)
+                                .andThen(
+                                        superstructure
+                                                .loadingStation()
+                                                .withTimeout(0.5)
+                                                .alongWith(
+                                                        superstructure
+                                                                .drivetrainCommands
+                                                                .robotRelativeDrive(
+                                                                        new Translation2d(-0.8, 0),
+                                                                        0.5)
+                                                                .andThen(superstructure.stow()))
+                                                .until(mainController::anyStickMoved)));
 
         mainController.rightTrigger.onTrue(
                 superstructure
@@ -89,18 +124,6 @@ public class RobotContainer {
                                                 printer.addPose(
                                                         "target",
                                                         panelScoreStateFinder::getScorePose))));
-
-        var intakeConeButton = new Trigger(() -> ctrlPanelOverrides.getRed7());
-        var intakeCubeButton = new Trigger(() -> ctrlPanelOverrides.getRed8());
-
-        intakeConeButton.whileTrue(superstructure.grabberCommands.intakeCone());
-        intakeCubeButton.whileTrue(superstructure.grabberCommands.intakeCube());
-
-        var outtakeCone = new Trigger(() -> ctrlPanelOverrides.getRed6());
-        var outtakeCube = new Trigger(() -> ctrlPanelOverrides.getRed5());
-
-        outtakeCone.whileTrue(superstructure.grabberCommands.openGrabber());
-        outtakeCube.whileTrue(superstructure.grabberCommands.outtakeCube());
 
         var extenderOverrideOnForward =
                 new Trigger(
@@ -166,7 +189,7 @@ public class RobotContainer {
         //                 superstructure.grabberCommands.closeGrabber(),
         //                 superstructure.grabberCommands.closeAndRollIn(),
         //                 grabber::getHasGamePiece));
-        grabber.setDefaultCommand(superstructure.grabberCommands.stop());
+        grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
@@ -243,16 +266,7 @@ public class RobotContainer {
                     ctrlPanelScoring::getColumnNine);
 
     // right menu button cube, left menu button cone
-    public final Grabber grabber =
-            new Grabber(
-                    GrabberConstants.kMaster,
-                    GrabberConstants.pistons,
-                    GrabberConstants.gamePieceSensor,
-                    panelScoreStateFinder::getHasCube,
-                    GrabberConstants.kNativeVelToMpS,
-                    GrabberConstants.kNativePosToMeters,
-                    GrabberConstants.kNominalVoltage,
-                    GlobalConstants.kDt);
+    public final Grabber grabber = new Grabber(GrabberConstants.pistons);
 
     public final Pivot pivot =
             new Pivot(
