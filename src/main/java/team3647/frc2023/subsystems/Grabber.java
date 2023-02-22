@@ -56,7 +56,7 @@ public class Grabber implements PeriodicSubsystem {
             periodicIO.gamePiece = GamePiece.CUBE;
         } else {
             // periodicIO.gamePiece = colorSensor.getGamepiece();
-            periodicIO.gamePiece = GamePiece.NONE;
+            periodicIO.gamePiece = GamePiece.CONE;
         }
     }
 
