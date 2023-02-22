@@ -33,6 +33,11 @@ public class GrabberCommands {
                 .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
     }
 
+    public Command outtakeCube() {
+        return Commands.run(() -> grabber.outtakeCube(), this.grabber)
+                .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
+    }
+
     public Command stop() {
         return Commands.run(() -> grabber.setOpenloop(0), this.grabber)
                 .finallyDo(interrupted -> Commands.run(() -> {}, grabber));

@@ -143,7 +143,7 @@ public class Superstructure {
                         "no level");
 
         public static final Level groundIntake =
-                new Level(189, ExtenderConstants.kMinimumPositionMeters, "ground intake");
+                new Level(187, ExtenderConstants.kMinimumPositionMeters, "ground intake");
 
         public static final Level station =
                 new Level(146, ExtenderConstants.kMinimumPositionMeters, "station");

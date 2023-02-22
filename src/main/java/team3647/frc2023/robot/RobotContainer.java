@@ -63,32 +63,21 @@ public class RobotContainer {
                         .until(mainController::anyStickMoved));
 
         mainController.buttonA.onTrue(superstructure.stow());
+
         // score need better open grabber logic
         mainController
                 .leftBumper
-                .whileTrue(superstructure.grabberCommands.openGrabber())
-                .onFalse(superstructure.stow());
-        mainController.buttonB.onTrue(superstructure.grabberCommands.openGrabber());
-        mainController.buttonY.onTrue(superstructure.grabberCommands.closeGrabber());
+                .whileTrue(superstructure.groundIntake())
+                .onFalse(new WaitCommand(0.7).andThen(superstructure.stow()));
 
         // left trigger slow
         // right bumper release
         // right trigger auto drive
 
         // hold and line up, release and wait for it to drive back
-        mainController
-                .rightBumper
-                .onTrue(
-                        superstructure
-                                .grabberCommands
-                                .intakeCube()
-                                .alongWith(superstructure.loadingStation()))
-                .onFalse(
-                        superstructure
-                                .grabberCommands
-                                .closeGrabber()
-                                .withTimeout(0.5)
-                                .until(mainController::anyStickMoved));
+        mainController.rightBumper.onTrue(
+                superstructure.loadingStation().until(mainController::anyStickMoved));
+
         mainController.rightTrigger.onTrue(
                 superstructure
                         .driveAndArmSequential(
@@ -101,18 +90,17 @@ public class RobotContainer {
                                                         "target",
                                                         panelScoreStateFinder::getScorePose))));
 
-        var groundIntakeButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
+        var intakeConeButton = new Trigger(() -> ctrlPanelOverrides.getRed7());
+        var intakeCubeButton = new Trigger(() -> ctrlPanelOverrides.getRed8());
 
-        groundIntakeButton
-                .whileTrue(
-                        superstructure
-                                .groundIntake()
-                                .alongWith(superstructure.grabberCommands.openGrabber()))
-                .onFalse(
-                        superstructure
-                                .grabberCommands
-                                .closeGrabber()
-                                .alongWith(new WaitCommand(0.7).andThen(superstructure.stow())));
+        intakeConeButton.whileTrue(superstructure.grabberCommands.intakeCone());
+        intakeCubeButton.whileTrue(superstructure.grabberCommands.intakeCube());
+
+        var outtakeCone = new Trigger(() -> ctrlPanelOverrides.getRed6());
+        var outtakeCube = new Trigger(() -> ctrlPanelOverrides.getRed5());
+
+        outtakeCone.whileTrue(superstructure.grabberCommands.openGrabber());
+        outtakeCube.whileTrue(superstructure.grabberCommands.outtakeCube());
 
         var extenderOverrideOnForward =
                 new Trigger(

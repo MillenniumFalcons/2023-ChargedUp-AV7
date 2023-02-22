@@ -49,11 +49,11 @@ public class Grabber extends TalonFXSubsystem {
         // location --> then open means roller out slowly, if not, normal open
         periodicIO.pistonOpen = true;
 
-        if (hasCube.getAsBoolean()) {
-            super.setOpenloop(-0.1);
-        } else {
-            super.setOpenloop(0);
-        }
+        // if (hasCube.getAsBoolean()) {
+        //     super.setOpenloop(-0.1);
+        // } else {
+        //     super.setOpenloop(0);
+        // }
     }
 
     public void intakeCone() {
@@ -64,6 +64,11 @@ public class Grabber extends TalonFXSubsystem {
     public void intakeCube() {
         periodicIO.pistonOpen = true;
         super.setOpenloop(0.4);
+    }
+
+    public void outtakeCube() {
+        periodicIO.pistonOpen = true;
+        super.setOpenloop(-0.1);
     }
 
     public void setPositionNative(double demand) {

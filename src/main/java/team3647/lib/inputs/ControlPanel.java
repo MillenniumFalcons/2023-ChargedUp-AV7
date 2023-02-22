@@ -84,8 +84,24 @@ public class ControlPanel {
         return getButton(Buttons.Column9);
     }
 
+    public boolean getRed5() {
+        return getButton(Buttons.Red2);
+    }
+
+    public boolean getRed6() {
+        return getButton(Buttons.White2);
+    }
+
     public boolean getRed3() {
         return getButton(Buttons.Red3);
+    }
+
+    public boolean getRed7() {
+        return getButton(Buttons.White1);
+    }
+
+    public boolean getRed8() {
+        return getButton(Buttons.Red1);
     }
 
     public boolean getRedFour() {
