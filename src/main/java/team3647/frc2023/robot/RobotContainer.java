@@ -62,14 +62,12 @@ public class RobotContainer {
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
 
-        mainController.buttonA.onTrue(
+        mainController.buttonB.onTrue(
                 superstructure
                         .grabberCommands
                         .openGrabber()
                         .withTimeout(0.5)
                         .andThen(superstructure.stow()));
-
-        // score need better open grabber logic
         mainController
                 .leftBumper
                 .whileTrue(
@@ -105,13 +103,12 @@ public class RobotContainer {
                                                 .loadingStation()
                                                 .withTimeout(0.5)
                                                 .alongWith(
-                                                        superstructure
-                                                                .drivetrainCommands
+                                                        superstructure.drivetrainCommands
                                                                 .robotRelativeDrive(
                                                                         new Translation2d(-0.8, 0),
-                                                                        0.5)
-                                                                .andThen(superstructure.stow()))
-                                                .until(mainController::anyStickMoved)));
+                                                                        0.5))
+                                                .until(mainController::anyStickMoved)
+                                                .andThen(superstructure.stow())));
 
         mainController.rightTrigger.onTrue(
                 superstructure
@@ -124,6 +121,8 @@ public class RobotContainer {
                                                 printer.addPose(
                                                         "target",
                                                         panelScoreStateFinder::getScorePose))));
+        // var groundIntakeButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
+        // groundIntakeButton
 
         var extenderOverrideOnForward =
                 new Trigger(
