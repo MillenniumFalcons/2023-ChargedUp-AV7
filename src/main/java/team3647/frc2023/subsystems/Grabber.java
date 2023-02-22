@@ -3,12 +3,14 @@ package team3647.frc2023.subsystems;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import java.util.function.BooleanSupplier;
 import team3647.frc2023.subsystems.SwerveDrive.PeriodicIO;
 import team3647.lib.TalonFXSubsystem;
 
 public class Grabber extends TalonFXSubsystem {
     private final Solenoid pistons;
     private final DigitalInput gamePieceSensor;
+    private final BooleanSupplier hasCube;
     private final PeriodicIO periodicIO = new PeriodicIO();
 
     public static class PeriodicIO {
@@ -20,6 +22,7 @@ public class Grabber extends TalonFXSubsystem {
             TalonFX master,
             Solenoid pistons,
             DigitalInput gamePieceSensor,
+            BooleanSupplier hasCube,
             double velocityConversion,
             double positionConversion,
             double nominalVoltage,
@@ -27,6 +30,7 @@ public class Grabber extends TalonFXSubsystem {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.pistons = pistons;
         this.gamePieceSensor = gamePieceSensor;
+        this.hasCube = hasCube;
         close();
     }
 
@@ -40,15 +44,16 @@ public class Grabber extends TalonFXSubsystem {
         super.setOpenloop(0.2);
     }
 
-    public void holdCube() {
-        periodicIO.pistonOpen = true;
-        super.setOpenloop(0.3);
-    }
-
     public void open() {
         // add check what place its at, add a suppler to the constructor --> if it is at a cube
         // location --> then open means roller out slowly, if not, normal open
         periodicIO.pistonOpen = true;
+
+        if (hasCube.getAsBoolean()) {
+            super.setOpenloop(-0.1);
+        } else {
+            super.setOpenloop(0);
+        }
     }
 
     public void intakeCone() {
@@ -59,6 +64,10 @@ public class Grabber extends TalonFXSubsystem {
     public void intakeCube() {
         periodicIO.pistonOpen = true;
         super.setOpenloop(0.4);
+    }
+
+    public void setPositionNative(double demand) {
+        super.setPositionNative(demand, 0);
     }
 
     // public void holdCurrentPosition() {

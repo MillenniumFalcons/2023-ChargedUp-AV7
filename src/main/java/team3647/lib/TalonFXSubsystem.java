@@ -101,6 +101,12 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         periodicIO.demand = position / positionConversion;
     }
 
+    protected void setPositionNative(double position, double feedforward) {
+        periodicIO.controlMode = ControlMode.Position;
+        periodicIO.feedforward = feedforward;
+        periodicIO.demand = position;
+    }
+
     /**
      * Motion Magic position
      *

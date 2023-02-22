@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -69,7 +68,9 @@ public class RobotContainer {
                 .leftBumper
                 .whileTrue(superstructure.grabberCommands.openGrabber())
                 .onFalse(superstructure.stow());
-        // left bumper intake
+        mainController.buttonB.onTrue(superstructure.grabberCommands.openGrabber());
+        mainController.buttonY.onTrue(superstructure.grabberCommands.closeGrabber());
+
         // left trigger slow
         // right bumper release
         // right trigger auto drive
@@ -80,7 +81,7 @@ public class RobotContainer {
                 .onTrue(
                         superstructure
                                 .grabberCommands
-                                .openGrabber()
+                                .intakeCube()
                                 .alongWith(superstructure.loadingStation()))
                 .onFalse(
                         superstructure
@@ -100,7 +101,7 @@ public class RobotContainer {
                                                         "target",
                                                         panelScoreStateFinder::getScorePose))));
 
-        var groundIntakeButton = new Trigger(() -> ctrlPanelOverrides.getRedThree());
+        var groundIntakeButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
 
         groundIntakeButton
                 .whileTrue(
@@ -116,50 +117,50 @@ public class RobotContainer {
         var extenderOverrideOnForward =
                 new Trigger(
                         () ->
-                                Math.abs(ctrlPanelScoring.getJoystickFBAxis()) > 0.2
+                                ctrlPanelScoring.getJoystickFBAxis() > 0.5
                                         && ctrlPanelOverrides.getRedFour());
 
-        extenderOverrideOnForward.onTrue(
-                superstructure
-                        .extenderCommands
-                        .openloop(() -> 0.2)
-                        .until(extenderOverrideOnForward.negate().debounce(0.5)));
-
-        var extenderOverrideOnReverse =
-                new Trigger(
-                        () ->
-                                Math.abs(ctrlPanelScoring.getJoystickFBAxis()) < -0.2
-                                        && ctrlPanelOverrides.getRedFour());
-
-        extenderOverrideOnReverse.onTrue(
+        extenderOverrideOnForward.whileTrue(
                 superstructure
                         .extenderCommands
                         .openloop(() -> -0.2)
                         .until(extenderOverrideOnForward.negate().debounce(0.5)));
 
+        var extenderOverrideOnReverse =
+                new Trigger(
+                        () ->
+                                ctrlPanelScoring.getJoystickFBAxis() < -0.5
+                                        && ctrlPanelOverrides.getRedFour());
+
+        extenderOverrideOnReverse.whileTrue(
+                superstructure
+                        .extenderCommands
+                        .openloop(() -> 0.2)
+                        .until(extenderOverrideOnReverse.negate().debounce(0.5)));
+
         var pivotOverrideOnFoward =
                 new Trigger(
                         () ->
-                                Math.abs(ctrlPanelOverrides.getJoystickFBAxis()) > 0.2
+                                ctrlPanelOverrides.getJoystickFBAxis() > 0.5
                                         && ctrlPanelOverrides.getRedFour());
 
-        pivotOverrideOnFoward.onTrue(
+        pivotOverrideOnFoward.whileTrue(
                 superstructure
-                        .extenderCommands
-                        .openloop(() -> 0.15)
+                        .pivotCommands
+                        .openloop(() -> 0.2)
                         .until(pivotOverrideOnFoward.negate().debounce(0.5)));
 
         var pivotOverrideOnReverse =
                 new Trigger(
                         () ->
-                                Math.abs(ctrlPanelOverrides.getJoystickFBAxis()) < -0.2
+                                ctrlPanelOverrides.getJoystickFBAxis() < -0.5
                                         && ctrlPanelOverrides.getRedFour());
 
-        pivotOverrideOnReverse.onTrue(
+        pivotOverrideOnReverse.whileTrue(
                 superstructure
-                        .extenderCommands
-                        .openloop(() -> -0.15)
-                        .until(pivotOverrideOnFoward.negate().debounce(0.5)));
+                        .pivotCommands
+                        .openloop(() -> -0.2)
+                        .until(pivotOverrideOnReverse.negate().debounce(0.5)));
     }
 
     private void configureDefaultCommands() {
@@ -172,11 +173,12 @@ public class RobotContainer {
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
-        grabber.setDefaultCommand(
-                new ConditionalCommand(
-                        superstructure.grabberCommands.closeGrabber(),
-                        superstructure.grabberCommands.closeAndRollIn(),
-                        grabber::getHasGamePiece));
+        // grabber.setDefaultCommand(
+        //         new ConditionalCommand(
+        //                 superstructure.grabberCommands.closeGrabber(),
+        //                 superstructure.grabberCommands.closeAndRollIn(),
+        //                 grabber::getHasGamePiece));
+        grabber.setDefaultCommand(superstructure.grabberCommands.stop());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
@@ -237,12 +239,28 @@ public class RobotContainer {
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
 
+    final PanelScoreStateFinder panelScoreStateFinder =
+            new PanelScoreStateFinder(
+                    ctrlPanelOverrides::getLevelLow,
+                    ctrlPanelScoring::getLevelMid,
+                    ctrlPanelScoring::getLevelHigh,
+                    ctrlPanelScoring::getColumnOne,
+                    ctrlPanelScoring::getColumnTwo,
+                    ctrlPanelScoring::getColumnThree,
+                    ctrlPanelScoring::getColumnFour,
+                    ctrlPanelScoring::getColumnFive,
+                    ctrlPanelScoring::getColumnSix,
+                    ctrlPanelScoring::getColumnSeven,
+                    ctrlPanelScoring::getColumnEight,
+                    ctrlPanelScoring::getColumnNine);
+
     // right menu button cube, left menu button cone
     public final Grabber grabber =
             new Grabber(
                     GrabberConstants.kMaster,
                     GrabberConstants.pistons,
                     GrabberConstants.gamePieceSensor,
+                    panelScoreStateFinder::getHasCube,
                     GrabberConstants.kNativeVelToMpS,
                     GrabberConstants.kNativePosToMeters,
                     GrabberConstants.kNominalVoltage,
@@ -286,18 +304,4 @@ public class RobotContainer {
             new Superstructure(swerve, pivot, extender, grabber, compressor);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
-    final PanelScoreStateFinder panelScoreStateFinder =
-            new PanelScoreStateFinder(
-                    ctrlPanelOverrides::getLevelLow,
-                    ctrlPanelScoring::getLevelMid,
-                    ctrlPanelScoring::getLevelHigh,
-                    ctrlPanelScoring::getColumnOne,
-                    ctrlPanelScoring::getColumnTwo,
-                    ctrlPanelScoring::getColumnThree,
-                    ctrlPanelScoring::getColumnFour,
-                    ctrlPanelScoring::getColumnFive,
-                    ctrlPanelScoring::getColumnSix,
-                    ctrlPanelScoring::getColumnSeven,
-                    ctrlPanelScoring::getColumnEight,
-                    ctrlPanelScoring::getColumnNine);
 }

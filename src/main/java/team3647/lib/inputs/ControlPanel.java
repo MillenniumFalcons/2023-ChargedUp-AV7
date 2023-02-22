@@ -84,7 +84,7 @@ public class ControlPanel {
         return getButton(Buttons.Column9);
     }
 
-    public boolean getRedThree() {
+    public boolean getRed3() {
         return getButton(Buttons.Red3);
     }
 

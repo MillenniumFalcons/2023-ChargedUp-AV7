@@ -10,7 +10,7 @@ import team3647.frc2023.subsystems.Pivot;
 
 public class PivotCommands {
 
-    public Command openLoop(DoubleSupplier demand) {
+    public Command openloop(DoubleSupplier demand) {
         return Commands.run(() -> pivot.setOpenloop(demand.getAsDouble()), this.pivot);
     }
 

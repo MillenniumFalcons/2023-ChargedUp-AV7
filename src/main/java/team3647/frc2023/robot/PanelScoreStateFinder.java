@@ -30,6 +30,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
     private Level scoreLevel = Level.coneTwo;
     private boolean[] levels = new boolean[3];
     private boolean[] positions = new boolean[9];
+    private boolean hasCube = false;
 
     public PanelScoreStateFinder(
             BooleanSupplier level1,
@@ -87,6 +88,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         }
 
         if (positions[1] || positions[4] || positions[7]) {
+            hasCube = true;
             if (levels[0]) {
                 return Level.cubeOne;
             } else if (levels[1]) {
@@ -152,6 +154,10 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
 
     public Pose2d getScorePose() {
         return scorePose;
+    }
+
+    public boolean getHasCube() {
+        return hasCube;
     }
 
     @Override

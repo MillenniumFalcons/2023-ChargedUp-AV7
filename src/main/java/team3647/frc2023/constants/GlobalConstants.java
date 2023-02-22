@@ -47,6 +47,7 @@ public final class GlobalConstants {
 
     public static final class ExtenderIds {
         public static final int kMasterId = 19;
+        // public static final int resetSensor = 0;
 
         private ExtenderIds() {}
     }
@@ -54,6 +55,7 @@ public final class GlobalConstants {
     public static final class GrabberIds {
         public static final int masterId = 28;
         public static final int pistonChannel = 2;
+        public static final int sensorPort = 0;
     }
 
     private GlobalConstants() {}
