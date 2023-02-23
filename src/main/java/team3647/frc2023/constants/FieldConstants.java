@@ -20,11 +20,12 @@ public class FieldConstants {
     public static final double fieldWidth = Units.inchesToMeters(315.5);
 
     // offset up down, negative down, positive up
-    public static final double yOffsetInches = 0.0;
+    public static final double yOffsetInches = -4.0;
     // offset towards or away from the scoring stations, positive farther towards center of field,
     // negative closer towards scoring stations$
     // always position
     public static final double xOffsetInches = 1;
+
     public static final double blueXLineUpDistance = Units.inchesToMeters(70.5);
 
     public static final Translation2d oneBlueT =

@@ -146,7 +146,7 @@ public class RobotContainer {
         extenderOverrideOnForward.whileTrue(
                 superstructure
                         .extenderCommands
-                        .openloop(() -> -0.2)
+                        .openloop(() -> -0.15)
                         .until(extenderOverrideOnForward.negate().debounce(0.5)));
 
         var extenderOverrideOnReverse =
@@ -158,7 +158,7 @@ public class RobotContainer {
         extenderOverrideOnReverse.whileTrue(
                 superstructure
                         .extenderCommands
-                        .openloop(() -> 0.2)
+                        .openloop(() -> 0.15)
                         .until(extenderOverrideOnReverse.negate().debounce(0.5)));
 
         var pivotOverrideOnFoward =
@@ -170,7 +170,7 @@ public class RobotContainer {
         pivotOverrideOnFoward.whileTrue(
                 superstructure
                         .pivotCommands
-                        .openloop(() -> 0.2)
+                        .openloop(() -> 0.09)
                         .until(pivotOverrideOnFoward.negate().debounce(0.5)));
 
         var pivotOverrideOnReverse =
@@ -182,7 +182,7 @@ public class RobotContainer {
         pivotOverrideOnReverse.whileTrue(
                 superstructure
                         .pivotCommands
-                        .openloop(() -> -0.2)
+                        .openloop(() -> -0.09)
                         .until(pivotOverrideOnReverse.negate().debounce(0.5)));
     }
 
@@ -241,6 +241,9 @@ public class RobotContainer {
 
         SmartDashboard.putNumber("RIGHT XY", 0.9);
         SmartDashboard.putNumber("RIGHT ROT", 0.9);
+
+        SmartDashboard.putNumber("OffsetX", 0);
+        SmartDashboard.putNumber("OffsetY", 0);
     }
 
     public Command getAutonomousCommand() {
