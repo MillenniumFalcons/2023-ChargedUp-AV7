@@ -6,6 +6,8 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +20,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
+import team3647.frc2023.subsystems.VisionController.VisionInput;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
 
@@ -78,7 +82,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.poseEstimator =
                 new SwerveDrivePoseEstimator(
                         this.kinematics, getRotation2d(), getModulePositions(), new Pose2d());
-        // poseEstimator.setVisionMeasurementStdDevs(null);
+        // poseEstimator.setVisionMeasurementStdDevs();
         this.odometry =
                 new SwerveDriveOdometry(this.kinematics, getRotation2d(), getModulePositions());
         zeroGyro();
@@ -189,7 +193,10 @@ public class SwerveDrive implements PeriodicSubsystem {
         return periodicIO.pitch;
     }
 
-    public void addVisionMeasurement(Double timestamp, Pose2d visionBotPose2d) {
+    public void addVisionMeasurement(VisionInput input) {
+        Double timestamp = input.timestamp;
+        Pose2d visionBotPose2d = input.pose;
+        CAMERA_NAME name = input.name;
         if (timestamp == null || visionBotPose2d == null) {
             return;
         }
@@ -200,9 +207,27 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .minus(visionBotPose2d.getTranslation())
                         .getNorm()
                 > 1) return;
+
         Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), this.getRotation2d());
+        switch (name) {
+            case CENTER:
+                var matrix1 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(10, 10, 0.9);
+                this.poseEstimator.addVisionMeasurement(
+                        acutalPose2d, timestamp.doubleValue(), matrix1);
+            case LEFT:
+                var matrix2 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(20.0, 20.0, 0.9);
+                this.poseEstimator.addVisionMeasurement(
+                        acutalPose2d, timestamp.doubleValue(), matrix2);
+            case RIGHT:
+                var matrix3 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(20.0, 20.0, 0.9);
+                this.poseEstimator.addVisionMeasurement(
+                        acutalPose2d, timestamp.doubleValue(), matrix3);
+            default:
+                break;
+        }
+
         // GroupPrinter.getInstance().getField().getObject("vision pose").setPose(acutalPose2d);
-        this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp.doubleValue());
+
     }
 
     // Probably want to moving average filter pitch and roll.

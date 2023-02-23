@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import org.photonvision.PhotonCamera;
 
 public class PhotonVisionConstants {
-    public static final String kLimelightIP = "10.36.47.15";
+
     public static final double kNetworkLatency = 0.06; // seconds
     // public static Transform3d robotToCam = new Transform3d(new Translation3d(0, -0, 0), new
     // Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a

@@ -4,6 +4,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import team3647.lib.vision.IVisionCamera.CamConstants;
 
 public class LimelightConstant {
+
+    public static final String kLimelightCenterIP = "10.36.47.16";
+    public static final String kLimelightRightIP = "10.36.47.15";
+    public static final String kLimelightLeftIP = "10.36.47.14";
     public static final double kCameraHeightMeters = 0.49;
     public static final Rotation2d kHorizontalToLens = new Rotation2d();
     public static final double kVPH = 2.0 * Math.tan(Math.toRadians(49.7) / 2.0);

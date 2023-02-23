@@ -8,6 +8,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -17,7 +18,6 @@ import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
-import team3647.frc2023.constants.PhotonVisionConstants;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.subsystems.Extender;
@@ -26,6 +26,7 @@ import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
+import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.ControlPanel;
 import team3647.lib.inputs.Joysticks;
@@ -43,7 +44,14 @@ public class RobotContainer {
     public RobotContainer() {
         pdh.clearStickyFaults();
         scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, grabber, visionController, panelScoreStateFinder);
+                swerve,
+                printer,
+                pivot,
+                extender,
+                grabber,
+                visionController2,
+                visionController3,
+                panelScoreStateFinder);
         // scheduler.registerSubsystem(rollerGrabber);
 
         configureDefaultCommands();
@@ -68,7 +76,7 @@ public class RobotContainer {
                         .until(mainController::anyStickMoved));
 
         mainController
-                .buttonB
+                .leftBumper
                 .onTrue(
                         superstructure
                                 .grabberCommands
@@ -76,8 +84,9 @@ public class RobotContainer {
                                 .withTimeout(0.5)
                                 .andThen(superstructure.stow()))
                 .onFalse(superstructure.grabberCommands.closeGrabber());
+
         mainController
-                .leftBumper
+                .rightJoyStickPress
                 .whileTrue(
                         superstructure
                                 .groundIntake()
@@ -224,6 +233,14 @@ public class RobotContainer {
         printer.addBoolean("Column1 I guess", () -> ctrlPanelScoring.getLevelLow());
         printer.addPose("target", panelScoreStateFinder::findScorePose);
         printer.addString("Level", panelScoreStateFinder::getScoreLevelStr);
+        SmartDashboard.putNumber("CENTER XY", 0.9);
+        SmartDashboard.putNumber("CENTER ROT", 0.9);
+
+        SmartDashboard.putNumber("LEFT XY", 0.9);
+        SmartDashboard.putNumber("LEFT ROT", 0.9);
+
+        SmartDashboard.putNumber("RIGHT XY", 0.9);
+        SmartDashboard.putNumber("RIGHT ROT", 0.9);
     }
 
     public Command getAutonomousCommand() {
@@ -294,10 +311,29 @@ public class RobotContainer {
     private final VisionController visionController =
             new VisionController(
                     new Limelight(
-                            PhotonVisionConstants.kLimelightIP,
+                            LimelightConstant.kLimelightCenterIP,
                             0,
                             LimelightConstant.kCamConstatnts),
-                    swerve::addVisionMeasurement);
+                    swerve::addVisionMeasurement,
+                    CAMERA_NAME.CENTER);
+
+    private final VisionController visionController2 =
+            new VisionController(
+                    new Limelight(
+                            LimelightConstant.kLimelightLeftIP,
+                            0,
+                            LimelightConstant.kCamConstatnts),
+                    swerve::addVisionMeasurement,
+                    CAMERA_NAME.LEFT);
+
+    private final VisionController visionController3 =
+            new VisionController(
+                    new Limelight(
+                            LimelightConstant.kLimelightRightIP,
+                            0,
+                            LimelightConstant.kCamConstatnts),
+                    swerve::addVisionMeasurement,
+                    CAMERA_NAME.RIGHT);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
 
