@@ -1,11 +1,6 @@
 package team3647.frc2023.robot;
 
-import com.pathplanner.lib.server.PathPlannerServer;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -14,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.commands.AutoCommands;
 import team3647.frc2023.commands.PathPlannerTrajectories;
@@ -63,7 +57,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        //swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
+        // swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
         swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
     }
 
@@ -245,8 +239,8 @@ public class RobotContainer {
     }
 
     public void setToCoast() {
-       // pivot.setToCoast();
-       // extender.setToCoast();
+        // pivot.setToCoast();
+        // extender.setToCoast();
     }
 
     public double getPivotFFVoltage() {
