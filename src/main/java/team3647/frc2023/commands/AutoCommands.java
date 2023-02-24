@@ -90,46 +90,62 @@ public class AutoCommands {
 
     public Command top1C1B() {
         SequentialCommandGroup drivetrainSequence = new SequentialCommandGroup(
-                new WaitCommand(1), 
+                new WaitCommand(1.5),
                 getTraj("S_P4", true),
-                new WaitCommand(2),
+                new WaitCommand(1),
                 getTraj("P4_SB", false),
                 new WaitCommand(1),
                 getTraj("tSB_balance", false),
                 superstructure.drivetrainCommands
                         .robotRelativeDrive(new Translation2d(.5, 0), 1),
                 superstructure.drivetrainCommands.balance(
-                                SwerveDriveConstants.kPitchController,
-                                SwerveDriveConstants.kRollController));
+                        SwerveDriveConstants.kPitchController,
+                        SwerveDriveConstants.kRollController));
 
         SequentialCommandGroup scoringSequence = new SequentialCommandGroup(
-                superstructure.arm(() -> Level.coneThree).withTimeout(1)
-        );
-        return drivetrainSequence;
+                superstructure.arm(() -> Level.coneThree).withTimeout(1),
+                superstructure.stow().withTimeout(.5),
+                new WaitCommand(PathPlannerTrajectories.topS_P4.getTotalTimeSeconds() * .8),
+                superstructure.groundIntake()
+                        .withTimeout(.5 + PathPlannerTrajectories.topS_P4.getTotalTimeSeconds() * .2),
+                new WaitCommand(PathPlannerTrajectories.topP4_SB.getTotalTimeSeconds()),
+                superstructure.arm(() -> Level.cubeThreeReversed).withTimeout(1),
+                superstructure.stow().withTimeout(.5));
+        return new ParallelCommandGroup(drivetrainSequence, scoringSequence);
     }
 
     public Command centerR1C() {
         SequentialCommandGroup drivetrainSequence = new SequentialCommandGroup(
-                new WaitCommand(1),
+                new WaitCommand(1.5),
                 getTraj("RSC_balance", true),
                 superstructure.drivetrainCommands
-                        .balance(
-                                SwerveDriveConstants.kPitchController,
-                                SwerveDriveConstants.kRollController));
+                        .robotRelativeDrive(new Translation2d(.5, 0), 1),
+                superstructure.drivetrainCommands.balance(
+                        SwerveDriveConstants.kPitchController,
+                        SwerveDriveConstants.kRollController));
 
-        return new ParallelCommandGroup(drivetrainSequence);
+        SequentialCommandGroup scoringSequence = new SequentialCommandGroup(
+                superstructure.arm(() -> Level.coneThree).withTimeout(1),
+                superstructure.stow().withTimeout(.5));
+
+        return new ParallelCommandGroup(drivetrainSequence, scoringSequence);
     }
 
     public Command centerL1C() {
         SequentialCommandGroup drivetrainSequence = new SequentialCommandGroup(
-                new WaitCommand(1),
+                new WaitCommand(1.5),
                 getTraj("LSC_balance", true),
                 superstructure.drivetrainCommands
-                        .balance(
-                                SwerveDriveConstants.kPitchController,
-                                SwerveDriveConstants.kRollController));
+                        .robotRelativeDrive(new Translation2d(.5, 0), 1),
+                superstructure.drivetrainCommands.balance(
+                        SwerveDriveConstants.kPitchController,
+                        SwerveDriveConstants.kRollController));
 
-        return new ParallelCommandGroup(drivetrainSequence);
+        SequentialCommandGroup scoringSequence = new SequentialCommandGroup(
+                superstructure.arm(() -> Level.coneThree).withTimeout(1),
+                superstructure.stow().withTimeout(.5));
+
+        return new ParallelCommandGroup(drivetrainSequence, scoringSequence);
     }
 
     public SequentialCommandGroup getTraj(String pathName, boolean firstPath) {
