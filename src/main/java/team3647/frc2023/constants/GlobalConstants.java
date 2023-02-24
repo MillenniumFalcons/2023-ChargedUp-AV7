@@ -47,7 +47,7 @@ public final class GlobalConstants {
 
     public static final class ExtenderIds {
         public static final int kMasterId = 19;
-        // public static final int resetSensor = 0;
+        public static final int resetSensor = 0;
 
         private ExtenderIds() {}
     }

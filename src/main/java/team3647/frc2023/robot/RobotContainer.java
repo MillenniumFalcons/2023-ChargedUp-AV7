@@ -339,6 +339,7 @@ public class RobotContainer {
     public final Extender extender =
             new Extender(
                     ExtenderConstants.kMaster,
+                    ExtenderConstants.resetSensor,
                     new SimpleMotorFeedforward(0, 0, 0),
                     ExtenderConstants.kNativeVelToMpS,
                     ExtenderConstants.kNativePosToMeters,

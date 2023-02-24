@@ -6,10 +6,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ExtenderConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderIds.kMasterId);
-
+    public static final DigitalInput resetSensor =
+            new DigitalInput(GlobalConstants.ExtenderIds.resetSensor);
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final InvertType kMasterInvert = InvertType.None;
 
