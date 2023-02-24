@@ -5,7 +5,6 @@
 package team3647.frc2023.robot;
 
 import com.pathplanner.lib.server.PathPlannerServer;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;

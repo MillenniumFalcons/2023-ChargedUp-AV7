@@ -81,7 +81,7 @@ public class RobotContainer {
                 .leftBumper
                 .whileTrue(
                         superstructure
-                                .groundIntake()
+                                .armToGroundIntake()
                                 .alongWith(superstructure.grabberCommands.openGrabber()))
                 .onFalse(
                         superstructure

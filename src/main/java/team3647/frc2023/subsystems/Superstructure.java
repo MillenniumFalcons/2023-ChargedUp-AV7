@@ -59,7 +59,7 @@ public class Superstructure {
                         .andThen(extenderCommands.length(() -> Level.doubleStation.length)));
     }
 
-    public Command groundIntake() {
+    public Command armToGroundIntake() {
         return Commands.parallel(
                 pivotCommands.setAngle(() -> Level.groundIntake.angle),
                 extenderCommands.length(() -> Level.groundIntake.length));
@@ -116,6 +116,8 @@ public class Superstructure {
 
         public final String name;
 
+        // name parameter is just for debugging purposes
+
         private Level(double angle, double length, String name) {
             this.angle = angle;
             this.length = length;
@@ -129,19 +131,19 @@ public class Superstructure {
         public static final Level coneThree =
                 new Level(141 - 3, ExtenderConstants.kLevelThreeExtendCone, "cone high");
 
-        public static final Level cubeOneReversed =
-                new Level(35, ExtenderConstants.kMinimumPositionMeters, "cube reversed low");
-        public static final Level cubeTwoReversed =
-                new Level(27, ExtenderConstants.kLevelTwoExtendCube, "cube reversed mid");
-        public static final Level cubeThreeReversed =
-                new Level(39, ExtenderConstants.kLevelThreeExtendCube, "cube reversed high");
-
         public static final Level cubeOne =
                 new Level(125, ExtenderConstants.kMinimumPositionMeters, "cube low");
         public static final Level cubeTwo =
                 new Level(149, ExtenderConstants.kLevelTwoExtendCube, "cube mid");
         public static final Level cubeThree =
                 new Level(148, ExtenderConstants.kLevelThreeExtendCube, "cube high");
+
+        public static final Level cubeOneReversed =
+                new Level(35, ExtenderConstants.kMinimumPositionMeters, "cube reversed low");
+        public static final Level cubeTwoReversed =
+                new Level(27, ExtenderConstants.kLevelTwoExtendCube, "cube reversed mid");
+        public static final Level cubeThreeReversed =
+                new Level(39, ExtenderConstants.kLevelThreeExtendCube, "cube reversed high");
 
         public static final Level noLevel =
                 new Level(
