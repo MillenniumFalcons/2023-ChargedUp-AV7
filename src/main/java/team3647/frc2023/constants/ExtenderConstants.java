@@ -13,7 +13,7 @@ public class ExtenderConstants {
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final InvertType kMasterInvert = InvertType.None;
 
-    public static final double kRevMetersSoftLimit = 2000;
+    public static final double kRevTicksSoftLimit = 2000;
 
     private static final double kGearBoxRatio = 14.0 / 48.0 * 30.0 / 40.0 * 18.0 / 24.0;
     private static final double kDrumDiameterMeters = Units.inchesToMeters(1.2);
@@ -27,8 +27,8 @@ public class ExtenderConstants {
     public static final double kMaxVelocityTicks = 27000.0 / 2;
     public static final double kMaxAccelerationTicks = 27000.0 / 2;
 
-    public static final double kMinimumPositionMeters = 0;
-    public static final double kMaximumPositionMeters = 80000.0;
+    public static final double kMinimumPositionTicks = 0;
+    public static final double kMaximumPositionTicks = 80000.0;
 
     public static final double kS = 0.0;
     public static final double kV = 0.0;
@@ -65,7 +65,7 @@ public class ExtenderConstants {
         kMasterConfig.slot0.allowableClosedloopError = 1000;
 
         kMasterConfig.reverseSoftLimitEnable = true;
-        kMasterConfig.reverseSoftLimitThreshold = kRevMetersSoftLimit / kNativePosToMeters;
+        kMasterConfig.reverseSoftLimitThreshold = kRevTicksSoftLimit;
 
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);

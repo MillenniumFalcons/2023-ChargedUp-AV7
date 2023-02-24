@@ -56,7 +56,7 @@ public class RobotContainer {
         configureButtonBindings();
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
-        extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
+        extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
         swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
     }
@@ -249,8 +249,8 @@ public class RobotContainer {
 
     public double getPivotFFVoltage() {
         return PivotConstants.kG
-                * (extender.getLengthMeters() - ExtenderConstants.kMinimumPositionMeters)
-                / ExtenderConstants.kMaximumPositionMeters;
+                * (extender.getNativeTicks() - ExtenderConstants.kMinimumPositionTicks)
+                / ExtenderConstants.kMaximumPositionTicks;
     }
 
     public void configureSmartDashboardLogging() {
@@ -342,8 +342,8 @@ public class RobotContainer {
                     new SimpleMotorFeedforward(0, 0, 0),
                     ExtenderConstants.kNativeVelToMpS,
                     ExtenderConstants.kNativePosToMeters,
-                    ExtenderConstants.kMinimumPositionMeters,
-                    ExtenderConstants.kMaximumPositionMeters,
+                    ExtenderConstants.kMinimumPositionTicks,
+                    ExtenderConstants.kMaximumPositionTicks,
                     ExtenderConstants.nominalVoltage,
                     GlobalConstants.kDt);
 

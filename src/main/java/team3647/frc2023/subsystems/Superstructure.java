@@ -125,21 +125,21 @@ public class Superstructure {
         }
 
         public static final Level coneOne =
-                new Level(150, ExtenderConstants.kMinimumPositionMeters, "cone low");
+                new Level(150, ExtenderConstants.kMinimumPositionTicks, "cone low");
         public static final Level coneTwo =
                 new Level(139, ExtenderConstants.kLevelTwoExtendCone, "cone mid");
         public static final Level coneThree =
                 new Level(141 - 3, ExtenderConstants.kLevelThreeExtendCone, "cone high");
 
         public static final Level cubeOne =
-                new Level(125, ExtenderConstants.kMinimumPositionMeters, "cube low");
+                new Level(125, ExtenderConstants.kMinimumPositionTicks, "cube low");
         public static final Level cubeTwo =
                 new Level(149, ExtenderConstants.kLevelTwoExtendCube, "cube mid");
         public static final Level cubeThree =
                 new Level(148, ExtenderConstants.kLevelThreeExtendCube, "cube high");
 
         public static final Level cubeOneReversed =
-                new Level(35, ExtenderConstants.kMinimumPositionMeters, "cube reversed low");
+                new Level(35, ExtenderConstants.kMinimumPositionTicks, "cube reversed low");
         public static final Level cubeTwoReversed =
                 new Level(27, ExtenderConstants.kLevelTwoExtendCube, "cube reversed mid");
         public static final Level cubeThreeReversed =
@@ -148,14 +148,14 @@ public class Superstructure {
         public static final Level noLevel =
                 new Level(
                         PivotConstants.kInitialAngle,
-                        ExtenderConstants.kMinimumPositionMeters,
+                        ExtenderConstants.kMinimumPositionTicks,
                         "no level");
 
         public static final Level groundIntake =
-                new Level(187, ExtenderConstants.kMinimumPositionMeters, "ground intake");
+                new Level(187, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
         public static final Level station =
-                new Level(146, ExtenderConstants.kMinimumPositionMeters, "station");
+                new Level(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
         public static final Level doubleStation =
                 new Level(139.5, ExtenderConstants.kGroundStation, "double station");

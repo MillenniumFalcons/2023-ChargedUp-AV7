@@ -24,13 +24,13 @@ public class ExtenderCommands {
     }
 
     public Command stow() {
-        return length(() -> ExtenderConstants.kMinimumPositionMeters)
+        return length(() -> ExtenderConstants.kMinimumPositionTicks)
                 .andThen(Commands.run(() -> {}, extender));
     }
 
     public Command holdPositionAtCall() {
         return new Command() {
-            double lengthAtStart = ExtenderConstants.kMinimumPositionMeters;
+            double lengthAtStart = ExtenderConstants.kMinimumPositionTicks;
 
             @Override
             public void initialize() {
