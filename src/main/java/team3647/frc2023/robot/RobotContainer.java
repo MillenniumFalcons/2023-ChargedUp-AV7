@@ -1,5 +1,7 @@
 package team3647.frc2023.robot;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,7 +14,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import team3647.frc2023.commands.AutoCommands;
+import team3647.frc2023.commands.PathPlannerTrajectories;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
@@ -58,11 +63,8 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionMeters);
-        swerve.setRobotPose(
-                new Pose2d(
-                        Units.inchesToMeters(610 - 96.5 - 16),
-                        Units.inchesToMeters(177.4 - 18.5 + 16),
-                        Rotation2d.fromDegrees(0)));
+        //swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
     }
 
     private void configureButtonBindings() {
@@ -243,8 +245,8 @@ public class RobotContainer {
     }
 
     public void setToCoast() {
-        pivot.setToCoast();
-        extender.setToCoast();
+       // pivot.setToCoast();
+       // extender.setToCoast();
     }
 
     public double getPivotFFVoltage() {
@@ -281,7 +283,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.none();
+        // An ExampleCommand will run in autonomous
+        return autoCommands.top1C1B();
     }
 
     private final Joysticks mainController = new Joysticks(0);
@@ -382,4 +385,6 @@ public class RobotContainer {
             new Superstructure(swerve, pivot, extender, grabber, compressor);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
+    private final AutoCommands autoCommands =
+            new AutoCommands(swerve, SwerveDriveConstants.kDriveKinematics, superstructure);
 }

@@ -29,12 +29,12 @@ public class PivotConstants {
     public static final double kMaxVelocityTicks = 200.0 / kNativeVelToDPS;
     public static final double kMaxAccelerationTicks = 200.0 / kNativeVelToDPS;
 
-    public static final double kMinDegree = -30;
-    public static final double kMaxDegree = 210;
+    public static final double kMinDegree = -30.0;
+    public static final double kMaxDegree = 210.0;
 
     public static final double kG = 0.55;
 
-    private static final double masterKP = 0.15;
+    private static final double masterKP = 0.15;  
     private static final double masterKI = 0;
     private static final double masterKD = 0;
 
@@ -60,6 +60,10 @@ public class PivotConstants {
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
+        kMasterConfig.reverseSoftLimitEnable = true;
+        kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
+        kMasterConfig.forwardSoftLimitEnable = true;
+        kMasterConfig.forwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kSlave.follow(kMaster);
         kMaster.setInverted(kMasterInvert);

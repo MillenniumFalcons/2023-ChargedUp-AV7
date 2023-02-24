@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2023.2.1"
-    id 'com.diffplug.spotless' version '6.14.0'
+    id 'com.diffplug.spotless' version '6.12.1'
 
 }
 
@@ -101,12 +101,12 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
 
-spotless {
-    java {
-        target fileTree('.') {
-            include '**/*.java'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        googleJavaFormat().aosp().reflowLongStrings()
-    }
-}
+// spotless {
+//     java {
+//         target fileTree('.') {
+//             include '**/*.java'
+//             exclude '**/build/**', '**/build-*/**'
+//         }
+//         googleJavaFormat('1.8').aosp().reflowLongStrings()
+//     }
+// }

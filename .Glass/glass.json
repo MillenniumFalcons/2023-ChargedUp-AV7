@@ -1,10 +1,13 @@
 {
   "NetworkTables": {
-    "Retained Values": {
+    "Persistent Values": {
       "open": false
     },
     "transitory": {
       "LiveWindow": {
+        "open": true
+      },
+      "Shuffleboard": {
         "open": true
       },
       "SmartDashboard": {
@@ -36,7 +39,6 @@
           "width": 0.6349999904632568
         },
         "height": 8.013699531555176,
-        "image": "/home/edwardsun/Downloads/2023-field.png",
         "odo": {
           "length": 0.6349999904632568,
           "width": 0.6349999904632568
