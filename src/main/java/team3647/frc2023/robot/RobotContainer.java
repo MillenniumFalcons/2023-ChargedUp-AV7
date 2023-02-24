@@ -161,7 +161,11 @@ public class RobotContainer {
                                         visionController.changePipeline(
                                                 LimelightConstant.APRIL_PIPELINE)));
 
-        var stowButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
+        // manual arm scoring
+        var manualLevel = new Trigger(() -> ctrlPanelOverrides.getWhiteOne());
+        manualLevel.onTrue(superstructure.arm(() -> panelScoreStateFinder.getScoreLevel()));
+
+        var stowButton = new Trigger(() -> ctrlPanelOverrides.getRedThree());
         stowButton.onTrue(superstructure.stow());
 
         var extenderOverrideOnForward =
