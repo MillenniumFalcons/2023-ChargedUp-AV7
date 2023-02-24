@@ -1,5 +1,6 @@
 package team3647.frc2023.robot;
 
+import com.google.common.base.Supplier;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -11,6 +12,7 @@ import team3647.lib.PeriodicSubsystem;
 
 public class PanelScoreStateFinder implements PeriodicSubsystem {
     private final GroupPrinter printer = GroupPrinter.getInstance();
+    private final Supplier<Pose2d> robotPoseSupplier;
     private final BooleanSupplier level1;
     private final BooleanSupplier level2;
     private final BooleanSupplier level3;
@@ -44,7 +46,8 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
             BooleanSupplier column6,
             BooleanSupplier column7,
             BooleanSupplier column8,
-            BooleanSupplier column9) {
+            BooleanSupplier column9,
+            Supplier<Pose2d> robotPoseSupplier) {
         this.level1 = level1;
         this.level2 = level2;
         this.level3 = level3;
@@ -57,6 +60,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         this.column7 = column7;
         this.column8 = column8;
         this.column9 = column9;
+        this.robotPoseSupplier = robotPoseSupplier;
     }
 
     @Override
@@ -111,12 +115,20 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
 
     private PathPoint findScorePoint() {
         // THIS DETERMINES DEFAULT POSE WHERE IT GOES IF ELLA DON'T PRESS ANYTHING
-        int pressedIdx = 4;
+        // if ella don't press anything, list of bools are all false, then return path point to
+        // position already at a.k.a don't move
+        if (boolAllFalse(positions)) {
+            Pose2d currentRobotPose = robotPoseSupplier.get();
+            return new PathPoint(currentRobotPose.getTranslation(), currentRobotPose.getRotation());
+        }
+
+        int pressedIdx = 0;
         for (int i = 0; i < positions.length; i++) {
             if (positions[i]) {
                 pressedIdx = i;
             }
         }
+
         if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
             Pose2d pose = FieldConstants.allBlueStations[pressedIdx];
             return new PathPoint(pose.getTranslation(), pose.getRotation());
@@ -125,6 +137,12 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         return new PathPoint(pose.getTranslation(), pose.getRotation());
     }
 
+    private boolean boolAllFalse(boolean[] array) {
+        for (boolean b : array) if (b) return false;
+        return true;
+    }
+
+    // for debugging ONLY
     public Pose2d findScorePose() {
         int pressedIdx = 4;
         for (int i = 0; i < positions.length; i++) {

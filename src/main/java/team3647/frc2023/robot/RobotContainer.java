@@ -318,7 +318,8 @@ public class RobotContainer {
                     ctrlPanelScoring::getColumnSix,
                     ctrlPanelScoring::getColumnSeven,
                     ctrlPanelScoring::getColumnEight,
-                    ctrlPanelScoring::getColumnNine);
+                    ctrlPanelScoring::getColumnNine,
+                    swerve::getEstimPose);
 
     // right menu button cube, left menu button cone
     public final Grabber grabber = new Grabber(GrabberConstants.pistons);
