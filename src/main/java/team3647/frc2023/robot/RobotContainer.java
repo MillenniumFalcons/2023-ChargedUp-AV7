@@ -3,7 +3,6 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -75,18 +74,15 @@ public class RobotContainer {
                                 SwerveDriveConstants.kRollController)
                         .until(mainController::anyStickMoved));
 
-        mainController
-                .leftBumper
-                .onTrue(
-                        superstructure
-                                .grabberCommands
-                                .openGrabber()
-                                .withTimeout(0.5)
-                                .andThen(superstructure.stow()))
-                .onFalse(superstructure.grabberCommands.closeGrabber());
+        mainController.buttonA.onTrue(
+                superstructure
+                        .grabberCommands
+                        .openGrabber()
+                        .withTimeout(0.7)
+                        .andThen(superstructure.stow()));
 
         mainController
-                .rightJoyStickPress
+                .leftBumper
                 .whileTrue(
                         superstructure
                                 .groundIntake()
@@ -103,26 +99,42 @@ public class RobotContainer {
         // right trigger auto drive
 
         // hold and line up, release and wait for it to drive back
+        // mainController
+        //         .rightBumper
+        //         .onTrue(
+        //                 superstructure
+        //                         .grabberCommands
+        //                         .openGrabber()
+        //                         .alongWith(superstructure.doubleStation()))
+        //         .onFalse(
+        //                 superstructure
+        //                         .grabberCommands
+        //                         .closeGrabber()
+        //                         .withTimeout(0.5)
+        //                         .andThen(
+        //                                 superstructure.drivetrainCommands.robotRelativeDrive(
+        //                                         new Translation2d(-0.8, 0), 0.5))
+        //                         .until(mainController::anyStickMoved));
+
         mainController
                 .rightBumper
                 .onTrue(
                         superstructure
                                 .grabberCommands
                                 .openGrabber()
-                                .alongWith(superstructure.loadingStation()))
+                                .alongWith(superstructure.doubleStation()))
                 .onFalse(
                         superstructure
                                 .grabberCommands
                                 .closeGrabber()
                                 .withTimeout(0.5)
-                                .andThen(
-                                        superstructure.drivetrainCommands.robotRelativeDrive(
-                                                new Translation2d(-0.8, 0), 0.5))
+                                .andThen(superstructure.stow())
                                 .until(mainController::anyStickMoved));
 
-        mainController.rightTrigger.onTrue(
+        mainController.buttonY.onTrue(
                 Commands.run(() -> {}, grabber)
                         .alongWith(Commands.run(() -> {}, extender))
+                        .alongWith(Commands.run(() -> {}, pivot))
                         .withTimeout(0.2)
                         .andThen(
                                 superstructure.driveAndArmSequential(
@@ -134,6 +146,25 @@ public class RobotContainer {
                                                 printer.addPose(
                                                         "target",
                                                         panelScoreStateFinder::getScorePose))));
+        mainController
+                .rightTrigger
+                .whileTrue(
+                        new InstantCommand(
+                                        () ->
+                                                visionController.changePipeline(
+                                                        LimelightConstant.TAPE_PIPELINE))
+                                .withTimeout(0.5)
+                                .andThen(
+                                        superstructure.drivetrainCommands.rotateToTape(
+                                                SwerveDriveConstants.kYController,
+                                                visionController::getXToTape,
+                                                0.05)))
+                .onFalse(
+                        new InstantCommand(
+                                () ->
+                                        visionController.changePipeline(
+                                                LimelightConstant.APRIL_PIPELINE)));
+
         var stowButton = new Trigger(() -> ctrlPanelOverrides.getRed3());
         stowButton.onTrue(superstructure.stow());
 
@@ -233,6 +264,9 @@ public class RobotContainer {
         printer.addBoolean("Column1 I guess", () -> ctrlPanelScoring.getLevelLow());
         printer.addPose("target", panelScoreStateFinder::findScorePose);
         printer.addString("Level", panelScoreStateFinder::getScoreLevelStr);
+
+        printer.addDouble("X Dis", visionController::getXToTape);
+
         SmartDashboard.putNumber("CENTER XY", 0.9);
         SmartDashboard.putNumber("CENTER ROT", 0.9);
 
@@ -315,6 +349,7 @@ public class RobotContainer {
             new VisionController(
                     new Limelight(
                             LimelightConstant.kLimelightCenterIP,
+                            LimelightConstant.kLimelightCenterHost,
                             0,
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurement,
@@ -324,6 +359,7 @@ public class RobotContainer {
             new VisionController(
                     new Limelight(
                             LimelightConstant.kLimelightLeftIP,
+                            LimelightConstant.kLimelightLeftHost,
                             0,
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurement,
@@ -333,6 +369,7 @@ public class RobotContainer {
             new VisionController(
                     new Limelight(
                             LimelightConstant.kLimelightRightIP,
+                            LimelightConstant.kLimelightRightHost,
                             0,
                             LimelightConstant.kCamConstatnts),
                     swerve::addVisionMeasurement,

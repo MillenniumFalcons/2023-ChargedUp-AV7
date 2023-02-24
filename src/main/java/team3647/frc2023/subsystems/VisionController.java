@@ -7,7 +7,9 @@ package team3647.frc2023.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
-import team3647.lib.vision.AprilTagCamera;
+import team3647.lib.vision.IVisionCamera.VisionPipeline;
+import team3647.lib.vision.Limelight;
+import team3647.lib.vision.Limelight.Data;
 
 /** Add your docs here. */
 public class VisionController implements PeriodicSubsystem {
@@ -30,7 +32,7 @@ public class VisionController implements PeriodicSubsystem {
     }
 
     public VisionController(
-            AprilTagCamera camera, Consumer<VisionInput> sendVisionUpdate, CAMERA_NAME name) {
+            Limelight camera, Consumer<VisionInput> sendVisionUpdate, CAMERA_NAME name) {
         this.camera = camera;
         this.visionUpdate = sendVisionUpdate;
         this.name = name;
@@ -43,12 +45,27 @@ public class VisionController implements PeriodicSubsystem {
         visionUpdate.accept(input);
     }
 
+    public void changePipeline(VisionPipeline pipeLine) {
+        this.camera.setPipeline(pipeLine);
+    }
+
+    public double getXToTape() {
+        if (this.camera.getPipeline().asInt == 1) {
+            return this.camera.getDouble(Data.X);
+        }
+        return 0;
+    }
+
+    public double getCurrentPipeline() {
+        return this.camera.getPipeline().asInt;
+    }
+
     @Override
     public String getName() {
         return "VisionController";
     }
 
-    private final AprilTagCamera camera;
+    private final Limelight camera;
     private final Consumer<VisionInput> visionUpdate;
     private final CAMERA_NAME name;
 }

@@ -43,13 +43,15 @@ public class ExtenderConstants {
     public static final double nominalVoltage = 11.0;
 
     /** ticks */
-    public static final double kLevelTwoExtendCone = 32000 * 0.75;
+    public static final double kLevelTwoExtendCone = 25006; // 32000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCone = 78500 * 0.75;
+    public static final double kLevelThreeExtendCone = 55870 * 1.1; // 78500 * 0.75;
     /** ticks */
-    public static final double kLevelTwoExtendCube = 30000 * 0.75;
+    public static final double kLevelTwoExtendCube = 16250; // 30000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCube = 74000 * 0.75;
+    public static final double kLevelThreeExtendCube = 50903; // 74000 * 0.75;
+
+    public static final double kGroundStation = 28000;
 
     static {
         kMaster.configFactoryDefault();
@@ -68,6 +70,6 @@ public class ExtenderConstants {
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);
         kMaster.enableVoltageCompensation(true);
-        kMaster.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
     }
 }

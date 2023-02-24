@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -77,6 +78,16 @@ public class DrivetrainCommands {
                     var point = selectedPoint.get();
                     return swerve.getTrajectoryCommand(swerve.getToPointATrajectory(point));
                 });
+    }
+
+    public Command rotateToTape(PIDController yController, DoubleSupplier angle, double offset) {
+        return Commands.run(
+                () -> {
+                    double distance = Math.sin(Units.degreesToRadians(angle.getAsDouble()));
+                    double yPID = yController.calculate(distance, offset);
+                    swerve.drive(new Translation2d(0, yPID), 0, false, false);
+                },
+                swerve);
     }
 
     private final SwerveDrive swerve;
