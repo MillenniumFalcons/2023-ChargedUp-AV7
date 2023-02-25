@@ -128,20 +128,19 @@ public class RobotContainer {
                                 .until(mainController::anyStickMoved));
 
         mainController.buttonY.onTrue(
-                Commands.run(() -> {}, grabber)
-                        .alongWith(Commands.run(() -> {}, extender))
-                        .alongWith(Commands.run(() -> {}, pivot))
-                        .withTimeout(0.2)
-                        .andThen(
-                                superstructure.driveAndArmSequential(
-                                        panelScoreStateFinder::getScorePoint,
-                                        panelScoreStateFinder::getScoreLevel))
-                        .alongWith(
+                Commands.parallel(
+                                Commands.runOnce(() -> {}, grabber),
+                                Commands.runOnce(() -> {}, extender),
+                                Commands.runOnce(() -> {}, pivot),
                                 new InstantCommand(
                                         () ->
                                                 printer.addPose(
                                                         "target",
-                                                        panelScoreStateFinder::getScorePose))));
+                                                        panelScoreStateFinder::getScorePose)))
+                        .andThen(
+                                superstructure.driveAndArmSequential(
+                                        panelScoreStateFinder::getScorePoint,
+                                        panelScoreStateFinder::getScoreLevel)));
         mainController
                 .rightTrigger
                 .whileTrue(
