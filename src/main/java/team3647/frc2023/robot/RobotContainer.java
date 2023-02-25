@@ -62,13 +62,13 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        mainController.buttonX.whileTrue(
-                superstructure
-                        .drivetrainCommands
-                        .balance(
-                                SwerveDriveConstants.kPitchController,
-                                SwerveDriveConstants.kRollController)
-                        .until(mainController::anyStickMoved));
+        // mainController.buttonX.whileTrue(
+        //         superstructure
+        //                 .drivetrainCommands
+        //                 .balance(
+        //                         SwerveDriveConstants.kPitchController,
+        //                         SwerveDriveConstants.kRollController)
+        //                 .until(mainController::anyStickMoved));
 
         mainController.buttonA.onTrue(
                 superstructure
@@ -161,10 +161,6 @@ public class RobotContainer {
                                         visionController.changePipeline(
                                                 LimelightConstant.APRIL_PIPELINE)));
 
-        // manual arm scoring
-        var manualLevel = new Trigger(() -> ctrlPanelOverrides.getWhiteOne());
-        manualLevel.onTrue(superstructure.arm(() -> panelScoreStateFinder.getScoreLevel()));
-
         var stowButton = new Trigger(() -> ctrlPanelOverrides.getRedThree());
         stowButton.onTrue(superstructure.stow());
 
@@ -227,6 +223,10 @@ public class RobotContainer {
                         () -> true,
                         AllianceFlipUtil::shouldFlip));
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
+        // pivot.setDefaultCommand(
+        //         superstructure.pivotCommands.openloop(
+        //                 () -> SmartDashboard.getNumber("PIVOT OPEN", 0)));
+        ;
         // grabber.setDefaultCommand(
         //         new ConditionalCommand(
         //                 superstructure.grabberCommands.closeGrabber(),
@@ -254,18 +254,16 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        printer.addDouble("rot", swerve::getHeading);
         printer.addPose("odo", swerve::getPose);
         printer.addPose("estim", swerve::getEstimPose);
 
         printer.addDouble("Pivot Deg", pivot::getAngle);
         printer.addDouble("Extender Ticks", extender::getNativePos);
 
-        printer.addBoolean("Column1 I guess", () -> ctrlPanelScoring.getLevelLow());
         printer.addPose("target", panelScoreStateFinder::findScorePose);
         printer.addString("Level", panelScoreStateFinder::getScoreLevelStr);
 
-        printer.addDouble("X Dis", visionController::getXToTape);
+        // printer.addDouble("X Dis", visionController::getXToTape);
 
         SmartDashboard.putNumber("CENTER XY", 0.9);
         SmartDashboard.putNumber("CENTER ROT", 0.9);
@@ -278,6 +276,8 @@ public class RobotContainer {
 
         SmartDashboard.putNumber("OffsetX", 0);
         SmartDashboard.putNumber("OffsetY", 0);
+
+        SmartDashboard.putNumber("PIVOT OPEN", 0);
     }
 
     public Command getAutonomousCommand() {

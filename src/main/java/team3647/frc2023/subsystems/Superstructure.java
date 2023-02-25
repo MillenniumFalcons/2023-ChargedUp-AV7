@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
+import java.util.Objects;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
@@ -26,11 +27,53 @@ public class Superstructure {
     }
 
     public Command driveAndArmSequential(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
+        PathPoint point = getPoint.get();
+        if (Objects.isNull(point)) {
+            return arm(getLevel);
+        }
+
         return driveToScore(getPoint).andThen(arm(getLevel));
     }
 
     public Command arm(Supplier<Level> getLevel) {
         return new ProxyCommand(() -> goToLevel(getLevel.get()));
+    }
+
+    public Command armAuto(Supplier<Level> getLevel) {
+        Level level = getLevel.get();
+        return Commands.parallel(
+                pivotCommands.setAngle(() -> level.angle),
+                Commands.waitUntil(() -> pivot.getAngle() > level.angle * 0.5)
+                        .andThen(extenderCommands.length(() -> level.length)));
+        // .until(
+        //         () ->
+        //                 Math.abs(pivot.getAngle() - level.angle) < 2.5
+        //                         && Math.abs(extender.getNativeTicks() - level.length)
+        //                                 < 2000);
+    }
+
+    public Command armRetractAuto(Supplier<Level> getLevel) {
+        Level level = getLevel.get();
+        return Commands.parallel(
+                extenderCommands.length(() -> level.length),
+                Commands.waitUntil(
+                                () ->
+                                        extender.getNativePos()
+                                                < ExtenderConstants.kMaximumPositionTicks * 0.2)
+                        .andThen(pivotCommands.setAngle(() -> level.angle)));
+        // .until(
+        //         () ->
+        //                 Math.abs(pivot.getAngle() - level.angle) < 2.5
+        //                         && Math.abs(extender.getNativeTicks() - level.length)
+        //                                 < 2000);
+    }
+
+    public Command cancelPivot() {
+        return Commands.run(() -> {}, pivot).withTimeout(0.2);
+    }
+
+    public Command cancelExtender() {
+        return Commands.run(() -> {}, extender).withTimeout(0.2);
     }
 
     public Command driveToScore(Supplier<PathPoint> getPoint) {
@@ -67,6 +110,10 @@ public class Superstructure {
 
     public Command stow() {
         return Commands.parallel(pivotCommands.stow(), extenderCommands.stow());
+    }
+
+    public Command stowAuto() {
+        return Commands.parallel(pivotCommands.stowAuto(), extenderCommands.stowAuto());
     }
 
     public Command disableCompressor() {
@@ -131,6 +178,16 @@ public class Superstructure {
         public static final Level coneThree =
                 new Level(141 - 3, ExtenderConstants.kLevelThreeExtendCone, "cone high");
 
+        public static final Level coneOneReversed =
+                new Level(180 - 150, ExtenderConstants.kMinimumPositionTicks, "cone reversed low");
+        public static final Level coneTwoReversed =
+                new Level(180 - 139, ExtenderConstants.kLevelTwoExtendCone, "cone reversed mid");
+        public static final Level coneThreeReversed =
+                new Level(
+                        180 - (141 - 3),
+                        ExtenderConstants.kLevelThreeExtendCone,
+                        "cone reversed high");
+
         public static final Level cubeOne =
                 new Level(125, ExtenderConstants.kMinimumPositionTicks, "cube low");
         public static final Level cubeTwo =
@@ -143,7 +200,7 @@ public class Superstructure {
         public static final Level cubeTwoReversed =
                 new Level(27, ExtenderConstants.kLevelTwoExtendCube, "cube reversed mid");
         public static final Level cubeThreeReversed =
-                new Level(39, ExtenderConstants.kLevelThreeExtendCube, "cube reversed high");
+                new Level(180 - 148, ExtenderConstants.kLevelThreeExtendCube, "cube reversed high");
 
         public static final Level noLevel =
                 new Level(
@@ -152,7 +209,7 @@ public class Superstructure {
                         "no level");
 
         public static final Level groundIntake =
-                new Level(187, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+                new Level(190, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
         public static final Level station =
                 new Level(146, ExtenderConstants.kMinimumPositionTicks, "station");

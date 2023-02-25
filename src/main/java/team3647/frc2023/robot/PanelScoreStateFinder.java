@@ -82,7 +82,6 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         scoreLevel = findScoreLevel();
         scorePoint = findScorePoint();
         scorePose = findScorePose();
-        printer.addString("LEVEL NANEEE", () -> scoreLevel.name);
     }
 
     // positions [lvl1, lvl2, lvl3]
@@ -119,7 +118,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         // position already at a.k.a don't move
         if (boolAllFalse(positions)) {
             Pose2d currentRobotPose = robotPoseSupplier.get();
-            return new PathPoint(currentRobotPose.getTranslation(), currentRobotPose.getRotation());
+            return null;
         }
 
         int pressedIdx = 0;

@@ -23,11 +23,15 @@ public class PivotCommands {
 
     public Command setAngle(DoubleSupplier setpoint) {
         return Commands.run(() -> pivot.setAngle(setpoint.getAsDouble()), pivot)
-                .until(() -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 0.05);
+                .until(() -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 2.5);
     }
 
     public Command stow() {
         return setAngle(() -> PivotConstants.kInitialAngle).andThen(Commands.run(() -> {}, pivot));
+    }
+
+    public Command stowAuto() {
+        return setAngle(() -> PivotConstants.kInitialAngle);
     }
 
     public Command holdPositionAtCall() {

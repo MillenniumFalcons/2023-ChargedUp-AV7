@@ -28,6 +28,10 @@ public class ExtenderCommands {
                 .andThen(Commands.run(() -> {}, extender));
     }
 
+    public Command stowAuto() {
+        return length(() -> ExtenderConstants.kMinimumPositionTicks);
+    }
+
     public Command zero() {
         return Commands.run(() -> extender.setOpenloop(-0.2))
                 .until(() -> extender.getResetSensorVal())

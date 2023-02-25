@@ -16,6 +16,14 @@ public class GrabberCommands {
                 .finallyDo(interrupted -> Commands.run(() -> {}, grabber));
     }
 
+    public Command openGrabberAuto() {
+        return Commands.run(() -> grabber.open(), this.grabber).withTimeout(0.6);
+    }
+
+    public Command closeGrabberAuto() {
+        return Commands.run(() -> grabber.close(), this.grabber).withTimeout(0.6);
+    }
+
     // public Command holdPosition() {
     //     return Commands.run(() -> grabber.holdCurrentPosition(), this.grabber)
     //             .finallyDo(interrupted -> Commands.run(() -> {}, grabber));

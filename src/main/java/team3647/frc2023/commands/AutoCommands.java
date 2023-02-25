@@ -86,38 +86,33 @@ public class AutoCommands {
         SequentialCommandGroup drivetrainSequence =
                 new SequentialCommandGroup(
                         // preload score wait
-                        new WaitCommand(2),
+                        new WaitCommand(1.6),
                         getTraj("S_P4", true),
                         // intake top cube wait
-                        new WaitCommand(2),
+                        new WaitCommand(2.2),
                         getTraj("P4_SB", false),
                         // cube score wait
-                        new WaitCommand(2),
+                        new WaitCommand(2.0),
                         // this trajectory doesn't get on top of ramp
                         getTraj("tSB_balance", false),
-                        // lol 110% not possible but want to see how fast this goes
-                        superstructure.drivetrainCommands.robotRelativeDrive(
-                                new Translation2d(1.1, 0), 0.5),
                         superstructure.drivetrainCommands.balance(
                                 SwerveDriveConstants.kPitchController,
                                 SwerveDriveConstants.kRollController));
 
         SequentialCommandGroup armSequence =
                 new SequentialCommandGroup(
-                        superstructure.arm(() -> Level.coneThree),
-                        superstructure.grabberCommands.openGrabber(),
-                        new WaitCommand(0.6),
-                        superstructure.stow(),
-                        new WaitCommand(PathPlannerTrajectories.topS_P4.getTotalTimeSeconds() * .6),
-                        superstructure.armToGroundIntake(),
-                        new WaitCommand(0.6),
-                        superstructure.grabberCommands.closeGrabber(),
-                        new WaitCommand(0.5),
-                        superstructure.stow(),
-                        new WaitCommand(PathPlannerTrajectories.topP4_SB.getTotalTimeSeconds()),
-                        superstructure.arm(() -> Level.cubeThreeReversed),
-                        superstructure.grabberCommands.openGrabber(),
-                        superstructure.stow(),
+                        superstructure.armAuto(() -> Level.coneThreeReversed),
+                        superstructure.grabberCommands.openGrabberAuto(),
+                        new WaitCommand(0.4),
+                        superstructure.armRetractAuto(() -> Level.groundIntake),
+                        new WaitCommand(0.4),
+                        superstructure.grabberCommands.closeGrabberAuto(),
+                        superstructure.stowAuto(),
+                        new WaitCommand(
+                                PathPlannerTrajectories.topP4_SB.getTotalTimeSeconds() * 0.7),
+                        superstructure.armAuto(() -> Level.cubeThreeReversed),
+                        superstructure.grabberCommands.openGrabberAuto(),
+                        superstructure.stowAuto(),
                         superstructure.grabberCommands.closeGrabber());
         return new ParallelCommandGroup(drivetrainSequence, armSequence);
     }
@@ -177,6 +172,9 @@ public class AutoCommands {
                 break;
             case "P4_SB":
                 trajectory = PathPlannerTrajectories.topP4_SB;
+                break;
+            case "tSB_balance":
+                trajectory = PathPlannerTrajectories.topSB_balance;
                 break;
             case "RSC_balance":
                 trajectory = PathPlannerTrajectories.centerRSC_balance;

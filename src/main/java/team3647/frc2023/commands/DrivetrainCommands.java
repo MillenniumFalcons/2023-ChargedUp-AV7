@@ -29,7 +29,7 @@ public class DrivetrainCommands {
 
                         SmartDashboard.putNumber("PITCH PID", pitchPID);
                         SmartDashboard.putNumber("ROLL PID", rollPID);
-                        swerve.drive(new Translation2d(pitchPID, rollPID), 0, false, false);
+                        swerve.drive(new Translation2d(rollPID, pitchPID), 0, false, false);
                     }
                 },
                 swerve::stopModules,
