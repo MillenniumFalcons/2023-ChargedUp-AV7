@@ -1,9 +1,12 @@
 package team3647.frc2023.commands;
 
-import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +49,7 @@ public class DrivetrainCommands {
         return Commands.run(
                 () -> {
                     double triggerSlow =
-                            (Math.abs(slowTriggerFunction.getAsDouble()) > 0) ? 0.1 : 1;
+                            (Math.abs(slowTriggerFunction.getAsDouble()) > 0.5) ? 0.2 : 1;
                     var translation =
                             new Translation2d(
                                             ySpeedFunction.getAsDouble(),
@@ -61,6 +64,8 @@ public class DrivetrainCommands {
                             -turnSpeedFunction.getAsDouble()
                                     * swerve.getMaxRotationRadpS()
                                     * triggerSlow;
+                    SmartDashboard.putNumber("Swerve wanted x", translation.getX());
+                    SmartDashboard.putNumber("Swerve wanted y", translation.getY());
                     swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
                 },
                 swerve);
@@ -72,12 +77,55 @@ public class DrivetrainCommands {
                 .withTimeout(seconds);
     }
 
-    public Command toPointCommand(Supplier<PathPoint> selectedPoint) {
+    public Command toPoseCommand(Supplier<Pose2d> getPose) {
+        return new ProxyCommand(() -> swerve.toPoseCommand(getPose.get()));
+    }
+
+    private static final ProfiledPIDController yController =
+            new ProfiledPIDController(5, 0, 0, new Constraints(1, 1));
+
+    private static final ProfiledPIDController xController =
+            new ProfiledPIDController(5, 0, 0, new Constraints(1, 1));
+
+    private static final ProfiledPIDController rotationController =
+            new ProfiledPIDController(5, 0, 0, new Constraints(10, 3.14));
+
+    public Command toPosePID(Supplier<Pose2d> getPose) {
         return new ProxyCommand(
                 () -> {
-                    var point = selectedPoint.get();
-                    // System.out.println("Going to: " + point.);
-                    return swerve.getTrajectoryCommand(swerve.getToPointATrajectory(point));
+                    var pose = getPose.get();
+                    yController.setGoal(pose.getY());
+                    xController.setGoal(pose.getX());
+                    xController.setTolerance(0.1);
+                    yController.setTolerance(0.1);
+                    rotationController.setTolerance(Units.degreesToRadians(10));
+                    rotationController.setGoal(pose.getRotation().getRadians());
+                    rotationController.enableContinuousInput(-Math.PI, Math.PI);
+
+                    return Commands.run(
+                                    () -> {
+                                        System.out.println("Wanted Pose: " + pose);
+                                        System.out.println(
+                                                "current pose: " + swerve.getEstimPose());
+                                        var vx =
+                                                xController.calculate(swerve.getEstimPose().getX());
+                                        var vy =
+                                                yController.calculate(swerve.getEstimPose().getY());
+                                        var vtheta =
+                                                rotationController.calculate(
+                                                        swerve.getEstimPose()
+                                                                .getRotation()
+                                                                .getRadians());
+                                        System.out.println("theta speed " + vtheta);
+                                        var fieldSpeeds = new ChassisSpeeds(vx, vy, vtheta);
+                                        swerve.setFieldRelativeSpeeds(fieldSpeeds);
+                                    },
+                                    swerve)
+                            .until(
+                                    () ->
+                                            yController.atSetpoint()
+                                                    && xController.atSetpoint()
+                                                    && rotationController.atSetpoint());
                 });
     }
 

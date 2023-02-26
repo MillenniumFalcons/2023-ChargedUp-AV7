@@ -3,6 +3,9 @@
     "Persistent Values": {
       "open": false
     },
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "LiveWindow": {
         "open": true
@@ -13,7 +16,15 @@
       "SmartDashboard": {
         "Field": {
           "open": true
-        },
+        }
+      },
+      "limelight-center": {
+        "open": true
+      },
+      "limelight-left": {
+        "open": true
+      },
+      "limelight-right": {
         "open": true
       }
     },

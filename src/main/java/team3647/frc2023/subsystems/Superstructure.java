@@ -1,6 +1,6 @@
 package team3647.frc2023.subsystems;
 
-import com.pathplanner.lib.PathPoint;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -22,18 +22,29 @@ public class Superstructure {
         // this.kGPivot = PivotConstants.getkGFromLength(extender.getLengthMeters());
     }
 
-    public Command driveAndArmParallel(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
-        return Commands.parallel(driveToScore(getPoint), arm(getLevel));
+    public Command driveAndArmParallel(Supplier<Pose2d> getPose, Supplier<Level> getLevel) {
+        return Commands.parallel(drivetrainCommands.toPoseCommand(getPose), arm(getLevel));
     }
 
-    public Command driveAndArmSequential(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
+    public Command driveAndArmSequential(Supplier<Pose2d> getPose, Supplier<Level> getLevel) {
         return new ProxyCommand(
                 () -> {
-                    PathPoint point = getPoint.get();
-                    if (Objects.isNull(point)) {
+                    var pose = getPose.get();
+                    if (Objects.isNull(pose)) {
                         return arm(getLevel);
                     }
-                    return driveToScore(getPoint).andThen(arm(getLevel));
+                    return drivetrainCommands.toPoseCommand(getPose).andThen(arm(getLevel));
+                });
+    }
+
+    public Command driveAndArmSequentialPID(Supplier<Pose2d> getPose, Supplier<Level> getLevel) {
+        return new ProxyCommand(
+                () -> {
+                    var pose = getPose.get();
+                    if (Objects.isNull(pose)) {
+                        return arm(getLevel);
+                    }
+                    return drivetrainCommands.toPosePID(getPose).andThen(arm(getLevel));
                 });
     }
 
@@ -76,10 +87,6 @@ public class Superstructure {
 
     public Command cancelExtender() {
         return Commands.run(() -> {}, extender).withTimeout(0.2);
-    }
-
-    public Command driveToScore(Supplier<PathPoint> getPoint) {
-        return drivetrainCommands.toPointCommand(getPoint);
     }
 
     public Command goToLevel(Level level) {

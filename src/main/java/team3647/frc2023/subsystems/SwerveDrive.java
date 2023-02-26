@@ -7,6 +7,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,10 +18,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import team3647.frc2023.constants.AutoConstants;
-import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
 import team3647.frc2023.subsystems.VisionController.VisionInput;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
@@ -42,6 +44,8 @@ public class SwerveDrive implements PeriodicSubsystem {
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final SwerveDriveOdometry odometry;
+
+    private final Matrix<N3, N1> matrix1 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(10, 10, 0.9);
 
     public static class PeriodicIO {
         // inputs
@@ -85,19 +89,11 @@ public class SwerveDrive implements PeriodicSubsystem {
                         Rotation2d.fromDegrees(gyro.getYaw()),
                         getModulePositions(),
                         new Pose2d());
-        // poseEstimator.setVisionMeasurementStdDevs();
         this.odometry =
                 new SwerveDriveOdometry(
                         this.kinematics,
                         Rotation2d.fromDegrees(gyro.getYaw()),
                         getModulePositions());
-        zeroGyro();
-    }
-
-    @Override
-    public void init() {
-        resetEncoders();
-        zeroGyro();
     }
 
     @Override
@@ -164,10 +160,9 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void setRobotPose(Pose2d pose) {
-        odometry.resetPosition(
-                Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions(), pose);
-        poseEstimator.resetPosition(
-                Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions(), pose);
+        gyro.setYaw(pose.getRotation().getDegrees());
+        odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
+        poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         periodicIO = new PeriodicIO();
     }
 
@@ -204,7 +199,6 @@ public class SwerveDrive implements PeriodicSubsystem {
     public void addVisionMeasurement(VisionInput input) {
         Double timestamp = input.timestamp;
         Pose2d visionBotPose2d = input.pose;
-        CAMERA_NAME name = input.name;
         if (timestamp == null || visionBotPose2d == null) {
             return;
         }
@@ -216,26 +210,9 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .getNorm()
                 > 1) return;
 
-        Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), this.getRotation2d());
-        // this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp);
-        switch (name) {
-            case CENTER:
-                var matrix1 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(10, 10, 0.9);
-                this.poseEstimator.addVisionMeasurement(
-                        acutalPose2d, timestamp.doubleValue(), matrix1);
-            case LEFT:
-                var matrix2 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(20.0, 20.0, 0.9);
-                this.poseEstimator.addVisionMeasurement(
-                        acutalPose2d, timestamp.doubleValue(), matrix2);
-            case RIGHT:
-                var matrix3 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(20.0, 20.0, 0.9);
-                this.poseEstimator.addVisionMeasurement(
-                        acutalPose2d, timestamp.doubleValue(), matrix3);
-            default:
-                break;
-        }
-
-        // GroupPrinter.getInstance().getField().getObject("vision pose").setPose(acutalPose2d);
+        Pose2d acutalPose2d =
+                new Pose2d(visionBotPose2d.getTranslation(), visionBotPose2d.getRotation());
+        this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp, matrix1);
     }
 
     // Probably want to moving average filter pitch and roll.
@@ -324,7 +301,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                                         translation.getX(),
                                         translation.getY(),
                                         rotation,
-                                        getRotation2d())
+                                        Rotation2d.fromDegrees(getRawHeading()))
                                 : new ChassisSpeeds(
                                         translation.getX(), translation.getY(), rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, this.maxSpeedMpS);
@@ -350,6 +327,12 @@ public class SwerveDrive implements PeriodicSubsystem {
         setModuleStates(swerveModuleStates);
     }
 
+    public void setFieldRelativeSpeeds(ChassisSpeeds speeds) {
+        var robotSpeeds = speeds.fromFieldRelativeSpeeds(speeds, getRotation2d());
+        var moduleStates = kinematics.toSwerveModuleStates(robotSpeeds);
+        setModuleStates(moduleStates);
+    }
+
     public void setModulesAngle(double angle) {
         SwerveModuleState state = new SwerveModuleState(0.1, Rotation2d.fromDegrees(angle));
         SwerveModuleState[] states = {state, state, state, state};
@@ -365,28 +348,28 @@ public class SwerveDrive implements PeriodicSubsystem {
         };
     }
 
-    public PathPlannerTrajectory getToPointATrajectory(PathPoint endpoint) {
-        return PathPlanner.generatePath(
-                new PathConstraints(1, 1),
-                PathPoint.fromCurrentHolonomicState(
-                        getEstimPose(),
-                        SwerveDriveConstants.kDriveKinematics.toChassisSpeeds(
-                                periodicIO.frontLeftState,
-                                periodicIO.frontRightState,
-                                periodicIO.backLeftState,
-                                periodicIO.backRightState)),
-                endpoint);
+    public Command toPoseCommand(Pose2d endPose) {
+        return getTrajectoryCommand(getToPoseTrajectory(endPose));
+    }
+
+    public PathPlannerTrajectory getToPoseTrajectory(Pose2d endpoint) {
+        System.out.println("Start: " + getEstimPose());
+        System.out.println("End: " + endpoint);
+        var start = getEstimPose();
+        var ppEndpoint = new PathPoint(endpoint.getTranslation(), endpoint.getRotation());
+        var ppStart = new PathPoint(start.getTranslation(), start.getRotation());
+        return PathPlanner.generatePath(new PathConstraints(1, 1), ppStart, ppEndpoint);
     }
 
     public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
-        // System.out.println("New trajectory");
         return new PPSwerveControllerCommand(
                 trajectory,
                 this::getEstimPose,
                 AutoConstants.kXController,
                 AutoConstants.kYController,
                 AutoConstants.kRotController,
-                this::setChasisSpeeds,
+                this::setFieldRelativeSpeeds,
+                false,
                 this);
     }
 

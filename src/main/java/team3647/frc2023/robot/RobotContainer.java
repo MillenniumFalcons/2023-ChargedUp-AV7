@@ -134,9 +134,10 @@ public class RobotContainer {
                                                         "target",
                                                         panelScoreStateFinder::getScorePose)))
                         .andThen(
-                                superstructure.driveAndArmSequential(
-                                        panelScoreStateFinder::getScorePoint,
-                                        panelScoreStateFinder::getScoreLevel)));
+                                superstructure.driveAndArmSequentialPID(
+                                        panelScoreStateFinder::getScorePose,
+                                        panelScoreStateFinder::getScoreLevel))
+                        .until(mainController::anyStickMoved));
         // mainController
         //         .rightBumper
         //         .whileTrue(
