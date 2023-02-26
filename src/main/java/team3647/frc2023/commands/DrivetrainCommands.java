@@ -1,17 +1,13 @@
 package team3647.frc2023.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -39,34 +35,46 @@ public class DrivetrainCommands {
                 swerve);
     }
 
-    public Command drive(
+    public Command driveVisionTeleop(
             DoubleSupplier xSpeedFunction, // X axis on joystick is Left/Right
             DoubleSupplier ySpeedFunction, // Y axis on Joystick is Front/Back
             DoubleSupplier turnSpeedFunction,
-            DoubleSupplier slowTriggerFunction,
+            BooleanSupplier slowTriggerFunction,
+            BooleanSupplier enableAutoSteer,
             BooleanSupplier getIsFieldOriented,
-            BooleanSupplier shouldFlip) {
+            BooleanSupplier shouldFlip,
+            Supplier<Twist2d> autoSteerVelocitiesSupplier) {
         return Commands.run(
                 () -> {
-                    double triggerSlow =
-                            (Math.abs(slowTriggerFunction.getAsDouble()) > 0.5) ? 0.2 : 1;
-                    var translation =
-                            new Translation2d(
-                                            ySpeedFunction.getAsDouble(),
-                                            -xSpeedFunction.getAsDouble())
-                                    .times(swerve.getMaxSpeedMpS())
-                                    .times(triggerSlow);
+                    double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.2 : 1;
+                    boolean autoSteer = enableAutoSteer.getAsBoolean();
+                    boolean fieldOriented = getIsFieldOriented.getAsBoolean();
+                    var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
+                    // right stick X, (negative so that left positive)
+                    var motionYComponent = -xSpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
+
+                    var motionTurnComponent =
+                            -turnSpeedFunction.getAsDouble() * maxRotationRadpS * triggerSlow;
+
+                    var translation = new Translation2d(motionXComponent, motionYComponent);
                     translation =
-                            shouldFlip.getAsBoolean()
+                            shouldFlip.getAsBoolean() && fieldOriented
                                     ? translation.rotateBy(OneEightyRotation)
                                     : translation;
-                    var rotation =
-                            -turnSpeedFunction.getAsDouble()
-                                    * swerve.getMaxRotationRadpS()
-                                    * triggerSlow;
+
+                    if (autoSteer && fieldOriented) {
+                        var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
+                        // completely take over rotation for heading lock.
+                        motionTurnComponent = autoSteerVelocities.dtheta;
+                        if (Math.abs(motionXComponent) > 0.1 && Math.abs(motionYComponent) > 0.1) {
+                            motionXComponent = motionXComponent * 0.5 + autoSteerVelocities.dx;
+                            motionYComponent = motionYComponent * 0.5 + autoSteerVelocities.dy;
+                        }
+                    }
+                    var rotation = motionTurnComponent;
                     SmartDashboard.putNumber("Swerve wanted x", translation.getX());
                     SmartDashboard.putNumber("Swerve wanted y", translation.getY());
-                    swerve.drive(translation, rotation, getIsFieldOriented.getAsBoolean(), true);
+                    swerve.drive(translation, rotation, fieldOriented, true);
                 },
                 swerve);
     }
@@ -75,58 +83,6 @@ public class DrivetrainCommands {
         return Commands.run(() -> swerve.drive(t, 0, false, true), swerve)
                 .finallyDo(interupted -> swerve.end())
                 .withTimeout(seconds);
-    }
-
-    public Command toPoseCommand(Supplier<Pose2d> getPose) {
-        return new ProxyCommand(() -> swerve.toPoseCommand(getPose.get()));
-    }
-
-    private static final ProfiledPIDController yController =
-            new ProfiledPIDController(5, 0, 0, new Constraints(1, 1));
-
-    private static final ProfiledPIDController xController =
-            new ProfiledPIDController(5, 0, 0, new Constraints(1, 1));
-
-    private static final ProfiledPIDController rotationController =
-            new ProfiledPIDController(5, 0, 0, new Constraints(10, 3.14));
-
-    public Command toPosePID(Supplier<Pose2d> getPose) {
-        return new ProxyCommand(
-                () -> {
-                    var pose = getPose.get();
-                    yController.setGoal(pose.getY());
-                    xController.setGoal(pose.getX());
-                    xController.setTolerance(0.1);
-                    yController.setTolerance(0.1);
-                    rotationController.setTolerance(Units.degreesToRadians(10));
-                    rotationController.setGoal(pose.getRotation().getRadians());
-                    rotationController.enableContinuousInput(-Math.PI, Math.PI);
-
-                    return Commands.run(
-                                    () -> {
-                                        System.out.println("Wanted Pose: " + pose);
-                                        System.out.println(
-                                                "current pose: " + swerve.getEstimPose());
-                                        var vx =
-                                                xController.calculate(swerve.getEstimPose().getX());
-                                        var vy =
-                                                yController.calculate(swerve.getEstimPose().getY());
-                                        var vtheta =
-                                                rotationController.calculate(
-                                                        swerve.getEstimPose()
-                                                                .getRotation()
-                                                                .getRadians());
-                                        System.out.println("theta speed " + vtheta);
-                                        var fieldSpeeds = new ChassisSpeeds(vx, vy, vtheta);
-                                        swerve.setFieldRelativeSpeeds(fieldSpeeds);
-                                    },
-                                    swerve)
-                            .until(
-                                    () ->
-                                            yController.atSetpoint()
-                                                    && xController.atSetpoint()
-                                                    && rotationController.atSetpoint());
-                });
     }
 
     public Command rotateToTape(PIDController yController, DoubleSupplier angle, double offset) {
@@ -141,8 +97,12 @@ public class DrivetrainCommands {
 
     private final SwerveDrive swerve;
     private static final Rotation2d OneEightyRotation = Rotation2d.fromDegrees(180);
+    private final double maxSpeed;
+    private final double maxRotationRadpS;
 
     public DrivetrainCommands(SwerveDrive swerve) {
         this.swerve = swerve;
+        this.maxSpeed = this.swerve.getMaxSpeedMpS();
+        this.maxRotationRadpS = this.swerve.getMaxRotationRadpS();
     }
 }

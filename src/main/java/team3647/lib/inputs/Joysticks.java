@@ -25,6 +25,8 @@ public class Joysticks {
     public final Trigger dPadRight;
     public final Trigger dPadUp;
 
+    public final Trigger rightStickMoved;
+
     /** XboxController Object for Controller; contains all Xbox Controller Functions */
     private final CommandXboxController controller;
 
@@ -53,6 +55,8 @@ public class Joysticks {
         dPadLeft = controller.povLeft();
         dPadRight = controller.povRight();
         dPadUp = controller.povUp();
+
+        rightStickMoved = new Trigger(this::rightStickMoved);
     }
 
     public double getLeftStickX() {
@@ -80,9 +84,13 @@ public class Joysticks {
     }
 
     public boolean anyStickMoved() {
-        return Math.abs(getLeftStickX()) > 0
-                || Math.abs(getLeftStickY()) > 0
-                || Math.abs(getRightStickX()) > 0;
+        return Math.abs(getLeftStickX()) > 0.15
+                || Math.abs(getLeftStickY()) > 0.15
+                || Math.abs(getRightStickX()) > 0.15;
+    }
+
+    public boolean rightStickMoved() {
+        return Math.abs(getRightStickX()) > 0.1 || Math.abs(getRightStickY()) > 0.1;
     }
 
     public boolean anyStickMovedStiff() {
