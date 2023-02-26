@@ -117,6 +117,7 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         // if ella don't press anything, list of bools are all false, then return path point to
         // position already at a.k.a don't move
         if (boolAllFalse(positions)) {
+            // System.out.println("staying in place");
             Pose2d currentRobotPose = robotPoseSupplier.get();
             return null;
         }
@@ -129,10 +130,13 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
         }
 
         if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
+            // System.out.println("Going blue");
             Pose2d pose = FieldConstants.allBlueStations[pressedIdx];
             return new PathPoint(pose.getTranslation(), pose.getRotation());
         }
+        // System.out.println("Going red");
         Pose2d pose = FieldConstants.allRedStation[pressedIdx];
+        System.out.println("going to: " + pose);
         return new PathPoint(pose.getTranslation(), pose.getRotation());
     }
 
@@ -143,12 +147,18 @@ public class PanelScoreStateFinder implements PeriodicSubsystem {
 
     // for debugging ONLY
     public Pose2d findScorePose() {
-        int pressedIdx = 4;
+        if (boolAllFalse(positions)) {
+            Pose2d currentRobotPose = robotPoseSupplier.get();
+            return null;
+        }
+
+        int pressedIdx = 0;
         for (int i = 0; i < positions.length; i++) {
             if (positions[i]) {
                 pressedIdx = i;
             }
         }
+
         if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
             Pose2d pose = FieldConstants.allBlueStations[pressedIdx];
             return pose;

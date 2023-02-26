@@ -76,6 +76,7 @@ public class DrivetrainCommands {
         return new ProxyCommand(
                 () -> {
                     var point = selectedPoint.get();
+                    // System.out.println("Going to: " + point.);
                     return swerve.getTrajectoryCommand(swerve.getToPointATrajectory(point));
                 });
     }

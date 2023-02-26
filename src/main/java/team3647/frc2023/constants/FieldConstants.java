@@ -16,6 +16,17 @@ import team3647.lib.GroupPrinter;
 /** Add your docs here. */
 public class FieldConstants {
     public static final GroupPrinter printer = GroupPrinter.getInstance();
+    //     public static final Pose2d redStart =
+    //             new Pose2d(
+    //                     Units.inchesToMeters(610 - 96.5 - 16),
+    //                     Units.inchesToMeters(177.4 - 18.5 + 16),
+    //                     Rotation2d.fromDegrees(0));
+
+    //     public static final Pose2d blueStart =
+    //             new Pose2d(
+    //                     flip(redStart.getTranslation()),
+    //                     redStart.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+
     public static final double fieldLength = Units.inchesToMeters(651.25);
     public static final double fieldWidth = Units.inchesToMeters(315.5);
 
@@ -321,6 +332,12 @@ public class FieldConstants {
     public static Translation2d flip(Translation2d translation) {
         return new Translation2d(
                 FieldConstants.fieldLength - translation.getX(), translation.getY());
+    }
+
+    public static Pose2d flipPose(Pose2d pose) {
+        return new Pose2d(
+                flip(pose.getTranslation()),
+                pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
     }
 
     static {

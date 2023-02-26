@@ -209,6 +209,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                 > 1) return;
 
         Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), this.getRotation2d());
+        // this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp);
         switch (name) {
             case CENTER:
                 var matrix1 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(10, 10, 0.9);
@@ -227,7 +228,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         }
 
         // GroupPrinter.getInstance().getField().getObject("vision pose").setPose(acutalPose2d);
-
     }
 
     // Probably want to moving average filter pitch and roll.
@@ -371,6 +371,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public PPSwerveControllerCommand getTrajectoryCommand(PathPlannerTrajectory trajectory) {
+        // System.out.println("New trajectory");
         return new PPSwerveControllerCommand(
                 trajectory,
                 this::getEstimPose,

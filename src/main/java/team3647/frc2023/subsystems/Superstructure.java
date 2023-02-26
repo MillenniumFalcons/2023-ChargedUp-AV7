@@ -27,12 +27,15 @@ public class Superstructure {
     }
 
     public Command driveAndArmSequential(Supplier<PathPoint> getPoint, Supplier<Level> getLevel) {
-        PathPoint point = getPoint.get();
-        if (Objects.isNull(point)) {
-            return arm(getLevel);
-        }
-
-        return driveToScore(getPoint).andThen(arm(getLevel));
+        return new ProxyCommand(
+                () -> {
+                    PathPoint point = getPoint.get();
+                    if (Objects.isNull(point)) {
+                        // System.out.println("No point");
+                        return arm(getLevel);
+                    }
+                    return driveToScore(getPoint).andThen(arm(getLevel));
+                });
     }
 
     public Command arm(Supplier<Level> getLevel) {

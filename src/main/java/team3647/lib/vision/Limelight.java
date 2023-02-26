@@ -76,7 +76,7 @@ public class Limelight implements AprilTagCamera {
 
     public StampedPose getRobotPose() {
         double[] arr = getDoubleArray(Data.ROBOT_POSE);
-        if (arr.length < 5) {
+        if (arr.length < 6) {
             return AprilTagCamera.KNoAnswer;
         }
 

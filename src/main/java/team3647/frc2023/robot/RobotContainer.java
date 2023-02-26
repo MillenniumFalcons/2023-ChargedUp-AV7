@@ -1,6 +1,8 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -11,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.commands.AutoCommands;
-import team3647.frc2023.commands.PathPlannerTrajectories;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
@@ -58,7 +59,8 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(PathPlannerTrajectories.topS_P4.getInitialPose());
+        // swerve.setRobotPose(new Pose2d(14.75, 5.07, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
     }
 
     private void configureButtonBindings() {
@@ -70,25 +72,25 @@ public class RobotContainer {
         //                         SwerveDriveConstants.kRollController)
         //                 .until(mainController::anyStickMoved));
 
-        mainController.buttonA.onTrue(
+        mainController.leftBumper.onTrue(
                 superstructure
                         .grabberCommands
                         .openGrabber()
                         .withTimeout(0.7)
                         .andThen(superstructure.stow()));
 
-        mainController
-                .leftBumper
-                .whileTrue(
-                        superstructure
-                                .armToGroundIntake()
-                                .alongWith(superstructure.grabberCommands.openGrabber()))
-                .onFalse(
-                        superstructure
-                                .grabberCommands
-                                .closeGrabber()
-                                .withTimeout(0.5)
-                                .andThen(superstructure.stow()));
+        // mainController
+        //         .leftBumper
+        //         .whileTrue(
+        //                 superstructure
+        //                         .armToGroundIntake()
+        //                         .alongWith(superstructure.grabberCommands.openGrabber()))
+        //         .onFalse(
+        //                 superstructure
+        //                         .grabberCommands
+        //                         .closeGrabber()
+        //                         .withTimeout(0.5)
+        //                         .andThen(superstructure.stow()));
 
         // left trigger slow
         // right bumper release
@@ -124,10 +126,10 @@ public class RobotContainer {
                                 .grabberCommands
                                 .closeGrabber()
                                 .withTimeout(0.5)
-                                .andThen(superstructure.stow())
-                                .until(mainController::anyStickMoved));
+                                .andThen(superstructure.stow()));
+        // .until(mainController::anyStickMoved));
 
-        mainController.buttonY.onTrue(
+        mainController.rightTrigger.onTrue(
                 Commands.parallel(
                                 Commands.runOnce(() -> {}, grabber),
                                 Commands.runOnce(() -> {}, extender),
@@ -141,24 +143,24 @@ public class RobotContainer {
                                 superstructure.driveAndArmSequential(
                                         panelScoreStateFinder::getScorePoint,
                                         panelScoreStateFinder::getScoreLevel)));
-        mainController
-                .rightTrigger
-                .whileTrue(
-                        new InstantCommand(
-                                        () ->
-                                                visionController.changePipeline(
-                                                        LimelightConstant.TAPE_PIPELINE))
-                                .withTimeout(0.5)
-                                .andThen(
-                                        superstructure.drivetrainCommands.rotateToTape(
-                                                SwerveDriveConstants.kYController,
-                                                visionController::getXToTape,
-                                                0.05)))
-                .onFalse(
-                        new InstantCommand(
-                                () ->
-                                        visionController.changePipeline(
-                                                LimelightConstant.APRIL_PIPELINE)));
+        // mainController
+        //         .rightBumper
+        //         .whileTrue(
+        //                 new InstantCommand(
+        //                                 () ->
+        //                                         visionController.changePipeline(
+        //                                                 LimelightConstant.TAPE_PIPELINE))
+        //                         .withTimeout(0.5)
+        //                         .andThen(
+        //                                 superstructure.drivetrainCommands.rotateToTape(
+        //                                         SwerveDriveConstants.kYController,
+        //                                         visionController::getXToTape,
+        //                                         0.05)))
+        //         .onFalse(
+        //                 new InstantCommand(
+        //                         () ->
+        //                                 visionController.changePipeline(
+        //                                         LimelightConstant.APRIL_PIPELINE)));
 
         var stowButton = new Trigger(() -> ctrlPanelOverrides.getRedThree());
         stowButton.onTrue(superstructure.stow());
@@ -285,6 +287,7 @@ public class RobotContainer {
     }
 
     private final Joysticks mainController = new Joysticks(0);
+    private final Joysticks paddleController = new Joysticks(3);
     private final ControlPanel ctrlPanelScoring = new ControlPanel(1);
     private final ControlPanel ctrlPanelOverrides = new ControlPanel(2);
 
