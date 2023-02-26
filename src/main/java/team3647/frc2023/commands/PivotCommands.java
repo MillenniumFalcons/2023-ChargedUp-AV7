@@ -10,7 +10,7 @@ import team3647.frc2023.subsystems.Pivot;
 
 public class PivotCommands {
 
-    public Command openLoop(DoubleSupplier demand) {
+    public Command openloop(DoubleSupplier demand) {
         return Commands.run(() -> pivot.setOpenloop(demand.getAsDouble()), this.pivot);
     }
 
@@ -23,10 +23,14 @@ public class PivotCommands {
 
     public Command setAngle(DoubleSupplier setpoint) {
         return Commands.run(() -> pivot.setAngle(setpoint.getAsDouble()), pivot)
-                .until(() -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 0.05);
+                .until(() -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 2.5);
     }
 
     public Command stow() {
+        return setAngle(() -> PivotConstants.kInitialAngle).andThen(Commands.run(() -> {}, pivot));
+    }
+
+    public Command stowAuto() {
         return setAngle(() -> PivotConstants.kInitialAngle);
     }
 

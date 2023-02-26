@@ -89,7 +89,6 @@ public class SwerveModule {
     public void resetToAbsolute() {
         double absolutePosition = (getCanCoder() - absOffsetDeg) / turnPositionConversion;
         var error = turnMotor.setSelectedSensorPosition(absolutePosition, 0, 255);
-        System.out.println(error);
 
         // double absoluteAngle = (getAbsEncoderPos().getDegrees() - absOffsetDeg);
         // double adjustedAngle = CTREModuleState.optimizeAngle(absoluteAngle, getTurnAngle());

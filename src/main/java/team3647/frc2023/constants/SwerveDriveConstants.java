@@ -172,6 +172,12 @@ public class SwerveDriveConstants {
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0; // 10.0; // 1;
 
+    public static final double kYP = 1;
+    public static final double kYI = 0.0;
+    public static final double kYD = 0;
+
+    public static final PIDController kYController = new PIDController(kYP, kYI, kYD);
+
     // PID constants for roll and yaw
 
     // is stored as reference?
@@ -344,25 +350,33 @@ public class SwerveDriveConstants {
 
         printError(
                 kFrontLeftTurn.configAllSettings(kFrontLeftTurnConfig, GlobalConstants.kTimeoutMS));
+        kFrontLeftTurn.setNeutralMode(kTurnNeutralMode);
         printError(
                 kFrontRightTurn.configAllSettings(
                         kFrontRightTurnConfig, GlobalConstants.kTimeoutMS));
+        kFrontRightTurn.setNeutralMode(kTurnNeutralMode);
         printError(
                 kBackLeftTurn.configAllSettings(kBackLeftTurnConfig, GlobalConstants.kTimeoutMS));
+        kBackLeftTurn.setNeutralMode(kTurnNeutralMode);
         printError(
                 kBackRightTurn.configAllSettings(kBackRightTurnConfig, GlobalConstants.kTimeoutMS));
+        kBackRightTurn.setNeutralMode(kTurnNeutralMode);
 
         printError(
                 kFrontLeftDrive.configAllSettings(
                         kFrontLeftDriveConfig, GlobalConstants.kTimeoutMS));
+        kFrontLeftDrive.setNeutralMode(kDriveNeutralMode);
         printError(
                 kFrontRightDrive.configAllSettings(
                         kFrontRightDriveConfig, GlobalConstants.kTimeoutMS));
+        kFrontRightDrive.setNeutralMode(kDriveNeutralMode);
         printError(
                 kBackLeftDrive.configAllSettings(kBackLeftDriveConfig, GlobalConstants.kTimeoutMS));
+        kBackLeftDrive.setNeutralMode(kDriveNeutralMode);
         printError(
                 kBackRightDrive.configAllSettings(
                         kBackRightDriveConfig, GlobalConstants.kTimeoutMS));
+        kBackRightDrive.setNeutralMode(kDriveNeutralMode);
 
         // set invert, same for all b/c all motors facing same direction
         kFrontLeftTurn.setInverted(kTurnMotorInverted);

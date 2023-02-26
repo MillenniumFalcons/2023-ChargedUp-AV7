@@ -1,5 +1,8 @@
 {
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
     "Retained Values": {
       "open": false
     },
@@ -7,10 +10,21 @@
       "LiveWindow": {
         "open": true
       },
+      "Shuffleboard": {
+        "open": true
+      },
       "SmartDashboard": {
         "Field": {
           "open": true
-        },
+        }
+      },
+      "limelight-center": {
+        "open": true
+      },
+      "limelight-left": {
+        "open": true
+      },
+      "limelight-right": {
         "open": true
       }
     },
@@ -36,7 +50,6 @@
           "width": 0.6349999904632568
         },
         "height": 8.013699531555176,
-        "image": "/home/edwardsun/Downloads/2023-field.png",
         "odo": {
           "length": 0.6349999904632568,
           "width": 0.6349999904632568

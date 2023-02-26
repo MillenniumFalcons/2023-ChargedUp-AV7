@@ -24,12 +24,23 @@ public class ExtenderCommands {
     }
 
     public Command stow() {
-        return length(() -> ExtenderConstants.kMinimumPositionMeters);
+        return length(() -> ExtenderConstants.kMinimumPositionTicks)
+                .andThen(Commands.run(() -> {}, extender));
+    }
+
+    public Command stowAuto() {
+        return length(() -> ExtenderConstants.kMinimumPositionTicks);
+    }
+
+    public Command zero() {
+        return Commands.run(() -> extender.setOpenloop(-0.2))
+                .until(() -> extender.getResetSensorVal())
+                .andThen(() -> extender.setEncoder(0));
     }
 
     public Command holdPositionAtCall() {
         return new Command() {
-            double lengthAtStart = ExtenderConstants.kMinimumPositionMeters;
+            double lengthAtStart = ExtenderConstants.kMinimumPositionTicks;
 
             @Override
             public void initialize() {

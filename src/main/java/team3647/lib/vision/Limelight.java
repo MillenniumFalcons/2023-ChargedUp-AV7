@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
@@ -75,7 +76,7 @@ public class Limelight implements AprilTagCamera {
 
     public StampedPose getRobotPose() {
         double[] arr = getDoubleArray(Data.ROBOT_POSE);
-        if (arr.length < 5) {
+        if (arr.length < 6) {
             return AprilTagCamera.KNoAnswer;
         }
 
@@ -83,13 +84,14 @@ public class Limelight implements AprilTagCamera {
                 new Pose3d(
                         new Translation3d(arr[0], arr[1], arr[2]),
                         new Rotation3d(arr[3], arr[4], arr[5]));
-        double totalLatency = getDouble(Data.LATENCY_CAP_MS) + getDouble(Data.LATENCY_PIPE_MS);
 
+        double totalLatency = getDouble(Data.LATENCY_CAP_MS) + getDouble(Data.LATENCY_PIPE_MS);
+        SmartDashboard.putNumber("Limelight Latency", totalLatency);
         return new StampedPose(
                 new Pose2d(
                         new Translation2d(robotPose.getX(), robotPose.getY()),
                         new Rotation2d(robotPose.getRotation().getX())),
-                Timer.getFPGATimestamp() - totalLatency / 1000 - 0.011 - extraLatencySec);
+                Timer.getFPGATimestamp() - totalLatency / 1000 - extraLatencySec);
     }
 
     @Override

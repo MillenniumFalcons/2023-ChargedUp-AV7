@@ -4,18 +4,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 2;
+    public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxRotSpeedRadPerSec =
             SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec;
 
-    public static final double kMaxAccelerationMetersPerSecSq = 2;
+    public static final double kMaxAccelerationMetersPerSecSq = 3;
     public static final double kMaxRotAccelerationRadsPerSecSq = Math.PI;
 
-    public static final double kXControllerP = 1.4; // 2.2;
+    public static final double kXControllerP = 5; // 1.4, 2.2;
     public static final double kXControllerI = 0; // 6;
     public static final double kXControllerD = 0; // 0;
 
-    public static final double kYControllerP = 1.4; // 2.2;
+    public static final double kYControllerP = 5; // 1.4, 2.2;
     public static final double kYControllerI = 0; // 6;
     public static final double kYControllerD = 0; // 0;
 

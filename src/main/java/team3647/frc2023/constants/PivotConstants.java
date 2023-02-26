@@ -32,7 +32,8 @@ public class PivotConstants {
     public static final double kMinDegree = -30.0;
     public static final double kMaxDegree = 210.0;
 
-    public static final double kG = 0.55;
+    // kG at max extension
+    public static final double kG = 0.63;
 
     private static final double masterKP = 0.15;
     private static final double masterKI = 0;
@@ -71,8 +72,8 @@ public class PivotConstants {
         kMaster.configGetStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
 
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kSlave.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
+        kSlave.setNeutralMode(NeutralMode.Coast);
         kMaster.enableVoltageCompensation(true);
         kSlave.enableVoltageCompensation(true);
 

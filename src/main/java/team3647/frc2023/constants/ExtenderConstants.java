@@ -6,14 +6,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class ExtenderConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.ExtenderIds.kMasterId);
-
+    public static final DigitalInput resetSensor =
+            new DigitalInput(GlobalConstants.ExtenderIds.resetSensor);
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final InvertType kMasterInvert = InvertType.None;
 
-    public static final double kRevMetersSoftLimit = 2000;
+    public static final double kRevTicksSoftLimit = 2000;
 
     private static final double kGearBoxRatio = 14.0 / 48.0 * 30.0 / 40.0 * 18.0 / 24.0;
     private static final double kDrumDiameterMeters = Units.inchesToMeters(1.2);
@@ -27,8 +29,8 @@ public class ExtenderConstants {
     public static final double kMaxVelocityTicks = 27000.0 / 2;
     public static final double kMaxAccelerationTicks = 27000.0 / 2;
 
-    public static final double kMinimumPositionMeters = 0;
-    public static final double kMaximumPositionMeters = 80000.0;
+    public static final double kMinimumPositionTicks = 0;
+    public static final double kMaximumPositionTicks = 80000.0;
 
     public static final double kS = 0.0;
     public static final double kV = 0.0;
@@ -43,13 +45,15 @@ public class ExtenderConstants {
     public static final double nominalVoltage = 11.0;
 
     /** ticks */
-    public static final double kLevelTwoExtendCone = 32000;
+    public static final double kLevelTwoExtendCone = 25006; // 32000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCone = 78500;
+    public static final double kLevelThreeExtendCone = 55870 * 1.1; // 78500 * 0.75;
     /** ticks */
-    public static final double kLevelTwoExtendCube = 30000;
+    public static final double kLevelTwoExtendCube = 16250; // 30000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCube = 74000;
+    public static final double kLevelThreeExtendCube = 50903; // 74000 * 0.75;
+
+    public static final double kGroundStation = 28000;
 
     static {
         kMaster.configFactoryDefault();
@@ -60,13 +64,14 @@ public class ExtenderConstants {
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
         kMasterConfig.voltageCompSaturation = nominalVoltage;
+        kMasterConfig.slot0.allowableClosedloopError = 1000;
 
         kMasterConfig.reverseSoftLimitEnable = true;
-        kMasterConfig.reverseSoftLimitThreshold = kRevMetersSoftLimit / kNativePosToMeters;
+        kMasterConfig.reverseSoftLimitThreshold = kRevTicksSoftLimit;
 
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);
         kMaster.enableVoltageCompensation(true);
-        kMaster.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
     }
 }
