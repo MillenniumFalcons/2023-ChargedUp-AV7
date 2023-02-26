@@ -1,6 +1,5 @@
 package team3647.frc2023.subsystems;
 
-import com.google.common.base.Supplier;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -8,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import java.util.Objects;
+import java.util.function.Supplier;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
@@ -31,7 +31,6 @@ public class Superstructure {
                 () -> {
                     PathPoint point = getPoint.get();
                     if (Objects.isNull(point)) {
-                        // System.out.println("No point");
                         return arm(getLevel);
                     }
                     return driveToScore(getPoint).andThen(arm(getLevel));

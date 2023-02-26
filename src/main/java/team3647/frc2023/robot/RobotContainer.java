@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Map;
 import team3647.frc2023.commands.AutoCommands;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
@@ -43,14 +44,7 @@ public class RobotContainer {
     public RobotContainer() {
         pdh.clearStickyFaults();
         scheduler.registerSubsystem(
-                swerve,
-                printer,
-                pivot,
-                extender,
-                grabber,
-                visionController2,
-                visionController3,
-                panelScoreStateFinder);
+                swerve, printer, pivot, extender, grabber, visionController, panelScoreStateFinder);
         // scheduler.registerSubsystem(rollerGrabber);
 
         configureDefaultCommands();
@@ -352,33 +346,26 @@ public class RobotContainer {
 
     private final VisionController visionController =
             new VisionController(
-                    new Limelight(
-                            LimelightConstant.kLimelightCenterIP,
-                            LimelightConstant.kLimelightCenterHost,
-                            0,
-                            LimelightConstant.kCamConstatnts),
-                    swerve::addVisionMeasurement,
-                    CAMERA_NAME.CENTER);
-
-    private final VisionController visionController2 =
-            new VisionController(
-                    new Limelight(
-                            LimelightConstant.kLimelightLeftIP,
-                            LimelightConstant.kLimelightLeftHost,
-                            0,
-                            LimelightConstant.kCamConstatnts),
-                    swerve::addVisionMeasurement,
-                    CAMERA_NAME.LEFT);
-
-    private final VisionController visionController3 =
-            new VisionController(
-                    new Limelight(
-                            LimelightConstant.kLimelightRightIP,
-                            LimelightConstant.kLimelightRightHost,
-                            0,
-                            LimelightConstant.kCamConstatnts),
-                    swerve::addVisionMeasurement,
-                    CAMERA_NAME.RIGHT);
+                    Map.of(
+                            CAMERA_NAME.CENTER,
+                            new Limelight(
+                                    LimelightConstant.kLimelightCenterIP,
+                                    LimelightConstant.kLimelightCenterHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts),
+                            CAMERA_NAME.LEFT,
+                            new Limelight(
+                                    LimelightConstant.kLimelightLeftIP,
+                                    LimelightConstant.kLimelightLeftHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts),
+                            CAMERA_NAME.RIGHT,
+                            new Limelight(
+                                    LimelightConstant.kLimelightRightIP,
+                                    LimelightConstant.kLimelightRightHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts)),
+                    swerve::addVisionMeasurement);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
 

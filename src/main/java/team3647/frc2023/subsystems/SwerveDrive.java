@@ -31,7 +31,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final SwerveModule backLeft;
     private final SwerveModule backRight;
 
-    public final SwerveDrivePoseEstimator poseEstimator;
+    private final SwerveDrivePoseEstimator poseEstimator;
     private final SwerveDriveKinematics kinematics;
 
     private final Pigeon2 gyro;
@@ -81,10 +81,16 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.maxRotRadPerSec = maxRotRadPerSec;
         this.poseEstimator =
                 new SwerveDrivePoseEstimator(
-                        this.kinematics, getRotation2d(), getModulePositions(), new Pose2d());
+                        this.kinematics,
+                        Rotation2d.fromDegrees(gyro.getYaw()),
+                        getModulePositions(),
+                        new Pose2d());
         // poseEstimator.setVisionMeasurementStdDevs();
         this.odometry =
-                new SwerveDriveOdometry(this.kinematics, getRotation2d(), getModulePositions());
+                new SwerveDriveOdometry(
+                        this.kinematics,
+                        Rotation2d.fromDegrees(gyro.getYaw()),
+                        getModulePositions());
         zeroGyro();
     }
 
@@ -139,8 +145,8 @@ public class SwerveDrive implements PeriodicSubsystem {
 
         // SmartDashboard.putNumber(getName(), maxRotRadPerSec)
 
-        odometry.update(getRotation2d(), getModulePositions());
-        poseEstimator.update(getRotation2d(), getModulePositions());
+        odometry.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
+        poseEstimator.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
     }
 
     @Override
@@ -158,8 +164,10 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void setRobotPose(Pose2d pose) {
-        odometry.resetPosition(getRotation2d(), getModulePositions(), pose);
-        poseEstimator.resetPosition(getRotation2d(), getModulePositions(), pose);
+        odometry.resetPosition(
+                Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions(), pose);
+        poseEstimator.resetPosition(
+                Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions(), pose);
         periodicIO = new PeriodicIO();
     }
 
@@ -240,7 +248,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getHeading());
+        return getEstimPose().getRotation();
     }
 
     public Pose2d getPose() {

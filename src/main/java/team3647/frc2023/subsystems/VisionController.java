@@ -5,6 +5,7 @@
 package team3647.frc2023.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import java.util.Map;
 import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.vision.IVisionCamera.VisionPipeline;
@@ -32,32 +33,44 @@ public class VisionController implements PeriodicSubsystem {
     }
 
     public VisionController(
-            Limelight camera, Consumer<VisionInput> sendVisionUpdate, CAMERA_NAME name) {
-        this.camera = camera;
+            Map<CAMERA_NAME, Limelight> cameras, Consumer<VisionInput> sendVisionUpdate) {
+        this.cameras = cameras;
         this.visionUpdate = sendVisionUpdate;
-        this.name = name;
     }
 
     @Override
     public void readPeriodicInputs() {
-        var stampedPose = camera.getRobotPose();
-        VisionInput input = new VisionInput(stampedPose.timestamp, stampedPose.pose, name);
-        visionUpdate.accept(input);
+        for (var name : cameras.keySet()) {
+            var camera = cameras.get(name);
+            var stampedPose = camera.getRobotPose();
+            VisionInput input = new VisionInput(stampedPose.timestamp, stampedPose.pose, name);
+            visionUpdate.accept(input);
+        }
     }
 
-    public void changePipeline(VisionPipeline pipeLine) {
-        this.camera.setPipeline(pipeLine);
+    public void changePipeline(CAMERA_NAME name, VisionPipeline pipeLine) {
+        if (cameras.containsKey(name)) {
+            this.cameras.get(name).setPipeline(pipeLine);
+        }
     }
 
-    public double getXToTape() {
-        if (this.camera.getPipeline().asInt == 1) {
-            return this.camera.getDouble(Data.X);
+    public double getXToTape(CAMERA_NAME name) {
+        if (!cameras.containsKey(name)) {
+            return 0;
+        }
+        var camera = cameras.get(name);
+
+        if (camera.getPipeline().asInt == 1) {
+            return camera.getDouble(Data.X);
         }
         return 0;
     }
 
-    public double getCurrentPipeline() {
-        return this.camera.getPipeline().asInt;
+    public double getCurrentPipeline(CAMERA_NAME name) {
+        if (!cameras.containsKey(name)) {
+            return -1;
+        }
+        return cameras.get(name).getPipeline().asInt;
     }
 
     @Override
@@ -65,7 +78,6 @@ public class VisionController implements PeriodicSubsystem {
         return "VisionController";
     }
 
-    private final Limelight camera;
+    private final Map<CAMERA_NAME, Limelight> cameras;
     private final Consumer<VisionInput> visionUpdate;
-    private final CAMERA_NAME name;
 }

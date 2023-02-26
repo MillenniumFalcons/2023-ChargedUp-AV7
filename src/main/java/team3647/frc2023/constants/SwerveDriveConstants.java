@@ -350,25 +350,33 @@ public class SwerveDriveConstants {
 
         printError(
                 kFrontLeftTurn.configAllSettings(kFrontLeftTurnConfig, GlobalConstants.kTimeoutMS));
+        kFrontLeftTurn.setNeutralMode(kTurnNeutralMode);
         printError(
                 kFrontRightTurn.configAllSettings(
                         kFrontRightTurnConfig, GlobalConstants.kTimeoutMS));
+        kFrontRightTurn.setNeutralMode(kTurnNeutralMode);
         printError(
                 kBackLeftTurn.configAllSettings(kBackLeftTurnConfig, GlobalConstants.kTimeoutMS));
+        kBackLeftTurn.setNeutralMode(kTurnNeutralMode);
         printError(
                 kBackRightTurn.configAllSettings(kBackRightTurnConfig, GlobalConstants.kTimeoutMS));
+        kBackRightTurn.setNeutralMode(kTurnNeutralMode);
 
         printError(
                 kFrontLeftDrive.configAllSettings(
                         kFrontLeftDriveConfig, GlobalConstants.kTimeoutMS));
+        kFrontLeftDrive.setNeutralMode(kDriveNeutralMode);
         printError(
                 kFrontRightDrive.configAllSettings(
                         kFrontRightDriveConfig, GlobalConstants.kTimeoutMS));
+        kFrontRightDrive.setNeutralMode(kDriveNeutralMode);
         printError(
                 kBackLeftDrive.configAllSettings(kBackLeftDriveConfig, GlobalConstants.kTimeoutMS));
+        kBackLeftDrive.setNeutralMode(kDriveNeutralMode);
         printError(
                 kBackRightDrive.configAllSettings(
                         kBackRightDriveConfig, GlobalConstants.kTimeoutMS));
+        kBackRightDrive.setNeutralMode(kDriveNeutralMode);
 
         // set invert, same for all b/c all motors facing same direction
         kFrontLeftTurn.setInverted(kTurnMotorInverted);
