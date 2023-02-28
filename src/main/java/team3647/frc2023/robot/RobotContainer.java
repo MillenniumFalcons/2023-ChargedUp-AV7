@@ -59,17 +59,18 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        mainController.buttonA.onTrue(
-                Commands.run(
-                        () ->
-                                printer.addPose(
-                                        "target", () -> positionFinder.getScoringPosition().pose)));
 
-        mainController.rightTrigger.onTrue(
-                Commands.runOnce(
-                        () ->
-                                autoSteer.initializeSteering(
-                                        positionFinder.getScoringPosition().pose)));
+        mainController
+                .rightTrigger
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        autoSteer.initializeSteering(
+                                                positionFinder.getScoringPosition().pose)))
+                .whileTrue(
+                        new WaitUntilCommand(autoSteer::arrived)
+                                .andThen(superstructure.armAutomatic()));
+
         mainController.rightStickMoved.onTrue(
                 new WaitUntilCommand(mainController.rightStickMoved.negate())
                         .andThen(

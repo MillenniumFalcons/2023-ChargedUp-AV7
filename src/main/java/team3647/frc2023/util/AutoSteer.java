@@ -51,4 +51,8 @@ public class AutoSteer {
         yController.setSetpoint(pose.getY());
         lockHeading(pose.getRotation().getRadians());
     }
+
+    public boolean arrived() {
+        return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
+    }
 }
