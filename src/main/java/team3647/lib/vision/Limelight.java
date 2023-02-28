@@ -76,7 +76,7 @@ public class Limelight implements AprilTagCamera {
 
     public StampedPose getRobotPose() {
         double[] arr = getDoubleArray(Data.ROBOT_POSE);
-        if (arr.length < 6) {
+        if (arr.length < 6 || arr[0] == 0.0) {
             return AprilTagCamera.KNoAnswer;
         }
 
@@ -90,7 +90,7 @@ public class Limelight implements AprilTagCamera {
         return new StampedPose(
                 new Pose2d(
                         new Translation2d(robotPose.getX(), robotPose.getY()),
-                        new Rotation2d(robotPose.getRotation().getX())),
+                        new Rotation2d(robotPose.getRotation().getZ())),
                 Timer.getFPGATimestamp() - totalLatency / 1000 - extraLatencySec);
     }
 

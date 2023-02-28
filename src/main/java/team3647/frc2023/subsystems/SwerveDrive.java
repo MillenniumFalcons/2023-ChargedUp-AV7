@@ -54,6 +54,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         public double roll = 0;
         public double pitch = 0;
         public double rawHeading = 0;
+        public Rotation2d gyroRotation = new Rotation2d();
 
         public SwerveModuleState frontLeftState = new SwerveModuleState();
         public SwerveModuleState frontRightState = new SwerveModuleState();
@@ -106,6 +107,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.frontRightState = frontRight.getState();
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
+        periodicIO.gyroRotation = Rotation2d.fromDegrees(periodicIO.heading);
 
         SmartDashboard.putNumber("yaw", getHeading());
         SmartDashboard.putNumber("pitch", periodicIO.pitch);
@@ -210,8 +212,7 @@ public class SwerveDrive implements PeriodicSubsystem {
                         .getNorm()
                 > 1) return;
 
-        Pose2d acutalPose2d =
-                new Pose2d(visionBotPose2d.getTranslation(), visionBotPose2d.getRotation());
+        Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), periodicIO.gyroRotation);
         this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp, matrix1);
     }
 

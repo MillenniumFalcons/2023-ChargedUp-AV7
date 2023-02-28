@@ -18,9 +18,6 @@
           "open": true
         }
       },
-      "limelight-center": {
-        "open": true
-      },
       "limelight-left": {
         "open": true
       },
@@ -68,8 +65,5 @@
   "NetworkTables Settings": {
     "mode": "Client (NT3)",
     "serverTeam": "3647"
-  },
-  "NetworkTables View": {
-    "visible": false
   }
 }

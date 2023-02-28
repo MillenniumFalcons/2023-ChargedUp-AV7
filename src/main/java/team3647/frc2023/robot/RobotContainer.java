@@ -47,8 +47,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, grabber); // visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -128,23 +127,8 @@ public class RobotContainer {
     public void configureSmartDashboardLogging() {
         printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
-
-        // printer.addDouble("Pivot Deg", pivot::getAngle);
-        // printer.addDouble("Extender Ticks", extender::getNativePos);
-
-        // SmartDashboard.putNumber("CENTER XY", 0.9);
-        // SmartDashboard.putNumber("CENTER ROT", 0.9);
-
-        // SmartDashboard.putNumber("LEFT XY", 0.9);
-        // SmartDashboard.putNumber("LEFT ROT", 0.9);
-
-        // SmartDashboard.putNumber("RIGHT XY", 0.9);
-        // SmartDashboard.putNumber("RIGHT ROT", 0.9);
-
-        // SmartDashboard.putNumber("OffsetX", 0);
-        // SmartDashboard.putNumber("OffsetY", 0);
-
-        // SmartDashboard.putNumber("PIVOT OPEN", 0);
+        printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
+        printer.addPose("vision average", visionController::getAveragedPose);
     }
 
     public Command getAutonomousCommand() {
@@ -225,12 +209,12 @@ public class RobotContainer {
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final ScorePositionFinder positionFinder =
             new ScorePositionFinder(
-                    swerve::getOdoPose,
+                    swerve::getEstimPose,
                     FieldConstants.kPositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(
-                    swerve::getOdoPose,
+                    swerve::getEstimPose,
                     SwerveDriveConstants.kAutoSteerXPIDController,
                     SwerveDriveConstants.kAutoSteerYPIDController,
                     SwerveDriveConstants.kAutoSteerHeadingController);

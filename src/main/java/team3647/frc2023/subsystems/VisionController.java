@@ -5,9 +5,11 @@
 package team3647.frc2023.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Map;
 import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
+import team3647.lib.vision.AprilTagCamera;
 import team3647.lib.vision.IVisionCamera.VisionPipeline;
 import team3647.lib.vision.Limelight;
 import team3647.lib.vision.Limelight.Data;
@@ -17,7 +19,12 @@ public class VisionController implements PeriodicSubsystem {
     public enum CAMERA_NAME {
         CENTER,
         LEFT,
-        RIGHT
+        RIGHT,
+        ALL
+    }
+
+    public class PeriodicIO {
+        Pose2d averagedPose = new Pose2d();
     }
 
     public static class VisionInput {
@@ -40,10 +47,33 @@ public class VisionController implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
+        var totX = 0.0;
+        var totY = 0.0;
+        var totAngle = 0.0;
+        var totTimestamp = 0.0;
+        var divideBy = 0.0;
         for (var name : cameras.keySet()) {
             var camera = cameras.get(name);
             var stampedPose = camera.getRobotPose();
-            VisionInput input = new VisionInput(stampedPose.timestamp, stampedPose.pose, name);
+            if (stampedPose == AprilTagCamera.KNoAnswer) {
+                continue;
+            }
+            totTimestamp += stampedPose.timestamp;
+            totX += stampedPose.pose.getX();
+            totY += stampedPose.pose.getY();
+            totAngle += stampedPose.pose.getRotation().getRadians();
+            divideBy += 1;
+        }
+
+        if (divideBy != 0) {
+            periodicIO.averagedPose =
+                    new Pose2d(
+                            totX / divideBy,
+                            totY / divideBy,
+                            Rotation2d.fromRadians(totAngle / divideBy));
+            var timestamp = totTimestamp / divideBy;
+            VisionInput input =
+                    new VisionInput(timestamp, periodicIO.averagedPose, CAMERA_NAME.ALL);
             visionUpdate.accept(input);
         }
     }
@@ -78,6 +108,11 @@ public class VisionController implements PeriodicSubsystem {
         return "VisionController";
     }
 
+    public Pose2d getAveragedPose() {
+        return periodicIO.averagedPose;
+    }
+
     private final Map<CAMERA_NAME, Limelight> cameras;
     private final Consumer<VisionInput> visionUpdate;
+    private PeriodicIO periodicIO = new PeriodicIO();
 }
