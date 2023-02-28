@@ -14,6 +14,7 @@ import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
 import team3647.frc2023.commands.PivotCommands;
 import team3647.frc2023.robot.PositionFinder;
+import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
@@ -22,6 +23,7 @@ public class Superstructure {
 
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
+    private boolean isAutoSteerEnabled = true;
 
     public void periodic(double timestamp) {}
 
@@ -65,6 +67,14 @@ public class Superstructure {
 
     public Command arm(Supplier<SuperstructureState> getState) {
         return new ProxyCommand(() -> goToStateParallel(getState.get()));
+    }
+
+    public Command armCone() {
+        return new ProxyCommand(
+                () ->
+                        goToStateParallel(
+                                finder.getSuperstructureStateByPiece(
+                                        getWantedLevel(), GamePiece.Cone)));
     }
 
     public Command cancelPivot() {
@@ -125,6 +135,14 @@ public class Superstructure {
         return Commands.runOnce(() -> setWantedStation(station));
     }
 
+    public Command enableAutoSteer() {
+        return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
+    }
+
+    public Command disableAutoSteer() {
+        return Commands.runOnce(() -> this.isAutoSteerEnabled = false);
+    }
+
     public StationType getWantedStation() {
         return this.wantedStation;
     }
@@ -139,6 +157,10 @@ public class Superstructure {
 
     public void setWantedLevel(Level level) {
         this.wantedLevel = level;
+    }
+
+    public boolean autoSteerEnabled() {
+        return this.isAutoSteerEnabled;
     }
 
     // keep this at the bottom

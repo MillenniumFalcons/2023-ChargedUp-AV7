@@ -30,14 +30,20 @@ public class PositionFinder {
     public final SuperstructureState getSuperstructureState(Level wantedLevel) {
         GamePiece piece = getScoringPosition().piece;
 
+        return getSuperstructureStateByPiece(wantedLevel, piece);
+    }
+
+    public final SuperstructureState getSuperstructureStateByPiece(
+            Level wantedLevel, GamePiece piece) {
+
         if (!this.levelAndPieceToSuperstrucutreState.containsKey(wantedLevel)) {
-            return null; // stow position
+            return SuperstructureState.stow; // stow position
         }
 
         var pieceToState = levelAndPieceToSuperstrucutreState.get(wantedLevel);
 
         if (!pieceToState.containsKey(piece)) {
-            return null; // return cone level
+            return pieceToState.get(GamePiece.Cone); // return cone level
         }
 
         return pieceToState.get(piece);

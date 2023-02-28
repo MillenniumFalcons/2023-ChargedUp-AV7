@@ -3,9 +3,6 @@
     "Persistent Values": {
       "open": false
     },
-    "Retained Values": {
-      "open": false
-    },
     "transitory": {
       "LiveWindow": {
         "open": true
@@ -16,12 +13,16 @@
       "SmartDashboard": {
         "Field": {
           "open": true
+<<<<<<< Updated upstream
         }
       },
       "limelight-left": {
         "open": true
       },
       "limelight-right": {
+=======
+        },
+>>>>>>> Stashed changes
         "open": true
       }
     },

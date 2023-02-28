@@ -10,9 +10,10 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
@@ -68,11 +69,14 @@ public class RobotContainer {
                                         autoSteer.initializeSteering(
                                                 positionFinder.getScoringPosition().pose)))
                 .whileTrue(
-                        new WaitUntilCommand(autoSteer::almostArrived)
-                                .andThen(superstructure.armAutomatic()));
+                        new ConditionalCommand(
+                                Commands.waitUntil(new Trigger(autoSteer::almostArrived))
+                                        .andThen(superstructure.armAutomatic()),
+                                superstructure.armCone(),
+                                enableAutoSteer));
 
         mainController.rightStickMoved.onTrue(
-                new WaitUntilCommand(mainController.rightStickMoved.negate())
+                Commands.waitUntil(mainController.rightStickMoved.negate())
                         .andThen(
                                 () ->
                                         autoSteer.lockHeading(
@@ -92,7 +96,7 @@ public class RobotContainer {
                                             }
                                             autoSteer.initializeSteering(intakePos.pose);
                                         })
-                                .andThen(new WaitUntilCommand(intakeModeChanged))
+                                .andThen(Commands.waitUntil(intakeModeChanged))
                                 .repeatedly())
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
@@ -100,6 +104,7 @@ public class RobotContainer {
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.One));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
+        coController.buttonX.onTrue(superstructure.stow());
 
         coController.dPadDown.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
         coController.dPadUp.onTrue(superstructure.setWantedStationCommand(StationType.Double));
@@ -107,6 +112,15 @@ public class RobotContainer {
                 .dPadRight
                 .or(coController.dPadLeft)
                 .onTrue(superstructure.setWantedStationCommand(StationType.Single));
+
+        coController
+                .rightBumper
+                .whileTrue(
+                        superstructure.pivotCommands.openLoopConstant(coController::getRightStickY))
+                .whileTrue(
+                        superstructure.extenderCommands.openLoopSlow(coController::getLeftStickY));
+        coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
+        coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
     }
 
     private void configureDefaultCommands() {
@@ -118,11 +132,7 @@ public class RobotContainer {
                         mainController.leftTrigger,
                         // enable autosteer if going to actual station (bumper), or scoring
                         // (trigger)
-                        mainController.rightTrigger.or(
-                                mainController.rightBumper.and(
-                                        () ->
-                                                superstructure.getWantedStation()
-                                                        != StationType.Ground)),
+                        enableAutoSteer,
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
@@ -254,4 +264,14 @@ public class RobotContainer {
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =
             new AutoCommands(swerve, SwerveDriveConstants.kDriveKinematics, superstructure);
+
+    private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
+
+    private final BooleanSupplier enableAutoSteer =
+            globalEnableAutosteer.and(
+                    mainController.rightTrigger.or(
+                            mainController.rightBumper.and(
+                                    () ->
+                                            superstructure.getWantedStation()
+                                                    != StationType.Ground)));
 }

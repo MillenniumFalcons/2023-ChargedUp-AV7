@@ -70,6 +70,8 @@ public class SuperstructureState {
 
     public static final SuperstructureState doubleStation =
             new SuperstructureState(139.5, ExtenderConstants.kGroundStation, "double station");
+    public static final SuperstructureState stow =
+            new SuperstructureState(0, ExtenderConstants.kMinimumPositionTicks, "double station");
 
     public static final Map<Level, Map<GamePiece, SuperstructureState>> kLevelPieceMap =
             Map.of(
