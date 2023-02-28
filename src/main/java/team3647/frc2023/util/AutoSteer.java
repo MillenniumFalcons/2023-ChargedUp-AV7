@@ -55,4 +55,8 @@ public class AutoSteer {
     public boolean arrived() {
         return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
     }
+
+    public boolean almostArrived() {
+        return this.targetPose.minus(drivePose.get()).getTranslation().getNorm() < 0.05;
+    }
 }

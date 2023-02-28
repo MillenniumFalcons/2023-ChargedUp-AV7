@@ -68,7 +68,7 @@ public class RobotContainer {
                                         autoSteer.initializeSteering(
                                                 positionFinder.getScoringPosition().pose)))
                 .whileTrue(
-                        new WaitUntilCommand(autoSteer::arrived)
+                        new WaitUntilCommand(autoSteer::almostArrived)
                                 .andThen(superstructure.armAutomatic()));
 
         mainController.rightStickMoved.onTrue(

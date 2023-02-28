@@ -329,7 +329,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void setFieldRelativeSpeeds(ChassisSpeeds speeds) {
-        var robotSpeeds = speeds.fromFieldRelativeSpeeds(speeds, getRotation2d());
+        var robotSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, periodicIO.gyroRotation);
         var moduleStates = kinematics.toSwerveModuleStates(robotSpeeds);
         setModuleStates(moduleStates);
     }
