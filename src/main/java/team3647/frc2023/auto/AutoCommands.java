@@ -122,7 +122,7 @@ public class AutoCommands {
                         }),
                 new PPSwerveControllerCommand(
                         trajectory,
-                        drive::getPose,
+                        drive::getOdoPose,
                         driveKinematics,
                         AutoConstants.kXController,
                         AutoConstants.kYController,

@@ -171,9 +171,11 @@ public class SwerveDriveConstants {
     public static final ProfiledPIDController kAutoSteerXController =
             new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(3, 3));
     public static final ProfiledPIDController kAutoSteerYController =
-            new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+            new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    public static final PIDController kAutoSteerXPIDController = new PIDController(2, 0, 0);
+    public static final PIDController kAutoSteerYPIDController = new PIDController(5, 0, 0);
     // 3*Pi = move at 10 rads per second if we are 180* away from target heading
-    public static final PIDController kAutoSteerHeadingController = new PIDController(3, 0, 0);
+    public static final PIDController kAutoSteerHeadingController = new PIDController(5, 0, 0);
     // PID constants for roll and yaw
 
     // is stored as reference?

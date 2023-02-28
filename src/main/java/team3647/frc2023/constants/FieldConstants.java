@@ -11,12 +11,9 @@ import edu.wpi.first.math.util.Units;
 import java.util.List;
 import team3647.frc2023.robot.ScorePositionFinder.GamePiece;
 import team3647.frc2023.robot.ScorePositionFinder.ScoringPosition;
-import team3647.lib.GroupPrinter;
 
 /** Add your docs here. */
 public class FieldConstants {
-    public static final GroupPrinter printer = GroupPrinter.getInstance();
-
     public static final double kFieldLength = Units.inchesToMeters(651.25);
     public static final double kFieldWidth = Units.inchesToMeters(315.5);
 
@@ -55,15 +52,15 @@ public class FieldConstants {
     private static final Pose2d kBlueEight = new Pose2d(kBlueXm, kBlueEightYm, kBlueScoreRotation);
     private static final Pose2d kBlueNine = new Pose2d(kBlueXm, kBlueNineYm, kBlueScoreRotation);
 
-    private static final Pose2d kRedOne = new Pose2d(kBlueXm, kBlueOneYm, kBlueScoreRotation);
-    private static final Pose2d kRedTwo = new Pose2d(kBlueXm, kBlueTwoYm, kBlueScoreRotation);
-    private static final Pose2d kRedThree = new Pose2d(kBlueXm, kBlueThreeYm, kBlueScoreRotation);
-    private static final Pose2d kRedFour = new Pose2d(kBlueXm, kBlueFourYm, kBlueScoreRotation);
-    private static final Pose2d kRedFive = new Pose2d(kBlueXm, kBlueFiveYm, kBlueScoreRotation);
-    private static final Pose2d kRedSix = new Pose2d(kBlueXm, kBlueSixYm, kBlueScoreRotation);
-    private static final Pose2d kRedSeven = new Pose2d(kBlueXm, kBlueSevenYm, kBlueScoreRotation);
-    private static final Pose2d kRedEight = new Pose2d(kBlueXm, kBlueEightYm, kBlueScoreRotation);
-    private static final Pose2d kRedNine = new Pose2d(kBlueXm, kBlueNineYm, kBlueScoreRotation);
+    private static final Pose2d kRedOne = new Pose2d(kRedXm, kRedOneYm, kRedRedRotation);
+    private static final Pose2d kRedTwo = new Pose2d(kRedXm, kRedTwoYm, kRedRedRotation);
+    private static final Pose2d kRedThree = new Pose2d(kRedXm, kRedThreeYm, kRedRedRotation);
+    private static final Pose2d kRedFour = new Pose2d(kRedXm, kRedFourYm, kRedRedRotation);
+    private static final Pose2d kRedFive = new Pose2d(kRedXm, kRedFiveYm, kRedRedRotation);
+    private static final Pose2d kRedSix = new Pose2d(kRedXm, kRedSixYm, kRedRedRotation);
+    private static final Pose2d kRedSeven = new Pose2d(kRedXm, kRedSevenYm, kRedRedRotation);
+    private static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
+    private static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
 
     public static final List<ScoringPosition> kPositions =
             List.of(

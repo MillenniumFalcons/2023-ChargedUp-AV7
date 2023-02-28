@@ -7,7 +7,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -48,17 +47,24 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
+        scheduler.registerSubsystem(
+                swerve, printer, pivot, extender, grabber); // visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
+        // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(new Pose2d(12.83, 4.39, Rotation2d.fromDegrees(0)));
     }
 
     private void configureButtonBindings() {
+        mainController.buttonA.onTrue(
+                Commands.run(
+                        () ->
+                                printer.addPose(
+                                        "target", () -> positionFinder.getScoringPosition().pose)));
 
         mainController.rightTrigger.onTrue(
                 Commands.runOnce(
@@ -120,25 +126,25 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        printer.addPose("odo", swerve::getPose);
+        printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
 
-        printer.addDouble("Pivot Deg", pivot::getAngle);
-        printer.addDouble("Extender Ticks", extender::getNativePos);
+        // printer.addDouble("Pivot Deg", pivot::getAngle);
+        // printer.addDouble("Extender Ticks", extender::getNativePos);
 
-        SmartDashboard.putNumber("CENTER XY", 0.9);
-        SmartDashboard.putNumber("CENTER ROT", 0.9);
+        // SmartDashboard.putNumber("CENTER XY", 0.9);
+        // SmartDashboard.putNumber("CENTER ROT", 0.9);
 
-        SmartDashboard.putNumber("LEFT XY", 0.9);
-        SmartDashboard.putNumber("LEFT ROT", 0.9);
+        // SmartDashboard.putNumber("LEFT XY", 0.9);
+        // SmartDashboard.putNumber("LEFT ROT", 0.9);
 
-        SmartDashboard.putNumber("RIGHT XY", 0.9);
-        SmartDashboard.putNumber("RIGHT ROT", 0.9);
+        // SmartDashboard.putNumber("RIGHT XY", 0.9);
+        // SmartDashboard.putNumber("RIGHT ROT", 0.9);
 
-        SmartDashboard.putNumber("OffsetX", 0);
-        SmartDashboard.putNumber("OffsetY", 0);
+        // SmartDashboard.putNumber("OffsetX", 0);
+        // SmartDashboard.putNumber("OffsetY", 0);
 
-        SmartDashboard.putNumber("PIVOT OPEN", 0);
+        // SmartDashboard.putNumber("PIVOT OPEN", 0);
     }
 
     public Command getAutonomousCommand() {
@@ -219,14 +225,14 @@ public class RobotContainer {
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final ScorePositionFinder positionFinder =
             new ScorePositionFinder(
-                    swerve::getEstimPose,
+                    swerve::getOdoPose,
                     FieldConstants.kPositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(
-                    swerve::getEstimPose,
-                    SwerveDriveConstants.kAutoSteerXController,
-                    SwerveDriveConstants.kAutoSteerYController,
+                    swerve::getOdoPose,
+                    SwerveDriveConstants.kAutoSteerXPIDController,
+                    SwerveDriveConstants.kAutoSteerYPIDController,
                     SwerveDriveConstants.kAutoSteerHeadingController);
 
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);

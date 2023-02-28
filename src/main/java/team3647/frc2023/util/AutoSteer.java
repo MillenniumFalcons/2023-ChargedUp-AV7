@@ -1,7 +1,6 @@
 package team3647.frc2023.util;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -12,7 +11,7 @@ public class AutoSteer {
     private Pose2d targetPose = new Pose2d();
     private double lastUpdated = Timer.getFPGATimestamp();
 
-    private final ProfiledPIDController xController, yController;
+    private final PIDController xController, yController;
     private final PIDController thetaController;
     private final Supplier<Pose2d> drivePose;
 
@@ -20,8 +19,8 @@ public class AutoSteer {
 
     public AutoSteer(
             Supplier<Pose2d> drivePose,
-            ProfiledPIDController xController,
-            ProfiledPIDController yController,
+            PIDController xController,
+            PIDController yController,
             PIDController thetaController) {
         this.drivePose = drivePose;
         this.xController = xController;
@@ -48,8 +47,8 @@ public class AutoSteer {
     public void initializeSteering(Pose2d pose) {
         this.targetPose = pose;
         lastUpdated = Timer.getFPGATimestamp();
-        xController.setGoal(pose.getX());
-        yController.setGoal(pose.getY());
+        xController.setSetpoint(pose.getX());
+        yController.setSetpoint(pose.getY());
         lockHeading(pose.getRotation().getRadians());
     }
 }

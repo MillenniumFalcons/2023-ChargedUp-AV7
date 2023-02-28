@@ -26,8 +26,8 @@ public class DrivetrainCommands {
                         double pitchPID = pitchController.calculate(swerve.getPitch(), -1.71);
                         double rollPID = rollController.calculate(-swerve.getRoll(), 2.15);
 
-                        SmartDashboard.putNumber("PITCH PID", pitchPID);
-                        SmartDashboard.putNumber("ROLL PID", rollPID);
+                        // SmartDashboard.putNumber("PITCH PID", pitchPID);
+                        // SmartDashboard.putNumber("ROLL PID", rollPID);
                         swerve.drive(new Translation2d(rollPID, pitchPID), 0, false, false);
                     }
                 },
@@ -65,15 +65,22 @@ public class DrivetrainCommands {
                     if (autoSteer && fieldOriented) {
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
                         // completely take over rotation for heading lock.
-                        motionTurnComponent = autoSteerVelocities.dtheta;
-                        if (Math.abs(motionXComponent) > 0.1 && Math.abs(motionYComponent) > 0.1) {
+                        motionTurnComponent =
+                                Math.abs(motionTurnComponent) < .1
+                                        ? autoSteerVelocities.dtheta
+                                        : motionTurnComponent;
+                        if (Math.abs(motionXComponent) > 0.1 || Math.abs(motionYComponent) > 0.1) {
                             motionXComponent = motionXComponent * 0.5 + autoSteerVelocities.dx;
                             motionYComponent = motionYComponent * 0.5 + autoSteerVelocities.dy;
+                            SmartDashboard.putNumber(
+                                    "autoSteerVelocities.dx", autoSteerVelocities.dx);
+                            SmartDashboard.putNumber(
+                                    "autoSteerVelocities.dy", autoSteerVelocities.dy);
                         }
                     }
                     var rotation = motionTurnComponent;
-                    SmartDashboard.putNumber("Swerve wanted x", translation.getX());
-                    SmartDashboard.putNumber("Swerve wanted y", translation.getY());
+                    // SmartDashboard.putNumber("Swerve wanted x", translation.getX());
+                    // SmartDashboard.putNumber("Swerve wanted y", translation.getY());
                     swerve.drive(translation, rotation, fieldOriented, true);
                 },
                 swerve);
