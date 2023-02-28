@@ -13,8 +13,8 @@ import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.GrabberCommands;
 import team3647.frc2023.commands.PivotCommands;
-import team3647.frc2023.robot.ScorePositionFinder;
-import team3647.frc2023.robot.ScorePositionFinder.Level;
+import team3647.frc2023.robot.PositionFinder;
+import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 
@@ -147,7 +147,7 @@ public class Superstructure {
             Pivot pivot,
             Extender extender,
             Grabber grabber,
-            ScorePositionFinder finder,
+            PositionFinder finder,
             Compressor compressor,
             Trigger intakeButtons) {
         this.drive = drive;
@@ -171,7 +171,7 @@ public class Superstructure {
     private final Extender extender;
     private final Grabber grabber;
     private final GroupPrinter printer = GroupPrinter.getInstance();
-    private final ScorePositionFinder finder;
+    private final PositionFinder finder;
     private final Trigger recheckIntakeMode;
     public final DrivetrainCommands drivetrainCommands;
     public final PivotCommands pivotCommands;

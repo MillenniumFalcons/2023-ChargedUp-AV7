@@ -9,8 +9,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.List;
-import team3647.frc2023.robot.ScorePositionFinder.GamePiece;
-import team3647.frc2023.robot.ScorePositionFinder.ScoringPosition;
+import team3647.frc2023.robot.PositionFinder.GamePiece;
+import team3647.frc2023.robot.PositionFinder.IntakePosition;
+import team3647.frc2023.robot.PositionFinder.ScoringPosition;
+import team3647.frc2023.subsystems.Superstructure.StationType;
 
 /** Add your docs here. */
 public class FieldConstants {
@@ -19,6 +21,12 @@ public class FieldConstants {
 
     private static final Rotation2d kBlueScoreRotation = Rotation2d.fromDegrees(180);
     private static final Rotation2d kRedRedRotation = Rotation2d.fromDegrees(0);
+
+    private static final Rotation2d kBlueDoubleSubstationRotation = Rotation2d.fromDegrees(0);
+    private static final Rotation2d kRedDoubleSubstationRotation = Rotation2d.fromDegrees(180);
+
+    private static final Rotation2d kBlueSingleStationRotation = Rotation2d.fromDegrees(90);
+    private static final Rotation2d kRedSingleStationRotation = Rotation2d.fromDegrees(-90);
 
     private static final double kBlueXm = 1.80 + Units.inchesToMeters(3); // bumpers 3inches thick
     private static final double kBlueNineYm = 0.52;
@@ -42,6 +50,19 @@ public class FieldConstants {
     private static final double kRedEightYm = kBlueTwoYm;
     private static final double kRedNineYm = kBlueOneYm;
 
+    private static final double kBlueDoubleSubstationLeftYm = 7.35;
+    private static final double kBlueDoubleSubstationRightYm = 6;
+    private static final double kBlueDoubleSubstationXm = 15.66;
+
+    private static final double kBlueSingleStationXm = 0.0;
+    private static final double kBlueSingleStationYm = 0.0;
+    private static final double kRedSingleStationXm = 0.0;
+    private static final double kRedSingleStationYm = kBlueSingleStationYm;
+
+    private static final double kRedDoubleSubstationLeftYm = kBlueDoubleSubstationRightYm;
+    private static final double kRedDoubleSubstationRightYm = kBlueDoubleSubstationLeftYm;
+    private static final double kRedDoubleSubstationXm = 0.8;
+
     private static final Pose2d kBlueOne = new Pose2d(kBlueXm, kBlueOneYm, kBlueScoreRotation);
     private static final Pose2d kBlueTwo = new Pose2d(kBlueXm, kBlueTwoYm, kBlueScoreRotation);
     private static final Pose2d kBlueThree = new Pose2d(kBlueXm, kBlueThreeYm, kBlueScoreRotation);
@@ -62,7 +83,35 @@ public class FieldConstants {
     private static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
     private static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
 
-    public static final List<ScoringPosition> kPositions =
+    private static final Pose2d kBlueDoubleSubstationLeft =
+            new Pose2d(
+                    kBlueDoubleSubstationXm,
+                    kBlueDoubleSubstationLeftYm,
+                    kBlueDoubleSubstationRotation);
+    private static final Pose2d kBlueDoubleSubstationRight =
+            new Pose2d(
+                    kBlueDoubleSubstationXm,
+                    kBlueDoubleSubstationRightYm,
+                    kBlueDoubleSubstationRotation);
+    private static final Pose2d kBlueSingleStation =
+            new Pose2d(kBlueSingleStationXm, kBlueSingleStationYm, kBlueSingleStationRotation);
+
+    private static final Pose2d kRedDoubleSubstationLeft =
+            new Pose2d(
+                    kRedDoubleSubstationXm,
+                    kRedDoubleSubstationLeftYm,
+                    kRedDoubleSubstationRotation);
+    private static final Pose2d kRedDoubleSubstationRight =
+            new Pose2d(
+                    kRedDoubleSubstationXm,
+                    kRedDoubleSubstationRightYm,
+                    kRedDoubleSubstationRotation);
+    private static final Pose2d kRedSingleStation =
+            new Pose2d(kRedSingleStationXm, kRedSingleStationYm, kRedSingleStationRotation);
+
+    public static final Pose2d kGroundIntake = new Pose2d();
+
+    public static final List<ScoringPosition> kScoringPositions =
             List.of(
                     new ScoringPosition(kBlueOne, GamePiece.Cone),
                     new ScoringPosition(kBlueTwo, GamePiece.Cube),
@@ -82,6 +131,16 @@ public class FieldConstants {
                     new ScoringPosition(kRedSeven, GamePiece.Cone),
                     new ScoringPosition(kRedEight, GamePiece.Cube),
                     new ScoringPosition(kRedNine, GamePiece.Cone));
+
+    public static final List<IntakePosition> kIntakePositions =
+            List.of(
+                    new IntakePosition(kBlueDoubleSubstationLeft, StationType.Double),
+                    new IntakePosition(kBlueDoubleSubstationRight, StationType.Double),
+                    new IntakePosition(kRedDoubleSubstationLeft, StationType.Double),
+                    new IntakePosition(kRedDoubleSubstationRight, StationType.Double),
+                    new IntakePosition(kBlueSingleStation, StationType.Single),
+                    new IntakePosition(kRedSingleStation, StationType.Single),
+                    new IntakePosition(kGroundIntake, StationType.Ground));
 
     public static Translation2d flip(Translation2d translation) {
         return new Translation2d(

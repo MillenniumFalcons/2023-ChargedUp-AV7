@@ -21,7 +21,7 @@ import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.frc2023.robot.ScorePositionFinder.Level;
+import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.Grabber;
 import team3647.frc2023.subsystems.Pivot;
@@ -81,6 +81,19 @@ public class RobotContainer {
 
         mainController
                 .rightBumper
+                .whileTrue(
+                        Commands.runOnce(
+                                        () -> {
+                                            var intakePos =
+                                                    positionFinder.getIntakePositionByStation(
+                                                            superstructure.getWantedStation());
+                                            if (intakePos.pose == FieldConstants.kGroundIntake) {
+                                                return;
+                                            }
+                                            autoSteer.initializeSteering(intakePos.pose);
+                                        })
+                                .andThen(new WaitUntilCommand(intakeModeChanged))
+                                .repeatedly())
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
 
@@ -103,7 +116,13 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         mainController.leftTrigger,
-                        mainController.rightTrigger,
+                        // enable autosteer if going to actual station (bumper), or scoring
+                        // (trigger)
+                        mainController.rightTrigger.or(
+                                mainController.rightBumper.and(
+                                        () ->
+                                                superstructure.getWantedStation()
+                                                        != StationType.Ground)),
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
@@ -208,10 +227,11 @@ public class RobotContainer {
                     swerve::addVisionMeasurement);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
-    private final ScorePositionFinder positionFinder =
-            new ScorePositionFinder(
+    private final PositionFinder positionFinder =
+            new PositionFinder(
                     swerve::getEstimPose,
-                    FieldConstants.kPositions,
+                    FieldConstants.kScoringPositions,
+                    FieldConstants.kIntakePositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(

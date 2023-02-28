@@ -3,8 +3,9 @@ package team3647.frc2023.util;
 import java.util.Map;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.PivotConstants;
-import team3647.frc2023.robot.ScorePositionFinder.GamePiece;
-import team3647.frc2023.robot.ScorePositionFinder.Level;
+import team3647.frc2023.robot.PositionFinder.GamePiece;
+import team3647.frc2023.robot.PositionFinder.Level;
+import team3647.frc2023.subsystems.Superstructure.StationType;
 
 public class SuperstructureState {
     /** degrees */
@@ -88,4 +89,9 @@ public class SuperstructureState {
                     Map.of(
                             GamePiece.Cone, noLevel,
                             GamePiece.Cube, noLevel));
+    public final Map<StationType, SuperstructureState> kIntakePositionsMap =
+            Map.of(
+                    StationType.Double, doubleStation,
+                    StationType.Single, singleStation,
+                    StationType.Ground, groundIntake);
 }
