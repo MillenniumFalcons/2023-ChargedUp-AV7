@@ -3,32 +3,36 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
-import team3647.frc2023.commands.AutoCommands;
+import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.constants.ExtenderConstants;
+import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.robot.ScorePositionFinder.Level;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.Grabber;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Superstructure;
+import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
 import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
+import team3647.frc2023.util.AutoSteer;
+import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
-import team3647.lib.inputs.ControlPanel;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.vision.Limelight;
 
@@ -44,190 +48,67 @@ public class RobotContainer {
     public RobotContainer() {
         pdh.clearStickyFaults();
         scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, grabber, visionController, panelScoreStateFinder);
-        // scheduler.registerSubsystem(rollerGrabber);
+                swerve, printer, pivot, extender, grabber); // visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        // swerve.setRobotPose(new Posse2d(12.75, 4.3, Rotation2d.fromDegrees(0)));
-        // swerve.setRobotPose(new Pose2d(14.75, 5.07, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
+        // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(new Pose2d(12.83, 4.39, Rotation2d.fromDegrees(0)));
     }
 
     private void configureButtonBindings() {
-        // mainController.buttonX.whileTrue(
-        //         superstructure
-        //                 .drivetrainCommands
-        //                 .balance(
-        //                         SwerveDriveConstants.kPitchController,
-        //                         SwerveDriveConstants.kRollController)
-        //                 .until(mainController::anyStickMoved));
+        mainController.buttonA.onTrue(
+                Commands.run(
+                        () ->
+                                printer.addPose(
+                                        "target", () -> positionFinder.getScoringPosition().pose)));
 
-        mainController.leftBumper.onTrue(
-                superstructure
-                        .grabberCommands
-                        .openGrabber()
-                        .withTimeout(0.7)
-                        .andThen(superstructure.stow()));
-
-        // mainController
-        //         .leftBumper
-        //         .whileTrue(
-        //                 superstructure
-        //                         .armToGroundIntake()
-        //                         .alongWith(superstructure.grabberCommands.openGrabber()))
-        //         .onFalse(
-        //                 superstructure
-        //                         .grabberCommands
-        //                         .closeGrabber()
-        //                         .withTimeout(0.5)
-        //                         .andThen(superstructure.stow()));
-
-        // left trigger slow
-        // right bumper release
-        // right trigger auto drive
-
-        // hold and line up, release and wait for it to drive back
-        // mainController
-        //         .rightBumper
-        //         .onTrue(
-        //                 superstructure
-        //                         .grabberCommands
-        //                         .openGrabber()
-        //                         .alongWith(superstructure.doubleStation()))
-        //         .onFalse(
-        //                 superstructure
-        //                         .grabberCommands
-        //                         .closeGrabber()
-        //                         .withTimeout(0.5)
-        //                         .andThen(
-        //                                 superstructure.drivetrainCommands.robotRelativeDrive(
-        //                                         new Translation2d(-0.8, 0), 0.5))
-        //                         .until(mainController::anyStickMoved));
+        mainController.rightTrigger.onTrue(
+                Commands.runOnce(
+                        () ->
+                                autoSteer.initializeSteering(
+                                        positionFinder.getScoringPosition().pose)));
+        mainController.rightStickMoved.onTrue(
+                new WaitUntilCommand(mainController.rightStickMoved.negate())
+                        .andThen(
+                                () ->
+                                        autoSteer.lockHeading(
+                                                Units.degreesToRadians(swerve.getHeading()))));
+        mainController.leftBumper.onTrue(superstructure.score());
 
         mainController
                 .rightBumper
-                .onTrue(
-                        superstructure
-                                .grabberCommands
-                                .openGrabber()
-                                .alongWith(superstructure.doubleStation()))
-                .onFalse(
-                        superstructure
-                                .grabberCommands
-                                .closeGrabber()
-                                .withTimeout(0.5)
-                                .andThen(superstructure.stow()));
-        // .until(mainController::anyStickMoved));
+                .onTrue(superstructure.intakeAutomatic())
+                .onFalse(superstructure.stowFromIntake());
 
-        mainController.rightTrigger.onTrue(
-                Commands.parallel(
-                                Commands.runOnce(() -> {}, grabber),
-                                Commands.runOnce(() -> {}, extender),
-                                Commands.runOnce(() -> {}, pivot),
-                                new InstantCommand(
-                                        () ->
-                                                printer.addPose(
-                                                        "target",
-                                                        panelScoreStateFinder::getScorePose)))
-                        .andThen(
-                                superstructure.driveAndArmSequentialPID(
-                                        panelScoreStateFinder::getScorePose,
-                                        panelScoreStateFinder::getScoreLevel))
-                        .until(mainController::anyStickMoved));
-        // mainController
-        //         .rightBumper
-        //         .whileTrue(
-        //                 new InstantCommand(
-        //                                 () ->
-        //                                         visionController.changePipeline(
-        //                                                 LimelightConstant.TAPE_PIPELINE))
-        //                         .withTimeout(0.5)
-        //                         .andThen(
-        //                                 superstructure.drivetrainCommands.rotateToTape(
-        //                                         SwerveDriveConstants.kYController,
-        //                                         visionController::getXToTape,
-        //                                         0.05)))
-        //         .onFalse(
-        //                 new InstantCommand(
-        //                         () ->
-        //                                 visionController.changePipeline(
-        //                                         LimelightConstant.APRIL_PIPELINE)));
+        coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.One));
+        coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
+        coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
 
-        var stowButton = new Trigger(() -> ctrlPanelOverrides.getRedThree());
-        stowButton.onTrue(superstructure.stow());
-
-        var extenderOverrideOnForward =
-                new Trigger(
-                        () ->
-                                ctrlPanelScoring.getJoystickFBAxis() > 0.5
-                                        && ctrlPanelOverrides.getRedFour());
-
-        extenderOverrideOnForward.whileTrue(
-                superstructure
-                        .extenderCommands
-                        .openloop(() -> -0.15)
-                        .until(extenderOverrideOnForward.negate().debounce(0.5)));
-
-        var extenderOverrideOnReverse =
-                new Trigger(
-                        () ->
-                                ctrlPanelScoring.getJoystickFBAxis() < -0.5
-                                        && ctrlPanelOverrides.getRedFour());
-
-        extenderOverrideOnReverse.whileTrue(
-                superstructure
-                        .extenderCommands
-                        .openloop(() -> 0.15)
-                        .until(extenderOverrideOnReverse.negate().debounce(0.5)));
-
-        var pivotOverrideOnFoward =
-                new Trigger(
-                        () ->
-                                ctrlPanelOverrides.getJoystickFBAxis() > 0.5
-                                        && ctrlPanelOverrides.getRedFour());
-
-        pivotOverrideOnFoward.whileTrue(
-                superstructure
-                        .pivotCommands
-                        .openloop(() -> 0.09)
-                        .until(pivotOverrideOnFoward.negate().debounce(0.5)));
-
-        var pivotOverrideOnReverse =
-                new Trigger(
-                        () ->
-                                ctrlPanelOverrides.getJoystickFBAxis() < -0.5
-                                        && ctrlPanelOverrides.getRedFour());
-
-        pivotOverrideOnReverse.whileTrue(
-                superstructure
-                        .pivotCommands
-                        .openloop(() -> -0.09)
-                        .until(pivotOverrideOnReverse.negate().debounce(0.5)));
+        coController.dPadDown.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
+        coController.dPadUp.onTrue(superstructure.setWantedStationCommand(StationType.Double));
+        coController
+                .dPadRight
+                .or(coController.dPadLeft)
+                .onTrue(superstructure.setWantedStationCommand(StationType.Single));
     }
 
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
-                superstructure.drivetrainCommands.drive(
+                superstructure.drivetrainCommands.driveVisionTeleop(
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
-                        mainController::getLeftTriggerValue,
+                        mainController.leftTrigger,
+                        mainController.rightTrigger,
                         () -> true,
-                        AllianceFlipUtil::shouldFlip));
+                        AllianceFlipUtil::shouldFlip,
+                        autoSteer::findVelocities));
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
-        // pivot.setDefaultCommand(
-        //         superstructure.pivotCommands.openloop(
-        //                 () -> SmartDashboard.getNumber("PIVOT OPEN", 0)));
-        ;
-        // grabber.setDefaultCommand(
-        //         new ConditionalCommand(
-        //                 superstructure.grabberCommands.closeGrabber(),
-        //                 superstructure.grabberCommands.closeAndRollIn(),
-        //                 grabber::getHasGamePiece));
+
         grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
@@ -238,11 +119,6 @@ public class RobotContainer {
         Commands.run(() -> {}, grabber).schedule();
     }
 
-    public void setToCoast() {
-        // pivot.setToCoast();
-        // extender.setToCoast();
-    }
-
     public double getPivotFFVoltage() {
         return PivotConstants.kG
                 * (extender.getNativeTicks() - ExtenderConstants.kMinimumPositionTicks)
@@ -250,46 +126,40 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        printer.addPose("odo", swerve::getPose);
+        printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
 
-        printer.addDouble("Pivot Deg", pivot::getAngle);
-        printer.addDouble("Extender Ticks", extender::getNativePos);
+        // printer.addDouble("Pivot Deg", pivot::getAngle);
+        // printer.addDouble("Extender Ticks", extender::getNativePos);
 
-        printer.addPose("target", panelScoreStateFinder::findScorePose);
-        printer.addString("Level", panelScoreStateFinder::getScoreLevelStr);
+        // SmartDashboard.putNumber("CENTER XY", 0.9);
+        // SmartDashboard.putNumber("CENTER ROT", 0.9);
 
-        // printer.addDouble("X Dis", visionController::getXToTape);
+        // SmartDashboard.putNumber("LEFT XY", 0.9);
+        // SmartDashboard.putNumber("LEFT ROT", 0.9);
 
-        SmartDashboard.putNumber("CENTER XY", 0.9);
-        SmartDashboard.putNumber("CENTER ROT", 0.9);
+        // SmartDashboard.putNumber("RIGHT XY", 0.9);
+        // SmartDashboard.putNumber("RIGHT ROT", 0.9);
 
-        SmartDashboard.putNumber("LEFT XY", 0.9);
-        SmartDashboard.putNumber("LEFT ROT", 0.9);
+        // SmartDashboard.putNumber("OffsetX", 0);
+        // SmartDashboard.putNumber("OffsetY", 0);
 
-        SmartDashboard.putNumber("RIGHT XY", 0.9);
-        SmartDashboard.putNumber("RIGHT ROT", 0.9);
-
-        SmartDashboard.putNumber("OffsetX", 0);
-        SmartDashboard.putNumber("OffsetY", 0);
-
-        SmartDashboard.putNumber("PIVOT OPEN", 0);
+        // SmartDashboard.putNumber("PIVOT OPEN", 0);
     }
 
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return autoCommands.top1C1B();
+        return Commands.none();
     }
 
     private final Joysticks mainController = new Joysticks(0);
-    private final Joysticks paddleController = new Joysticks(3);
-    private final ControlPanel ctrlPanelScoring = new ControlPanel(1);
-    private final ControlPanel ctrlPanelOverrides = new ControlPanel(2);
+    private final Joysticks coController = new Joysticks(1);
 
-    //     public final RollerGrabber rollerGrabber =
-    //             new RollerGrabber(
-    //                     RollerGrabberConstants.kMaster, RollerGrabberConstants.kPiston, 1, 1, 1,
-    // 1);
+    private final Trigger intakeModeChanged =
+            coController
+                    .dPadLeft
+                    .or(coController.dPadRight)
+                    .or(coController.dPadUp)
+                    .or(coController.dPadDown);
 
     public final SwerveDrive swerve =
             new SwerveDrive(
@@ -301,22 +171,6 @@ public class RobotContainer {
                     SwerveDriveConstants.kDriveKinematics,
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
-
-    final PanelScoreStateFinder panelScoreStateFinder =
-            new PanelScoreStateFinder(
-                    ctrlPanelOverrides::getLevelLow,
-                    ctrlPanelScoring::getLevelMid,
-                    ctrlPanelScoring::getLevelHigh,
-                    ctrlPanelScoring::getColumnOne,
-                    ctrlPanelScoring::getColumnTwo,
-                    ctrlPanelScoring::getColumnThree,
-                    ctrlPanelScoring::getColumnFour,
-                    ctrlPanelScoring::getColumnFive,
-                    ctrlPanelScoring::getColumnSix,
-                    ctrlPanelScoring::getColumnSeven,
-                    ctrlPanelScoring::getColumnEight,
-                    ctrlPanelScoring::getColumnNine,
-                    swerve::getEstimPose);
 
     // right menu button cube, left menu button cone
     public final Grabber grabber = new Grabber(GrabberConstants.pistons);
@@ -369,10 +223,28 @@ public class RobotContainer {
                     swerve::addVisionMeasurement);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
+    private final ScorePositionFinder positionFinder =
+            new ScorePositionFinder(
+                    swerve::getOdoPose,
+                    FieldConstants.kPositions,
+                    SuperstructureState.kLevelPieceMap);
+    private final AutoSteer autoSteer =
+            new AutoSteer(
+                    swerve::getOdoPose,
+                    SwerveDriveConstants.kAutoSteerXPIDController,
+                    SwerveDriveConstants.kAutoSteerYPIDController,
+                    SwerveDriveConstants.kAutoSteerHeadingController);
 
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
     final Superstructure superstructure =
-            new Superstructure(swerve, pivot, extender, grabber, compressor);
+            new Superstructure(
+                    swerve,
+                    pivot,
+                    extender,
+                    grabber,
+                    positionFinder,
+                    compressor,
+                    intakeModeChanged);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =

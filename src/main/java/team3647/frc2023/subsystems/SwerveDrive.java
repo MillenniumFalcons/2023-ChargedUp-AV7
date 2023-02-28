@@ -228,7 +228,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         return getEstimPose().getRotation();
     }
 
-    public Pose2d getPose() {
+    public Pose2d getOdoPose() {
         return odometry.getPoseMeters();
     }
 
@@ -353,8 +353,6 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public PathPlannerTrajectory getToPoseTrajectory(Pose2d endpoint) {
-        System.out.println("Start: " + getEstimPose());
-        System.out.println("End: " + endpoint);
         var start = getEstimPose();
         var ppEndpoint = new PathPoint(endpoint.getTranslation(), endpoint.getRotation());
         var ppStart = new PathPoint(start.getTranslation(), start.getRotation());

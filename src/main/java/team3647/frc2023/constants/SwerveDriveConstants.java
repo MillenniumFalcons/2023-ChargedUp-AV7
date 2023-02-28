@@ -12,9 +12,11 @@ import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import team3647.lib.SwerveModule;
 
@@ -92,25 +94,13 @@ public class SwerveDriveConstants {
 
     // from motor to output shaft
     public static final double kDriveMotorGearRatio = 1 / 6.75;
-    //     public static final double kTurnMotorGearRatio = 15.0 / 32.0 * 10.0 / 60.0;
     public static final double kTurnMotorGearRatio = 7.0 / 150.0;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4.0);
-
-    //     public static final double kWheelRotationToMetersDrive =
-    //             kWheelDiameterMeters * Math.PI * kDriveMotorGearRatio;
-
-    //     public static final double kDriveMotorNativeToMeter =
-    //             kWheelRotationToMetersDrive
-    //                     / GlobalConstants.kFalconTicksPerRotation; // meters / native
 
     //     // divide for tick to deg
     public static final double kTurnMotorNativeToDeg =
             kTurnMotorGearRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
-    //     // deg / native
-    //     public static final double kDriveMotorNativeToMPS =
-    //             kWheelRotationToMetersDrive
-    //                     * 10
-    //                     / GlobalConstants.kFalconTicksPerRotation; // MPS / Native/10ms
+
     public static final double kTurnMotorNativeToDPS =
             kTurnMotorNativeToDeg * 10.0; // RPS / Native/10ms
 
@@ -129,10 +119,10 @@ public class SwerveDriveConstants {
     public static final double kMaxCurrent = 60;
 
     // find
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 302.52; // 38.43;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 244.77; // 250.22;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 121.9; // 347.91 - 180;
-    public static final double kAbsBackRightEncoderOffsetDeg = 240.3; // 246.22 - 180;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 302.52;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 244.77;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 121.9;
+    public static final double kAbsBackRightEncoderOffsetDeg = 240.3;
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
     public static final double kTeleopDriveMaxAngularAccelUnitsPerSec =
@@ -164,13 +154,13 @@ public class SwerveDriveConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
 
     // master PID constants for turn and drive for all modules
-    public static final double kDriveP = 0.1; // 1;
+    public static final double kDriveP = 0.1;
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0;
 
     public static final double kTurnP = 0.4;
     public static final double kTurnI = 0.0;
-    public static final double kTurnD = 0; // 10.0; // 1;
+    public static final double kTurnD = 0;
 
     public static final double kYP = 1;
     public static final double kYI = 0.0;
@@ -178,6 +168,14 @@ public class SwerveDriveConstants {
 
     public static final PIDController kYController = new PIDController(kYP, kYI, kYD);
 
+    public static final ProfiledPIDController kAutoSteerXController =
+            new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    public static final ProfiledPIDController kAutoSteerYController =
+            new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    public static final PIDController kAutoSteerXPIDController = new PIDController(2, 0, 0);
+    public static final PIDController kAutoSteerYPIDController = new PIDController(5, 0, 0);
+    // 3*Pi = move at 10 rads per second if we are 180* away from target heading
+    public static final PIDController kAutoSteerHeadingController = new PIDController(5, 0, 0);
     // PID constants for roll and yaw
 
     // is stored as reference?
@@ -243,7 +241,6 @@ public class SwerveDriveConstants {
         config.slot0.kI = kTurnI;
         config.slot0.kD = kTurnD;
         config.supplyCurrLimit.enable = true;
-        // config.supplyCurrLimit.currentLimit = kStallCurrent;
         config.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
         config.voltageCompSaturation = kNominalVoltage;
         config.initializationStrategy = SensorInitializationStrategy.BootToZero;
@@ -254,7 +251,6 @@ public class SwerveDriveConstants {
         config.slot0.kI = kDriveI;
         config.slot0.kD = kDriveD;
         config.supplyCurrLimit.enable = true;
-        // config.supplyCurrLimit.currentLimit = kStallCurrent;
         config.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
         config.initializationStrategy = SensorInitializationStrategy.BootToZero;
         config.voltageCompSaturation = kNominalVoltage;
@@ -268,28 +264,11 @@ public class SwerveDriveConstants {
         System.out.println(error);
     }
 
-    //     private static void setCancoderConfig(CANCoderConfiguration config) {
-    //         config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    //         config.sensorDirection = canCoderInvert;
-    //         config.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
-    //         config.sensorTimeBase = SensorTimeBase.PerSecond;
-    //     }
-
     static {
         kGyroConfig.ZAxisGyroError = 0.3;
         // remove later
         kGyroConfig.MountPoseYaw = 90;
         printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
-        // encoder feedback alredy continous for turn motor?
-        // kFrontLeftDrive.configFactoryDefault();
-        // kFrontRightDrive.configFactoryDefault();
-        // kBackLeftDrive.configFactoryDefault();
-        // kBackRightDrive.configFactoryDefault();
-
-        // kFrontLeftTurn.configFactoryDefault();
-        // kFrontRightTurn.configFactoryDefault();
-        // kBackLeftTurn.configFactoryDefault();
-        // kBackRightTurn.configFactoryDefault();
 
         setTurnMotorConfig(kFrontLeftTurnConfig);
         setTurnMotorConfig(kFrontRightTurnConfig);
@@ -300,11 +279,6 @@ public class SwerveDriveConstants {
         setDriveMotorConfig(kFrontRightDriveConfig);
         setDriveMotorConfig(kBackLeftDriveConfig);
         setDriveMotorConfig(kBackRightDriveConfig);
-
-        // kFrontLeftAbsEncoder.configFactoryDefault();
-        // kFrontRightAbsEncoder.configFactoryDefault();
-        // kBackLeftAbsEncoder.configFactoryDefault();
-        // kBackRightAbsEncoder.configFactoryDefault();
 
         kFrontLeftAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
         kFrontLeftAbsConfig.sensorDirection = canCoderInvert;

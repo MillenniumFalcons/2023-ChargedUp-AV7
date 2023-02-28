@@ -28,19 +28,16 @@ public class ExtenderCommands {
                 .andThen(Commands.run(() -> {}, extender));
     }
 
-    public Command stowAuto() {
-        return length(() -> ExtenderConstants.kMinimumPositionTicks);
-    }
-
     public Command zero() {
         return Commands.run(() -> extender.setOpenloop(-0.2))
-                .until(() -> extender.getResetSensorVal())
+                .until(extender::getResetSensorVal)
                 .andThen(() -> extender.setEncoder(0));
     }
 
     public Command holdPositionAtCall() {
         return new Command() {
             double lengthAtStart = ExtenderConstants.kMinimumPositionTicks;
+            Set<Subsystem> reqs = Set.of(extender);
 
             @Override
             public void initialize() {
@@ -54,7 +51,7 @@ public class ExtenderCommands {
 
             @Override
             public Set<Subsystem> getRequirements() {
-                return Set.of(extender);
+                return reqs;
             }
         };
     }
