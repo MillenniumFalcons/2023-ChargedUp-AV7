@@ -69,18 +69,25 @@ public class DrivetrainCommands {
                         motionTurnComponent =
                                 Math.abs(motionTurnComponent) < .1
                                         ? autoSteerVelocities.dtheta
-                                                + Math.signum(autoSteerVelocities.dtheta) * 0.3
+                                                + Math.signum(autoSteerVelocities.dtheta) * 0.1
                                         : motionTurnComponent;
 
                         if (Math.abs(motionXComponent) > 0.1 || Math.abs(motionYComponent) > 0.1) {
-                            motionXComponent = motionXComponent * 0.5 + autoSteerVelocities.dx;
-                            motionYComponent = motionYComponent * 0.5 + autoSteerVelocities.dy;
+                            motionXComponent =
+                                    motionXComponent * 0.5
+                                            + autoSteerVelocities.dx
+                                            + Math.signum(autoSteerVelocities.dx) * 0.25;
+                            motionYComponent =
+                                    motionYComponent * 0.5
+                                            + autoSteerVelocities.dy
+                                            + Math.signum(autoSteerVelocities.dy) * 0.25;
                             SmartDashboard.putNumber(
                                     "autoSteerVelocities.dx", autoSteerVelocities.dx);
                             SmartDashboard.putNumber(
                                     "autoSteerVelocities.dy", autoSteerVelocities.dy);
                         }
                     }
+                    SmartDashboard.putNumber("wanted x", translation.getY());
                     var rotation = motionTurnComponent;
                     swerve.drive(translation, rotation, fieldOriented, true);
                 },

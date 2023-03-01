@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ProxyCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
@@ -27,8 +26,8 @@ public class Superstructure {
 
     public void periodic(double timestamp) {}
 
-    public Command score() {
-        return Commands.sequence(grabberCommands.openGrabber(), new WaitCommand(0.5), stow());
+    public Command scoreStowHalfSecDelay() {
+        return scoreAndStow(0.5);
     }
 
     public Command armAutomatic() {
@@ -61,20 +60,17 @@ public class Superstructure {
                                 StationType.Double,
                                 new WaitCommand(0.5).andThen(stow()),
                                 StationType.Ground,
-                                stow()),
+                                new WaitCommand(0.8).andThen(stow())),
                         this::getWantedStation));
     }
 
     public Command arm(Supplier<SuperstructureState> getState) {
-        return new ProxyCommand(() -> goToStateParallel(getState.get()));
+        return goToStateParallel(getState);
     }
 
     public Command armCone() {
-        return new ProxyCommand(
-                () ->
-                        goToStateParallel(
-                                finder.getSuperstructureStateByPiece(
-                                        getWantedLevel(), GamePiece.Cone)));
+        return goToStateParallel(
+                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone));
     }
 
     public Command cancelPivot() {
@@ -96,6 +92,12 @@ public class Superstructure {
         return Commands.parallel(
                 pivotCommands.setAngle(() -> state.angle),
                 extenderCommands.length(() -> state.length));
+    }
+
+    public Command goToStateParallel(Supplier<SuperstructureState> getState) {
+        return Commands.parallel(
+                pivotCommands.setAngle(() -> getState.get().angle),
+                extenderCommands.length(() -> getState.get().length));
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {

@@ -91,7 +91,7 @@ public class SuperstructureState {
                     Map.of(
                             GamePiece.Cone, noLevel,
                             GamePiece.Cube, noLevel));
-    public final Map<StationType, SuperstructureState> kIntakePositionsMap =
+    public static final Map<StationType, SuperstructureState> kIntakePositionsMap =
             Map.of(
                     StationType.Double, doubleStation,
                     StationType.Single, singleStation,

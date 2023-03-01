@@ -57,6 +57,6 @@ public class AutoSteer {
     }
 
     public boolean almostArrived() {
-        return this.targetPose.minus(drivePose.get()).getTranslation().getNorm() < 0.05;
+        return this.targetPose.minus(drivePose.get()).getTranslation().getNorm() < 0.50;
     }
 }

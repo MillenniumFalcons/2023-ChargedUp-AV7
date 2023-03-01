@@ -56,7 +56,8 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(new Pose2d(12.83, 4.39, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(
+                new Pose2d(FieldConstants.kFieldLength - 12.83, 4.39, Rotation2d.fromDegrees(180)));
     }
 
     private void configureButtonBindings() {
@@ -81,7 +82,7 @@ public class RobotContainer {
                                 () ->
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
-        mainController.leftBumper.onTrue(superstructure.score());
+        mainController.leftBumper.onTrue(superstructure.scoreStowHalfSecDelay());
 
         mainController
                 .rightBumper
@@ -155,10 +156,12 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        printer.addPose("odo", swerve::getOdoPose);
+        // printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
         printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
-        printer.addPose("vision average", visionController::getAveragedPose);
+        // printer.addPose("vision average", visionController::getAveragedPose);
+        printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
+        printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
     }
 
     public Command getAutonomousCommand() {

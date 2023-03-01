@@ -26,9 +26,9 @@ public class FieldConstants {
     private static final Rotation2d kRedDoubleSubstationRotation = Rotation2d.fromDegrees(180);
 
     private static final Rotation2d kBlueSingleStationRotation = Rotation2d.fromDegrees(90);
-    private static final Rotation2d kRedSingleStationRotation = Rotation2d.fromDegrees(-90);
+    private static final Rotation2d kRedSingleStationRotation = Rotation2d.fromDegrees(90);
 
-    private static final double kBlueXm = 1.80 + Units.inchesToMeters(3); // bumpers 3inches thick
+    private static final double kBlueXm = 1.80 + Units.inchesToMeters(10); // bumpers 3inches thick
     private static final double kBlueNineYm = 0.52;
     private static final double kBlueEightYm = 1.05;
     private static final double kBlueSevenYm = 1.64;
@@ -39,7 +39,7 @@ public class FieldConstants {
     private static final double kBlueTwoYm = 4.43;
     private static final double kBlueOneYm = 4.97;
 
-    private static final double kRedXm = 14.73 - Units.inchesToMeters(3);
+    private static final double kRedXm = 14.73 + Units.inchesToMeters(10);
     private static final double kRedOneYm = kBlueNineYm;
     private static final double kRedTwoYm = kBlueEightYm;
     private static final double kRedThreeYm = kBlueSevenYm;
