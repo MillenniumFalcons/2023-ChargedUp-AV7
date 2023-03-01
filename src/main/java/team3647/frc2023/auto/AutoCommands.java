@@ -17,6 +17,9 @@ public class AutoCommands {
     private final SwerveDriveKinematics driveKinematics;
     private final Superstructure superstructure;
 
+    public final Blue blue = new Blue();
+    public final Red red = new Red();
+
     public AutoCommands(
             SwerveDrive drive,
             SwerveDriveKinematics driveKinematics,
@@ -70,7 +73,9 @@ public class AutoCommands {
 
         public Command justScore(SuperstructureState state) {
             return Commands.sequence(
-                    superstructure.goToStateParallel(state), superstructure.scoreAndStow(0.5));
+                    superstructure.goToStateParallel(state),
+                    Commands.waitSeconds(0.5),
+                    superstructure.scoreAndStow(0.5));
         }
 
         private Blue() {}

@@ -60,7 +60,7 @@ public class Superstructure {
                                 StationType.Double,
                                 new WaitCommand(0.5).andThen(stow()),
                                 StationType.Ground,
-                                new WaitCommand(0.8).andThen(stow())),
+                                new WaitCommand(0.5).andThen(stow())),
                         this::getWantedStation));
     }
 

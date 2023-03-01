@@ -28,27 +28,33 @@ public class FieldConstants {
     private static final Rotation2d kBlueSingleStationRotation = Rotation2d.fromDegrees(90);
     private static final Rotation2d kRedSingleStationRotation = Rotation2d.fromDegrees(90);
 
-    private static final double kBlueXm = 1.80 + Units.inchesToMeters(10); // bumpers 3inches thick
-    private static final double kBlueNineYm = 0.52;
-    private static final double kBlueEightYm = 1.05;
-    private static final double kBlueSevenYm = 1.64;
-    private static final double kBlueSixYm = 2.19;
-    private static final double kBlueFiveYm = 2.75;
-    private static final double kBlueFourYm = 3.30;
-    private static final double kBlueThreeYm = 3.87;
-    private static final double kBlueTwoYm = 4.43;
-    private static final double kBlueOneYm = 4.97;
+    private static final Rotation2d kRotateOneEighty = Rotation2d.fromDegrees(180);
 
-    private static final double kRedXm = 14.73 + Units.inchesToMeters(10);
-    private static final double kRedOneYm = kBlueNineYm;
-    private static final double kRedTwoYm = kBlueEightYm;
-    private static final double kRedThreeYm = kBlueSevenYm;
-    private static final double kRedFourYm = kBlueSixYm;
-    private static final double kRedFiveYm = kBlueFiveYm;
-    private static final double kRedSixYm = kBlueFourYm;
-    private static final double kRedSevenYm = kBlueThreeYm;
-    private static final double kRedEightYm = kBlueTwoYm;
-    private static final double kRedNineYm = kBlueOneYm;
+    public static final double kXAdjustment = Units.inchesToMeters(10);
+
+    public static final double kActualBlueXm = 1.80;
+    public static final double kBlueXm = kActualBlueXm - kXAdjustment; // bumpers 3inches thick
+    public static final double kBlueNineYm = 0.52;
+    public static final double kBlueEightYm = 1.05;
+    public static final double kBlueSevenYm = 1.64;
+    public static final double kBlueSixYm = 2.19;
+    public static final double kBlueFiveYm = 2.75;
+    public static final double kBlueFourYm = 3.30;
+    public static final double kBlueThreeYm = 3.87;
+    public static final double kBlueTwoYm = 4.43;
+    public static final double kBlueOneYm = 4.97;
+
+    public static final double kActualRedXm = 14.73;
+    public static final double kRedXm = kActualRedXm + kXAdjustment;
+    public static final double kRedOneYm = kBlueNineYm;
+    public static final double kRedTwoYm = kBlueEightYm;
+    public static final double kRedThreeYm = kBlueSevenYm;
+    public static final double kRedFourYm = kBlueSixYm;
+    public static final double kRedFiveYm = kBlueFiveYm;
+    public static final double kRedSixYm = kBlueFourYm;
+    public static final double kRedSevenYm = kBlueThreeYm;
+    public static final double kRedEightYm = kBlueTwoYm;
+    public static final double kRedNineYm = kBlueOneYm;
 
     private static final double kBlueDoubleSubstationLeftYm = 7.35;
     private static final double kBlueDoubleSubstationRightYm = 6;
@@ -63,25 +69,25 @@ public class FieldConstants {
     private static final double kRedDoubleSubstationRightYm = kBlueDoubleSubstationLeftYm;
     private static final double kRedDoubleSubstationXm = 0.8;
 
-    private static final Pose2d kBlueOne = new Pose2d(kBlueXm, kBlueOneYm, kBlueScoreRotation);
-    private static final Pose2d kBlueTwo = new Pose2d(kBlueXm, kBlueTwoYm, kBlueScoreRotation);
-    private static final Pose2d kBlueThree = new Pose2d(kBlueXm, kBlueThreeYm, kBlueScoreRotation);
-    private static final Pose2d kBlueFour = new Pose2d(kBlueXm, kBlueFourYm, kBlueScoreRotation);
-    private static final Pose2d kBlueFive = new Pose2d(kBlueXm, kBlueFiveYm, kBlueScoreRotation);
-    private static final Pose2d kBlueSix = new Pose2d(kBlueXm, kBlueSixYm, kBlueScoreRotation);
-    private static final Pose2d kBlueSeven = new Pose2d(kBlueXm, kBlueSevenYm, kBlueScoreRotation);
-    private static final Pose2d kBlueEight = new Pose2d(kBlueXm, kBlueEightYm, kBlueScoreRotation);
-    private static final Pose2d kBlueNine = new Pose2d(kBlueXm, kBlueNineYm, kBlueScoreRotation);
+    public static final Pose2d kBlueOne = new Pose2d(kBlueXm, kBlueOneYm, kBlueScoreRotation);
+    public static final Pose2d kBlueTwo = new Pose2d(kBlueXm, kBlueTwoYm, kBlueScoreRotation);
+    public static final Pose2d kBlueThree = new Pose2d(kBlueXm, kBlueThreeYm, kBlueScoreRotation);
+    public static final Pose2d kBlueFour = new Pose2d(kBlueXm, kBlueFourYm, kBlueScoreRotation);
+    public static final Pose2d kBlueFive = new Pose2d(kBlueXm, kBlueFiveYm, kBlueScoreRotation);
+    public static final Pose2d kBlueSix = new Pose2d(kBlueXm, kBlueSixYm, kBlueScoreRotation);
+    public static final Pose2d kBlueSeven = new Pose2d(kBlueXm, kBlueSevenYm, kBlueScoreRotation);
+    public static final Pose2d kBlueEight = new Pose2d(kBlueXm, kBlueEightYm, kBlueScoreRotation);
+    public static final Pose2d kBlueNine = new Pose2d(kBlueXm, kBlueNineYm, kBlueScoreRotation);
 
-    private static final Pose2d kRedOne = new Pose2d(kRedXm, kRedOneYm, kRedRedRotation);
-    private static final Pose2d kRedTwo = new Pose2d(kRedXm, kRedTwoYm, kRedRedRotation);
-    private static final Pose2d kRedThree = new Pose2d(kRedXm, kRedThreeYm, kRedRedRotation);
-    private static final Pose2d kRedFour = new Pose2d(kRedXm, kRedFourYm, kRedRedRotation);
-    private static final Pose2d kRedFive = new Pose2d(kRedXm, kRedFiveYm, kRedRedRotation);
-    private static final Pose2d kRedSix = new Pose2d(kRedXm, kRedSixYm, kRedRedRotation);
-    private static final Pose2d kRedSeven = new Pose2d(kRedXm, kRedSevenYm, kRedRedRotation);
-    private static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
-    private static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
+    public static final Pose2d kRedOne = new Pose2d(kRedXm, kRedOneYm, kRedRedRotation);
+    public static final Pose2d kRedTwo = new Pose2d(kRedXm, kRedTwoYm, kRedRedRotation);
+    public static final Pose2d kRedThree = new Pose2d(kRedXm, kRedThreeYm, kRedRedRotation);
+    public static final Pose2d kRedFour = new Pose2d(kRedXm, kRedFourYm, kRedRedRotation);
+    public static final Pose2d kRedFive = new Pose2d(kRedXm, kRedFiveYm, kRedRedRotation);
+    public static final Pose2d kRedSix = new Pose2d(kRedXm, kRedSixYm, kRedRedRotation);
+    public static final Pose2d kRedSeven = new Pose2d(kRedXm, kRedSevenYm, kRedRedRotation);
+    public static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
+    public static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
 
     private static final Pose2d kBlueDoubleSubstationLeft =
             new Pose2d(
@@ -142,9 +148,15 @@ public class FieldConstants {
                     new IntakePosition(kRedSingleStation, StationType.Single),
                     new IntakePosition(kGroundIntake, StationType.Ground));
 
-    public static Translation2d flip(Translation2d translation) {
+    public static Translation2d flipTranslation(Translation2d translation) {
         return new Translation2d(
                 FieldConstants.kFieldLength - translation.getX(), translation.getY());
+    }
+
+    public static Pose2d flipBluePose(Pose2d pose) {
+        return new Pose2d(
+                flipTranslation(pose.getTranslation()),
+                pose.getRotation().rotateBy(kRotateOneEighty));
     }
 
     private FieldConstants() {}

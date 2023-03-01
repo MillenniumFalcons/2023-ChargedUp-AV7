@@ -1,6 +1,8 @@
 package team3647.frc2023.constants;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class AutoConstants {
@@ -22,6 +24,18 @@ public class AutoConstants {
     public static final double xRotControllerP = 11; // 12;
     public static final double xRotControllerI = 4; // 8;
     public static final double xRotControllerD = 0;
+
+    public static final Pose2d kJustScoreRed =
+            new Pose2d(
+                    FieldConstants.kActualRedXm,
+                    FieldConstants.kRedFourYm,
+                    Rotation2d.fromDegrees(180));
+
+    public static final Pose2d kJustScoreBlue =
+            new Pose2d(
+                    FieldConstants.kActualBlueXm,
+                    FieldConstants.kBlueSixYm,
+                    Rotation2d.fromDegrees(0));
 
     public static final TrapezoidProfile.Constraints kRotControllerConstraints =
             new TrapezoidProfile.Constraints(

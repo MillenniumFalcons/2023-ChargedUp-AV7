@@ -1,8 +1,6 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -15,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
+import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
@@ -56,8 +55,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(
-                new Pose2d(FieldConstants.kFieldLength - 12.83, 4.39, Rotation2d.fromDegrees(180)));
+        swerve.setRobotPose(AutoConstants.kJustScoreRed);
     }
 
     private void configureButtonBindings() {
@@ -165,7 +163,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.none();
+        return autoCommands.blue.justScore(SuperstructureState.coneThreeReversed);
     }
 
     private final Joysticks mainController = new Joysticks(0);
