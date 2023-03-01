@@ -47,9 +47,48 @@ public final class Trajectories {
                                 fromPose(kRightThirdPathInitial, Rotation2d.fromDegrees(95)),
                                 fromPose(kRightThirdPathWaypoint1, kZero),
                                 fromPose(kRightThirdPathFinal, kZero)));
-        public static final PathPlannerTrajectory leftSideConeCubeFirst = null;
-        public static final PathPlannerTrajectory leftSideConeCubeSecond = null;
-        public static final PathPlannerTrajectory leftGoToBalance = null;
+
+        private static final Pose2d kLeftFirstPathInitial = new Pose2d(1.8, 4.95, kZero);
+        private static final Pose2d kLeftFirstPathFinal = new Pose2d(6.7, 4.60, kZero);
+        private static final Pose2d kLeftSecondPathInitial = kLeftFirstPathFinal;
+        private static final Pose2d kLeftSecondPathFinal = new Pose2d(1.80, 4.40, kZero);
+        private static final Pose2d kLeftThirdPathInitial =
+                new Pose2d(1.80, 4.40, Rotation2d.fromDegrees(0));
+        private static final Pose2d kLeftThirdPathWayFinal =
+                new Pose2d(6.60, 4.00, Rotation2d.fromDegrees(-45));
+        private static final Pose2d kLeftFourthPathInitial =
+                new Pose2d(6.60, 4.0, Rotation2d.fromDegrees(-45));
+        private static final Pose2d kLeftFourthPathFinal =
+                new Pose2d(1.8, 3.85, Rotation2d.fromDegrees(0));
+
+        public static final PathPlannerTrajectory leftSideConeCubeConeFirst =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(kLeftFirstPathInitial, kZero),
+                                fromPose(kLeftFirstPathFinal, kZero)));
+        ;
+        public static final PathPlannerTrajectory leftSideConeCubeConeSecond =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(kLeftSecondPathInitial, kZero),
+                                fromPose(kLeftSecondPathFinal, kZero)));
+        ;
+        public static final PathPlannerTrajectory leftSideConeCubeConeThird =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(kLeftThirdPathInitial, Rotation2d.fromDegrees(45)),
+                                fromPose(kLeftThirdPathWayFinal, Rotation2d.fromDegrees(-45))));
+        ;
+        public static final PathPlannerTrajectory leftSideConeCubeConeFourth =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(kLeftFourthPathInitial, Rotation2d.fromDegrees(120)),
+                                fromPose(kLeftFourthPathFinal, Rotation2d.fromDegrees(-90))));
+        ;
 
         private Blue() {}
     }

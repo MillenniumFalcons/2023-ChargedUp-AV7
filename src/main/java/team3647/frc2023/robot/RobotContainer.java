@@ -162,8 +162,9 @@ public class RobotContainer {
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
     }
 
+    // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.blue.justScore(SuperstructureState.coneThreeReversed);
+        return autoCommands.red.rightSideConeCube();
     }
 
     private final Joysticks mainController = new Joysticks(0);
