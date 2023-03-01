@@ -34,10 +34,9 @@ public class AutoCommands {
                 superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
                 superstructure.scoreAndStow(0.5).withTimeout(1.25),
                 new WaitCommand(0),
-                superstructure.groundIntake(),
-                new WaitCommand(1),
                 Commands.parallel(
-                                superstructure.grabberCommands.closeGrabber(),
+                                superstructure.groundIntake(),
+                                superstructure.rollersCommands.intake(),
                                 Commands.waitSeconds(0.5).andThen(superstructure.stow()))
                         .withTimeout(0.6),
                 new WaitCommand(3),
@@ -52,7 +51,7 @@ public class AutoCommands {
                 .andThen(new WaitCommand(1))
                 .andThen(
                         Commands.parallel(
-                                superstructure.grabberCommands.closeGrabber(),
+                                superstructure.rollersCommands.out(),
                                 Commands.waitSeconds(0.5).andThen(superstructure.stow())))
                 .andThen(new WaitCommand(2))
                 .andThen(superstructure.goToStateParallel(SuperstructureState.coneThree))

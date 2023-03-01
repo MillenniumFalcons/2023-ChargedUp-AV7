@@ -3,15 +3,17 @@ package team3647.frc2023.subsystems;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
-import team3647.frc2023.commands.GrabberCommands;
 import team3647.frc2023.commands.PivotCommands;
+import team3647.frc2023.commands.RollersCommands;
 import team3647.frc2023.robot.PositionFinder;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
@@ -23,6 +25,7 @@ public class Superstructure {
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
     private boolean isAutoSteerEnabled = true;
+    private SuperstructureState currentState = SuperstructureState.stow;
 
     public void periodic(double timestamp) {}
 
@@ -36,7 +39,7 @@ public class Superstructure {
 
     public Command intakeAutomatic() {
         return Commands.parallel(
-                grabberCommands.openGrabber(),
+                rollersCommands.intake(),
                 Commands.select(
                                 Map.of(
                                         StationType.Single,
@@ -52,7 +55,6 @@ public class Superstructure {
 
     public Command stowFromIntake() {
         return Commands.parallel(
-                grabberCommands.closeGrabber(),
                 Commands.select(
                         Map.of(
                                 StationType.Single,
@@ -95,14 +97,52 @@ public class Superstructure {
     }
 
     public Command goToStateParallel(Supplier<SuperstructureState> getState) {
-        return Commands.parallel(
-                pivotCommands.setAngle(() -> getState.get().angle),
-                extenderCommands.length(() -> getState.get().length));
+        BooleanSupplier stateChanged =
+                () -> {
+                    boolean stateDifferent = this.currentState != getState.get();
+                    this.currentState = getState.get();
+                    return stateDifferent;
+                };
+        return new ConditionalCommand(
+                        Commands.parallel(
+                                pivotCommands.setAngle(() -> getState.get().angle),
+                                Commands.waitUntil(
+                                                () ->
+                                                        armAngleReached(
+                                                                pivot.getAngle(),
+                                                                getState.get().angle))
+                                        .andThen(
+                                                extenderCommands.length(
+                                                        () -> getState.get().length))),
+                        Commands.parallel(
+                                Commands.waitUntil(
+                                                () ->
+                                                        Math.abs(
+                                                                        extender.getNativePos()
+                                                                                - getState.get()
+                                                                                        .length)
+                                                                < 500)
+                                        .andThen(
+                                                pivotCommands.setAngle(() -> getState.get().angle)),
+                                extenderCommands.length(() -> getState.get().length)),
+                        () -> {
+                            var angle = getState.get().angle;
+                            var length = getState.get().length;
+                            return length < extender.getNativePos();
+                        })
+                .until(stateChanged)
+                .repeatedly();
+    }
+
+    public boolean armAngleReached(double armAngle, double aimedAngle) {
+        if (armAngle < aimedAngle) {
+            return armAngle > aimedAngle * 0.8;
+        }
+        return aimedAngle < aimedAngle * 1.2;
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
-        return Commands.sequence(
-                grabberCommands.openGrabber(), new WaitCommand(secsBetweenOpenAndStow), stow());
+        return Commands.sequence(rollersCommands.out().withTimeout(0.3), stow());
     }
 
     public Command singleStation() {
@@ -145,6 +185,18 @@ public class Superstructure {
         return Commands.runOnce(() -> this.isAutoSteerEnabled = false);
     }
 
+    public Command intakeIfArmMoves() {
+        return Commands.run(
+                () -> {
+                    if (Math.abs(pivot.getVelocity()) < 50) {
+                        rollers.setOpenloop(0);
+                    } else {
+                        rollers.setOpenloop(-0.2);
+                    }
+                },
+                rollers);
+    }
+
     public StationType getWantedStation() {
         return this.wantedStation;
     }
@@ -170,21 +222,21 @@ public class Superstructure {
             SwerveDrive drive,
             Pivot pivot,
             Extender extender,
-            Grabber grabber,
+            Rollers rollers,
             PositionFinder finder,
             Compressor compressor,
             Trigger intakeButtons) {
         this.drive = drive;
         this.pivot = pivot;
         this.extender = extender;
-        this.grabber = grabber;
+        this.rollers = rollers;
         this.finder = finder;
         this.compressor = compressor;
 
         drivetrainCommands = new DrivetrainCommands(drive);
         pivotCommands = new PivotCommands(pivot);
         extenderCommands = new ExtenderCommands(extender);
-        grabberCommands = new GrabberCommands(grabber);
+        rollersCommands = new RollersCommands(rollers);
         recheckIntakeMode = intakeButtons;
     }
 
@@ -193,14 +245,14 @@ public class Superstructure {
     private final SwerveDrive drive;
     private final Pivot pivot;
     private final Extender extender;
-    private final Grabber grabber;
+    private final Rollers rollers;
     private final GroupPrinter printer = GroupPrinter.getInstance();
     private final PositionFinder finder;
     private final Trigger recheckIntakeMode;
     public final DrivetrainCommands drivetrainCommands;
     public final PivotCommands pivotCommands;
     public final ExtenderCommands extenderCommands;
-    public final GrabberCommands grabberCommands;
+    public final RollersCommands rollersCommands;
 
     public enum StationType {
         Single,
