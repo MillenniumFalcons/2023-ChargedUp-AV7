@@ -32,14 +32,16 @@ public class AutoCommands {
     private Command getSupestructureSequence() {
         return Commands.sequence(
                 superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
-                superstructure.scoreAndStow(0.5),
-                // Wait to get to cube
+                superstructure.scoreAndStow(0.5).withTimeout(1.25),
+                new WaitCommand(0),
                 superstructure.groundIntake(),
-                new WaitCommand(0.5),
+                new WaitCommand(1),
                 Commands.parallel(
-                        superstructure.grabberCommands.closeGrabber(), superstructure.stow()),
-                // wait to get to scoring
-                superstructure.goToStateParallel(SuperstructureState.cubeThree),
+                                superstructure.grabberCommands.closeGrabber(),
+                                Commands.waitSeconds(0.5).andThen(superstructure.stow()))
+                        .withTimeout(0.6),
+                new WaitCommand(3),
+                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure.scoreAndStow(0.5));
     }
 
@@ -48,14 +50,15 @@ public class AutoCommands {
         public Command rightSideConeCube() {
             Command drivetrainSequence =
                     Commands.sequence(
-                            new WaitCommand(1), // Wait to score cone
+                            new WaitCommand(1.75), // Wait to score cone
                             followTrajectory(Trajectories.Blue.rightSideConeCubeFirst, false),
-                            new WaitCommand(0.5), // close grabber
+                            new WaitCommand(1.3), // close grabber
                             followTrajectory(Trajectories.Blue.rightSideConeCubeSecond, false),
-                            new WaitCommand(1), // score cube
+                            new WaitCommand(1.5), // score cube
                             followTrajectory(Trajectories.Blue.rightGoToBalance, false));
 
-            return Commands.parallel(drivetrainSequence, getSupestructureSequence());
+            // return Commands.parallel(drivetrainSequence, getSupestructureSequence());
+            return Commands.parallel(drivetrainSequence);
         }
 
         public Command leftSideConeCube() {
@@ -98,11 +101,11 @@ public class AutoCommands {
         public Command leftSideConeCube() {
             Command drivetrainSequence =
                     Commands.sequence(
-                            new WaitCommand(1), // Wait to score cone
+                            new WaitCommand(1.75), // Wait to score cone
                             followTrajectory(Trajectories.Red.leftSideConeCubeFirst, false),
-                            new WaitCommand(0.5), // close grabber
+                            new WaitCommand(1.3), // close grabber
                             followTrajectory(Trajectories.Red.leftSideConeCubeSecond, false),
-                            new WaitCommand(1), // score cube
+                            new WaitCommand(1.5), // score cube
                             followTrajectory(Trajectories.Red.leftGoToBalance, false));
 
             return Commands.parallel(drivetrainSequence, getSupestructureSequence());

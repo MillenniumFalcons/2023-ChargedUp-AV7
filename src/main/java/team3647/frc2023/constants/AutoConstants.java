@@ -6,11 +6,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxSpeedMetersPerSecond = 2.5;
     public static final double kMaxRotSpeedRadPerSec =
             SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec;
 
-    public static final double kMaxAccelerationMetersPerSecSq = 3;
+    public static final double kMaxAccelerationMetersPerSecSq = 2;
     public static final double kMaxRotAccelerationRadsPerSecSq = Math.PI;
 
     public static final double kXControllerP = 5; // 1.4, 2.2;
@@ -25,13 +25,25 @@ public class AutoConstants {
     public static final double xRotControllerI = 4; // 8;
     public static final double xRotControllerD = 0;
 
-    public static final Pose2d kJustScoreRed =
+    public static final Pose2d kRedJustScore =
             new Pose2d(
                     FieldConstants.kActualRedXm,
                     FieldConstants.kRedFourYm,
                     Rotation2d.fromDegrees(180));
 
-    public static final Pose2d kJustScoreBlue =
+    public static final Pose2d kRedLeftScoreConeCube =
+            new Pose2d(
+                    FieldConstants.kActualRedXm,
+                    FieldConstants.kRedOneYm,
+                    Rotation2d.fromDegrees(180));
+
+    public static final Pose2d kBlueRightScoreConeCube =
+            new Pose2d(
+                    FieldConstants.kActualBlueXm,
+                    FieldConstants.kBlueNineYm,
+                    Rotation2d.fromDegrees(0));
+
+    public static final Pose2d kBlueJustScore =
             new Pose2d(
                     FieldConstants.kActualBlueXm,
                     FieldConstants.kBlueSixYm,

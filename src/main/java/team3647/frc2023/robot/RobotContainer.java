@@ -55,7 +55,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(AutoConstants.kJustScoreRed);
+        swerve.setRobotPose(AutoConstants.kBlueJustScore);
     }
 
     private void configureButtonBindings() {
@@ -154,7 +154,7 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        // printer.addPose("odo", swerve::getOdoPose);
+        printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
         printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
         // printer.addPose("vision average", visionController::getAveragedPose);

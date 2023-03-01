@@ -45,7 +45,7 @@ public class SuperstructureState {
     public static final SuperstructureState cubeTwo =
             new SuperstructureState(149, ExtenderConstants.kLevelTwoExtendCube, "cube mid");
     public static final SuperstructureState cubeThree =
-            new SuperstructureState(148, ExtenderConstants.kLevelThreeExtendCube, "cube high");
+            new SuperstructureState(143, ExtenderConstants.kLevelThreeExtendCube, "cube high");
 
     public static final SuperstructureState cubeOneReversed =
             new SuperstructureState(
@@ -54,7 +54,9 @@ public class SuperstructureState {
             new SuperstructureState(27, ExtenderConstants.kLevelTwoExtendCube, "cube reversed mid");
     public static final SuperstructureState cubeThreeReversed =
             new SuperstructureState(
-                    180 - 148, ExtenderConstants.kLevelThreeExtendCube, "cube reversed high");
+                    180 - cubeThree.angle,
+                    ExtenderConstants.kLevelThreeExtendCube,
+                    "cube reversed high");
 
     public static final SuperstructureState noLevel =
             new SuperstructureState(
