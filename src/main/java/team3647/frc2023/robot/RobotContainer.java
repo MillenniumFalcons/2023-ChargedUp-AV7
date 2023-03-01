@@ -10,9 +10,10 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
@@ -21,7 +22,7 @@ import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
-import team3647.frc2023.robot.ScorePositionFinder.Level;
+import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.Grabber;
 import team3647.frc2023.subsystems.Pivot;
@@ -55,37 +56,56 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(new Pose2d(12.83, 4.39, Rotation2d.fromDegrees(0)));
+        swerve.setRobotPose(
+                new Pose2d(FieldConstants.kFieldLength - 12.83, 4.39, Rotation2d.fromDegrees(180)));
     }
 
     private void configureButtonBindings() {
-        mainController.buttonA.onTrue(
-                Commands.run(
-                        () ->
-                                printer.addPose(
-                                        "target", () -> positionFinder.getScoringPosition().pose)));
 
-        mainController.rightTrigger.onTrue(
-                Commands.runOnce(
-                        () ->
-                                autoSteer.initializeSteering(
-                                        positionFinder.getScoringPosition().pose)));
+        mainController
+                .rightTrigger
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        autoSteer.initializeSteering(
+                                                positionFinder.getScoringPosition().pose)))
+                .whileTrue(
+                        new ConditionalCommand(
+                                Commands.waitUntil(new Trigger(autoSteer::almostArrived))
+                                        .andThen(superstructure.armAutomatic()),
+                                superstructure.armCone(),
+                                enableAutoSteer));
+
         mainController.rightStickMoved.onTrue(
-                new WaitUntilCommand(mainController.rightStickMoved.negate())
+                Commands.waitUntil(mainController.rightStickMoved.negate())
                         .andThen(
                                 () ->
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
-        mainController.leftBumper.onTrue(superstructure.score());
+        mainController.leftBumper.onTrue(superstructure.scoreStowHalfSecDelay());
 
         mainController
                 .rightBumper
+                .whileTrue(
+                        Commands.runOnce(
+                                        () -> {
+                                            var intakePos =
+                                                    positionFinder.getIntakePositionByStation(
+                                                            superstructure.getWantedStation());
+                                            if (intakePos.pose == FieldConstants.kGroundIntake) {
+                                                return;
+                                            }
+                                            autoSteer.initializeSteering(intakePos.pose);
+                                        })
+                                .andThen(Commands.waitUntil(intakeModeChanged))
+                                .repeatedly())
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.One));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
+        coController.buttonX.onTrue(superstructure.stow());
 
         coController.dPadDown.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
         coController.dPadUp.onTrue(superstructure.setWantedStationCommand(StationType.Double));
@@ -93,6 +113,15 @@ public class RobotContainer {
                 .dPadRight
                 .or(coController.dPadLeft)
                 .onTrue(superstructure.setWantedStationCommand(StationType.Single));
+
+        coController
+                .rightBumper
+                .whileTrue(
+                        superstructure.pivotCommands.openLoopConstant(coController::getRightStickY))
+                .whileTrue(
+                        superstructure.extenderCommands.openLoopSlow(coController::getLeftStickY));
+        coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
+        coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
     }
 
     private void configureDefaultCommands() {
@@ -102,7 +131,9 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         mainController.leftTrigger,
-                        mainController.rightTrigger,
+                        // enable autosteer if going to actual station (bumper), or scoring
+                        // (trigger)
+                        enableAutoSteer,
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
@@ -125,10 +156,12 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
-        printer.addPose("odo", swerve::getOdoPose);
+        // printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
         printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
-        printer.addPose("vision average", visionController::getAveragedPose);
+        // printer.addPose("vision average", visionController::getAveragedPose);
+        printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
+        printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
     }
 
     public Command getAutonomousCommand() {
@@ -207,10 +240,11 @@ public class RobotContainer {
                     swerve::addVisionMeasurement);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
-    private final ScorePositionFinder positionFinder =
-            new ScorePositionFinder(
+    private final PositionFinder positionFinder =
+            new PositionFinder(
                     swerve::getEstimPose,
-                    FieldConstants.kPositions,
+                    FieldConstants.kScoringPositions,
+                    FieldConstants.kIntakePositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(
@@ -233,4 +267,14 @@ public class RobotContainer {
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =
             new AutoCommands(swerve, SwerveDriveConstants.kDriveKinematics, superstructure);
+
+    private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
+
+    private final BooleanSupplier enableAutoSteer =
+            globalEnableAutosteer.and(
+                    mainController.rightTrigger.or(
+                            mainController.rightBumper.and(
+                                    () ->
+                                            superstructure.getWantedStation()
+                                                    != StationType.Ground)));
 }

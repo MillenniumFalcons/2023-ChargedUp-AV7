@@ -16,12 +16,7 @@
       "SmartDashboard": {
         "Field": {
           "open": true
-        }
-      },
-      "limelight-left": {
-        "open": true
-      },
-      "limelight-right": {
+        },
         "open": true
       }
     },
@@ -36,6 +31,12 @@
           "length": 0.6349999904632568,
           "width": 0.6349999904632568
         },
+        "Target": {
+          "length": 0.8299999833106995,
+          "style": "Box/Image",
+          "width": 0.8299999833106995
+        },
+        "bottom": 544,
         "estim": {
           "color": [
             0.0,
@@ -43,19 +44,23 @@
             0.08823513984680176,
             255.0
           ],
-          "length": 0.6349999904632568,
-          "width": 0.6349999904632568
+          "length": 0.8299999833106995,
+          "width": 0.8299999833106995
         },
-        "height": 8.013699531555176,
+        "height": 8.013679504394531,
+        "image": "/home/haxoc/Downloads/2023-field.png",
+        "left": 46,
         "odo": {
           "length": 0.6349999904632568,
           "width": 0.6349999904632568
         },
+        "right": 1088,
+        "top": 36,
         "vision pose": {
           "length": 0.6349999904632568,
           "width": 0.6349999904632568
         },
-        "width": 16.541749954223633,
+        "width": 16.541748046875,
         "window": {
           "visible": true
         }
