@@ -146,7 +146,7 @@ public class Superstructure {
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
-                pivotCommands.goDownDegrees(5), rollersCommands.out().withTimeout(0.3), stow());
+                pivotCommands.goDownDegrees(5), rollersCommands.out().withTimeout(0.2), stow());
     }
 
     public Command singleStation() {
