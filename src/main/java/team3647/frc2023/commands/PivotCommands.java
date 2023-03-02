@@ -17,8 +17,7 @@ public class PivotCommands {
     public Command openLoopConstant(DoubleSupplier demand) {
         double output = 0.2;
 
-        return Commands.run(
-                () -> pivot.setOpenloop(Math.copySign(output, demand.getAsDouble())), this.pivot);
+        return Commands.run(() -> pivot.setOpenloop(0.3 * demand.getAsDouble()), this.pivot);
     }
 
     public Command setAngle(DoubleSupplier setpoint) {

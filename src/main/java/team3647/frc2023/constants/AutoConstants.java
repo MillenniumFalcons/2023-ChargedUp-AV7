@@ -37,7 +37,19 @@ public class AutoConstants {
                     FieldConstants.kRedOneYm,
                     Rotation2d.fromDegrees(180));
 
+    public static final Pose2d kRedLeftScoreConeCone =
+            new Pose2d(
+                    FieldConstants.kActualRedXm,
+                    FieldConstants.kRedOneYm,
+                    Rotation2d.fromDegrees(180));
+
     public static final Pose2d kBlueRightScoreConeCube =
+            new Pose2d(
+                    FieldConstants.kActualBlueXm,
+                    FieldConstants.kBlueNineYm,
+                    Rotation2d.fromDegrees(0));
+
+    public static final Pose2d kBlueRightScoreConeCone =
             new Pose2d(
                     FieldConstants.kActualBlueXm,
                     FieldConstants.kBlueNineYm,

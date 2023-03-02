@@ -45,6 +45,19 @@ public class AutoCommands {
                 superstructure.scoreAndStow(0.5));
     }
 
+    private Command getSupestructureSequenceConeCone() {
+        return Commands.sequence(
+                superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
+                superstructure.scoreAndStow(0.5).withTimeout(1.25),
+                new WaitCommand(0),
+                superstructure.groundIntake(),
+                new WaitCommand(1),
+                Commands.parallel(
+                                superstructure.grabberCommands.closeGrabber(),
+                                Commands.waitSeconds(0.5).andThen(superstructure.stow()))
+                        .withTimeout(0.6));
+    }
+
     private Command getSupestructureSequenceThreePieces() {
         return getSupestructureSequenceTwoPieces()
                 .andThen(new WaitCommand(0.5))
@@ -60,7 +73,7 @@ public class AutoCommands {
     }
 
     public class Blue {
-
+        // cone cube balance
         public Command rightSideConeCube() {
             Command drivetrainSequence =
                     Commands.sequence(
@@ -72,6 +85,18 @@ public class AutoCommands {
                             followTrajectory(Trajectories.Blue.rightGoToBalance, false));
 
             return Commands.parallel(drivetrainSequence, getSupestructureSequenceTwoPieces());
+        }
+
+        // cone cone balance
+        public Command rightSideConeCone() {
+            Command drivetrainSequence =
+                    Commands.sequence(
+                            new WaitCommand(1.75), // Wait to score cone
+                            followTrajectory(Trajectories.Blue.rightSideConeConeFirst, false),
+                            new WaitCommand(1.3), // close grabber
+                            followTrajectory(Trajectories.Blue.rightSideConeConeSecond, false));
+
+            return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCone());
         }
 
         public Command leftSideConeCube() {
@@ -109,6 +134,17 @@ public class AutoCommands {
                             followTrajectory(Trajectories.Red.rightGoToBalance, false));
 
             return Commands.parallel(getSupestructureSequenceThreePieces());
+        }
+
+        public Command leftSideConeCone() {
+            Command drivetrainSequence =
+                    Commands.sequence(
+                            new WaitCommand(1.75), // Wait to score cone
+                            followTrajectory(Trajectories.Red.rightSideConeConeFirst, false),
+                            new WaitCommand(1.3), // close grabber
+                            followTrajectory(Trajectories.Red.rightSideConeConeSecond, false));
+
+            return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCone());
         }
 
         public Command leftSideConeCube() {

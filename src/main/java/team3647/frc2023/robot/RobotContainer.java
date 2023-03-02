@@ -55,7 +55,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(AutoConstants.kBlueJustScore);
+        swerve.setRobotPose(AutoConstants.kRedLeftScoreConeCone);
     }
 
     private void configureButtonBindings() {
@@ -135,10 +135,10 @@ public class RobotContainer {
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
-        pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
+        // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
-        grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
-        extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
+        // grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
+        // extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
     void configTestCommands() {
@@ -157,6 +157,7 @@ public class RobotContainer {
         printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
         printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
+        printer.addDouble("PIVOT", pivot::getAngle);
         // printer.addPose("vision average", visionController::getAveragedPose);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
@@ -164,7 +165,7 @@ public class RobotContainer {
 
     // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.red.rightSideConeCube();
+        return autoCommands.red.leftSideConeCone();
     }
 
     private final Joysticks mainController = new Joysticks(0);

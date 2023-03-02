@@ -88,7 +88,29 @@ public final class Trajectories {
                         List.of(
                                 fromPose(kLeftFourthPathInitial, Rotation2d.fromDegrees(120)),
                                 fromPose(kLeftFourthPathFinal, Rotation2d.fromDegrees(-90))));
-        ;
+
+        // cone cone balance
+        private static final Pose2d kRightConeConeFirstPathInitial = new Pose2d(1.8, 0.45, kZero);
+        private static final Pose2d kRightConeConeFirstPathFinal = new Pose2d(6.7, 0.92, kZero);
+        private static final Pose2d kRightConeConeSecondPathInitial = kRightConeConeFirstPathFinal;
+        private static final Pose2d kRightConeConeSecondPathFinal = new Pose2d(3.88, 2.15, kZero);
+
+        public static final PathPlannerTrajectory rightSideConeConeFirst =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(kRightConeConeFirstPathInitial, kZero),
+                                fromPose(kRightConeConeFirstPathFinal, kZero)));
+        public static final PathPlannerTrajectory rightSideConeConeSecond =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(
+                                        kRightConeConeSecondPathInitial,
+                                        Rotation2d.fromDegrees(-110)),
+                                fromPose(
+                                        kRightConeConeSecondPathFinal,
+                                        Rotation2d.fromDegrees(3.21))));
 
         private Blue() {}
     }
@@ -132,6 +154,34 @@ public final class Trajectories {
                                 fromPose(kRightThirdPathInitial, Rotation2d.fromDegrees(95)),
                                 fromPose(kRightThirdPathWaypoint1, kOneEighty),
                                 fromPose(kRightThirdPathFinal, kOneEighty)));
+
+        // cone cone balance
+        private static final Pose2d kRightConeConeFirstPathInitial =
+                FieldConstants.flipBluePose(Blue.kRightConeConeFirstPathInitial);
+        private static final Pose2d kRightConeConeFirstPathFinal =
+                FieldConstants.flipBluePose(Blue.kRightConeConeFirstPathFinal);
+        private static final Pose2d kRightConeConeSecondPathInitial =
+                FieldConstants.flipBluePose(Blue.kRightConeConeSecondPathInitial);
+        private static final Pose2d kRightConeConeSecondPathFinal =
+                FieldConstants.flipBluePose(Blue.kRightConeConeSecondPathFinal);
+        ;
+
+        public static final PathPlannerTrajectory rightSideConeConeFirst =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(kRightConeConeFirstPathInitial, kOneEighty),
+                                fromPose(kRightConeConeFirstPathFinal, kOneEighty)));
+        public static final PathPlannerTrajectory rightSideConeConeSecond =
+                PathPlanner.generatePath(
+                        defaultConstraints,
+                        List.of(
+                                fromPose(
+                                        kRightConeConeSecondPathInitial,
+                                        Rotation2d.fromDegrees(-110.00).rotateBy(kOneEighty)),
+                                fromPose(
+                                        kRightConeConeSecondPathFinal,
+                                        Rotation2d.fromDegrees(3.21).rotateBy(kOneEighty))));
 
         private Red() {}
     }
