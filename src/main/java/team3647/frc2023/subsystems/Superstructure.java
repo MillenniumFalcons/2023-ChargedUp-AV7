@@ -128,7 +128,7 @@ public class Superstructure {
                         () -> {
                             var angle = getState.get().angle;
                             var length = getState.get().length;
-                            return length < extender.getNativePos();
+                            return length > extender.getNativePos();
                         })
                 .until(stateChanged)
                 .repeatedly();
