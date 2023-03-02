@@ -148,7 +148,7 @@ public class Superstructure {
         return Commands.sequence(
                 pivotCommands.goDownDegrees(5),
                 rollersCommands.out().withTimeout(0.2),
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(secsBetweenOpenAndStow),
                 stow());
     }
 

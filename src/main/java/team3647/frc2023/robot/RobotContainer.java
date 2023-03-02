@@ -3,6 +3,8 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
-import team3647.frc2023.constants.AutoConstants;
+import team3647.frc2023.auto.AutonomousMode;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
@@ -44,6 +46,8 @@ import team3647.lib.vision.Limelight;
  */
 public class RobotContainer {
 
+    private AutonomousMode runningMode; // set in the constructor.
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
@@ -54,8 +58,13 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        // swerve.setRobotPose(new Pose2d(1.84, 0.42, Rotation2d.fromDegrees(0)));
-        swerve.setRobotPose(AutoConstants.kRedLeftScoreConeCone);
+        runningMode = autoCommands.coneCubeClimbBumpSideMode;
+
+        // reset the pose once we know our alliance color
+        new Trigger(() -> DriverStation.getAlliance() != Alliance.Invalid)
+                .and(DriverStation::isDisabled)
+                .onTrue(Commands.runOnce(() -> swerve.setRobotPose(runningMode.getInitialPose())));
+        swerve.setRobotPose(runningMode.getInitialPose());
     }
 
     private void configureButtonBindings() {
@@ -165,7 +174,7 @@ public class RobotContainer {
 
     // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.red.leftSideConeCone();
+        return runningMode.getAutoCommand();
     }
 
     private final Joysticks mainController = new Joysticks(0);
