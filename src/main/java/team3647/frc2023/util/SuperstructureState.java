@@ -23,12 +23,16 @@ public class SuperstructureState {
         this.name = name;
     }
 
+    public static final double kAdjustment = -5;
     public static final SuperstructureState coneOne =
-            new SuperstructureState(150, ExtenderConstants.kMinimumPositionTicks, "cone low");
+            new SuperstructureState(
+                    150 + kAdjustment, ExtenderConstants.kMinimumPositionTicks, "cone low");
     public static final SuperstructureState coneTwo =
-            new SuperstructureState(139, ExtenderConstants.kLevelTwoExtendCone, "cone mid");
+            new SuperstructureState(
+                    145 + kAdjustment, ExtenderConstants.kLevelTwoExtendCone, "cone mid");
     public static final SuperstructureState coneThree =
-            new SuperstructureState(141 - 3, ExtenderConstants.kLevelThreeExtendCone, "cone high");
+            new SuperstructureState(
+                    141 + kAdjustment, ExtenderConstants.kLevelThreeExtendCone, "cone high");
 
     public static final SuperstructureState coneOneReversed =
             new SuperstructureState(
@@ -71,9 +75,9 @@ public class SuperstructureState {
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(137.5, ExtenderConstants.kGroundStation, "double station");
+            new SuperstructureState(135, ExtenderConstants.kGroundStation, "double station");
     public static final SuperstructureState stow =
-            new SuperstructureState(0, ExtenderConstants.kMinimumPositionTicks, "double station");
+            new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
 
     public static final Map<Level, Map<GamePiece, SuperstructureState>> kLevelPieceMap =
             Map.of(

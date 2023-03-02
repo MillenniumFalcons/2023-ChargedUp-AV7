@@ -49,12 +49,11 @@ public class AutoCommands {
                 superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
                 superstructure.scoreAndStow(0.5).withTimeout(1.25),
                 new WaitCommand(0),
-                superstructure.groundIntake(),
-                new WaitCommand(1),
                 Commands.parallel(
-                                superstructure.grabberCommands.closeGrabber(),
-                                Commands.waitSeconds(0.5).andThen(superstructure.stow()))
-                        .withTimeout(0.6));
+                                superstructure.groundIntake(),
+                                superstructure.rollersCommands.intake())
+                        .withTimeout(3),
+                superstructure.stow().withTimeout(0.6));
     }
 
     private Command getSupestructureSequenceThreePieces() {

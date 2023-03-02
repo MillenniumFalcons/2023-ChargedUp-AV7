@@ -55,6 +55,7 @@ public class Superstructure {
 
     public Command stowFromIntake() {
         return Commands.parallel(
+                rollersCommands.intake().withTimeout(1),
                 Commands.select(
                         Map.of(
                                 StationType.Single,
@@ -117,11 +118,9 @@ public class Superstructure {
                         Commands.parallel(
                                 Commands.waitUntil(
                                                 () ->
-                                                        Math.abs(
-                                                                        extender.getNativePos()
-                                                                                - getState.get()
-                                                                                        .length)
-                                                                < 500)
+                                                        extenderLengthReached(
+                                                                extender.getNativePos(),
+                                                                getState.get().length))
                                         .andThen(
                                                 pivotCommands.setAngle(() -> getState.get().angle)),
                                 extenderCommands.length(() -> getState.get().length)),
@@ -134,6 +133,10 @@ public class Superstructure {
                 .repeatedly();
     }
 
+    public boolean extenderLengthReached(double extenderLength, double wantedLength) {
+        return Math.abs(extenderLength - wantedLength) < 1000;
+    }
+
     public boolean armAngleReached(double armAngle, double aimedAngle) {
         if (armAngle < aimedAngle) {
             return armAngle > aimedAngle * 0.8;
@@ -143,7 +146,7 @@ public class Superstructure {
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
-                pivotCommands.goDownDegrees(1), rollersCommands.out().withTimeout(0.3), stow());
+                pivotCommands.goDownDegrees(5), rollersCommands.out().withTimeout(0.3), stow());
     }
 
     public Command singleStation() {
@@ -159,7 +162,7 @@ public class Superstructure {
     }
 
     public Command stow() {
-        return Commands.parallel(pivotCommands.stow(), extenderCommands.stow());
+        return goToStateParallel(() -> SuperstructureState.stow);
     }
 
     public Command disableCompressor() {

@@ -66,6 +66,8 @@ public class ExtenderConstants {
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.slot0.allowableClosedloopError = 1000;
 
+        kMasterConfig.peakOutputReverse = -0.3;
+
         kMasterConfig.reverseSoftLimitEnable = true;
         kMasterConfig.reverseSoftLimitThreshold = kRevTicksSoftLimit;
 

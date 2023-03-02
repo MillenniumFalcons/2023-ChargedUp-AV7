@@ -158,7 +158,7 @@ public class RobotContainer {
         printer.addPose("estim", swerve::getEstimPose);
         printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
         printer.addDouble("PIVOT", pivot::getAngle);
-        // printer.addPose("vision average", visionController::getAveragedPose);
+        printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
     }
