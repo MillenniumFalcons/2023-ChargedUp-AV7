@@ -26,6 +26,32 @@ public class PivotCommands {
                 .until(() -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 2.5);
     }
 
+    public Command goDownDegrees(double degrees) {
+        return new Command() {
+            private double goToAngle = 90;
+
+            @Override
+            public void initialize() {
+                goToAngle = pivot.getAngle() + degrees;
+            }
+
+            @Override
+            public void execute() {
+                pivot.setAngle(goToAngle);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return Math.abs(pivot.getAngle() - this.goToAngle) < 0.5;
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                return requirements;
+            }
+        };
+    }
+
     public Command stow() {
         return setAngle(() -> PivotConstants.kInitialAngle).andThen(Commands.run(() -> {}, pivot));
     }
@@ -50,14 +76,16 @@ public class PivotCommands {
 
             @Override
             public Set<Subsystem> getRequirements() {
-                return Set.of(pivot);
+                return requirements;
             }
         };
     }
 
     private final Pivot pivot;
+    private final Set<Subsystem> requirements;
 
     public PivotCommands(Pivot pivot) {
         this.pivot = pivot;
+        this.requirements = Set.of(pivot);
     }
 }

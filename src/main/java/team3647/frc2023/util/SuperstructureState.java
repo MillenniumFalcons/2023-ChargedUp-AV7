@@ -65,13 +65,13 @@ public class SuperstructureState {
                     "no level");
 
     public static final SuperstructureState groundIntake =
-            new SuperstructureState(187, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+            new SuperstructureState(189, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
     public static final SuperstructureState singleStation =
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(139.5, ExtenderConstants.kGroundStation, "double station");
+            new SuperstructureState(137.5, ExtenderConstants.kGroundStation, "double station");
     public static final SuperstructureState stow =
             new SuperstructureState(0, ExtenderConstants.kMinimumPositionTicks, "double station");
 

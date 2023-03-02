@@ -24,7 +24,7 @@ public class RollersConstants {
 
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
 
-        kMaster.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
         kMaster.enableVoltageCompensation(true);
         kMaster.configVoltageCompSaturation(kNominalVoltage, GlobalConstants.kTimeoutMS);
     }

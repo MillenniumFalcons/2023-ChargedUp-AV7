@@ -142,7 +142,8 @@ public class Superstructure {
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
-        return Commands.sequence(rollersCommands.out().withTimeout(0.3), stow());
+        return Commands.sequence(
+                pivotCommands.goDownDegrees(1), rollersCommands.out().withTimeout(0.3), stow());
     }
 
     public Command singleStation() {
@@ -191,7 +192,7 @@ public class Superstructure {
                     if (Math.abs(pivot.getVelocity()) < 50) {
                         rollers.setOpenloop(0);
                     } else {
-                        rollers.setOpenloop(-0.2);
+                        rollers.setOpenloop(-0.1);
                     }
                 },
                 rollers);

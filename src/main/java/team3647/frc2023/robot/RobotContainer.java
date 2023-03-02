@@ -54,7 +54,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        swerve.setRobotPose(AutoConstants.kBlueJustScore);
+        swerve.setRobotPose(AutoConstants.kRedJustScore);
     }
 
     private void configureButtonBindings() {
@@ -163,7 +163,7 @@ public class RobotContainer {
 
     // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.red.rightSideConeCube();
+        return autoCommands.red.justScore(SuperstructureState.cubeThreeReversed);
     }
 
     private final Joysticks mainController = new Joysticks(0);
