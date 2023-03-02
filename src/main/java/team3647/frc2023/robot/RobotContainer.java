@@ -17,14 +17,14 @@ import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
-import team3647.frc2023.constants.GrabberConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
+import team3647.frc2023.constants.RollersConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.subsystems.Extender;
-import team3647.frc2023.subsystems.Grabber;
 import team3647.frc2023.subsystems.Pivot;
+import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
@@ -47,7 +47,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, grabber, visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -137,14 +137,14 @@ public class RobotContainer {
                         autoSteer::findVelocities));
         // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
-        // grabber.setDefaultCommand(superstructure.grabberCommands.closeGrabber());
-        // extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
+        rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
+        extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
     void configTestCommands() {
         Commands.run(() -> {}, extender).schedule();
         Commands.run(() -> {}, pivot).schedule();
-        Commands.run(() -> {}, grabber).schedule();
+        // Commands.run(() -> {}, grabber).schedule();
     }
 
     public double getPivotFFVoltage() {
@@ -190,7 +190,15 @@ public class RobotContainer {
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
 
     // right menu button cube, left menu button cone
-    public final Grabber grabber = new Grabber(GrabberConstants.pistons);
+    //     public final Grabber grabber = new Grabber(GrabberConstants.pistons);
+
+    public final Rollers rollers =
+            new Rollers(
+                    RollersConstants.kMaster,
+                    1,
+                    1,
+                    RollersConstants.kNominalVoltage,
+                    GlobalConstants.kDt);
 
     public final Pivot pivot =
             new Pivot(
@@ -259,7 +267,7 @@ public class RobotContainer {
                     swerve,
                     pivot,
                     extender,
-                    grabber,
+                    rollers,
                     positionFinder,
                     compressor,
                     intakeModeChanged);

@@ -56,6 +56,12 @@ public final class GlobalConstants {
         public static final int masterId = 28;
         public static final int pistonChannel = 2;
         public static final int sensorPort = 0;
+
+        private GrabberIds() {}
+    }
+
+    public static final class RollersIds {
+        public static final int kMasterId = 28;
     }
 
     private GlobalConstants() {}
