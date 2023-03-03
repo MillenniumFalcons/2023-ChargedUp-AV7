@@ -31,7 +31,7 @@ public class PivotCommands {
 
             @Override
             public void initialize() {
-                if (pivot.getAngle() > 180) {
+                if (pivot.getAngle() > 90) {
 
                     goToAngle = pivot.getAngle() + degrees;
                 } else {
