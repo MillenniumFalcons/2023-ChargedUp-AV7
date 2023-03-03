@@ -55,16 +55,17 @@ public class Superstructure {
 
     public Command stowFromIntake() {
         return Commands.parallel(
-                rollersCommands.intake().withTimeout(1),
-                Commands.select(
-                        Map.of(
-                                StationType.Single,
-                                new WaitCommand(0.5).andThen(stow()),
-                                StationType.Double,
-                                new WaitCommand(0.5).andThen(stow()),
-                                StationType.Ground,
-                                new WaitCommand(0.5).andThen(stow())),
-                        this::getWantedStation));
+                        rollersCommands.intake().withTimeout(1),
+                        Commands.select(
+                                Map.of(
+                                        StationType.Single,
+                                        new WaitCommand(0.5).andThen(stowArmFirst()),
+                                        StationType.Double,
+                                        new WaitCommand(0.5).andThen(stowArmFirst()),
+                                        StationType.Ground,
+                                        new WaitCommand(0.5).andThen(stowArmFirst())),
+                                this::getWantedStation))
+                .andThen(rollersCommands.intake().withTimeout(0.7));
     }
 
     public Command arm(Supplier<SuperstructureState> getState) {
@@ -166,6 +167,10 @@ public class Superstructure {
 
     public Command stow() {
         return goToStateParallel(() -> SuperstructureState.stow);
+    }
+
+    public Command stowArmFirst() {
+        return goToStateArmFirst(SuperstructureState.stow, 0.9);
     }
 
     public Command disableCompressor() {

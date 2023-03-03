@@ -18,6 +18,8 @@ public class AutoCommands {
     private final SwerveDrive drive;
     private final SwerveDriveKinematics driveKinematics;
     private final Superstructure superstructure;
+    public final AutonomousMode coneCubeConeFlatSideMode;
+    public final AutonomousMode coneCubeClimbBumpSideMode;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -26,6 +28,16 @@ public class AutoCommands {
         this.drive = drive;
         this.driveKinematics = driveKinematics;
         this.superstructure = superstructure;
+        coneCubeConeFlatSideMode =
+                new AutonomousMode(
+                        coneCubeConeFlatSide(),
+                        Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory
+                                .getInitialHolonomicPose());
+        coneCubeClimbBumpSideMode =
+                new AutonomousMode(
+                        coneCubeClimbBumpSide(),
+                        Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
+                                .getInitialHolonomicPose());
     }
 
     private Command getSupestructureSequenceConeCube() {
@@ -108,22 +120,13 @@ public class AutoCommands {
                 superstructure.scoreStowHalfSecDelay());
     }
 
-    public final AutonomousMode coneCubeConeFlatSideMode =
-            new AutonomousMode(
-                    coneCubeConeFlatSide(),
-                    Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory.getInitialHolonomicPose());
-    public final AutonomousMode coneCubeClimbBumpSideMode =
-            new AutonomousMode(
-                    coneCubeClimbBumpSide(),
-                    Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory.getInitialHolonomicPose());
+    public Command followTrajectoryAutoColor(PathPlannerTrajectory trajectory) {
+        return followTrajectory(trajectory, true);
+    }
 
     public AutonomousMode getJustScore(SuperstructureState state) {
         return new AutonomousMode(
                 justScore(() -> state), new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0)));
-    }
-
-    public Command followTrajectoryAutoColor(PathPlannerTrajectory trajectory) {
-        return followTrajectory(trajectory, true);
     }
 
     public Command followTrajectory(PathPlannerTrajectory trajectory, boolean automaticAlliance) {

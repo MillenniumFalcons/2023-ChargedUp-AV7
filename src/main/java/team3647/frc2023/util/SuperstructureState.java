@@ -23,7 +23,7 @@ public class SuperstructureState {
         this.name = name;
     }
 
-    public static final double kAdjustment = -5;
+    public static final double kAdjustment = -4;
     public static final SuperstructureState coneOne =
             new SuperstructureState(
                     150 + kAdjustment, ExtenderConstants.kMinimumPositionTicks, "cone low");
@@ -45,11 +45,12 @@ public class SuperstructureState {
                     180 - (141 - 3), ExtenderConstants.kLevelThreeExtendCone, "cone reversed high");
 
     public static final SuperstructureState cubeOne =
-            new SuperstructureState(125, ExtenderConstants.kMinimumPositionTicks, "cube low");
+            new SuperstructureState(125 - 5, ExtenderConstants.kMinimumPositionTicks, "cube low");
     public static final SuperstructureState cubeTwo =
-            new SuperstructureState(149, ExtenderConstants.kLevelTwoExtendCube, "cube mid");
+            new SuperstructureState(147.6 - 5, ExtenderConstants.kLevelTwoExtendCube, "cube mid");
     public static final SuperstructureState cubeThree =
-            new SuperstructureState(143, ExtenderConstants.kLevelThreeExtendCube, "cube high");
+            new SuperstructureState(
+                    145.3 - 5, ExtenderConstants.kLevelThreeExtendCube, "cube high");
 
     public static final SuperstructureState cubeOneReversed =
             new SuperstructureState(
@@ -69,13 +70,13 @@ public class SuperstructureState {
                     "no level");
 
     public static final SuperstructureState groundIntake =
-            new SuperstructureState(189, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+            new SuperstructureState(194, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
     public static final SuperstructureState singleStation =
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(135, ExtenderConstants.kGroundStation, "double station");
+            new SuperstructureState(143, ExtenderConstants.kGroundStation, "double station");
     public static final SuperstructureState stow =
             new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
 
