@@ -23,7 +23,7 @@ public final class Trajectories {
 
     public static final class Blue {
         public static final class ConeCubeBumpSide {
-            private static final Pose2d kFirstPathInitial = new Pose2d(1.80, 0.5, kZero);
+            public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 0.5, kZero);
             private static final Pose2d kFirstPathFinal = new Pose2d(6.35, 0.93, kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
@@ -55,7 +55,7 @@ public final class Trajectories {
         }
 
         public static final class ConeCubeConeFlat {
-            private static final Pose2d kFirstPathInitial = new Pose2d(1.80, 3.85, kZero);
+            public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 3.85, kZero);
             private static final Pose2d kFirstPathFinal = new Pose2d(6.41, 4.64, kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;

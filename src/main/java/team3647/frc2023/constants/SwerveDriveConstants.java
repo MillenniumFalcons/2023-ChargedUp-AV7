@@ -248,6 +248,7 @@ public class SwerveDriveConstants {
         config.slot0.kD = kTurnD;
         config.supplyCurrLimit.enable = true;
         config.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
+        config.supplyCurrLimit.triggerThresholdTime = 5;
         config.voltageCompSaturation = kNominalVoltage;
         config.initializationStrategy = SensorInitializationStrategy.BootToZero;
     }
@@ -256,8 +257,9 @@ public class SwerveDriveConstants {
         config.slot0.kP = kDriveP;
         config.slot0.kI = kDriveI;
         config.slot0.kD = kDriveD;
-        config.supplyCurrLimit.enable = true;
+        config.supplyCurrLimit.enable = false;
         config.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
+        config.supplyCurrLimit.triggerThresholdTime = 5;
         config.initializationStrategy = SensorInitializationStrategy.BootToZero;
         config.voltageCompSaturation = kNominalVoltage;
     }

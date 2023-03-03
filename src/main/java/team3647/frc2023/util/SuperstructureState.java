@@ -70,7 +70,7 @@ public class SuperstructureState {
                     "no level");
 
     public static final SuperstructureState groundIntake =
-            new SuperstructureState(194, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+            new SuperstructureState(193, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
     public static final SuperstructureState singleStation =
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");

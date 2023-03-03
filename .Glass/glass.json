@@ -1,8 +1,5 @@
 {
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "Retained Values": {
       "open": false
     },
@@ -68,6 +65,7 @@
     }
   },
   "NetworkTables Settings": {
+    "dsClient": false,
     "mode": "Client (NT3)",
     "serverTeam": "3647"
   }

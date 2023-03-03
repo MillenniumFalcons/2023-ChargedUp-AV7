@@ -36,7 +36,7 @@ public class Joysticks {
         this.controllerPin = controllerPin;
         controller = new CommandXboxController(controllerPin);
 
-        leftTrigger = controller.leftTrigger(0.15);
+        leftTrigger = controller.leftTrigger(0.5);
         rightTrigger = controller.rightTrigger(0.15);
 
         rightJoyStickPress = controller.rightStick();

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.AutoConstants;
+import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.util.SuperstructureState;
@@ -18,8 +19,10 @@ public class AutoCommands {
     private final SwerveDrive drive;
     private final SwerveDriveKinematics driveKinematics;
     private final Superstructure superstructure;
-    public final AutonomousMode coneCubeConeFlatSideMode;
-    public final AutonomousMode coneCubeClimbBumpSideMode;
+    public final AutonomousMode blueConeCubeConeFlatSideMode;
+    public final AutonomousMode blueConeCubeClimbBumpSideMode;
+    public final AutonomousMode redConeCubeConeFlatSideMode;
+    public final AutonomousMode redConeCubeClimbBumpSideMode;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -28,16 +31,28 @@ public class AutoCommands {
         this.drive = drive;
         this.driveKinematics = driveKinematics;
         this.superstructure = superstructure;
-        coneCubeConeFlatSideMode =
+        blueConeCubeConeFlatSideMode =
                 new AutonomousMode(
                         coneCubeConeFlatSide(),
                         Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory
                                 .getInitialHolonomicPose());
-        coneCubeClimbBumpSideMode =
+        blueConeCubeClimbBumpSideMode =
                 new AutonomousMode(
                         coneCubeClimbBumpSide(),
                         Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
                                 .getInitialHolonomicPose());
+        redConeCubeConeFlatSideMode =
+                new AutonomousMode(
+                        coneCubeConeFlatSide(),
+                        FieldConstants.flipBluePose(
+                                Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
+                                        .getInitialHolonomicPose()));
+        redConeCubeClimbBumpSideMode =
+                new AutonomousMode(
+                        coneCubeClimbBumpSide(),
+                        FieldConstants.flipBluePose(
+                                Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
+                                        .getInitialHolonomicPose()));
     }
 
     private Command getSupestructureSequenceConeCube() {
@@ -115,7 +130,7 @@ public class AutoCommands {
 
     public Command justScore(Supplier<SuperstructureState> state) {
         return Commands.sequence(
-                superstructure.goToStateParallel(state.get()),
+                superstructure.goToStateParallel(state.get()).withTimeout(1),
                 Commands.waitSeconds(0.5),
                 superstructure.scoreStowHalfSecDelay());
     }
