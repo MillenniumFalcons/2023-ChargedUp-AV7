@@ -21,6 +21,8 @@ public final class Trajectories {
                     AutoConstants.kMaxSpeedMetersPerSecond,
                     AutoConstants.kMaxAccelerationMetersPerSecSq);
 
+    private static final PathConstraints slowConstraints = new PathConstraints(2, 2);
+
     public static final class Blue {
         public static final class ConeCubeBumpSide {
             public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 0.5, kZero);

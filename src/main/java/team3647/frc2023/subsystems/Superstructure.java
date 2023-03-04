@@ -49,7 +49,7 @@ public class Superstructure {
                                                 rollersCommands.intake(), doubleStation()),
                                         StationType.Ground,
                                         Commands.parallel(
-                                                rollersCommands.openloop(() -> -0.7),
+                                                rollersCommands.openloop(() -> -0.45),
                                                 groundIntake())),
                                 this::getWantedStation)
                         .until(recheckIntakeMode)

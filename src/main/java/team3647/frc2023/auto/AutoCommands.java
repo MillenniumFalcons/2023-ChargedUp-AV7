@@ -187,7 +187,7 @@ public class AutoCommands {
     public Command justScoreBalance(Supplier<SuperstructureState> state, Alliance alliance) {
         var drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(2),
+                        Commands.waitSeconds(6),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)));
