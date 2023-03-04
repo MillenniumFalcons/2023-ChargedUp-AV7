@@ -44,6 +44,7 @@ public class SwerveDrive implements PeriodicSubsystem {
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final SwerveDriveOdometry odometry;
+    private final SwerveDriveOdometry ppOdometry;
 
     private final Matrix<N3, N1> matrix1 = new MatBuilder<>(Nat.N3(), Nat.N1()).fill(10, 10, 0.9);
 
@@ -91,6 +92,11 @@ public class SwerveDrive implements PeriodicSubsystem {
                         getModulePositions(),
                         new Pose2d());
         this.odometry =
+                new SwerveDriveOdometry(
+                        this.kinematics,
+                        Rotation2d.fromDegrees(gyro.getYaw()),
+                        getModulePositions());
+        this.ppOdometry =
                 new SwerveDriveOdometry(
                         this.kinematics,
                         Rotation2d.fromDegrees(gyro.getYaw()),
@@ -145,6 +151,7 @@ public class SwerveDrive implements PeriodicSubsystem {
 
         odometry.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
         poseEstimator.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
+        ppOdometry.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
     }
 
     @Override
@@ -166,6 +173,14 @@ public class SwerveDrive implements PeriodicSubsystem {
         odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
         poseEstimator.resetPosition(pose.getRotation(), getModulePositions(), pose);
         periodicIO = new PeriodicIO();
+    }
+
+    public void setPathplanner(Pose2d pose) {
+        ppOdometry.resetPosition(periodicIO.gyroRotation, getModulePositions(), pose);
+    }
+
+    public Pose2d getPPPose() {
+        return ppOdometry.getPoseMeters();
     }
 
     public void resetEncoders() {

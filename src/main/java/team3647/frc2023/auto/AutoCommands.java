@@ -4,10 +4,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.FieldConstants;
@@ -33,41 +34,45 @@ public class AutoCommands {
         this.superstructure = superstructure;
         blueConeCubeConeFlatSideMode =
                 new AutonomousMode(
-                        coneCubeConeFlatSide(),
-                        Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory
-                                .getInitialHolonomicPose());
+                        coneCubeConeFlatSide(Alliance.Blue),
+                        Trajectories.Blue.ConeCubeConeFlat.kFirstPathInitial,
+                        Trajectories.Blue.ConeCubeConeFlat.kFirstPathInitial);
         blueConeCubeClimbBumpSideMode =
                 new AutonomousMode(
-                        coneCubeClimbBumpSide(),
-                        Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
-                                .getInitialHolonomicPose());
+                        coneCubeClimbBumpSide(Alliance.Blue),
+                        Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial,
+                        Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial);
         redConeCubeConeFlatSideMode =
                 new AutonomousMode(
-                        coneCubeConeFlatSide(),
+                        coneCubeConeFlatSide(Alliance.Red),
                         FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
-                                        .getInitialHolonomicPose()));
+                                Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial),
+                        flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
         redConeCubeClimbBumpSideMode =
                 new AutonomousMode(
-                        coneCubeClimbBumpSide(),
+                        coneCubeClimbBumpSide(Alliance.Red),
                         FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory
-                                        .getInitialHolonomicPose()));
+                                Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial),
+                        flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
+    }
+
+    public static Pose2d getJustScore(Pose2d pose) {
+        return new Pose2d(
+                pose.getTranslation(), pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
     }
 
     private Command getSupestructureSequenceConeCube() {
         return Commands.sequence(
                 superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
-                superstructure.scoreAndStow(0.5).withTimeout(1.25),
-                new WaitCommand(1),
+                superstructure.scoreAndStow(0).withTimeout(1.2),
+                Commands.waitSeconds(1),
                 Commands.parallel(
                                 superstructure.groundIntake(),
                                 superstructure.rollersCommands.intake())
-                        .withTimeout(2),
-                superstructure.stow(),
-                new WaitCommand(3),
+                        .withTimeout(1),
+                superstructure.stow().withTimeout(3),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStow(0.5));
+                superstructure.scoreAndStow(1));
     }
 
     private Command getSupestructureSequenceThreePieces(
@@ -89,34 +94,55 @@ public class AutoCommands {
                 superstructure.scoreAndStow(0.5));
     }
 
-    public Command coneCubeClimbBumpSide() {
+    public Command coneCubeClimbBumpSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(1.75), // score cone
-                        followTrajectoryAutoColor(
-                                Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory),
+                        Commands.waitSeconds(2), // score cone
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeBumpSide.kFirstTrajectory,
+                                        color)),
                         // rollers don't need waiting
-                        followTrajectoryAutoColor(
-                                Trajectories.Blue.ConeCubeBumpSide.kSecondTrajectory),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeBumpSide.kSecondTrajectory,
+                                        color)),
                         Commands.waitSeconds(1),
-                        followTrajectoryAutoColor(Trajectories.Blue.ConeCubeBumpSide.kGoToBalance));
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeBumpSide.kGoToBalance, color)));
         return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCube());
     }
 
-    public Command coneCubeConeFlatSide() {
+    public Pose2d flipForPP(Pose2d pose) {
+        return new Pose2d(
+                new Translation2d(pose.getX(), FieldConstants.kFieldWidth - pose.getY()),
+                new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
+    }
+
+    public Command coneCubeConeFlatSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(1.75), // score cone
-                        followTrajectoryAutoColor(
-                                Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory,
+                                        color)),
                         // rollers don't need waiting
-                        followTrajectoryAutoColor(
-                                Trajectories.Blue.ConeCubeConeFlat.kSecondTrajectory),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlat.kSecondTrajectory,
+                                        color)),
                         Commands.waitSeconds(1),
-                        followTrajectoryAutoColor(
-                                Trajectories.Blue.ConeCubeConeFlat.kThirdTrajectory),
-                        followTrajectoryAutoColor(
-                                Trajectories.Blue.ConeCubeConeFlat.kFourthTrajectory));
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlat.kThirdTrajectory,
+                                        color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlat.kFourthTrajectory,
+                                        color)));
+
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceThreePieces(
@@ -135,26 +161,31 @@ public class AutoCommands {
                 superstructure.scoreStowHalfSecDelay());
     }
 
-    public Command followTrajectoryAutoColor(PathPlannerTrajectory trajectory) {
-        return followTrajectory(trajectory, true);
-    }
-
-    public AutonomousMode getJustScore(SuperstructureState state) {
+    public AutonomousMode getJustScoreBlue(SuperstructureState state) {
         return new AutonomousMode(
-                justScore(() -> state), new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0)));
+                justScore(() -> state),
+                new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0)),
+                new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0)));
     }
 
-    public Command followTrajectory(PathPlannerTrajectory trajectory, boolean automaticAlliance) {
+    public AutonomousMode getJustScoreRed(SuperstructureState state) {
+        return new AutonomousMode(
+                justScore(() -> state),
+                FieldConstants.flipBluePose(new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0))),
+                flipForPP(new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0))));
+    }
+
+    public Command followTrajectory(PathPlannerTrajectory trajectory) {
         return new PPSwerveControllerCommand(
                 trajectory,
-                drive::getOdoPose,
+                drive::getPPPose,
                 driveKinematics,
                 AutoConstants.kXController,
                 AutoConstants.kYController,
                 AutoConstants.kRotController,
                 drive::setModuleStates,
                 // false runs blue
-                automaticAlliance,
+                false,
                 drive);
     }
 }

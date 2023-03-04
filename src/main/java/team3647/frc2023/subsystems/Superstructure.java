@@ -165,6 +165,10 @@ public class Superstructure {
         return goToStateParallel(SuperstructureState.groundIntake);
     }
 
+    public Command groundIntakeReverse() {
+        return goToStateParallel(SuperstructureState.groundIntakeReverse);
+    }
+
     public Command stow() {
         return goToStateParallel(() -> SuperstructureState.stow);
     }

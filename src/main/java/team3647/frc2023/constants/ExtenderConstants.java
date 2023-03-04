@@ -26,8 +26,8 @@ public class ExtenderConstants {
     // kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS = 10 * kNativePosToMeters;
 
-    public static final double kMaxVelocityTicks = 27000.0 / 2;
-    public static final double kMaxAccelerationTicks = 27000.0 / 2;
+    public static final double kMaxVelocityTicks = 30000.0;
+    public static final double kMaxAccelerationTicks = 30000.0;
 
     public static final double kMinimumPositionTicks = 0;
     public static final double kMaximumPositionTicks = 80000.0;
@@ -66,7 +66,7 @@ public class ExtenderConstants {
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.slot0.allowableClosedloopError = 1000;
 
-        kMasterConfig.peakOutputReverse = -0.3;
+        kMasterConfig.peakOutputReverse = -0.7;
 
         kMasterConfig.reverseSoftLimitEnable = true;
         kMasterConfig.reverseSoftLimitThreshold = kRevTicksSoftLimit;

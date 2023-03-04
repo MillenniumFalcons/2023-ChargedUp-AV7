@@ -20,7 +20,7 @@ public class ExtenderCommands {
 
     public Command length(DoubleSupplier length) {
         return Commands.run(() -> extender.setLengthMeters(length.getAsDouble()), extender)
-                .until(() -> Math.abs(extender.getPosition() - length.getAsDouble()) < 2000);
+                .until(() -> Math.abs(extender.getPosition() - length.getAsDouble()) < 5000);
     }
 
     public Command stow() {

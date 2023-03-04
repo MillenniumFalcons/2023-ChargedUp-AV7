@@ -70,15 +70,21 @@ public class SuperstructureState {
                     "no level");
 
     public static final SuperstructureState groundIntake =
-            new SuperstructureState(193, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+            new SuperstructureState(194, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
     public static final SuperstructureState singleStation =
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(143, ExtenderConstants.kGroundStation, "double station");
+            new SuperstructureState(143.5, ExtenderConstants.kGroundStation, "double station");
     public static final SuperstructureState stow =
             new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
+
+    public static final SuperstructureState groundIntakeReverse =
+            new SuperstructureState(
+                    180 - groundIntake.angle,
+                    ExtenderConstants.kMinimumPositionTicks,
+                    "ground intake reverse");
 
     public static final Map<Level, Map<GamePiece, SuperstructureState>> kLevelPieceMap =
             Map.of(

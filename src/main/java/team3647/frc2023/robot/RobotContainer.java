@@ -1,8 +1,6 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -81,12 +79,8 @@ public class RobotContainer {
         //                         }))
         //         .onTrue(new PrintCommand("Changing Alliance"));
         // swerve.setRobotPose(runningMode.getInitialPose());
-        swerve.setRobotPose(
-                new Pose2d(
-                        FieldConstants.kRedNine.getTranslation(),
-                        FieldConstants.kRedNine
-                                .getRotation()
-                                .rotateBy(Rotation2d.fromDegrees(180))));
+        swerve.setRobotPose(runningMode.getInitialPose());
+        swerve.setPathplanner(runningMode.getPathplannerPose2d());
     }
 
     private void configureButtonBindings() {
@@ -196,7 +190,7 @@ public class RobotContainer {
 
     // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.justScore(() -> SuperstructureState.coneThreeReversed);
+        return autoCommands.blueConeCubeClimbBumpSideMode.getAutoCommand();
     }
 
     private final Joysticks mainController = new Joysticks(0);
@@ -306,6 +300,11 @@ public class RobotContainer {
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =
             new AutoCommands(swerve, SwerveDriveConstants.kDriveKinematics, superstructure);
+
+    private final Command justScoreLevel3Cone =
+            autoCommands.justScore(() -> SuperstructureState.coneThreeReversed);
+    private final Command justScoreLevel3Cube =
+            autoCommands.justScore(() -> SuperstructureState.cubeThreeReversed);
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
 
