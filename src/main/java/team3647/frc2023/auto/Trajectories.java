@@ -59,10 +59,13 @@ public final class Trajectories {
         public static final class ConeCubeConeFlatSide {
             public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 3.85, kZero);
             private static final Pose2d kFirstPathWaypoint1 = new Pose2d(4.61, 4.73, kZero);
-            private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60, kZero);
+            //     private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60, kZero);
+            private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60 - 0.381, kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
-            private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39, kZero);
+            //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
+            // kZero);
+            private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39 - 0.381, kZero);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
             private static final Pose2d kThirdPathFinal =
@@ -83,6 +86,7 @@ public final class Trajectories {
                             defaultConstraints,
                             List.of(
                                     fromPose(kSecondPathInitial, kOneEighty),
+                                    fromPose(kFirstPathWaypoint1, kOneEighty),
                                     fromPose(kSecondPathFinal, Rotation2d.fromDegrees(-160))));
             public static final PathPlannerTrajectory kThirdTrajectory =
                     PathPlanner.generatePath(
