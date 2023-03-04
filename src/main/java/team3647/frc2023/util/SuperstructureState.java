@@ -26,7 +26,7 @@ public class SuperstructureState {
     public static final double kAdjustment = -4;
     public static final SuperstructureState groundIntake =
             new SuperstructureState(
-                    188.5, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+                    189.5, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
     public static final SuperstructureState singleStation =
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");

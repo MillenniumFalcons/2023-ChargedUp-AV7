@@ -39,15 +39,18 @@ public class Superstructure {
 
     public Command intakeAutomatic() {
         return Commands.parallel(
-                rollersCommands.intake(),
                 Commands.select(
                                 Map.of(
                                         StationType.Single,
-                                        singleStation(),
+                                        Commands.parallel(
+                                                rollersCommands.intake(), singleStation()),
                                         StationType.Double,
-                                        doubleStation(),
+                                        Commands.parallel(
+                                                rollersCommands.intake(), doubleStation()),
                                         StationType.Ground,
-                                        groundIntake()),
+                                        Commands.parallel(
+                                                rollersCommands.openloop(() -> -0.7),
+                                                groundIntake())),
                                 this::getWantedStation)
                         .until(recheckIntakeMode)
                         .repeatedly());
@@ -65,7 +68,7 @@ public class Superstructure {
                                         StationType.Ground,
                                         new WaitCommand(0.5).andThen(stowArmFirst())),
                                 this::getWantedStation))
-                .andThen(rollersCommands.intake().withTimeout(0.7));
+                .andThen(rollersCommands.intake().withTimeout(1));
     }
 
     public Command arm(Supplier<SuperstructureState> getState) {

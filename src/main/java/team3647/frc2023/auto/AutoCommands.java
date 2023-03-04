@@ -26,6 +26,7 @@ public class AutoCommands {
     public final AutonomousMode redConeCubeConeFlatSideMode;
     public final AutonomousMode redConeCubeClimbBumpSideMode;
     public final AutonomousMode redConeBalance;
+    public final AutonomousMode redJustScore;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -68,6 +69,11 @@ public class AutoCommands {
                         FieldConstants.flipBluePose(
                                 Trajectories.Blue.ConeBalance.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeBalance.kFirstPathInitial));
+        redJustScore =
+                new AutonomousMode(
+                        justScore(() -> SuperstructureState.coneThreeReversed),
+                        getJustScore(FieldConstants.kRedFour),
+                        flipForPP(getJustScore(FieldConstants.kRedFour)));
     }
 
     public static Pose2d getJustScore(Pose2d pose) {
