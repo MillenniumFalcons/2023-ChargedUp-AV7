@@ -66,9 +66,8 @@ public class AutoCommands {
         redConeBalance =
                 new AutonomousMode(
                         justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
-                        FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeBalance.kFirstPathInitial),
-                        flipForPP(Trajectories.Blue.ConeBalance.kFirstPathInitial));
+                        getJustScore(FieldConstants.kRedFour),
+                        flipForPP(getJustScore(FieldConstants.kBlueFour)));
         redJustScore =
                 new AutonomousMode(
                         justScore(() -> SuperstructureState.coneThreeReversed),
@@ -89,8 +88,8 @@ public class AutoCommands {
                 Commands.parallel(
                                 superstructure.groundIntake(),
                                 superstructure.rollersCommands.intake())
-                        .withTimeout(1),
-                superstructure.stow().withTimeout(3),
+                        .withTimeout(2.5),
+                superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure.scoreAndStow(1));
     }
@@ -102,16 +101,15 @@ public class AutoCommands {
             double path3time,
             double path4time) {
         return Commands.sequence(
-                twoPieceCommand.withTimeout(path1time + path2time),
-                Commands.waitSeconds(1),
-                Commands.parallel(
-                                superstructure.groundIntake(),
-                                superstructure.rollersCommands.intake())
-                        .withTimeout(path3time - 1 + path4time * 0.2),
-                superstructure.stow(),
-                Commands.waitSeconds(path4time * 0.6),
-                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStow(0.5));
+                twoPieceCommand.withTimeout(path1time + path2time + 3), superstructure.stow());
+        // Commands.waitSeconds(path3time * 0.2 - 3),
+        // Commands.parallel(
+        //                 superstructure.groundIntake(),
+        //                 superstructure.rollersCommands.intake())
+        //         .withTimeout(path3time * 0.8 - 4 + path4time * 0.2 + 3),
+        // superstructure.stow().withTimeout(0.4 + path4time * 0.4),
+        // superstructure.goToStateParallel(SuperstructureState.coneThree),
+        // superstructure.scoreAndStow(0.5));
     }
 
     public Command coneCubeClimbBumpSide(Alliance color) {
@@ -152,16 +150,16 @@ public class AutoCommands {
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory,
-                                        color)),
-                        Commands.waitSeconds(1),
-                        followTrajectory(
-                                PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
-                                        color)),
-                        followTrajectory(
-                                PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
                                         color)));
+        // Commands.waitSeconds(2.5),
+        // followTrajectory(
+        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
+        //                 Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
+        //                 color)),
+        // followTrajectory(
+        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
+        //                 Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
+        //                 color)));
 
         return Commands.parallel(
                 drivetrainSequence,
@@ -190,7 +188,14 @@ public class AutoCommands {
                         Commands.waitSeconds(6),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)));
+                                        Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)),
+                        superstructure
+                                .drivetrainCommands
+                                .robotRelativeDrive(
+                                        new Translation2d(), Rotation2d.fromDegrees(5), 0.3)
+                                .withTimeout(0.2),
+                        superstructure.drivetrainCommands.robotRelativeDrive(
+                                new Translation2d(), Rotation2d.fromDegrees(0), 0.3));
         return Commands.parallel(drivetrainSequence, justScore(state));
     }
 

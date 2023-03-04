@@ -74,6 +74,6 @@ public class ExtenderConstants {
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);
         kMaster.enableVoltageCompensation(true);
-        kMaster.setNeutralMode(NeutralMode.Coast);
+        kMaster.setNeutralMode(NeutralMode.Brake);
     }
 }

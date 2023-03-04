@@ -94,8 +94,8 @@ public class DrivetrainCommands {
                 swerve);
     }
 
-    public Command robotRelativeDrive(Translation2d t, double seconds) {
-        return Commands.run(() -> swerve.drive(t, 0, false, true), swerve)
+    public Command robotRelativeDrive(Translation2d t, Rotation2d rotation, double seconds) {
+        return Commands.run(() -> swerve.drive(t, rotation.getDegrees(), false, true), swerve)
                 .finallyDo(interupted -> swerve.end())
                 .withTimeout(seconds);
     }

@@ -12,11 +12,9 @@ import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import team3647.lib.SwerveModule;
 
@@ -174,12 +172,8 @@ public class SwerveDriveConstants {
 
     public static final PIDController kYController = new PIDController(kYP, kYI, kYD);
 
-    public static final ProfiledPIDController kAutoSteerXController =
-            new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-    public static final ProfiledPIDController kAutoSteerYController =
-            new ProfiledPIDController(5, 0, 0, new TrapezoidProfile.Constraints(3, 3));
     public static final PIDController kAutoSteerXPIDController = new PIDController(2, 0, 0);
-    public static final PIDController kAutoSteerYPIDController = new PIDController(10, 0, 0);
+    public static final PIDController kAutoSteerYPIDController = new PIDController(40, 0, 0.05);
     // 3*Pi = move at 10 rads per second if we are 180* away from target heading
     public static final PIDController kAutoSteerHeadingController = new PIDController(5, 0, 0);
     // PID constants for roll and yaw
