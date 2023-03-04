@@ -84,7 +84,7 @@ public class AutoCommands {
         return Commands.sequence(
                 superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
                 superstructure.scoreAndStow(0).withTimeout(1.2),
-                Commands.waitSeconds(1),
+                Commands.waitSeconds(1 - 0.5),
                 Commands.parallel(
                                 superstructure.groundIntake(),
                                 superstructure.rollersCommands.intake())
