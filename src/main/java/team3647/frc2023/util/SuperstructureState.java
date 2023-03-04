@@ -24,6 +24,23 @@ public class SuperstructureState {
     }
 
     public static final double kAdjustment = -4;
+    public static final SuperstructureState groundIntake =
+            new SuperstructureState(194, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+
+    public static final SuperstructureState singleStation =
+            new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
+
+    public static final SuperstructureState doubleStation =
+            new SuperstructureState(142.5, ExtenderConstants.kDoubleStation, "double station");
+    public static final SuperstructureState stow =
+            new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
+
+    public static final SuperstructureState groundIntakeReverse =
+            new SuperstructureState(
+                    180 - groundIntake.angle,
+                    ExtenderConstants.kMinimumPositionTicks,
+                    "ground intake reverse");
+
     public static final SuperstructureState coneOne =
             new SuperstructureState(
                     150 + kAdjustment, ExtenderConstants.kMinimumPositionTicks, "cone low");
@@ -44,6 +61,8 @@ public class SuperstructureState {
             new SuperstructureState(
                     180 - (141 - 3), ExtenderConstants.kLevelThreeExtendCone, "cone reversed high");
 
+    public static final SuperstructureState cubeZero =
+            new SuperstructureState(groundIntake.angle, groundIntake.length, "cube zero");
     public static final SuperstructureState cubeOne =
             new SuperstructureState(125 - 5, ExtenderConstants.kMinimumPositionTicks, "cube low");
     public static final SuperstructureState cubeTwo =
@@ -68,23 +87,6 @@ public class SuperstructureState {
                     PivotConstants.kInitialAngle,
                     ExtenderConstants.kMinimumPositionTicks,
                     "no level");
-
-    public static final SuperstructureState groundIntake =
-            new SuperstructureState(194, ExtenderConstants.kMinimumPositionTicks, "ground intake");
-
-    public static final SuperstructureState singleStation =
-            new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
-
-    public static final SuperstructureState doubleStation =
-            new SuperstructureState(142.5, ExtenderConstants.kDoubleStation, "double station");
-    public static final SuperstructureState stow =
-            new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
-
-    public static final SuperstructureState groundIntakeReverse =
-            new SuperstructureState(
-                    180 - groundIntake.angle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "ground intake reverse");
 
     public static final Map<Level, Map<GamePiece, SuperstructureState>> kLevelPieceMap =
             Map.of(
