@@ -46,7 +46,7 @@ public class DrivetrainCommands {
             Supplier<Twist2d> autoSteerVelocitiesSupplier) {
         return Commands.run(
                 () -> {
-                    double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.1 : 1;
+                    double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.2 : 1;
                     boolean autoSteer = enableAutoSteer.getAsBoolean();
                     boolean fieldOriented = getIsFieldOriented.getAsBoolean();
                     var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
