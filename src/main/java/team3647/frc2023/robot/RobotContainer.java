@@ -58,7 +58,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        runningMode = autoCommands.redConeCubeConeFlatSideMode;
+        runningMode = autoCommands.blueConeCubeConeFlatSideMode;
 
         // reset the pose once we know our alliance color
         // new Trigger(
@@ -190,7 +190,7 @@ public class RobotContainer {
 
     // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.redConeCubeConeFlatSideMode.getAutoCommand();
+        return autoCommands.blueConeCubeConeFlatSideMode.getAutoCommand();
     }
 
     private final Joysticks mainController = new Joysticks(0);
