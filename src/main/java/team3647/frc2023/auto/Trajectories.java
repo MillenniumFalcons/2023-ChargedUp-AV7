@@ -94,6 +94,18 @@ public final class Trajectories {
                                     fromPose(kFourthPathFinal, kOneEighty)));
         }
 
+        public static final class ConeBalance {
+            public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 3.3, kZero);
+            private static final Pose2d kFirstPathFinal = new Pose2d(4.00, 3.3, kZero);
+
+            public static final PathPlannerTrajectory kFirstTrajectory =
+                    PathPlanner.generatePath(
+                            defaultConstraints,
+                            List.of(
+                                    fromPose(kFirstPathInitial, kZero),
+                                    fromPose(kFirstPathFinal, kZero)));
+        }
+
         private Blue() {}
     }
 

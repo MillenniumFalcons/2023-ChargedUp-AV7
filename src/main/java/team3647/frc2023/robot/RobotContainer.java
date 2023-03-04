@@ -45,7 +45,7 @@ import team3647.lib.vision.Limelight;
  */
 public class RobotContainer {
 
-    private AutonomousMode runningMode; // set in the constructor.
+    private AutonomousMode runningMode;
     private Alliance currentAlliance = Alliance.Invalid;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -60,25 +60,6 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         runningMode = autoCommands.blueConeCubeConeFlatSideMode;
 
-        // reset the pose once we know our alliance color
-        // new Trigger(
-        //                 () -> {
-        //                     var newAlliance = DriverStation.getAlliance();
-        //                     var changed = newAlliance != currentAlliance;
-        //                     currentAlliance = newAlliance;
-        //                     return changed;
-        //                 })
-        //         .and(DriverStation::isDisabled)
-        //         .onTrue(
-        //                 Commands.runOnce(
-        //                         () -> {
-        //                             System.out.println("changing pose");
-        //                             swerve.setRobotPose(
-        //
-        // AllianceFlipUtil.apply(runningMode.getInitialPose()));
-        //                         }))
-        //         .onTrue(new PrintCommand("Changing Alliance"));
-        // swerve.setRobotPose(runningMode.getInitialPose());
         swerve.setRobotPose(runningMode.getInitialPose());
         swerve.setPathplanner(runningMode.getPathplannerPose2d());
     }
@@ -200,7 +181,7 @@ public class RobotContainer {
 
     // counted relative to what driver sees
     public Command getAutonomousCommand() {
-        return autoCommands.blueConeCubeConeFlatSideMode.getAutoCommand();
+        return runningMode.getAutoCommand();
     }
 
     private final Joysticks mainController = new Joysticks(0);

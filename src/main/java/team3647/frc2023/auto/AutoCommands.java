@@ -22,8 +22,10 @@ public class AutoCommands {
     private final Superstructure superstructure;
     public final AutonomousMode blueConeCubeConeFlatSideMode;
     public final AutonomousMode blueConeCubeClimbBumpSideMode;
+    public final AutonomousMode blueConeBalance;
     public final AutonomousMode redConeCubeConeFlatSideMode;
     public final AutonomousMode redConeCubeClimbBumpSideMode;
+    public final AutonomousMode redConeBalance;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -42,6 +44,12 @@ public class AutoCommands {
                         coneCubeClimbBumpSide(Alliance.Blue),
                         Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial,
                         Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial);
+        blueConeBalance =
+                new AutonomousMode(
+                        justScoreBalance(
+                                () -> SuperstructureState.coneThreeReversed, Alliance.Blue),
+                        Trajectories.Blue.ConeBalance.kFirstPathInitial,
+                        Trajectories.Blue.ConeBalance.kFirstPathInitial);
         redConeCubeConeFlatSideMode =
                 new AutonomousMode(
                         coneCubeConeFlatSide(Alliance.Red),
@@ -54,6 +62,12 @@ public class AutoCommands {
                         FieldConstants.flipBluePose(
                                 Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
+        redConeBalance =
+                new AutonomousMode(
+                        justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
+                        FieldConstants.flipBluePose(
+                                Trajectories.Blue.ConeBalance.kFirstPathInitial),
+                        flipForPP(Trajectories.Blue.ConeBalance.kFirstPathInitial));
     }
 
     public static Pose2d getJustScore(Pose2d pose) {
@@ -162,6 +176,16 @@ public class AutoCommands {
                 superstructure.goToStateParallel(state.get()).withTimeout(1),
                 Commands.waitSeconds(0.5),
                 superstructure.scoreStowHalfSecDelay());
+    }
+
+    public Command justScoreBalance(Supplier<SuperstructureState> state, Alliance alliance) {
+        var drivetrainSequence =
+                Commands.sequence(
+                        Commands.waitSeconds(2),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)));
+        return Commands.parallel(drivetrainSequence, justScore(state));
     }
 
     public AutonomousMode getJustScoreBlue(SuperstructureState state) {
