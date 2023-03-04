@@ -35,6 +35,9 @@ public class PositionFinder {
 
     public final SuperstructureState getSuperstructureStateByPiece(
             Level wantedLevel, GamePiece piece) {
+        if (wantedLevel == Level.Ground) {
+            return SuperstructureState.cubeZero;
+        }
 
         if (!this.levelAndPieceToSuperstrucutreState.containsKey(wantedLevel)) {
             return SuperstructureState.stow; // stow position
@@ -138,6 +141,7 @@ public class PositionFinder {
     }
 
     public enum Level {
+        Ground,
         One,
         Two,
         Three,

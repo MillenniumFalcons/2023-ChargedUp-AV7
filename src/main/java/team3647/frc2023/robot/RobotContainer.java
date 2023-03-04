@@ -129,6 +129,11 @@ public class RobotContainer {
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
         coController.buttonX.onTrue(superstructure.stow());
+        coController
+                .leftTrigger
+                .onTrue(superstructure.setWantedLevelCommand(Level.Ground))
+                .onTrue(superstructure.disableAutoSteer())
+                .onTrue(superstructure.setWantedStationCommand(StationType.Ground));
 
         coController.dPadDown.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
         coController.dPadUp.onTrue(superstructure.setWantedStationCommand(StationType.Double));
@@ -186,6 +191,11 @@ public class RobotContainer {
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
+        printer.addBoolean(
+                "Cube Ground",
+                () ->
+                        superstructure.getWantedLevel() == Level.Ground
+                                && superstructure.getWantedStation() == StationType.Ground);
     }
 
     // counted relative to what driver sees
