@@ -53,7 +53,7 @@ public class ExtenderConstants {
     /** ticks */
     public static final double kLevelThreeExtendCube = 31929; // 74000 * 0.75;
 
-    public static final double kGroundStation = 33180;
+    public static final double kDoubleStation = 35000;
 
     static {
         kMaster.configFactoryDefault();

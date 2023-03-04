@@ -35,8 +35,8 @@ public class AutoCommands {
         blueConeCubeConeFlatSideMode =
                 new AutonomousMode(
                         coneCubeConeFlatSide(Alliance.Blue),
-                        Trajectories.Blue.ConeCubeConeFlat.kFirstPathInitial,
-                        Trajectories.Blue.ConeCubeConeFlat.kFirstPathInitial);
+                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial,
+                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial);
         blueConeCubeClimbBumpSideMode =
                 new AutonomousMode(
                         coneCubeClimbBumpSide(Alliance.Blue),
@@ -46,8 +46,8 @@ public class AutoCommands {
                 new AutonomousMode(
                         coneCubeConeFlatSide(Alliance.Red),
                         FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial),
-                        flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
+                                Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial),
+                        flipForPP(Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial));
         redConeCubeClimbBumpSideMode =
                 new AutonomousMode(
                         coneCubeClimbBumpSide(Alliance.Red),
@@ -126,31 +126,34 @@ public class AutoCommands {
                         Commands.waitSeconds(1.75), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory,
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory,
                                         color)),
                         // rollers don't need waiting
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlat.kSecondTrajectory,
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory,
                                         color)),
                         Commands.waitSeconds(1),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlat.kThirdTrajectory,
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
                                         color)),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlat.kFourthTrajectory,
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
                                         color)));
 
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceThreePieces(
                         getSupestructureSequenceConeCube(),
-                        Trajectories.Blue.ConeCubeConeFlat.kFirstTrajectory.getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlat.kSecondTrajectory.getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlat.kThirdTrajectory.getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlat.kFourthTrajectory
+                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory
                                 .getTotalTimeSeconds()));
     }
 

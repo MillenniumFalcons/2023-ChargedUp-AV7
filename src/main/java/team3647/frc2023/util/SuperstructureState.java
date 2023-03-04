@@ -76,7 +76,7 @@ public class SuperstructureState {
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(143.5, ExtenderConstants.kGroundStation, "double station");
+            new SuperstructureState(142.5, ExtenderConstants.kDoubleStation, "double station");
     public static final SuperstructureState stow =
             new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
 

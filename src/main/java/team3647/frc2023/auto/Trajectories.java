@@ -54,7 +54,7 @@ public final class Trajectories {
                                     fromPose(kThirdPathFinal, kZero)));
         }
 
-        public static final class ConeCubeConeFlat {
+        public static final class ConeCubeConeFlatSide {
             public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 3.85, kZero);
             private static final Pose2d kFirstPathFinal = new Pose2d(6.41, 4.64, kZero);
 
