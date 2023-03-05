@@ -47,7 +47,7 @@ public class SuperstructureState {
                     150 + kAdjustment, ExtenderConstants.kMinimumPositionTicks, "cone low");
     public static final SuperstructureState coneTwo =
             new SuperstructureState(
-                    145 + kAdjustment, ExtenderConstants.kLevelTwoExtendCone, "cone mid");
+                    145 + kAdjustment - 2, ExtenderConstants.kLevelTwoExtendCone, "cone mid");
     public static final SuperstructureState coneThree =
             new SuperstructureState(
                     141 + kAdjustment, ExtenderConstants.kLevelThreeExtendCone, "cone high");

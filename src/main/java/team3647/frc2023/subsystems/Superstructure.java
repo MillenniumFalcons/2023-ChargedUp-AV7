@@ -156,6 +156,14 @@ public class Superstructure {
                 stow());
     }
 
+    public Command scoreAndStowCube(double secsBetweenOpenAndStow) {
+        return Commands.sequence(
+                pivotCommands.goDownDegrees(5),
+                rollersCommands.out().withTimeout(1),
+                Commands.waitSeconds(secsBetweenOpenAndStow),
+                stow());
+    }
+
     public Command singleStation() {
         return goToStateArmFirst(SuperstructureState.singleStation, 0.9);
     }

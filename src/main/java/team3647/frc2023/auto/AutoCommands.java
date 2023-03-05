@@ -91,7 +91,7 @@ public class AutoCommands {
                         .withTimeout(2.5),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStow(1));
+                superstructure.scoreAndStowCube(1));
     }
 
     private Command getSupestructureSequenceThreePieces(
