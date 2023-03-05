@@ -104,7 +104,7 @@ public final class Trajectories {
 
         public static final class ConeBalance {
             public static final Pose2d kFirstPathInitial = new Pose2d(1.80, 3.3, kZero);
-            private static final Pose2d kFirstPathFinal = new Pose2d(5.25, 3.3, kZero);
+            private static final Pose2d kFirstPathFinal = new Pose2d(5.2, 3.3, kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(

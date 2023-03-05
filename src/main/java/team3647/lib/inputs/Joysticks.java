@@ -89,6 +89,12 @@ public class Joysticks {
                 || Math.abs(getRightStickX()) > 0.15;
     }
 
+    public boolean anyStickMovedFast() {
+        return Math.abs(getLeftStickX()) > 0.5
+                || Math.abs(getLeftStickY()) > 0.5
+                || Math.abs(getRightStickX()) > 0.5;
+    }
+
     public boolean rightStickMoved() {
         return Math.abs(getRightStickX()) > 0.1 || Math.abs(getRightStickY()) > 0.1;
     }

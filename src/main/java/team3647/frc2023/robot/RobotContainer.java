@@ -52,7 +52,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        runningMode = autoCommands.blueConeCubeConeFlatSideMode;
+        runningMode = autoCommands.redConeCubeConeFlatSideMode;
 
         swerve.setRobotPose(runningMode.getInitialPose());
         swerve.setPathplanner(runningMode.getPathplannerPose2d());
@@ -283,7 +283,7 @@ public class RobotContainer {
                     positionFinder,
                     compressor,
                     intakeModeChanged,
-                    mainController::anyStickMoved);
+                    mainController::anyStickMovedFast);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =

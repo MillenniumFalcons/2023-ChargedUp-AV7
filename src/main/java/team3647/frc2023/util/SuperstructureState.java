@@ -32,7 +32,7 @@ public class SuperstructureState {
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(142.5, ExtenderConstants.kDoubleStation, "double station");
+            new SuperstructureState(142.5 - 2, ExtenderConstants.kDoubleStation, "double station");
     public static final SuperstructureState stow =
             new SuperstructureState(90, ExtenderConstants.kMinimumPositionTicks, "stow");
 
@@ -61,7 +61,7 @@ public class SuperstructureState {
     public static final SuperstructureState coneThreeReversed =
             new SuperstructureState(
                     180 - (141 - 3),
-                    ExtenderConstants.kLevelThreeExtendCone - 2000,
+                    ExtenderConstants.kLevelThreeExtendCone - 4000,
                     "cone reversed high");
 
     public static final double kAngleAdjustment = 4.0;
