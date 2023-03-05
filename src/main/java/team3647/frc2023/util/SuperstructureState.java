@@ -60,7 +60,9 @@ public class SuperstructureState {
                     180 - 139, ExtenderConstants.kLevelTwoExtendCone, "cone reversed mid");
     public static final SuperstructureState coneThreeReversed =
             new SuperstructureState(
-                    180 - (141 - 3), ExtenderConstants.kLevelThreeExtendCone, "cone reversed high");
+                    180 - (141 - 3),
+                    ExtenderConstants.kLevelThreeExtendCone - 2000,
+                    "cone reversed high");
 
     public static final double kAngleAdjustment = 4.0;
     public static final SuperstructureState cubeZero =

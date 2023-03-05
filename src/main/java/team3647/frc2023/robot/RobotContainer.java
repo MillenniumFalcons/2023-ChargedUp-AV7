@@ -52,7 +52,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        runningMode = autoCommands.blueConeBalance;
+        runningMode = autoCommands.blueConeCubeConeFlatSideMode;
 
         swerve.setRobotPose(runningMode.getInitialPose());
         swerve.setPathplanner(runningMode.getPathplannerPose2d());
@@ -72,7 +72,10 @@ public class RobotContainer {
         //                 Commands.waitUntil(new Trigger(autoSteer::almostArrived))
         //                         .andThen(superstructure.armAutomatic()));
         // .and(() -> !enableAutoSteer.getAsBoolean())
-        mainController.rightTrigger.whileTrue(superstructure.armCone());
+        mainController
+                .rightTrigger
+                .onTrue(superstructure.armCone())
+                .onFalse(superstructure.scoreAndStow(0));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -80,7 +83,6 @@ public class RobotContainer {
                                 () ->
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
-        mainController.leftBumper.onTrue(superstructure.scoreAndStow(0));
 
         mainController
                 .rightBumper
@@ -280,7 +282,8 @@ public class RobotContainer {
                     rollers,
                     positionFinder,
                     compressor,
-                    intakeModeChanged);
+                    intakeModeChanged,
+                    mainController::anyStickMoved);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =

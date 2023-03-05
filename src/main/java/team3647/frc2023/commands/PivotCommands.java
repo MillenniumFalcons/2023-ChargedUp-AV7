@@ -15,7 +15,6 @@ public class PivotCommands {
     }
 
     public Command openLoopConstant(DoubleSupplier demand) {
-        double output = 0.2;
 
         return Commands.run(() -> pivot.setOpenloop(0.3 * demand.getAsDouble()), this.pivot);
     }

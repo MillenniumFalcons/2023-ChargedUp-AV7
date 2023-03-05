@@ -208,10 +208,12 @@ public class Superstructure {
     public Command intakeIfArmMoves() {
         return Commands.run(
                 () -> {
-                    if (Math.abs(pivot.getVelocity()) < 50) {
-                        rollers.setOpenloop(0);
+                    if (Math.abs(pivot.getVelocity()) > 50) {
+                        rollers.setOpenloop(-1);
+                    } else if (this.drivetrainWantMove.getAsBoolean()) {
+                        rollers.setOpenloop(-0.4);
                     } else {
-                        rollers.setOpenloop(-0.3);
+                        rollers.setOpenloop(0);
                     }
                 },
                 rollers);
@@ -245,7 +247,8 @@ public class Superstructure {
             Rollers rollers,
             PositionFinder finder,
             Compressor compressor,
-            Trigger intakeButtons) {
+            Trigger intakeButtons,
+            BooleanSupplier drivetrainWantMove) {
         this.drive = drive;
         this.pivot = pivot;
         this.extender = extender;
@@ -258,6 +261,7 @@ public class Superstructure {
         extenderCommands = new ExtenderCommands(extender);
         rollersCommands = new RollersCommands(rollers);
         recheckIntakeMode = intakeButtons;
+        this.drivetrainWantMove = drivetrainWantMove;
     }
 
     private double kGPivot;
@@ -273,6 +277,7 @@ public class Superstructure {
     public final PivotCommands pivotCommands;
     public final ExtenderCommands extenderCommands;
     public final RollersCommands rollersCommands;
+    private final BooleanSupplier drivetrainWantMove;
 
     public enum StationType {
         Single,
