@@ -9,13 +9,16 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.auto.AutonomousMode;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
+import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
@@ -26,10 +29,13 @@ import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
+import team3647.frc2023.subsystems.VisionController;
+import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
 import team3647.frc2023.util.AutoSteer;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
+import team3647.lib.vision.Limelight;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,7 +51,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -60,19 +66,19 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        // mainController
-        //         .rightTrigger
-        //         .and(enableAutoSteer)
-        //         .onTrue(
-        //                 Commands.runOnce(
-        //                         () ->
-        //                                 autoSteer.initializeSteering(
-        //                                         positionFinder.getScoringPosition().pose)))
-        //         .whileTrue(
-        //                 Commands.waitUntil(new Trigger(autoSteer::almostArrived))
-        //                         .andThen(superstructure.armAutomatic()));
-        // .and(() -> !enableAutoSteer.getAsBoolean())
-        mainController.rightTrigger.whileTrue(superstructure.armCone());
+        mainController
+                .rightTrigger
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        autoSteer.initializeSteering(
+                                                positionFinder.getScoringPosition().pose)))
+                .whileTrue(
+                        new ConditionalCommand(
+                                Commands.waitUntil(new Trigger(autoSteer::almostArrived))
+                                        .andThen(superstructure.armAutomatic()),
+                                superstructure.armCone(),
+                                enableAutoSteer));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -80,7 +86,7 @@ public class RobotContainer {
                                 () ->
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
-        mainController.leftBumper.onTrue(superstructure.scoreAndStow(0));
+        mainController.leftBumper.onTrue(superstructure.scoreStowHalfSecDelay());
 
         mainController
                 .rightBumper
@@ -234,28 +240,28 @@ public class RobotContainer {
                     ExtenderConstants.nominalVoltage,
                     GlobalConstants.kDt);
 
-    //     private final VisionController visionController =
-    //             new VisionController(
-    //                     Map.of(
-    //                             CAMERA_NAME.CENTER,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightCenterIP,
-    //                                     LimelightConstant.kLimelightCenterHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts),
-    //                             CAMERA_NAME.LEFT,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightLeftIP,
-    //                                     LimelightConstant.kLimelightLeftHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts),
-    //                             CAMERA_NAME.RIGHT,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightRightIP,
-    //                                     LimelightConstant.kLimelightRightHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts)),
-    //                     swerve::addVisionMeasurement);
+    private final VisionController visionController =
+            new VisionController(
+                    Map.of(
+                            CAMERA_NAME.CENTER,
+                            new Limelight(
+                                    LimelightConstant.kLimelightCenterIP,
+                                    LimelightConstant.kLimelightCenterHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts),
+                            CAMERA_NAME.LEFT,
+                            new Limelight(
+                                    LimelightConstant.kLimelightLeftIP,
+                                    LimelightConstant.kLimelightLeftHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts),
+                            CAMERA_NAME.RIGHT,
+                            new Limelight(
+                                    LimelightConstant.kLimelightRightIP,
+                                    LimelightConstant.kLimelightRightHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts)),
+                    swerve::addVisionMeasurement);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
