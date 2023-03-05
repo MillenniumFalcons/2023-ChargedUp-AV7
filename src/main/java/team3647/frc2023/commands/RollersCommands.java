@@ -10,7 +10,11 @@ import team3647.frc2023.subsystems.Rollers;
 public class RollersCommands {
 
     public Command intake() {
-        return Commands.runEnd(rollers::intake, rollers::end, rollers);
+        return Commands.run(rollers::intake, rollers);
+    }
+
+    public Command intakeGround() {
+        return Commands.run(rollers::intakeGround, rollers);
     }
 
     public Command out() {

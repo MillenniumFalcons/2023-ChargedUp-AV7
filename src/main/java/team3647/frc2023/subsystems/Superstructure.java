@@ -24,7 +24,7 @@ public class Superstructure {
 
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
-    private boolean isAutoSteerEnabled = true;
+    private boolean isAutoSteerEnabled = false;
     private SuperstructureState currentState = SuperstructureState.stow;
 
     public void periodic(double timestamp) {}
@@ -138,7 +138,7 @@ public class Superstructure {
     }
 
     public boolean extenderLengthReached(double extenderLength, double wantedLength) {
-        return Math.abs(extenderLength - wantedLength) < 1000;
+        return Math.abs(extenderLength - wantedLength) < 3000;
     }
 
     public boolean armAngleReached(double armAngle, double aimedAngle) {
@@ -197,7 +197,8 @@ public class Superstructure {
     }
 
     public Command enableAutoSteer() {
-        return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
+        // return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
+        return Commands.none();
     }
 
     public Command disableAutoSteer() {
