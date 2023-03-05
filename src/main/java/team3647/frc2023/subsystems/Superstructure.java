@@ -211,7 +211,7 @@ public class Superstructure {
                     if (Math.abs(pivot.getVelocity()) < 50) {
                         rollers.setOpenloop(0);
                     } else {
-                        rollers.setOpenloop(-0.1);
+                        rollers.setOpenloop(-0.3);
                     }
                 },
                 rollers);
