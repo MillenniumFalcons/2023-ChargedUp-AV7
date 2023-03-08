@@ -48,7 +48,8 @@ public class AutoCommands {
         blueConeBalance =
                 new AutonomousMode(
                         justScoreBalance(
-                                () -> SuperstructureState.coneThreeReversed, Alliance.Blue),
+                                () -> SuperstructureState.reverseArm(SuperstructureState.coneThree),
+                                Alliance.Blue),
                         Trajectories.Blue.ConeBalance.kFirstPathInitial,
                         Trajectories.Blue.ConeBalance.kFirstPathInitial);
         redConeCubeConeFlatSideMode =
@@ -65,12 +66,17 @@ public class AutoCommands {
                         flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
         redConeBalance =
                 new AutonomousMode(
-                        justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
+                        justScoreBalance(
+                                () -> SuperstructureState.reverseArm(SuperstructureState.coneThree),
+                                Alliance.Red),
                         getJustScore(FieldConstants.kRedFour),
                         flipForPP(getJustScore(FieldConstants.kBlueFour)));
         redJustScore =
                 new AutonomousMode(
-                        justScore(() -> SuperstructureState.coneThreeReversed),
+                        justScore(
+                                () ->
+                                        SuperstructureState.reverseArm(
+                                                SuperstructureState.coneThree)),
                         getJustScore(FieldConstants.kRedFour),
                         flipForPP(getJustScore(FieldConstants.kRedFour)));
     }
@@ -82,7 +88,8 @@ public class AutoCommands {
 
     private Command getSupestructureSequenceConeCube() {
         return Commands.sequence(
-                superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
+                superstructure.goToStateParallel(
+                        SuperstructureState.reverseArm(SuperstructureState.coneThree)),
                 superstructure.scoreAndStow(0).withTimeout(1.2),
                 Commands.waitSeconds(1 - 0.5),
                 Commands.parallel(
@@ -90,7 +97,8 @@ public class AutoCommands {
                                 superstructure.rollersCommands.intake())
                         .withTimeout(2.5),
                 superstructure.stow().withTimeout(2),
-                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                superstructure.goToStateParallel(
+                        SuperstructureState.reverseArm(SuperstructureState.coneThree)),
                 superstructure.scoreAndStowCube(1));
     }
 

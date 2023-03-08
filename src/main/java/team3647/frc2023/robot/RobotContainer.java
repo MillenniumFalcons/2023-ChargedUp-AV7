@@ -72,10 +72,11 @@ public class RobotContainer {
         //                 Commands.waitUntil(new Trigger(autoSteer::almostArrived))
         //                         .andThen(superstructure.armAutomatic()));
         // .and(() -> !enableAutoSteer.getAsBoolean())
-        mainController
-                .rightTrigger
-                .onTrue(superstructure.armCone())
-                .onFalse(superstructure.scoreAndStow(0));
+
+        // mainController
+        //         .rightTrigger
+        //         .onTrue(superstructure.armCone())
+        //         .onFalse(superstructure.scoreAndStow(0));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -173,6 +174,8 @@ public class RobotContainer {
                 () ->
                         superstructure.getWantedLevel() == Level.Ground
                                 && superstructure.getWantedStation() == StationType.Ground);
+        printer.addDouble("GYRO", () -> swerve.getHeading());
+        printer.addString("arm pose", () -> superstructure.armAutomaticPrint().name);
     }
 
     // counted relative to what driver sees
@@ -265,7 +268,8 @@ public class RobotContainer {
                     swerve::getEstimPose,
                     FieldConstants.kScoringPositions,
                     FieldConstants.kIntakePositions,
-                    SuperstructureState.kLevelPieceMap);
+                    SuperstructureState.kLevelPieceMap,
+                    swerve::getHeading);
     private final AutoSteer autoSteer =
             new AutoSteer(
                     swerve::getEstimPose,
@@ -290,9 +294,11 @@ public class RobotContainer {
             new AutoCommands(swerve, SwerveDriveConstants.kDriveKinematics, superstructure);
 
     private final Command justScoreLevel3Cone =
-            autoCommands.justScore(() -> SuperstructureState.coneThreeReversed);
+            autoCommands.justScore(
+                    () -> SuperstructureState.reverseArm(SuperstructureState.coneThree));
     private final Command justScoreLevel3Cube =
-            autoCommands.justScore(() -> SuperstructureState.cubeThreeReversed);
+            autoCommands.justScore(
+                    () -> SuperstructureState.reverseArm(SuperstructureState.cubeThree));
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
 

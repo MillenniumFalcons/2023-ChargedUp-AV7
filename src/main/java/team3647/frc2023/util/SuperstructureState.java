@@ -32,23 +32,11 @@ public class SuperstructureState {
             new SuperstructureState(
                     189.5, ExtenderConstants.kMinimumPositionTicks, "ground intake");
 
-    public static final SuperstructureState groundIntakeReverse =
-            new SuperstructureState(
-                    180 - groundIntake.angle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "ground intake reverse");
-
     public static final SuperstructureState singleStation =
             new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
 
     public static final SuperstructureState doubleStation =
             new SuperstructureState(142.5 - 2, ExtenderConstants.kDoubleStation, "double station");
-
-    public static final SuperstructureState doubleStationReversed =
-            new SuperstructureState(
-                    180 - doubleStation.angle,
-                    ExtenderConstants.kDoubleStation,
-                    "double station reversed");
 
     public static final SuperstructureState coneOne =
             new SuperstructureState(
@@ -59,22 +47,6 @@ public class SuperstructureState {
     public static final SuperstructureState coneThree =
             new SuperstructureState(
                     141 + kAdjustment, ExtenderConstants.kLevelThreeExtendCone, "cone high");
-
-    public static final SuperstructureState coneOneReversed =
-            new SuperstructureState(
-                    180 - coneOne.angle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "cone reversed low");
-    public static final SuperstructureState coneTwoReversed =
-            new SuperstructureState(
-                    180 - coneTwo.angle,
-                    ExtenderConstants.kLevelTwoExtendCone,
-                    "cone reversed mid");
-    public static final SuperstructureState coneThreeReversed =
-            new SuperstructureState(
-                    180 - coneThree.angle,
-                    ExtenderConstants.kLevelThreeExtendCone - 4000,
-                    "cone reversed high");
 
     public static final double kAngleAdjustment = 4.0;
     public static final SuperstructureState cubeZero =
@@ -96,27 +68,15 @@ public class SuperstructureState {
                     ExtenderConstants.kLevelThreeExtendCube,
                     "cube high");
 
-    public static final SuperstructureState cubeOneReversed =
-            new SuperstructureState(
-                    180 - cubeOne.angle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "cube reversed low");
-    public static final SuperstructureState cubeTwoReversed =
-            new SuperstructureState(
-                    180 - cubeTwo.angle,
-                    ExtenderConstants.kLevelTwoExtendCube,
-                    "cube reversed mid");
-    public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(
-                    180 - cubeThree.angle,
-                    ExtenderConstants.kLevelThreeExtendCube,
-                    "cube reversed high");
-
     public static final SuperstructureState noLevel =
             new SuperstructureState(
                     PivotConstants.kInitialAngle,
                     ExtenderConstants.kMinimumPositionTicks,
                     "no level");
+
+    public static SuperstructureState reverseArm(SuperstructureState state) {
+        return new SuperstructureState(180 - state.angle, state.length, state.name + " reversed");
+    }
 
     public static final Map<Level, Map<GamePiece, SuperstructureState>> kLevelPieceMap =
             Map.of(

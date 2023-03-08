@@ -37,6 +37,10 @@ public class Superstructure {
         return arm(() -> finder.getSuperstructureState(getWantedLevel())).repeatedly();
     }
 
+    public SuperstructureState armAutomaticPrint() {
+        return finder.getSuperstructureState(getWantedLevel());
+    }
+
     public Command intakeAutomatic() {
         return Commands.parallel(
                 Commands.select(
@@ -177,7 +181,7 @@ public class Superstructure {
     }
 
     public Command groundIntakeReverse() {
-        return goToStateParallel(SuperstructureState.groundIntakeReverse);
+        return goToStateParallel(SuperstructureState.reverseArm(SuperstructureState.groundIntake));
     }
 
     public Command stow() {

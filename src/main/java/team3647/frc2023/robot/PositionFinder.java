@@ -15,16 +15,19 @@ public class PositionFinder {
     private final List<IntakePosition> possibleIntakePositions;
     private final Map<Level, Map<GamePiece, SuperstructureState>>
             levelAndPieceToSuperstrucutreState;
+    private final Supplier<Double> robotRotationSupplier;
 
     public PositionFinder(
             Supplier<Pose2d> robotPoseSupplier,
             List<ScoringPosition> possibleScoringPositions,
             List<IntakePosition> possibleIntakePositions,
-            Map<Level, Map<GamePiece, SuperstructureState>> levelAndPieceToSuperstrucutreState) {
+            Map<Level, Map<GamePiece, SuperstructureState>> levelAndPieceToSuperstrucutreState,
+            Supplier<Double> robotRotationSupplier) {
         this.possibleScoringPositions = possibleScoringPositions;
         this.possibleIntakePositions = possibleIntakePositions;
         this.robotPoseSupplier = robotPoseSupplier;
         this.levelAndPieceToSuperstrucutreState = levelAndPieceToSuperstrucutreState;
+        this.robotRotationSupplier = robotRotationSupplier;
     }
 
     public final SuperstructureState getSuperstructureState(Level wantedLevel) {
@@ -36,7 +39,7 @@ public class PositionFinder {
     public final SuperstructureState getSuperstructureStateByPiece(
             Level wantedLevel, GamePiece piece) {
         if (wantedLevel == Level.Ground) {
-            return SuperstructureState.cubeZero;
+            return getBestArmRotation(SuperstructureState.cubeZero);
         }
 
         if (!this.levelAndPieceToSuperstrucutreState.containsKey(wantedLevel)) {
@@ -46,10 +49,20 @@ public class PositionFinder {
         var pieceToState = levelAndPieceToSuperstrucutreState.get(wantedLevel);
 
         if (!pieceToState.containsKey(piece)) {
-            return pieceToState.get(GamePiece.Cone); // return cone level
+            return getBestArmRotation(pieceToState.get(GamePiece.Cone)); // return cone level
         }
 
-        return pieceToState.get(piece);
+        return getBestArmRotation(pieceToState.get(piece));
+    }
+
+    private final SuperstructureState getBestArmRotation(SuperstructureState state) {
+        double rot = robotRotationSupplier.get() % 360;
+        if ((rot >= -90 && rot <= 90)
+                || (rot >= 270 && rot <= 360)
+                || (rot >= -360 && rot <= -270)) {
+            return state;
+        }
+        return SuperstructureState.reverseArm(state);
     }
 
     public final ScoringPosition getScoringPosition() {
