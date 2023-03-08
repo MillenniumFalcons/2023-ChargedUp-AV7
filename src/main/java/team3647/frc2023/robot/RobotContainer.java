@@ -1,6 +1,7 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -54,8 +55,9 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         runningMode = autoCommands.redConeCubeConeFlatSideMode;
 
-        swerve.setRobotPose(runningMode.getInitialPose());
-        swerve.setPathplanner(runningMode.getPathplannerPose2d());
+        // swerve.setRobotPose(runningMode.getInitialPose());
+        // swerve.setPathplanner(runningMode.getPathplannerPose2d());
+        swerve.setRobotPose(new Pose2d());
     }
 
     private void configureButtonBindings() {

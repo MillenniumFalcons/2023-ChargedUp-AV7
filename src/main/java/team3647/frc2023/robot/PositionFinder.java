@@ -1,6 +1,8 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,6 +19,8 @@ public class PositionFinder {
             levelAndPieceToSuperstrucutreState;
     private final Supplier<Double> robotRotationSupplier;
 
+    private final boolean shouldFlipArmReverseNormal;
+
     public PositionFinder(
             Supplier<Pose2d> robotPoseSupplier,
             List<ScoringPosition> possibleScoringPositions,
@@ -28,6 +32,7 @@ public class PositionFinder {
         this.robotPoseSupplier = robotPoseSupplier;
         this.levelAndPieceToSuperstrucutreState = levelAndPieceToSuperstrucutreState;
         this.robotRotationSupplier = robotRotationSupplier;
+        this.shouldFlipArmReverseNormal = DriverStation.getAlliance() == Alliance.Blue;
     }
 
     public final SuperstructureState getSuperstructureState(Level wantedLevel) {
@@ -57,12 +62,19 @@ public class PositionFinder {
 
     private final SuperstructureState getBestArmRotation(SuperstructureState state) {
         double rot = robotRotationSupplier.get() % 360;
-        if ((rot >= -90 && rot <= 90)
+        SuperstructureState stateResult = state;
+        if (!(((rot >= -90 && rot <= 90)
                 || (rot >= 270 && rot <= 360)
-                || (rot >= -360 && rot <= -270)) {
-            return state;
+                || (rot >= -360 && rot <= -270)))) {
+            stateResult = SuperstructureState.reverseArm(stateResult);
         }
-        return SuperstructureState.reverseArm(state);
+
+        if (shouldFlipArmReverseNormal) {
+            // flip itself again if blue alliance
+            stateResult = SuperstructureState.reverseArm(stateResult);
+        }
+
+        return stateResult;
     }
 
     public final ScoringPosition getScoringPosition() {
