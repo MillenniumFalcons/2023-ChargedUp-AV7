@@ -77,7 +77,7 @@ public class AutoCommands {
 
     public static Pose2d getJustScore(Pose2d pose) {
         return new Pose2d(
-                pose.getTranslation(), pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+                pose.getTranslation(), pose.getRotation().rotateBy(FieldConstants.kOneEighty));
     }
 
     private Command getSupestructureSequenceConeCube() {
@@ -195,22 +195,22 @@ public class AutoCommands {
                                         new Translation2d(), Rotation2d.fromDegrees(5), 0.3)
                                 .withTimeout(0.2),
                         superstructure.drivetrainCommands.robotRelativeDrive(
-                                new Translation2d(), Rotation2d.fromDegrees(0), 0.3));
+                                new Translation2d(), FieldConstants.kZero, 0.3));
         return Commands.parallel(drivetrainSequence, justScore(state));
     }
 
     public AutonomousMode getJustScoreBlue(SuperstructureState state) {
         return new AutonomousMode(
                 justScore(() -> state),
-                new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0)),
-                new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0)));
+                new Pose2d(1.8, 3.26, FieldConstants.kZero),
+                new Pose2d(1.8, 3.26, FieldConstants.kZero));
     }
 
     public AutonomousMode getJustScoreRed(SuperstructureState state) {
         return new AutonomousMode(
                 justScore(() -> state),
-                FieldConstants.flipBluePose(new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0))),
-                flipForPP(new Pose2d(1.8, 3.26, Rotation2d.fromDegrees(0))));
+                FieldConstants.flipBluePose(new Pose2d(1.8, 3.26, FieldConstants.kZero)),
+                flipForPP(new Pose2d(1.8, 3.26, FieldConstants.kZero)));
     }
 
     public Command followTrajectory(PathPlannerTrajectory trajectory) {

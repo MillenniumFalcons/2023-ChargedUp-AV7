@@ -2,7 +2,6 @@ package team3647.frc2023.constants;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class AutoConstants {
@@ -29,37 +28,31 @@ public class AutoConstants {
             new Pose2d(
                     FieldConstants.kActualRedXm,
                     FieldConstants.kRedFourYm,
-                    Rotation2d.fromDegrees(180));
+                    FieldConstants.kOneEighty);
 
     public static final Pose2d kRedLeftScoreConeCube =
             new Pose2d(
                     FieldConstants.kActualRedXm,
                     FieldConstants.kRedOneYm,
-                    Rotation2d.fromDegrees(180));
+                    FieldConstants.kOneEighty);
 
     public static final Pose2d kRedLeftScoreConeCone =
             new Pose2d(
                     FieldConstants.kActualRedXm,
                     FieldConstants.kRedOneYm,
-                    Rotation2d.fromDegrees(180));
+                    FieldConstants.kOneEighty);
 
     public static final Pose2d kBlueRightScoreConeCube =
             new Pose2d(
-                    FieldConstants.kActualBlueXm,
-                    FieldConstants.kBlueNineYm,
-                    Rotation2d.fromDegrees(0));
+                    FieldConstants.kActualBlueXm, FieldConstants.kBlueNineYm, FieldConstants.kZero);
 
     public static final Pose2d kBlueRightScoreConeCone =
             new Pose2d(
-                    FieldConstants.kActualBlueXm,
-                    FieldConstants.kBlueNineYm,
-                    Rotation2d.fromDegrees(0));
+                    FieldConstants.kActualBlueXm, FieldConstants.kBlueNineYm, FieldConstants.kZero);
 
     public static final Pose2d kBlueJustScore =
             new Pose2d(
-                    FieldConstants.kActualBlueXm,
-                    FieldConstants.kBlueSixYm,
-                    Rotation2d.fromDegrees(0));
+                    FieldConstants.kActualBlueXm, FieldConstants.kBlueSixYm, FieldConstants.kZero);
 
     public static final TrapezoidProfile.Constraints kRotControllerConstraints =
             new TrapezoidProfile.Constraints(

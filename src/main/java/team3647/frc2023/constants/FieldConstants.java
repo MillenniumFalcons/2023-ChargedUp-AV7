@@ -16,19 +16,23 @@ import team3647.frc2023.subsystems.Superstructure.StationType;
 
 /** Add your docs here. */
 public class FieldConstants {
+    public static final Rotation2d kOneEighty = Rotation2d.fromDegrees(180);
+    public static final Rotation2d kZero = new Rotation2d();
+    public static final Rotation2d kNinety = Rotation2d.fromDegrees(90);
+
     public static final double kFieldLength = Units.inchesToMeters(651.25);
     public static final double kFieldWidth = Units.inchesToMeters(315.5);
 
-    private static final Rotation2d kBlueScoreRotation = Rotation2d.fromDegrees(180);
-    private static final Rotation2d kRedRedRotation = Rotation2d.fromDegrees(0);
+    private static final Rotation2d kBlueScoreRotation = FieldConstants.kOneEighty;
+    private static final Rotation2d kRedRedRotation = FieldConstants.kZero;
 
-    private static final Rotation2d kBlueDoubleSubstationRotation = Rotation2d.fromDegrees(0);
-    private static final Rotation2d kRedDoubleSubstationRotation = Rotation2d.fromDegrees(180);
+    private static final Rotation2d kBlueDoubleSubstationRotation = FieldConstants.kZero;
+    private static final Rotation2d kRedDoubleSubstationRotation = FieldConstants.kOneEighty;
 
-    private static final Rotation2d kBlueSingleStationRotation = Rotation2d.fromDegrees(90);
-    private static final Rotation2d kRedSingleStationRotation = Rotation2d.fromDegrees(90);
+    private static final Rotation2d kBlueSingleStationRotation = FieldConstants.kNinety;
+    private static final Rotation2d kRedSingleStationRotation = FieldConstants.kNinety;
 
-    private static final Rotation2d kRotateOneEighty = Rotation2d.fromDegrees(180);
+    private static final Rotation2d kRotateOneEighty = FieldConstants.kOneEighty;
 
     public static final double kXAdjustment = Units.inchesToMeters(10);
 

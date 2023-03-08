@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.SwerveDrive;
 
 public class DrivetrainCommands {
@@ -111,7 +112,7 @@ public class DrivetrainCommands {
     }
 
     private final SwerveDrive swerve;
-    private static final Rotation2d OneEightyRotation = Rotation2d.fromDegrees(180);
+    private static final Rotation2d OneEightyRotation = FieldConstants.kOneEighty;
     private final double maxSpeed;
     private final double maxRotationRadpS;
 
