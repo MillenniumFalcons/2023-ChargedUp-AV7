@@ -112,7 +112,38 @@ public class Superstructure {
                     this.currentState = getState.get();
                     return stateDifferent;
                 };
+
+        // return new ConditionalCommand(
+        //                 Commands.parallel(
+        //                         pivotCommands.setAngle(() -> getState.get().angle),
+        //                         Commands.waitUntil(
+        //                                         () ->
+        //                                                 armAngleReached(
+        //                                                         pivot.getAngle(),
+        //                                                         getState.get().angle))
+        //                                 .andThen(
+        //                                         extenderCommands.length(
+        //                                                 () -> getState.get().length))),
+        //                 Commands.parallel(
+        //                         Commands.waitUntil(
+        //                                         () ->
+        //                                                 extenderLengthReached(
+        //                                                         extender.getNativePos(),
+        //                                                         getState.get().length))
+        //                                 .andThen(
+        //                                         pivotCommands.setAngle(() ->
+        // getState.get().angle)),
+        //                         extenderCommands.length(() -> getState.get().length)),
+        //                 () -> {
+        //                     var angle = getState.get().angle;
+        //                     var length = getState.get().length;
+        //                     return length > extender.getNativePos();
+        //                 })
+        //         .until(stateChanged)
+        //         .repeatedly();
+
         return new ConditionalCommand(
+                        // if remove the waituntil code works
                         Commands.parallel(
                                 pivotCommands.setAngle(() -> getState.get().angle),
                                 Commands.waitUntil(
@@ -147,9 +178,15 @@ public class Superstructure {
 
     public boolean armAngleReached(double armAngle, double aimedAngle) {
         if (armAngle < aimedAngle) {
-            return armAngle > aimedAngle * 0.8;
+            return armAngle > aimedAngle - 10;
         }
-        return aimedAngle < aimedAngle * 1.2;
+        return armAngle < aimedAngle + 10;
+    }
+
+    public boolean isReached() {
+        return armAngleReached(
+                pivot.getAngle(),
+                finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone).angle);
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
@@ -241,6 +278,10 @@ public class Superstructure {
 
     public Level getWantedLevel() {
         return this.wantedLevel;
+    }
+
+    public double getWantedAngle() {
+        return finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone).angle;
     }
 
     public void setWantedLevel(Level level) {

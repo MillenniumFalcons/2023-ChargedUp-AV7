@@ -75,10 +75,10 @@ public class RobotContainer {
         //                         .andThen(superstructure.armAutomatic()));
         // .and(() -> !enableAutoSteer.getAsBoolean())
 
-        // mainController
-        //         .rightTrigger
-        //         .onTrue(superstructure.armCone())
-        //         .onFalse(superstructure.scoreAndStow(0));
+        mainController
+                .rightTrigger
+                .onTrue(superstructure.armCone())
+                .onFalse(superstructure.scoreAndStow(0));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -167,8 +167,10 @@ public class RobotContainer {
         printer.addPose("odo", swerve::getOdoPose);
         printer.addPose("estim", swerve::getEstimPose);
         printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
+        printer.addDouble("wanted angle", superstructure::getWantedAngle);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("extender", extender::getNativePos);
+        printer.addBoolean("angle reached?", superstructure::isReached);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
         printer.addBoolean(
@@ -177,7 +179,7 @@ public class RobotContainer {
                         superstructure.getWantedLevel() == Level.Ground
                                 && superstructure.getWantedStation() == StationType.Ground);
         printer.addDouble("GYRO", () -> swerve.getHeading());
-        printer.addString("arm pose", () -> superstructure.armAutomaticPrint().name);
+        printer.addDouble("arm pose", () -> superstructure.armAutomaticPrint().length);
     }
 
     // counted relative to what driver sees

@@ -19,7 +19,9 @@ public class PivotConstants {
 
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    private static final double kGearBoxRatio = 1 / 126.0;
+    // private static final double kGearBoxRatio = 1 / 126.0;
+
+    private static final double kGearBoxRatio = 1 / 91.022;
 
     public static final double kNativePosToDegrees =
             kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
@@ -74,8 +76,8 @@ public class PivotConstants {
         kMaster.configGetStatorCurrentLimit(
                 new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
 
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kSlave.setNeutralMode(NeutralMode.Brake);
+        kMaster.setNeutralMode(NeutralMode.Coast);
+        kSlave.setNeutralMode(NeutralMode.Coast);
         kMaster.enableVoltageCompensation(true);
         kSlave.enableVoltageCompensation(true);
 
