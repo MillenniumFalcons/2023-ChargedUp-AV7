@@ -184,7 +184,6 @@ public class RobotContainer {
                         superstructure.getWantedLevel() == Level.Ground
                                 && superstructure.getWantedStation() == StationType.Ground);
         printer.addDouble("GYRO", () -> swerve.getHeading());
-        printer.addDouble("SHIT", () -> superstructure.getCond());
     }
 
     // counted relative to what driver sees
