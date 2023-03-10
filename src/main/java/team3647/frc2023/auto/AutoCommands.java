@@ -20,13 +20,17 @@ public class AutoCommands {
     private final SwerveDrive drive;
     private final SwerveDriveKinematics driveKinematics;
     private final Superstructure superstructure;
-    public final AutonomousMode blueConeCubeConeFlatSideMode;
-    public final AutonomousMode blueConeCubeClimbBumpSideMode;
+    public final AutonomousMode blueConeCubeFlatSideMode;
+    public final AutonomousMode blueConeCubeBalanceBumpSideMode;
     public final AutonomousMode blueConeBalance;
-    public final AutonomousMode redConeCubeConeFlatSideMode;
-    public final AutonomousMode redConeCubeClimbBumpSideMode;
+    public final AutonomousMode blueJustScore;
+    public final AutonomousMode blueConeConeBalanceFlatSideMode;
+
+    public final AutonomousMode redConeCubeFlatSideMode;
+    public final AutonomousMode redConeCubeBalanceBumpSideMode;
     public final AutonomousMode redConeBalance;
     public final AutonomousMode redJustScore;
+    public final AutonomousMode redConeConeBalanceFlatSideMode;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -35,14 +39,20 @@ public class AutoCommands {
         this.drive = drive;
         this.driveKinematics = driveKinematics;
         this.superstructure = superstructure;
-        blueConeCubeConeFlatSideMode =
+        // blue side modes
+        blueConeCubeFlatSideMode =
                 new AutonomousMode(
-                        coneCubeConeFlatSide(Alliance.Blue),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial,
-                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial);
-        blueConeCubeClimbBumpSideMode =
+                        coneCubeFlatSide(Alliance.Blue),
+                        Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial,
+                        Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial);
+        blueConeConeBalanceFlatSideMode =
                 new AutonomousMode(
-                        coneCubeClimbBumpSide(Alliance.Blue),
+                        coneConeBalanceFlatSide(Alliance.Blue),
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial,
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial);
+        blueConeCubeBalanceBumpSideMode =
+                new AutonomousMode(
+                        coneCubeBalanceBumpSide(Alliance.Blue),
                         Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial,
                         Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial);
         blueConeBalance =
@@ -51,18 +61,30 @@ public class AutoCommands {
                                 () -> SuperstructureState.coneThreeReversed, Alliance.Blue),
                         Trajectories.Blue.ConeBalance.kFirstPathInitial,
                         Trajectories.Blue.ConeBalance.kFirstPathInitial);
-        redConeCubeConeFlatSideMode =
+        blueJustScore =
                 new AutonomousMode(
-                        coneCubeConeFlatSide(Alliance.Red),
+                        justScore(() -> SuperstructureState.coneThreeReversed),
+                        getJustScore(FieldConstants.kBlueSix),
+                        flipForPP(getJustScore(FieldConstants.kBlueSix)));
+
+        // red side modes
+        redConeCubeFlatSideMode =
+                new AutonomousMode(
+                        coneCubeFlatSide(Alliance.Red),
                         FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial),
-                        flipForPP(Trajectories.Blue.ConeCubeConeFlatSide.kFirstPathInitial));
-        redConeCubeClimbBumpSideMode =
+                                Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial),
+                        flipForPP(Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial));
+        redConeCubeBalanceBumpSideMode =
                 new AutonomousMode(
-                        coneCubeClimbBumpSide(Alliance.Red),
+                        coneCubeBalanceBumpSide(Alliance.Red),
                         FieldConstants.flipBluePose(
                                 Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
+        redConeConeBalanceFlatSideMode =
+                new AutonomousMode(
+                        coneConeBalanceFlatSide(Alliance.Red),
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial,
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial);
         redConeBalance =
                 new AutonomousMode(
                         justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
@@ -135,7 +157,7 @@ public class AutoCommands {
                 superstructure.scoreAndStow(0.5));
     }
 
-    public Command coneCubeClimbBumpSide(Alliance color) {
+    public Command coneCubeBalanceBumpSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(2), // score cone
@@ -155,44 +177,41 @@ public class AutoCommands {
         return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCube());
     }
 
-    public Command coneCubeConeFlatSide(Alliance color) {
+    public Command coneCubeFlatSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(1.75), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory,
+                                        Trajectories.Blue.ConeCubeFlatSide.kFirstTrajectory,
                                         color)),
                         // intake rollers don't need waiting
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory,
+                                        Trajectories.Blue.ConeCubeFlatSide.kSecondTrajectory,
                                         color)),
                         Commands.waitSeconds(1.2),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
+                                        Trajectories.Blue.ConeCubeFlatSide.kThirdTrajectory,
                                         color)),
                         // intake rollers no wait
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
+                                        Trajectories.Blue.ConeCubeFlatSide.kFourthTrajectory,
                                         color)));
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceThreePieces(
                         getSupestructureSequenceConeCube(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory
-                                .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory
-                                .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory
-                                .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory
+                        Trajectories.Blue.ConeCubeFlatSide.kFirstTrajectory.getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeFlatSide.kSecondTrajectory.getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeFlatSide.kThirdTrajectory.getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeFlatSide.kFourthTrajectory
                                 .getTotalTimeSeconds()));
     }
 
-    public Command coneConeClimbFlatSide(Alliance color) {
+    public Command coneConeBalanceFlatSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(1.75), // score cone

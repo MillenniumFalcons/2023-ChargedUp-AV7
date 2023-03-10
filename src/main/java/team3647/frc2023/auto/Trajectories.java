@@ -59,7 +59,7 @@ public final class Trajectories {
                                     fromPose(kThirdPathFinal, FieldConstants.kZero)));
         }
 
-        public static final class ConeCubeConeFlatSide {
+        public static final class ConeCubeFlatSide {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 3.85, FieldConstants.kZero);
             private static final Pose2d kFirstPathWaypoint1 =
