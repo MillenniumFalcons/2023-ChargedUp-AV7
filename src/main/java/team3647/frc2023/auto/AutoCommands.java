@@ -80,6 +80,12 @@ public class AutoCommands {
                 pose.getTranslation(), pose.getRotation().rotateBy(FieldConstants.kOneEighty));
     }
 
+    public Pose2d flipForPP(Pose2d pose) {
+        return new Pose2d(
+                new Translation2d(pose.getX(), FieldConstants.kFieldWidth - pose.getY()),
+                new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
+    }
+
     private Command getSupestructureSequenceConeCube() {
         return Commands.sequence(
                 superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
@@ -132,12 +138,6 @@ public class AutoCommands {
         return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCube());
     }
 
-    public Pose2d flipForPP(Pose2d pose) {
-        return new Pose2d(
-                new Translation2d(pose.getX(), FieldConstants.kFieldWidth - pose.getY()),
-                new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
-    }
-
     public Command coneCubeConeFlatSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
@@ -146,21 +146,61 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory,
                                         color)),
-                        // rollers don't need waiting
+                        // intake rollers don't need waiting
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory,
+                                        color)),
+                        Commands.waitSeconds(1.2),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
+                                        color)),
+                        // intake rollers no wait
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
                                         color)));
-        // Commands.waitSeconds(2.5),
-        // followTrajectory(
-        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
-        //                 Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
-        //                 color)),
-        // followTrajectory(
-        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
-        //                 Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
-        //                 color)));
+        // TODO NEED EDIT COMMANDS
+        return Commands.parallel(
+                drivetrainSequence,
+                getSupestructureSequenceThreePieces(
+                        getSupestructureSequenceConeCube(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory
+                                .getTotalTimeSeconds()));
+    }
 
+    public Command coneConeClimbFlatSide(Alliance color) {
+        // TODO WRITE
+        Command drivetrainSequence =
+                Commands.sequence(
+                        Commands.waitSeconds(1.75), // score cone
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory,
+                                        color)),
+                        // intake rollers don't need waiting
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory,
+                                        color)),
+                        Commands.waitSeconds(1.2),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
+                                        color)),
+                        // intake rollers no wait
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
+                                        color)));
+        // TODO NEED EDIT COMMANDS
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceThreePieces(
