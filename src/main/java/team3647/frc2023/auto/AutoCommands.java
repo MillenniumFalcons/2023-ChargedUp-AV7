@@ -107,15 +107,32 @@ public class AutoCommands {
             double path3time,
             double path4time) {
         return Commands.sequence(
-                twoPieceCommand.withTimeout(path1time + path2time + 3), superstructure.stow());
-        // Commands.waitSeconds(path3time * 0.2 - 3),
-        // Commands.parallel(
-        //                 superstructure.groundIntake(),
-        //                 superstructure.rollersCommands.intake())
-        //         .withTimeout(path3time * 0.8 - 4 + path4time * 0.2 + 3),
-        // superstructure.stow().withTimeout(0.4 + path4time * 0.4),
-        // superstructure.goToStateParallel(SuperstructureState.coneThree),
-        // superstructure.scoreAndStow(0.5));
+                twoPieceCommand.withTimeout(path1time + path2time + 3),
+                superstructure.stow(),
+                Commands.waitSeconds(path3time * 0.2 - 3),
+                Commands.parallel(
+                                superstructure.groundIntake(),
+                                superstructure.rollersCommands.intake())
+                        .withTimeout(path3time * 0.8 - 4 + path4time * 0.2 + 3),
+                superstructure.stow().withTimeout(0.4 + path4time * 0.4),
+                superstructure.goToStateParallel(SuperstructureState.coneThree),
+                superstructure.scoreAndStow(0.5));
+    }
+
+    private Command getSupestructureSequenceTwoPieceBalanceFlatSide(
+            double path1time, double path2time, double path3time) {
+        return Commands.sequence(
+                superstructure.goToStateParallel(SuperstructureState.coneThreeReversed),
+                superstructure.scoreAndStow(0).withTimeout(1.2),
+                Commands.waitSeconds(path1time * 0.2 - 3),
+                Commands.parallel(
+                                superstructure.groundIntake(),
+                                superstructure.rollersCommands.intake())
+                        .withTimeout(path1time * 0.8 - 4 + path1time * 0.2 + 3),
+                superstructure.stow().withTimeout(0.8),
+                Commands.waitSeconds(path2time),
+                superstructure.goToStateParallel(SuperstructureState.coneThree),
+                superstructure.scoreAndStow(0.5));
     }
 
     public Command coneCubeClimbBumpSide(Alliance color) {
@@ -161,7 +178,6 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
                                         color)));
-        // TODO NEED EDIT COMMANDS
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceThreePieces(
@@ -177,41 +193,31 @@ public class AutoCommands {
     }
 
     public Command coneConeClimbFlatSide(Alliance color) {
-        // TODO WRITE
         Command drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(1.75), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory,
+                                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstTrajectory,
                                         color)),
                         // intake rollers don't need waiting
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory,
+                                        Trajectories.Blue.ConeConeBalanceFlatSide.kSecondTrajectory,
                                         color)),
-                        Commands.waitSeconds(1.2),
+                        Commands.waitSeconds(1.5),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory,
-                                        color)),
-                        // intake rollers no wait
-                        followTrajectory(
-                                PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory,
+                                        Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory,
                                         color)));
-        // TODO NEED EDIT COMMANDS
         return Commands.parallel(
                 drivetrainSequence,
-                getSupestructureSequenceThreePieces(
-                        getSupestructureSequenceConeCube(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kFirstTrajectory
+                getSupestructureSequenceTwoPieceBalanceFlatSide(
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstTrajectory
                                 .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kSecondTrajectory
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kSecondTrajectory
                                 .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kThirdTrajectory
-                                .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeConeFlatSide.kFourthTrajectory
+                        Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory
                                 .getTotalTimeSeconds()));
     }
 

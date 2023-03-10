@@ -116,23 +116,22 @@ public final class Trajectories {
                     new Pose2d(1.80, 3.85, FieldConstants.kZero);
             private static final Pose2d kFirstPathWaypoint1 =
                     new Pose2d(4.61, 4.73, FieldConstants.kZero);
-            //     private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60, kZero);
             private static final Pose2d kFirstPathFinal =
                     new Pose2d(6.90, 4.60, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
-            //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
-            // kZero);
+            private static final Pose2d kSecondPathWaypoint1 =
+                    new Pose2d(4.03, 4.73, FieldConstants.kOneEighty);
             private static final Pose2d kSecondPathFinal =
-                    new Pose2d(1.80, 4.39, FieldConstants.kZero);
+                    new Pose2d(1.80, 4.95, FieldConstants.kOneEighty);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
+            private static final Pose2d kThirdPathWaypoint1 =
+                    new Pose2d(5.77, 4.69, FieldConstants.kOneEighty);
+            private static final Pose2d kThirdPathWaypoint2 =
+                    new Pose2d(5.88, 3.08, FieldConstants.kOneEighty);
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(6.95, 3.60, Rotation2d.fromDegrees(-60));
-
-            private static final Pose2d kFourthPathInitial = kThirdPathFinal;
-            private static final Pose2d kFourthPathFinal =
-                    new Pose2d(1.8, 4.95, FieldConstants.kOneEighty);
+                    new Pose2d(3.6, 3.00, FieldConstants.kOneEighty);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
@@ -146,20 +145,16 @@ public final class Trajectories {
                             fastConstraints,
                             List.of(
                                     fromPose(kSecondPathInitial, FieldConstants.kOneEighty),
-                                    fromPose(kFirstPathWaypoint1, FieldConstants.kOneEighty),
-                                    fromPose(kSecondPathFinal, Rotation2d.fromDegrees(-160))));
+                                    fromPose(kSecondPathWaypoint1, FieldConstants.kOneEighty),
+                                    fromPose(kSecondPathFinal, FieldConstants.kOneEighty)));
             public static final PathPlannerTrajectory kThirdTrajectory =
                     PathPlanner.generatePath(
                             fastConstraints,
                             List.of(
-                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(50)),
-                                    fromPose(kThirdPathFinal, Rotation2d.fromDegrees(-50))));
-            public static final PathPlannerTrajectory kFourthTrajectory =
-                    PathPlanner.generatePath(
-                            fastConstraints,
-                            List.of(
-                                    fromPose(kFourthPathInitial, Rotation2d.fromDegrees(120.00)),
-                                    fromPose(kFourthPathFinal, FieldConstants.kOneEighty)));
+                                    fromPose(kThirdPathInitial, FieldConstants.kZero),
+                                    fromPose(kThirdPathWaypoint1, Rotation2d.fromDegrees(35.41)),
+                                    fromPose(kThirdPathWaypoint2, Rotation2d.fromDegrees(-90.00)),
+                                    fromPose(kThirdPathFinal, FieldConstants.kOneEighty)));
         }
 
         public static final class ConeBalance {
