@@ -25,9 +25,14 @@ public class Superstructure {
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
     private boolean isAutoSteerEnabled = false;
+    private boolean armReachedAngle = false;
     private SuperstructureState currentState = SuperstructureState.stow;
 
-    public void periodic(double timestamp) {}
+    public void periodic(double timestamp) {
+        armReachedAngle =
+                armAngleReached(
+                        pivot.getAngle(), finder.getSuperstructureState(getWantedLevel()).angle);
+    }
 
     public Command scoreStowHalfSecDelay() {
         return scoreAndStow(0.5);
@@ -146,23 +151,12 @@ public class Superstructure {
                         // if remove the waituntil code works
                         Commands.parallel(
                                 pivotCommands.setAngle(() -> getState.get().angle),
-                                Commands.waitUntil(
-                                                () ->
-                                                        armAngleReached(
-                                                                pivot.getAngle(),
-                                                                getState.get().angle))
-                                        .andThen(
-                                                extenderCommands.length(
-                                                        () -> getState.get().length))),
+                                extenderCommands.length(
+                                        () -> getState.get().length, this::isReached)),
                         Commands.parallel(
-                                Commands.waitUntil(
-                                                () ->
-                                                        extenderLengthReached(
-                                                                extender.getNativePos(),
-                                                                getState.get().length))
-                                        .andThen(
-                                                pivotCommands.setAngle(() -> getState.get().angle)),
-                                extenderCommands.length(() -> getState.get().length)),
+                                extenderCommands.length(
+                                        () -> getState.get().length, this::isReached),
+                                pivotCommands.setAngle(() -> getState.get().angle)),
                         () -> {
                             var angle = getState.get().angle;
                             var length = getState.get().length;
@@ -177,16 +171,18 @@ public class Superstructure {
     }
 
     public boolean armAngleReached(double armAngle, double aimedAngle) {
-        if (armAngle < aimedAngle) {
-            return armAngle > aimedAngle - 10;
-        }
-        return armAngle < aimedAngle + 10;
+        // if (armAngle < aimedAngle) {
+        //     return armAngle > aimedAngle - 10;
+        // }
+        // return armAngle < aimedAngle + 10;
+        return Math.abs(armAngle - aimedAngle) < 10;
     }
 
     public boolean isReached() {
-        return armAngleReached(
-                pivot.getAngle(),
-                finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone).angle);
+        return armReachedAngle;
+        // return armAngleReached(
+        //         pivot.getAngle(),
+        //         finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone).angle);
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {

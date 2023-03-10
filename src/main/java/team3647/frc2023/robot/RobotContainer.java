@@ -145,7 +145,7 @@ public class RobotContainer {
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
-        // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
+        pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
         rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());

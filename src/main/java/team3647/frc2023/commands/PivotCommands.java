@@ -1,6 +1,7 @@
 package team3647.frc2023.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
@@ -20,8 +21,10 @@ public class PivotCommands {
     }
 
     public Command setAngle(DoubleSupplier setpoint) {
+
         return Commands.run(() -> pivot.setAngle(setpoint.getAsDouble()), pivot)
-                .until(() -> Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 2.5);
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
+                .until(() -> true);
     }
 
     public Command goDownDegrees(double degrees) {

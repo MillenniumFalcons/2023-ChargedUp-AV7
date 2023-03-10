@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.subsystems.Extender;
@@ -21,6 +22,17 @@ public class ExtenderCommands {
     public Command length(DoubleSupplier length) {
         return Commands.run(() -> extender.setLengthMeters(length.getAsDouble()), extender)
                 .until(() -> Math.abs(extender.getPosition() - length.getAsDouble()) < 5000);
+    }
+
+    public Command length(DoubleSupplier length, BooleanSupplier pivotReached) {
+        System.out.println(pivotReached.getAsBoolean());
+        if (pivotReached.getAsBoolean()) {
+
+            return Commands.run(() -> extender.setLengthMeters(length.getAsDouble()), extender)
+                    .until(() -> Math.abs(extender.getPosition() - length.getAsDouble()) < 5000);
+        }
+
+        return Commands.none();
     }
 
     public Command stow() {
