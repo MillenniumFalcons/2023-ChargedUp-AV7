@@ -158,7 +158,7 @@ public class SwerveDriveConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
 
     // master PID constants for turn and drive for all modules
-    public static final double kDriveP = 0.1;
+    public static final double kDriveP = 0.00014;
     public static final double kDriveI = 0.0;
     public static final double kDriveD = 0.0;
 
