@@ -89,7 +89,7 @@ public class AutoCommands {
     private Command getSupestructureSequenceConeCube() {
         return Commands.sequence(
                 superstructure.goToStateParallel(
-                        SuperstructureState.reverseArm(SuperstructureState.coneThree)),
+                        () -> SuperstructureState.reverseArm(SuperstructureState.coneThree)),
                 superstructure.scoreAndStow(0).withTimeout(1.2),
                 Commands.waitSeconds(1 - 0.5),
                 Commands.parallel(
@@ -98,7 +98,7 @@ public class AutoCommands {
                         .withTimeout(2.5),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(
-                        SuperstructureState.reverseArm(SuperstructureState.coneThree)),
+                        () -> SuperstructureState.reverseArm(SuperstructureState.coneThree)),
                 superstructure.scoreAndStowCube(1));
     }
 
@@ -185,7 +185,7 @@ public class AutoCommands {
 
     public Command justScore(Supplier<SuperstructureState> state) {
         return Commands.sequence(
-                superstructure.goToStateParallel(state.get()).withTimeout(1),
+                superstructure.goToStateParallel(() -> state.get()).withTimeout(1),
                 Commands.waitSeconds(0.5),
                 superstructure.scoreStowHalfSecDelay());
     }

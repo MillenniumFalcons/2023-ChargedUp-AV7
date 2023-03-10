@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -31,12 +30,6 @@ public class ExtenderConstants {
 
     public static final double kMinimumPositionTicks = 0;
     public static final double kMaximumPositionTicks = 80000.0;
-
-    public static final double kS = 0.0;
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
-
-    public static final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
     private static final double kP = 0.1;
     private static final double kI = 0.0;

@@ -75,6 +75,10 @@ public class RobotContainer {
         //                         .andThen(superstructure.armAutomatic()));
         // .and(() -> !enableAutoSteer.getAsBoolean())
 
+        // mainController
+        //         .rightTrigger
+        //         .onTrue(superstructure.armCone())
+        //         .onFalse(superstructure.scoreAndStow(0));
         mainController
                 .rightTrigger
                 .onTrue(superstructure.armCone())
@@ -173,13 +177,14 @@ public class RobotContainer {
         printer.addBoolean("angle reached?", superstructure::isReached);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
+        printer.addDouble("EXTENDER POSE", extender::getNativePos);
         printer.addBoolean(
                 "Cube Ground",
                 () ->
                         superstructure.getWantedLevel() == Level.Ground
                                 && superstructure.getWantedStation() == StationType.Ground);
         printer.addDouble("GYRO", () -> swerve.getHeading());
-        printer.addDouble("arm pose", () -> superstructure.armAutomaticPrint().length);
+        printer.addDouble("SHIT", () -> superstructure.getCond());
     }
 
     // counted relative to what driver sees

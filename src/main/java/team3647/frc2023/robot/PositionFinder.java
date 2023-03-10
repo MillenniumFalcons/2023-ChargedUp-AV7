@@ -43,6 +43,10 @@ public class PositionFinder {
 
     public final SuperstructureState getSuperstructureStateByPiece(
             Level wantedLevel, GamePiece piece) {
+        if (wantedLevel == Level.Stow) {
+            return SuperstructureState.stow;
+        }
+
         if (wantedLevel == Level.Ground) {
             return getBestArmRotation(SuperstructureState.cubeZero);
         }
@@ -170,6 +174,7 @@ public class PositionFinder {
         One,
         Two,
         Three,
-        Stay
+        Stay,
+        Stow
     }
 }

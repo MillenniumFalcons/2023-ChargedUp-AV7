@@ -3,7 +3,6 @@ package team3647.frc2023.subsystems;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -104,12 +103,6 @@ public class Superstructure {
                         .andThen(extenderCommands.length(() -> state.length)));
     }
 
-    public Command goToStateParallel(SuperstructureState state) {
-        return Commands.parallel(
-                pivotCommands.setAngle(() -> state.angle),
-                extenderCommands.length(() -> state.length));
-    }
-
     public Command goToStateParallel(Supplier<SuperstructureState> getState) {
         BooleanSupplier stateChanged =
                 () -> {
@@ -118,52 +111,29 @@ public class Superstructure {
                     return stateDifferent;
                 };
 
-        // return new ConditionalCommand(
-        //                 Commands.parallel(
-        //                         pivotCommands.setAngle(() -> getState.get().angle),
-        //                         Commands.waitUntil(
-        //                                         () ->
-        //                                                 armAngleReached(
-        //                                                         pivot.getAngle(),
-        //                                                         getState.get().angle))
-        //                                 .andThen(
-        //                                         extenderCommands.length(
-        //                                                 () -> getState.get().length))),
-        //                 Commands.parallel(
-        //                         Commands.waitUntil(
-        //                                         () ->
-        //                                                 extenderLengthReached(
-        //                                                         extender.getNativePos(),
-        //                                                         getState.get().length))
-        //                                 .andThen(
-        //                                         pivotCommands.setAngle(() ->
-        // getState.get().angle)),
-        //                         extenderCommands.length(() -> getState.get().length)),
-        //                 () -> {
-        //                     var angle = getState.get().angle;
-        //                     var length = getState.get().length;
-        //                     return length > extender.getNativePos();
-        //                 })
-        //         .until(stateChanged)
-        //         .repeatedly();
+        if (getState.get().length > extender.getNativePos()) {
+            return Commands.sequence(
+                            pivotCommands.setAngle(() -> getState.get().angle),
+                            extenderCommands.length(() -> getState.get().length))
+                    .until(stateChanged)
+                    .repeatedly();
+        } else {
 
-        return new ConditionalCommand(
-                        // if remove the waituntil code works
-                        Commands.parallel(
-                                pivotCommands.setAngle(() -> getState.get().angle),
-                                extenderCommands.length(
-                                        () -> getState.get().length, this::isReached)),
-                        Commands.parallel(
-                                extenderCommands.length(
-                                        () -> getState.get().length, this::isReached),
-                                pivotCommands.setAngle(() -> getState.get().angle)),
-                        () -> {
-                            var angle = getState.get().angle;
-                            var length = getState.get().length;
-                            return length > extender.getNativePos();
-                        })
-                .until(stateChanged)
-                .repeatedly();
+            // return Commands.sequence(
+            //                 extenderCommands.length(() -> getState.get().length),
+            //                 pivotCommands.setAngle(() -> getState.get().angle))
+            //         .until(stateChanged)
+            //         .repeatedly();
+            return Commands.sequence(
+                            pivotCommands.setAngle(() -> getState.get().angle),
+                            extenderCommands.length(() -> getState.get().length))
+                    .until(stateChanged)
+                    .repeatedly();
+        }
+    }
+
+    public double getCond() {
+        return finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone).length;
     }
 
     public boolean extenderLengthReached(double extenderLength, double wantedLength) {
@@ -210,11 +180,12 @@ public class Superstructure {
     }
 
     public Command groundIntake() {
-        return goToStateParallel(SuperstructureState.groundIntake);
+        return goToStateParallel(() -> SuperstructureState.groundIntake);
     }
 
     public Command groundIntakeReverse() {
-        return goToStateParallel(SuperstructureState.reverseArm(SuperstructureState.groundIntake));
+        return goToStateParallel(
+                () -> SuperstructureState.reverseArm(SuperstructureState.groundIntake));
     }
 
     public Command stow() {

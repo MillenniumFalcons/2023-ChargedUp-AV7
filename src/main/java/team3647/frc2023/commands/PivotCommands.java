@@ -23,8 +23,13 @@ public class PivotCommands {
     public Command setAngle(DoubleSupplier setpoint) {
 
         return Commands.run(() -> pivot.setAngle(setpoint.getAsDouble()), pivot)
-                .withInterruptBehavior(InterruptionBehavior.kCancelSelf)
-                .until(() -> true);
+                .until(
+                        () -> {
+                            System.out.println(
+                                    Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 2.5);
+                            return Math.abs(pivot.getAngle() - setpoint.getAsDouble()) < 2.5;
+                        })
+                .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
     }
 
     public Command goDownDegrees(double degrees) {
