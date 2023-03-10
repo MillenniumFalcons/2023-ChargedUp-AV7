@@ -132,10 +132,6 @@ public class Superstructure {
         }
     }
 
-    public double getCond() {
-        return finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone).length;
-    }
-
     public boolean extenderLengthReached(double extenderLength, double wantedLength) {
         return Math.abs(extenderLength - wantedLength) < 3000;
     }
