@@ -83,13 +83,13 @@ public class AutoCommands {
         redConeConeBalanceFlatSideMode =
                 new AutonomousMode(
                         coneConeBalanceFlatSide(Alliance.Red),
-                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial,
-                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial);
+                        FieldConstants.flipBluePose(Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial),
+                        flipForPP(Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial));
         redConeBalance =
                 new AutonomousMode(
                         justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
                         getJustScore(FieldConstants.kRedFour),
-                        flipForPP(getJustScore(FieldConstants.kBlueFour)));
+                        flipForPP(getJustScore(FieldConstants.kRedFour)));
         redJustScore =
                 new AutonomousMode(
                         justScore(() -> SuperstructureState.coneThreeReversed),
@@ -230,14 +230,14 @@ public class AutoCommands {
                                         Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory,
                                         color)));
         return Commands.parallel(
-                drivetrainSequence,
-                getSupestructureSequenceTwoPieceBalanceFlatSide(
-                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstTrajectory
-                                .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeConeBalanceFlatSide.kSecondTrajectory
-                                .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory
-                                .getTotalTimeSeconds()));
+                drivetrainSequence);
+                // getSupestructureSequenceTwoPieceBalanceFlatSide(
+                //         Trajectories.Blue.ConeConeBalanceFlatSide.kFirstTrajectory
+                //                 .getTotalTimeSeconds(),
+                //         Trajectories.Blue.ConeConeBalanceFlatSide.kSecondTrajectory
+                //                 .getTotalTimeSeconds(),
+                //         Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory
+                //                 .getTotalTimeSeconds()));
     }
 
     public Command justScore(Supplier<SuperstructureState> state) {

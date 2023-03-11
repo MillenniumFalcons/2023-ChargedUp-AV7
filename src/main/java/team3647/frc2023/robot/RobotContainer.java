@@ -52,7 +52,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-        runningMode = autoCommands.redConeCubeFlatSideMode;
+        runningMode = autoCommands.redConeConeBalanceFlatSideMode;
 
         swerve.setRobotPose(runningMode.getInitialPose());
         swerve.setPathplanner(runningMode.getPathplannerPose2d());
