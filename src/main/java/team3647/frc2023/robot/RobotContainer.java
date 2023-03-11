@@ -10,12 +10,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.auto.AutonomousMode;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
+import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
@@ -26,10 +28,16 @@ import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
+import team3647.frc2023.subsystems.VisionController;
+import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
 import team3647.frc2023.util.AutoSteer;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
+import team3647.lib.tracking.FlightDeck;
+import team3647.lib.tracking.RobotTracker;
+import team3647.lib.vision.Limelight;
+import team3647.lib.vision.MultiTargetTracker;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -236,33 +244,27 @@ public class RobotContainer {
                     ExtenderConstants.nominalVoltage,
                     GlobalConstants.kDt);
 
-    //     private final VisionController visionController =
-    //             new VisionController(
-    //                     Map.of(
-    //                             CAMERA_NAME.CENTER,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightCenterIP,
-    //                                     LimelightConstant.kLimelightCenterHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts),
-    //                             CAMERA_NAME.LEFT,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightLeftIP,
-    //                                     LimelightConstant.kLimelightLeftHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts),
-    //                             CAMERA_NAME.RIGHT,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightRightIP,
-    //                                     LimelightConstant.kLimelightRightHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts)),
-    //                     swerve::addVisionMeasurement);
+    final FlightDeck flightDeck =
+            new FlightDeck(
+                    new RobotTracker(1.0, swerve::getOdoPose, swerve::getTimestamp),
+                    new MultiTargetTracker(),
+                    LimelightConstant.kRobotToCamFixed);
+
+    private final VisionController visionController =
+            new VisionController(
+                    Map.of(
+                            CAMERA_NAME.CENTER,
+                            new Limelight(
+                                    LimelightConstant.kLimelightCenterIP,
+                                    LimelightConstant.kLimelightCenterHost,
+                                    0,
+                                    LimelightConstant.kCamConstatnts)),
+                    flightDeck::addVisionObservation);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
             new PositionFinder(
-                    swerve::getEstimPose,
+                    flightDeck::getLatestParameters,
                     FieldConstants.kScoringPositions,
                     FieldConstants.kIntakePositions,
                     SuperstructureState.kLevelPieceMap);

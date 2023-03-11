@@ -20,10 +20,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import team3647.frc2023.constants.AutoConstants;
-import team3647.frc2023.subsystems.VisionController.VisionInput;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
 
@@ -66,6 +66,8 @@ public class SwerveDrive implements PeriodicSubsystem {
         public SwerveModuleState frontRightOutputState = new SwerveModuleState();
         public SwerveModuleState backLeftOutputState = new SwerveModuleState();
         public SwerveModuleState backRightOutputState = new SwerveModuleState();
+
+        public double timestamp = 0;
     }
 
     public SwerveDrive(
@@ -114,6 +116,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         periodicIO.backLeftState = backLeft.getState();
         periodicIO.backRightState = backRight.getState();
         periodicIO.gyroRotation = Rotation2d.fromDegrees(periodicIO.heading);
+        periodicIO.timestamp = Timer.getFPGATimestamp();
 
         SmartDashboard.putNumber("yaw", getHeading());
         SmartDashboard.putNumber("pitch", periodicIO.pitch);
@@ -197,6 +200,10 @@ public class SwerveDrive implements PeriodicSubsystem {
         backRight.resetToAbsolute();
     }
 
+    public double getTimestamp() {
+        return periodicIO.timestamp;
+    }
+
     public void zeroGyro() {
         gyro.setYaw(0.0);
     }
@@ -211,24 +218,6 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public double getPitch() {
         return periodicIO.pitch;
-    }
-
-    public void addVisionMeasurement(VisionInput input) {
-        Double timestamp = input.timestamp;
-        Pose2d visionBotPose2d = input.pose;
-        if (timestamp == null || visionBotPose2d == null) {
-            return;
-        }
-
-        if (poseEstimator
-                        .getEstimatedPosition()
-                        .getTranslation()
-                        .minus(visionBotPose2d.getTranslation())
-                        .getNorm()
-                > 1) return;
-
-        Pose2d acutalPose2d = new Pose2d(visionBotPose2d.getTranslation(), periodicIO.gyroRotation);
-        this.poseEstimator.addVisionMeasurement(acutalPose2d, timestamp, matrix1);
     }
 
     // Probably want to moving average filter pitch and roll.

@@ -1,6 +1,7 @@
 package team3647.frc2023.constants;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import team3647.lib.vision.IVisionCamera.CamConstants;
 import team3647.lib.vision.IVisionCamera.VisionPipeline;
 
@@ -21,6 +22,8 @@ public class LimelightConstant {
     public static final double kVPW = 2.0 * Math.tan(Math.toRadians(59.8) / 2.0);
     public static final CamConstants kCamConstatnts =
             new CamConstants(kCameraHeightMeters, kHorizontalToLens, kVPH, kVPW);
+
+    public static final Transform2d kRobotToCamFixed = new Transform2d();
 
     public static final VisionPipeline APRIL_PIPELINE = new VisionPipeline(0, 2592, 1944);
     public static final VisionPipeline TAPE_PIPELINE = new VisionPipeline(1, 1280, 960);

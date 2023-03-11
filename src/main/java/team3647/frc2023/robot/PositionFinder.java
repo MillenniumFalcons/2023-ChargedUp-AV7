@@ -8,22 +8,23 @@ import java.util.Map;
 import java.util.function.Supplier;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.util.SuperstructureState;
+import team3647.lib.vision.AimingParameters;
 
 public class PositionFinder {
-    private final Supplier<Pose2d> robotPoseSupplier;
+    private final Supplier<AimingParameters> getBestTarget;
     private final List<ScoringPosition> possibleScoringPositions;
     private final List<IntakePosition> possibleIntakePositions;
     private final Map<Level, Map<GamePiece, SuperstructureState>>
             levelAndPieceToSuperstrucutreState;
 
     public PositionFinder(
-            Supplier<Pose2d> robotPoseSupplier,
+            Supplier<AimingParameters> getBestTarget,
             List<ScoringPosition> possibleScoringPositions,
             List<IntakePosition> possibleIntakePositions,
             Map<Level, Map<GamePiece, SuperstructureState>> levelAndPieceToSuperstrucutreState) {
         this.possibleScoringPositions = possibleScoringPositions;
         this.possibleIntakePositions = possibleIntakePositions;
-        this.robotPoseSupplier = robotPoseSupplier;
+        this.getBestTarget = getBestTarget;
         this.levelAndPieceToSuperstrucutreState = levelAndPieceToSuperstrucutreState;
     }
 
@@ -53,12 +54,13 @@ public class PositionFinder {
     }
 
     public final ScoringPosition getScoringPosition() {
-        return getClosestScoring(robotPoseSupplier.get(), this.possibleScoringPositions);
+        return getClosestScoring(
+                getBestTarget.get().getFieldToGoal(), this.possibleScoringPositions);
     }
 
     public final IntakePosition getIntakePositionByStation(StationType station) {
         return getClosestIntake(
-                robotPoseSupplier.get(),
+                getBestTarget.get().getFieldToGoal(),
                 this.possibleIntakePositions.stream()
                         .filter(intakePos -> intakePos.station == station)
                         .toList());
