@@ -1,30 +1,35 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.vision.AimingParameters;
 
 public class PositionFinder {
+    private final Supplier<Pose2d> robotPoseSupplier;
     private final Supplier<AimingParameters> getBestTarget;
-    private final List<ScoringPosition> possibleScoringPositions;
+    private final Supplier<Alliance> getColor;
     private final List<IntakePosition> possibleIntakePositions;
     private final Map<Level, Map<GamePiece, SuperstructureState>>
             levelAndPieceToSuperstrucutreState;
 
     public PositionFinder(
+            Supplier<Pose2d> robotPoseSupplier,
             Supplier<AimingParameters> getBestTarget,
-            List<ScoringPosition> possibleScoringPositions,
+            Supplier<Alliance> getColor,
             List<IntakePosition> possibleIntakePositions,
             Map<Level, Map<GamePiece, SuperstructureState>> levelAndPieceToSuperstrucutreState) {
-        this.possibleScoringPositions = possibleScoringPositions;
+        this.robotPoseSupplier = robotPoseSupplier;
         this.possibleIntakePositions = possibleIntakePositions;
         this.getBestTarget = getBestTarget;
+        this.getColor = getColor;
         this.levelAndPieceToSuperstrucutreState = levelAndPieceToSuperstrucutreState;
     }
 
@@ -53,9 +58,26 @@ public class PositionFinder {
         return pieceToState.get(piece);
     }
 
+    public final List<ScoringPosition> getScoringPositions() {
+        var aprilTagPose = this.getBestTarget.get().getFieldToGoal();
+
+        var cubePose = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCube);
+        var conePoseLeft = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCone1);
+        var conePoseRight = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCone2);
+        if (getColor.get() == Alliance.Red) {
+            cubePose = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCube);
+            conePoseLeft = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCone1);
+            conePoseRight = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCone2);
+        }
+
+        return List.of(
+                new ScoringPosition(cubePose, GamePiece.Cube),
+                new ScoringPosition(conePoseLeft, GamePiece.Cone),
+                new ScoringPosition(conePoseRight, GamePiece.Cone));
+    }
+
     public final ScoringPosition getScoringPosition() {
-        return getClosestScoring(
-                getBestTarget.get().getFieldToGoal(), this.possibleScoringPositions);
+        return getClosestScoring(robotPoseSupplier.get(), this.getScoringPositions());
     }
 
     public final IntakePosition getIntakePositionByStation(StationType station) {

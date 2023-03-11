@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.tracking.FlightDeck.VisionInput;
 import team3647.lib.vision.AprilTagCamera;
+import team3647.lib.vision.AprilTagCamera.AprilTagId;
 import team3647.lib.vision.IVisionCamera.VisionPipeline;
 
 /** Add your docs here. */
@@ -32,7 +33,25 @@ public class VisionController implements PeriodicSubsystem {
     }
 
     @Override
-    public void readPeriodicInputs() {}
+    public void readPeriodicInputs() {
+        for (AprilTagCamera camera : cameras.values()) {
+            var tags = camera.getCamToTags();
+            if (tags == AprilTagCamera.kNoTags) {
+                return;
+            }
+            for (var entry : tags.entrySet()) {
+                var id = entry.getKey();
+                if (id == AprilTagId.ID_DNE) {
+                    return;
+                }
+                var camToTagTransform = entry.getValue();
+
+                this.visionUpdate.accept(
+                        new VisionInput(
+                                camToTagTransform.timestamp, id, camToTagTransform.transform));
+            }
+        }
+    }
 
     public void changePipeline(CAMERA_NAME name, VisionPipeline pipeLine) {
         if (cameras.containsKey(name)) {

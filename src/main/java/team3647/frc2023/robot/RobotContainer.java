@@ -3,6 +3,7 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -264,8 +265,9 @@ public class RobotContainer {
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
             new PositionFinder(
+                    swerve::getOdoPose,
                     flightDeck::getLatestParameters,
-                    FieldConstants.kScoringPositions,
+                    DriverStation::getAlliance,
                     FieldConstants.kIntakePositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =

@@ -6,6 +6,7 @@ package team3647.frc2023.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.List;
@@ -73,6 +74,8 @@ public class FieldConstants {
     private static final double kRedDoubleSubstationRightYm = kBlueDoubleSubstationLeftYm;
     private static final double kRedDoubleSubstationXm = 0.8;
 
+    public static final Pose2d kOrigin = new Pose2d();
+
     public static final Pose2d kBlueOne = new Pose2d(kBlueXm, kBlueOneYm, kBlueScoreRotation);
     public static final Pose2d kBlueTwo = new Pose2d(kBlueXm, kBlueTwoYm, kBlueScoreRotation);
     public static final Pose2d kBlueThree = new Pose2d(kBlueXm, kBlueThreeYm, kBlueScoreRotation);
@@ -92,6 +95,19 @@ public class FieldConstants {
     public static final Pose2d kRedSeven = new Pose2d(kRedXm, kRedSevenYm, kRedRedRotation);
     public static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
     public static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
+
+    public static final Transform2d kBlueTransformTagCube =
+            new Transform2d(new Translation2d(0.72, 0), kZero);
+    public static final Transform2d kBlueTransformTagCone1 =
+            new Transform2d(new Translation2d(0.72, -0.55), kZero);
+    public static final Transform2d kBlueTransformTagCone2 =
+            new Transform2d(new Translation2d(0.72, 0.55), kZero);
+
+    public static final Transform2d kRedTransformTagCube = flipBlueTransform(kBlueTransformTagCube);
+    public static final Transform2d kRedTransformTagCone1 =
+            flipBlueTransform(kBlueTransformTagCone1);
+    public static final Transform2d kRedTransformTagCone2 =
+            flipBlueTransform(kBlueTransformTagCone2);
 
     private static final Pose2d kBlueDoubleSubstationLeft =
             new Pose2d(
@@ -160,7 +176,11 @@ public class FieldConstants {
     public static Pose2d flipBluePose(Pose2d pose) {
         return new Pose2d(
                 flipTranslation(pose.getTranslation()),
-                pose.getRotation().rotateBy(kRotateOneEighty));
+                new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
+    }
+
+    public static Transform2d flipBlueTransform(Transform2d transform) {
+        return new Transform2d(kOrigin, flipBluePose(kOrigin.transformBy(transform)));
     }
 
     private FieldConstants() {}

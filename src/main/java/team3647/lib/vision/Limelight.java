@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -11,6 +12,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
+import java.util.Map;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
 import team3647.lib.vision.IVisionCamera.LEDMode;
@@ -41,7 +43,8 @@ public class Limelight implements AprilTagCamera {
         LATENCY_PIPE_MS("tl"),
         LATENCY_CAP_MS("cl"),
         TAG_ID("tid"),
-        ROBOT_POSE("botpose_wpiblue");
+        ROBOT_POSE("botpose_wpiblue"),
+        TAG_POSE("targetpose_cameraspace");
 
         public final String str;
 
@@ -92,6 +95,32 @@ public class Limelight implements AprilTagCamera {
                         new Translation2d(robotPose.getX(), robotPose.getY()),
                         new Rotation2d(robotPose.getRotation().getZ())),
                 Timer.getFPGATimestamp() - totalLatency / 1000 - extraLatencySec);
+    }
+
+    public Map<AprilTagId, StampedTransform> getCamToTags() {
+        // From camera XYZ (East, Down, North) to WPILIB (North, West, Up)
+        // - cam X -> Y
+        // - cam Y -> Z
+        //  cam Z -> X
+        double[] arr = getDoubleArray(Data.TAG_POSE);
+        if (arr.length < 6 || arr[0] == 0.0 && arr[1] == 0.0 && arr[2] == 0.0) {
+            return AprilTagCamera.kNoTags;
+        }
+
+        var camX = arr[0];
+        var camY = arr[1];
+        var camZ = arr[2];
+
+        var camYaw = arr[4];
+
+        var camToTargetWPI =
+                new Transform2d(new Translation2d(camZ, -camX), Rotation2d.fromDegrees(-camYaw));
+        int id = (int) getDouble(Data.TAG_ID);
+        double timestamp =
+                Timer.getFPGATimestamp()
+                        - getDouble(Data.LATENCY_CAP_MS)
+                        - getDouble(Data.LATENCY_CAP_MS);
+        return Map.of(AprilTagCamera.getId(id), new StampedTransform(camToTargetWPI, timestamp));
     }
 
     @Override
