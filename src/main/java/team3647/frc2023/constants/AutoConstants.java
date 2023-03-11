@@ -22,7 +22,7 @@ public class AutoConstants {
 
     public static final double xRotControllerP = 10; // 12;
     public static final double xRotControllerI = 0; // 8;
-    public static final double xRotControllerD = 0;
+    public static final double xRotControllerD = 0.5;
 
     public static final Pose2d kRedJustScore =
             new Pose2d(

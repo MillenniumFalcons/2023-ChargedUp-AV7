@@ -20,6 +20,9 @@ public class AutoCommands {
     private final SwerveDrive drive;
     private final SwerveDriveKinematics driveKinematics;
     private final Superstructure superstructure;
+
+    public final AutonomousMode Test;
+
     public final AutonomousMode blueConeCubeFlatSideMode;
     public final AutonomousMode blueConeCubeBalanceBumpSideMode;
     public final AutonomousMode blueConeBalance;
@@ -39,6 +42,9 @@ public class AutoCommands {
         this.drive = drive;
         this.driveKinematics = driveKinematics;
         this.superstructure = superstructure;
+        Test =
+                new AutonomousMode(
+                        drive(), Trajectories.Blue.Test.kStart, Trajectories.Blue.Test.kStart);
         // blue side modes
         blueConeCubeFlatSideMode =
                 new AutonomousMode(
@@ -83,7 +89,8 @@ public class AutoCommands {
         redConeConeBalanceFlatSideMode =
                 new AutonomousMode(
                         coneConeBalanceFlatSide(Alliance.Red),
-                        FieldConstants.flipBluePose(Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial),
+                        FieldConstants.flipBluePose(
+                                Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial));
         redConeBalance =
                 new AutonomousMode(
@@ -155,6 +162,10 @@ public class AutoCommands {
                 Commands.waitSeconds(path2time),
                 superstructure.goToStateParallel(SuperstructureState.coneThree),
                 superstructure.scoreAndStow(0.5));
+    }
+
+    public Command drive() {
+        return followTrajectory(Trajectories.Blue.Test.kTrajectory);
     }
 
     public Command coneCubeBalanceBumpSide(Alliance color) {
@@ -229,15 +240,14 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory,
                                         color)));
-        return Commands.parallel(
-                drivetrainSequence);
-                // getSupestructureSequenceTwoPieceBalanceFlatSide(
-                //         Trajectories.Blue.ConeConeBalanceFlatSide.kFirstTrajectory
-                //                 .getTotalTimeSeconds(),
-                //         Trajectories.Blue.ConeConeBalanceFlatSide.kSecondTrajectory
-                //                 .getTotalTimeSeconds(),
-                //         Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory
-                //                 .getTotalTimeSeconds()));
+        return Commands.parallel(drivetrainSequence);
+        // getSupestructureSequenceTwoPieceBalanceFlatSide(
+        //         Trajectories.Blue.ConeConeBalanceFlatSide.kFirstTrajectory
+        //                 .getTotalTimeSeconds(),
+        //         Trajectories.Blue.ConeConeBalanceFlatSide.kSecondTrajectory
+        //                 .getTotalTimeSeconds(),
+        //         Trajectories.Blue.ConeConeBalanceFlatSide.kThirdTrajectory
+        //                 .getTotalTimeSeconds()));
     }
 
     public Command justScore(Supplier<SuperstructureState> state) {

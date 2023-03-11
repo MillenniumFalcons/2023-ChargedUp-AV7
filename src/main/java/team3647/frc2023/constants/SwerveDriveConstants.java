@@ -93,7 +93,7 @@ public class SwerveDriveConstants {
     // from motor to output shaft
     public static final double kDriveMotorGearRatio = 1 / 6.75;
     public static final double kTurnMotorGearRatio = 7.0 / 150.0;
-    public static final double kWheelDiameterMeters = Units.inchesToMeters(4.0);
+    public static final double kWheelDiameterMeters = Units.inchesToMeters(3.83);
 
     //     // divide for tick to deg
     public static final double kTurnMotorNativeToDeg =

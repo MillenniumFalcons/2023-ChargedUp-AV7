@@ -162,8 +162,8 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addPose("odo", swerve::getOdoPose);
-        printer.addPose("estim", swerve::getEstimPose);
-        printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
+        // printer.addPose("estim", swerve::getEstimPose);
+        // printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
