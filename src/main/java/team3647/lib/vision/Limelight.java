@@ -5,8 +5,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import team3647.lib.utils.NamedInt;
-import team3647.lib.vision.IVisionCamera.CamMode;
-import team3647.lib.vision.IVisionCamera.LEDMode;
 
 public class Limelight implements AprilTagCamera {
 
@@ -129,19 +127,14 @@ public class Limelight implements AprilTagCamera {
         if (id == AprilTagId.ID_DNE) {
             return VisionUpdate.kNoUpdate;
         }
-        var corners = getDoubleArray(Data.CORNERS);
-        double totX = 0;
-        double totY = 0;
-        for (int i = 0; i < corners.length - 1; i += 2) {
-            totX += corners[i];
-            totY += corners[i + 1];
-        }
 
         var tx = getDouble(Data.X);
         var ty = getDouble(Data.Y);
         var totalTime =
                 getDouble(Data.LATENCY_CAP_MS) / 1000.0 + getDouble(Data.LATENCY_PIPE_MS) / 1000;
-        // System.out.printf("Update, x:%f, y:%f%n", tx, ty);
-        return new VisionUpdate(Timer.getFPGATimestamp() - totalTime, new VisionPoint(tx, ty), id);
+        return new VisionUpdate(
+                Timer.getFPGATimestamp() - totalTime - extraLatencySec,
+                new VisionPoint(tx, ty),
+                id);
     }
 }

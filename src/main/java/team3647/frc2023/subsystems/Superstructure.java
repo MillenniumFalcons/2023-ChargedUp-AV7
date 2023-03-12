@@ -19,6 +19,7 @@ import team3647.frc2023.robot.PositionFinder;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.robot.PositionFinder.ScoringPosition;
+import team3647.frc2023.robot.PositionFinder.Side;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 
@@ -26,6 +27,7 @@ public class Superstructure {
 
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
+    private Side wantedSide = Side.Center;
     private boolean isAutoSteerEnabled = true;
     private SuperstructureState currentState = SuperstructureState.stow;
     private List<ScoringPosition> scoringPositions =

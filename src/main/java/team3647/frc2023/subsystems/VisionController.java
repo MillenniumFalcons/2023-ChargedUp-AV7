@@ -29,8 +29,6 @@ public class VisionController implements PeriodicSubsystem {
         ALL
     }
 
-    public class PeriodicIO {}
-
     public VisionController(
             Map<CAMERA_NAME, AprilTagCamera> cameras,
             Consumer<VisionInput> sendVisionUpdate,
@@ -58,10 +56,7 @@ public class VisionController implements PeriodicSubsystem {
 
             Translation2d camToTarget =
                     solveTranslationToTarget(
-                            update.point,
-                            targetHeightMeters,
-                            camera.getConstants(),
-                            camera.getPipeline());
+                            update.point, targetHeightMeters, camera.getConstants());
             SmartDashboard.putNumber("Cam to target X", camToTarget.getX());
             SmartDashboard.putNumber("Cam to target Y", camToTarget.getY());
             visionUpdate.accept(
@@ -86,10 +81,7 @@ public class VisionController implements PeriodicSubsystem {
     }
 
     public static Translation2d solveTranslationToTarget(
-            VisionPoint corner,
-            double targetHeightMeters,
-            CamConstants camConstants,
-            VisionPipeline camPipeline) {
+            VisionPoint corner, double targetHeightMeters, CamConstants camConstants) {
 
         var actualXy = new Translation2d(corner.x, corner.y).rotateBy(camConstants.kCamRoll);
         double floorToCamMeters = camConstants.kCameraHeightMeters;
@@ -108,7 +100,6 @@ public class VisionController implements PeriodicSubsystem {
 
     private final Map<CAMERA_NAME, AprilTagCamera> cameras;
     private final Consumer<VisionInput> visionUpdate;
-    private PeriodicIO periodicIO = new PeriodicIO();
     private final double scoreTargetHeightMeters;
     private final double intakeTargetHeightMeters;
     private final Rotation2d rotation2d = new Rotation2d();

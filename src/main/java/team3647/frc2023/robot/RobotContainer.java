@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -51,7 +50,6 @@ import team3647.lib.vision.MultiTargetTracker;
 public class RobotContainer {
 
     private AutonomousMode runningMode;
-    private Alliance currentAlliance = Alliance.Invalid;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -229,9 +227,6 @@ public class RobotContainer {
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
 
-    // right menu button cube, left menu button cone
-    //     public final Grabber grabber = new Grabber(GrabberConstants.pistons);
-
     public final Rollers rollers =
             new Rollers(
                     RollersConstants.kMaster,
@@ -293,7 +288,7 @@ public class RobotContainer {
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(
-                    swerve::getEstimPose,
+                    swerve::getOdoPose,
                     SwerveDriveConstants.kAutoSteerXPIDController,
                     SwerveDriveConstants.kAutoSteerYPIDController,
                     SwerveDriveConstants.kAutoSteerHeadingController);
