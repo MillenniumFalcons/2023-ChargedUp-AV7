@@ -123,6 +123,9 @@ public class Limelight implements AprilTagCamera {
             return VisionUpdate.kNoUpdate;
         }
         var tagIdInt = (int) getDouble(Data.TAG_ID);
+        if (tagIdInt == -1) {
+            return VisionUpdate.kNoUpdate;
+        }
         AprilTagId id = AprilTagCamera.getId(tagIdInt);
         if (id == AprilTagId.ID_DNE) {
             return VisionUpdate.kNoUpdate;

@@ -75,10 +75,10 @@ public class DrivetrainCommands {
                         if (Math.abs(motionXComponent) < 0.1 && Math.abs(motionYComponent) < 0.1) {
                             motionXComponent =
                                     autoSteerVelocities.dx
-                                            + Math.signum(autoSteerVelocities.dx) * 0.2;
+                                            + Math.signum(autoSteerVelocities.dx) * 0.15;
                             motionYComponent =
                                     autoSteerVelocities.dy
-                                            + Math.signum(autoSteerVelocities.dy) * 0.2;
+                                            + Math.signum(autoSteerVelocities.dy) * 0.15;
                             SmartDashboard.putNumber("autoSteerVelocities.dx", motionXComponent);
                             SmartDashboard.putNumber("autoSteerVelocities.dy", motionYComponent);
                             translation = new Translation2d(motionXComponent, motionYComponent);
