@@ -111,16 +111,20 @@ public class Superstructure {
         boolean currentBelowMaxRotateLength = extender.getNativePos() < kMaxRotationLength + 500;
         boolean nextBelowMaxRotateLength = wantedState.length < kMaxRotationLength + 500;
         boolean needsRotate = !pivot.angleReached(wantedState.angle, 1.5);
+        boolean needsExtend = extender.reachedPosition(wantedState.length, 5000);
+        boolean closeEnoughForParallel = pivot.angleReached(wantedState.angle, 8);
         double nextExtender = kMaxRotationLength;
         double nextPivot = pivot.getAngle();
 
-        if (needsRotate) {
+        if (needsRotate && !closeEnoughForParallel) {
             if (currentBelowMaxRotateLength && nextBelowMaxRotateLength) {
                 nextExtender = wantedState.length;
                 nextPivot = wantedState.angle;
             } else if (currentBelowMaxRotateLength) {
                 nextPivot = wantedState.angle;
             }
+        } else if (closeEnoughForParallel && !needsExtend) {
+            nextPivot = wantedState.angle;
         } else {
             nextExtender = wantedState.length;
         }

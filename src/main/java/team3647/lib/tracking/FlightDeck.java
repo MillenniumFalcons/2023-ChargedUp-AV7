@@ -111,7 +111,7 @@ public class FlightDeck {
         }
 
         TrackedTargetComparator comparator =
-                new TrackedTargetComparator(50, 50, Timer.getFPGATimestamp(), 100, lastTargetId);
+                new TrackedTargetComparator(100, 50, Timer.getFPGATimestamp(), 20, lastTargetId);
 
         int val = comparator.compare(lastTarget, closestTarget);
 

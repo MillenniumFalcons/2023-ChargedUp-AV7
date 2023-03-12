@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
 
 public class AutoSteer {
@@ -57,6 +58,9 @@ public class AutoSteer {
     }
 
     public boolean almostArrived() {
+        SmartDashboard.putNumber(
+                "Distance to target",
+                this.targetPose.minus(drivePose.get()).getTranslation().getNorm());
         return this.targetPose.minus(drivePose.get()).getTranslation().getNorm() < 0.50;
     }
 }
