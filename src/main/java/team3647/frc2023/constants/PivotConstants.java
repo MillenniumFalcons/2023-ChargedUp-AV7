@@ -48,8 +48,8 @@ public class PivotConstants {
     public static final double[][] kVoltageGravity = {{0.1, 0.1}, {Units.inchesToMeters(61), 0.55}};
 
     public static final InterpolatingTreeMap<Double, Double> kLengthGravityVoltageMap =
-            new InterpolatingTreeMap<Double, Double>();
-    public static double kInitialAngle = 90.0;
+            new InterpolatingTreeMap<>();
+    public static final double kInitialAngle = 90.0;
 
     static {
         kMaster.configFactoryDefault();

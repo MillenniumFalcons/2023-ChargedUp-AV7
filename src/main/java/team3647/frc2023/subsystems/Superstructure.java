@@ -105,42 +105,43 @@ public class Superstructure {
     }
 
     public Command goToStateParallel(SuperstructureState state) {
-        return Commands.run(() -> runPivotExtender(state), pivot, extender);
+        return Commands.run(() -> runPivotExtenderWrist(state), pivot, extender, wrist);
     }
 
     public Command goToStateParallel(Supplier<SuperstructureState> getState) {
-        return Commands.run(() -> runPivotExtender(getState.get()), pivot, extender);
+        return Commands.run(() -> runPivotExtenderWrist(getState.get()), pivot, extender, wrist);
     }
 
     private final double kMaxRotationLength = 15000;
 
-    private void runPivotExtender(SuperstructureState wantedState) {
+    private void runPivotExtenderWrist(SuperstructureState wantedState) {
         boolean currentBelowMaxRotateLength = extender.getNativePos() < kMaxRotationLength + 500;
         boolean nextBelowMaxRotateLength = wantedState.length < kMaxRotationLength + 500;
-        boolean needsRotate = !pivot.angleReached(wantedState.angle, 5);
+        boolean needsRotate = !pivot.angleReached(wantedState.armAngle, 5);
         boolean needsExtend = !extender.reachedPosition(wantedState.length, 5000);
-        boolean closeEnoughForParallel = pivot.angleReached(wantedState.angle, 8);
+        boolean closeEnoughForParallel = pivot.angleReached(wantedState.armAngle, 8);
         double nextExtender =
                 currentBelowMaxRotateLength ? extender.getNativePos() : kMaxRotationLength;
         double nextPivot = pivot.getAngle();
-        SmartDashboard.putBoolean("Needs extend", needsExtend);
-        SmartDashboard.putBoolean("Needs Rotate", needsRotate);
         if (needsRotate && !closeEnoughForParallel) {
             if (currentBelowMaxRotateLength && nextBelowMaxRotateLength) {
                 nextExtender = wantedState.length;
-                nextPivot = wantedState.angle;
+                nextPivot = wantedState.armAngle;
             } else if (currentBelowMaxRotateLength) {
-                nextPivot = wantedState.angle;
+                nextPivot = wantedState.armAngle;
             }
         } else if (closeEnoughForParallel && !needsExtend) {
-            nextPivot = wantedState.angle;
+            nextPivot = wantedState.armAngle;
             nextExtender = wantedState.length;
         } else {
             nextExtender = wantedState.length;
         }
 
-        extender.setLengthMeters(nextExtender);
+        SmartDashboard.putNumber("Wanted Wrist", wantedState.wristAngle);
+        SmartDashboard.putNumber("Wanted extender", nextExtender);
+        SmartDashboard.putNumber("Wanted pivot", nextPivot);
         pivot.setAngle(nextPivot);
+        wrist.setAngle(wantedState.wristAngle);
     }
 
     public boolean extenderLengthReached(double extenderLength, double wantedLength) {

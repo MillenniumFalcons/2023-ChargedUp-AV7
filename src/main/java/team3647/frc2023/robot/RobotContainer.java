@@ -67,6 +67,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
+        wrist.setEncoder(WristConstants.kInitialDegree);
         runningMode = autoCommands.redConeConeBalanceFlatSideMode;
 
         swerve.setRobotPose(new Pose2d(new Translation2d(5, 5), Rotation2d.fromDegrees(0)));
@@ -104,7 +105,8 @@ public class RobotContainer {
                 .rightBumper
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
-
+        coController.buttonA.onTrue(
+                superstructure.goToStateParallel(SuperstructureState.doubleStation));
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.One));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
@@ -144,10 +146,10 @@ public class RobotContainer {
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
-        // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
-        // rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
+        rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
         wrist.setDefaultCommand(superstructure.wristCommands.openloop(coController::getLeftStickY));
+        pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
@@ -167,6 +169,7 @@ public class RobotContainer {
     public void configureSmartDashboardLogging() {
         printer.addPose("odo", swerve::getOdoPose);
         printer.addDouble("PIVOT", pivot::getAngle);
+        printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
         printer.addBoolean("auto steer almost ready", autoSteer::almostArrived);

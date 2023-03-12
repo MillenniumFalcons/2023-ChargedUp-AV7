@@ -16,6 +16,10 @@ public class WristCommands {
         return Commands.run(() -> wrist.setOpenloop(demand.getAsDouble()), wrist);
     }
 
+    public Command setAngle(double angle) {
+        return Commands.run(() -> wrist.setAngle(angle), wrist);
+    }
+
     public WristCommands(Wrist wrist) {
         this.wrist = wrist;
     }

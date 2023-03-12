@@ -8,7 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 public final class WristConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.WristIds.kMasterId);
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    public static final InvertType kMasterInvert = InvertType.None;
 
     private static final double kGearBoxRatio = 1.0 / 100;
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
@@ -29,8 +29,14 @@ public final class WristConstants {
     public static final double kMaxVelocityTicks = 300.0 / kNativeVelToDPS;
     public static final double kMaxAccelerationTicks = 200.0 / kNativeVelToDPS;
 
-    public static final double kMinDegree = -30.0;
-    public static final double kMaxDegree = 210.0;
+    public static final double kMinDegree = 0;
+    public static final double kMaxDegree = 130;
+
+    public static final double kInitialDegree = 140;
+    public static final double kHoldPosition = 30;
+    public static final double kDoubleStationDegrees = 106;
+    public static final double kConeScoreAngle = 90;
+    public static final double kCubeScoreAngle = 90;
 
     static {
         kMaster.configFactoryDefault();

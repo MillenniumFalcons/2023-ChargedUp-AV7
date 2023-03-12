@@ -30,6 +30,10 @@ public class Wrist extends TalonFXSubsystem {
         return super.getPosition();
     }
 
+    public void setAngle(double angle) {
+        this.setPositionMotionMagic(angle, 0);
+    }
+
     public boolean angleReached(double targetAngle, double threshold) {
         return Math.abs(getAngle() - targetAngle) < threshold;
     }
