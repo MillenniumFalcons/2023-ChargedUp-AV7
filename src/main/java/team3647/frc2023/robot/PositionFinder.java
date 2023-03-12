@@ -1,6 +1,8 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Collections;
 import java.util.Comparator;
@@ -59,20 +61,50 @@ public class PositionFinder {
         return pieceToState.get(piece);
     }
 
-    public final List<ScoringPosition> getScoringPositions() {
-        var aprilTagPose = this.getBestTarget.get().getFieldToGoal();
+    private static Pose2d translatePose(Pose2d pose, Translation2d t, Rotation2d newRotation) {
+        return new Pose2d(pose.getTranslation().plus(t), newRotation);
+    }
 
-        if (this.getBestTarget.get() == AimingParameters.None) {
+    public final List<ScoringPosition> getScoringPositions() {
+        var bestTarget = this.getBestTarget.get();
+        var aprilTagPose = bestTarget.getFieldToGoal();
+
+        if (bestTarget == AimingParameters.None) {
             return kEmptyList;
         }
 
-        var cubePose = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCube);
-        var conePoseLeft = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagConeLeft);
-        var conePoseRight = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagConeRight);
+        var cubePose =
+                translatePose(
+                        aprilTagPose,
+                        FieldConstants.kBlueTransformTagCube.getTranslation(),
+                        FieldConstants.kOneEighty);
+        var conePoseLeft =
+                translatePose(
+                        aprilTagPose,
+                        FieldConstants.kBlueTransformTagConeLeft.getTranslation(),
+                        FieldConstants.kOneEighty);
+        var conePoseRight =
+                translatePose(
+                        aprilTagPose,
+                        FieldConstants.kBlueTransformTagConeRight.getTranslation(),
+                        FieldConstants.kOneEighty);
+
         if (getColor.get() == Alliance.Red) {
-            cubePose = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCube);
-            conePoseLeft = aprilTagPose.transformBy(FieldConstants.kRedTransformTagConeLeft);
-            conePoseRight = aprilTagPose.transformBy(FieldConstants.kRedTransformTagConeRight);
+            cubePose =
+                    translatePose(
+                            aprilTagPose,
+                            FieldConstants.kRedTransformTagCube.getTranslation(),
+                            FieldConstants.kZero);
+            conePoseLeft =
+                    translatePose(
+                            aprilTagPose,
+                            FieldConstants.kRedTransformTagConeLeft.getTranslation(),
+                            FieldConstants.kZero);
+            conePoseRight =
+                    translatePose(
+                            aprilTagPose,
+                            FieldConstants.kRedTransformTagConeRight.getTranslation(),
+                            FieldConstants.kZero);
         }
 
         return List.of(
@@ -86,11 +118,12 @@ public class PositionFinder {
     }
 
     public final ScoringPosition getPositionBySide(Side side) {
-        if (this.getScoringPositions().size() != 3) {
+        var scoringPositions = this.getScoringPositions();
+        if (scoringPositions == kEmptyList) {
             return ScoringPosition.kNone;
         }
 
-        return this.getScoringPositions().get(side.listIndex);
+        return scoringPositions.get(side.listIndex);
     }
 
     public final IntakePosition getIntakePositionByStation(StationType station) {

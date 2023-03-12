@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
 
 public class AutoSteer {
@@ -25,6 +26,8 @@ public class AutoSteer {
         this.drivePose = drivePose;
         this.xController = xController;
         this.yController = yController;
+        xController.setTolerance(0.015);
+        yController.setTolerance(0.005);
         this.thetaController = thetaController;
         this.thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
@@ -37,6 +40,15 @@ public class AutoSteer {
         var dx = xController.calculate(currentPose.getX());
         var dy = yController.calculate(currentPose.getY());
         var dtheta = thetaController.calculate(currentPose.getRotation().getRadians());
+        if (xController.atSetpoint()) {
+            dx = 0.0;
+        }
+        if (yController.atSetpoint()) {
+            dy = 0.0;
+        }
+        if (thetaController.atSetpoint()) {
+            dtheta = 0.0;
+        }
         return new Twist2d(dx, dy, dtheta);
     }
 
@@ -57,6 +69,9 @@ public class AutoSteer {
     }
 
     public boolean almostArrived() {
+        SmartDashboard.putNumber(
+                "Distance to target",
+                this.targetPose.minus(drivePose.get()).getTranslation().getNorm());
         return this.targetPose.minus(drivePose.get()).getTranslation().getNorm() < 0.50;
     }
 }

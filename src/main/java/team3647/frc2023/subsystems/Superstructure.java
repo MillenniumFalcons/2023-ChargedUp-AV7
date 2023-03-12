@@ -1,6 +1,7 @@
 package team3647.frc2023.subsystems;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -37,6 +38,8 @@ public class Superstructure {
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
         scoringPositionBySide = finder.getPositionBySide(getWantedSide());
+        SmartDashboard.putString(
+                "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
     }
 
     public Command scoreStowHalfSecDelay() {
@@ -44,7 +47,10 @@ public class Superstructure {
     }
 
     public Command armAutomatic() {
-        return goToStateParallel(() -> finder.getSuperstructureState(getWantedLevel()));
+        return goToStateParallel(
+                () ->
+                        finder.getSuperstructureStateByPiece(
+                                getWantedLevel(), getScoringPosition().piece));
     }
 
     public Command intakeAutomatic() {
@@ -110,17 +116,24 @@ public class Superstructure {
     private void runPivotExtender(SuperstructureState wantedState) {
         boolean currentBelowMaxRotateLength = extender.getNativePos() < kMaxRotationLength + 500;
         boolean nextBelowMaxRotateLength = wantedState.length < kMaxRotationLength + 500;
-        boolean needsRotate = !pivot.angleReached(wantedState.angle, 1.5);
-        double nextExtender = kMaxRotationLength;
+        boolean needsRotate = !pivot.angleReached(wantedState.angle, 5);
+        boolean needsExtend = !extender.reachedPosition(wantedState.length, 5000);
+        boolean closeEnoughForParallel = pivot.angleReached(wantedState.angle, 8);
+        double nextExtender =
+                currentBelowMaxRotateLength ? extender.getNativePos() : kMaxRotationLength;
         double nextPivot = pivot.getAngle();
-
-        if (needsRotate) {
+        SmartDashboard.putBoolean("Needs extend", needsExtend);
+        SmartDashboard.putBoolean("Needs Rotate", needsRotate);
+        if (needsRotate && !closeEnoughForParallel) {
             if (currentBelowMaxRotateLength && nextBelowMaxRotateLength) {
                 nextExtender = wantedState.length;
                 nextPivot = wantedState.angle;
             } else if (currentBelowMaxRotateLength) {
                 nextPivot = wantedState.angle;
             }
+        } else if (closeEnoughForParallel && !needsExtend) {
+            nextPivot = wantedState.angle;
+            nextExtender = wantedState.length;
         } else {
             nextExtender = wantedState.length;
         }
@@ -169,7 +182,7 @@ public class Superstructure {
     }
 
     public Command stow() {
-        return goToStateParallel(() -> SuperstructureState.stow);
+        return goToStateParallel(SuperstructureState.stow);
     }
 
     public Command disableCompressor() {

@@ -2,6 +2,8 @@ package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -56,16 +58,20 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
+<<<<<<< HEAD
+        runningMode = autoCommands.redJustScore;
+=======
         runningMode = autoCommands.redConeConeBalanceFlatSideMode;
+>>>>>>> 6d11de0b8747c15d5c4aa938534cdb91478b440c
 
-        swerve.setRobotPose(runningMode.getInitialPose());
+        swerve.setRobotPose(new Pose2d(new Translation2d(5, 5), Rotation2d.fromDegrees(0)));
         swerve.setPathplanner(runningMode.getPathplannerPose2d());
     }
 
@@ -142,7 +148,7 @@ public class RobotContainer {
                         autoSteer::findVelocities));
         // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
-        rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
+        // rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
@@ -167,9 +173,9 @@ public class RobotContainer {
         printer.addPose("Cam pose", flightDeck::getFieldToCamera);
         printer.addPose("AutoSteerTarget", () -> superstructure.getScoringPosition().pose);
         printer.addBoolean("Valid Target", superstructure::validScoringPosition);
-        printer.addPose("Cube score", () -> getPoseIfLength(0).getPose());
-        printer.addPose("Cone Left", () -> getPoseIfLength(1).getPose());
-        printer.addPose("Cone Right", () -> getPoseIfLength(2).getPose());
+        printer.addPose("Cube score", () -> getPoseIfLength(Side.Center.listIndex).getPose());
+        printer.addPose("Cone Left", () -> getPoseIfLength(Side.Left.listIndex).getPose());
+        printer.addPose("Cone Right", () -> getPoseIfLength(Side.Right.listIndex).getPose());
         printer.addPose(
                 "April Pose",
                 () -> {
