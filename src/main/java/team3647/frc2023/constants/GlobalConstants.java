@@ -58,5 +58,11 @@ public final class GlobalConstants {
         private RollersIds() {}
     }
 
+    public static final class WristIds {
+        public static final int kMasterId = 20;
+
+        private WristIds() {}
+    }
+
     private GlobalConstants() {}
 }
