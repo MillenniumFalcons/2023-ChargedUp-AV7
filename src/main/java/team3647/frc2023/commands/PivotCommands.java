@@ -11,11 +11,6 @@ import team3647.frc2023.subsystems.Pivot;
 public class PivotCommands {
 
     public Command openloop(DoubleSupplier demand) {
-        return Commands.run(() -> pivot.setOpenloop(demand.getAsDouble()), this.pivot);
-    }
-
-    public Command openLoopConstant(DoubleSupplier demand) {
-
         return Commands.run(() -> pivot.setOpenloop(0.3 * demand.getAsDouble()), this.pivot);
     }
 
@@ -31,7 +26,6 @@ public class PivotCommands {
             @Override
             public void initialize() {
                 if (pivot.getAngle() > 90) {
-
                     goToAngle = pivot.getAngle() + degrees;
                 } else {
                     goToAngle = pivot.getAngle() - degrees;
@@ -53,14 +47,6 @@ public class PivotCommands {
                 return requirements;
             }
         };
-    }
-
-    public Command stow() {
-        return setAngle(() -> PivotConstants.kInitialAngle).andThen(Commands.run(() -> {}, pivot));
-    }
-
-    public Command stowAuto() {
-        return setAngle(() -> PivotConstants.kInitialAngle);
     }
 
     public Command holdPositionAtCall() {

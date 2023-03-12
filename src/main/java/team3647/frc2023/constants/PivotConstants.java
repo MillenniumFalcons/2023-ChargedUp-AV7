@@ -89,4 +89,6 @@ public class PivotConstants {
 
         return MathUtil.clamp(d, 0.0, kMaxkG);
     }
+
+    private PivotConstants() {}
 }

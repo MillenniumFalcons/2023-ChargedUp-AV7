@@ -18,10 +18,6 @@ public class RollersConstants {
     public static final double kCurrentLimitTimeMs = 1000;
 
     static {
-        // kMasterConfig.statorCurrLimit =
-        //         new StatorCurrentLimitConfiguration(
-        //                 true, kStallCurrent, kMaxCurrent, kCurrentLimitTimeMs);
-
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
 
         kMaster.setNeutralMode(NeutralMode.Coast);

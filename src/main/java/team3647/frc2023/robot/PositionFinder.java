@@ -19,6 +19,7 @@ public class PositionFinder {
     private final List<IntakePosition> possibleIntakePositions;
     private final Map<Level, Map<GamePiece, SuperstructureState>>
             levelAndPieceToSuperstrucutreState;
+    private final List<ScoringPosition> kEmptyList = List.of();
 
     public PositionFinder(
             Supplier<Pose2d> robotPoseSupplier,
@@ -34,7 +35,7 @@ public class PositionFinder {
     }
 
     public final SuperstructureState getSuperstructureState(Level wantedLevel) {
-        GamePiece piece = getScoringPosition().piece;
+        GamePiece piece = getClosestScoringPosition().piece;
 
         return getSuperstructureStateByPiece(wantedLevel, piece);
     }
@@ -61,6 +62,10 @@ public class PositionFinder {
     public final List<ScoringPosition> getScoringPositions() {
         var aprilTagPose = this.getBestTarget.get().getFieldToGoal();
 
+        if (this.getBestTarget.get() == AimingParameters.None) {
+            return kEmptyList;
+        }
+
         var cubePose = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCube);
         var conePoseLeft = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagConeLeft);
         var conePoseRight = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagConeRight);
@@ -76,7 +81,7 @@ public class PositionFinder {
                 new ScoringPosition(conePoseRight, GamePiece.Cone));
     }
 
-    public final ScoringPosition getScoringPosition() {
+    public final ScoringPosition getClosestScoringPosition() {
         return getClosestScoring(robotPoseSupplier.get(), this.getScoringPositions());
     }
 

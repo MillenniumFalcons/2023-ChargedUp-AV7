@@ -32,12 +32,9 @@ public class Pivot extends TalonFXSubsystem {
         // setToBrake();
     }
 
+    @Override
     public void setEncoder(double degree) {
         super.setEncoder(degree);
-    }
-
-    public void setOpenloop(double percentOut) {
-        super.setOpenloop(percentOut);
     }
 
     public void setAngle(double angle) {
@@ -51,6 +48,10 @@ public class Pivot extends TalonFXSubsystem {
 
     public double getAngle() {
         return super.getPosition();
+    }
+
+    public boolean angleReached(double targetAngle, double threshold) {
+        return Math.abs(getAngle() - targetAngle) < threshold;
     }
 
     @Override

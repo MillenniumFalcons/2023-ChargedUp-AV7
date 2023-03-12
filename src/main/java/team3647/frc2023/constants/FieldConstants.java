@@ -33,8 +33,6 @@ public class FieldConstants {
     private static final Rotation2d kBlueSingleStationRotation = FieldConstants.kNinety;
     private static final Rotation2d kRedSingleStationRotation = FieldConstants.kNinety;
 
-    private static final Rotation2d kRotateOneEighty = FieldConstants.kOneEighty;
-
     public static final double kXAdjustment = Units.inchesToMeters(10);
 
     public static final double kActualBlueXm = 1.80;

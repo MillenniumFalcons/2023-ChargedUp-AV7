@@ -32,9 +32,11 @@ public class Superstructure {
     private SuperstructureState currentState = SuperstructureState.stow;
     private List<ScoringPosition> scoringPositions =
             List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);
+    private ScoringPosition scoringPositionBySide = ScoringPosition.kNone;
 
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
+        scoringPositionBySide = finder.getPositionBySide(getWantedSide());
     }
 
     public Command scoreStowHalfSecDelay() {
@@ -42,7 +44,7 @@ public class Superstructure {
     }
 
     public Command armAutomatic() {
-        return arm(() -> finder.getSuperstructureState(getWantedLevel())).repeatedly();
+        return goToStateParallel(() -> finder.getSuperstructureState(getWantedLevel()));
     }
 
     public Command intakeAutomatic() {
@@ -70,17 +72,19 @@ public class Superstructure {
                         Commands.select(
                                 Map.of(
                                         StationType.Single,
-                                        new WaitCommand(0.5).andThen(stowArmFirst()),
+                                        new WaitCommand(0.5).andThen(stow()),
                                         StationType.Double,
-                                        new WaitCommand(0.5).andThen(stowArmFirst()),
+                                        new WaitCommand(0.5).andThen(stow()),
                                         StationType.Ground,
-                                        new WaitCommand(0.5).andThen(stowArmFirst())),
+                                        new WaitCommand(0.5).andThen(stow())),
                                 this::getWantedStation))
                 .andThen(rollersCommands.intake().withTimeout(1));
     }
 
-    public Command arm(Supplier<SuperstructureState> getState) {
-        return goToStateParallel(getState);
+    public Command armToPieceFromSide() {
+        return new ConditionalCommand(armCube(), armCone(), () -> getWantedSide() == Side.Center)
+                .until(recheckSide)
+                .repeatedly();
     }
 
     public Command armCone() {
@@ -88,61 +92,41 @@ public class Superstructure {
                 () -> finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone));
     }
 
-    public Command cancelPivot() {
-        return Commands.runOnce(() -> {}, pivot);
-    }
-
-    public Command cancelExtender() {
-        return Commands.runOnce(() -> {}, extender);
-    }
-
-    public Command goToStateArmFirst(SuperstructureState state, double percentDoneRotating) {
-        return Commands.parallel(
-                pivotCommands.setAngle(() -> state.angle),
-                Commands.waitUntil(() -> pivot.getAngle() > state.angle * percentDoneRotating)
-                        .andThen(extenderCommands.length(() -> state.length)));
+    public Command armCube() {
+        return goToStateParallel(
+                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone));
     }
 
     public Command goToStateParallel(SuperstructureState state) {
-        return Commands.parallel(
-                pivotCommands.setAngle(() -> state.angle),
-                extenderCommands.length(() -> state.length));
+        return Commands.run(() -> runPivotExtender(state), pivot, extender);
     }
 
     public Command goToStateParallel(Supplier<SuperstructureState> getState) {
-        BooleanSupplier stateChanged =
-                () -> {
-                    boolean stateDifferent = this.currentState != getState.get();
-                    this.currentState = getState.get();
-                    return stateDifferent;
-                };
-        return new ConditionalCommand(
-                        Commands.parallel(
-                                pivotCommands.setAngle(() -> getState.get().angle),
-                                Commands.waitUntil(
-                                                () ->
-                                                        armAngleReached(
-                                                                pivot.getAngle(),
-                                                                getState.get().angle))
-                                        .andThen(
-                                                extenderCommands.length(
-                                                        () -> getState.get().length))),
-                        Commands.parallel(
-                                Commands.waitUntil(
-                                                () ->
-                                                        extenderLengthReached(
-                                                                extender.getNativePos(),
-                                                                getState.get().length))
-                                        .andThen(
-                                                pivotCommands.setAngle(() -> getState.get().angle)),
-                                extenderCommands.length(() -> getState.get().length)),
-                        () -> {
-                            var angle = getState.get().angle;
-                            var length = getState.get().length;
-                            return length > extender.getNativePos();
-                        })
-                .until(stateChanged)
-                .repeatedly();
+        return Commands.run(() -> runPivotExtender(getState.get()), pivot, extender);
+    }
+
+    private final double kMaxRotationLength = 15000;
+
+    private void runPivotExtender(SuperstructureState wantedState) {
+        boolean currentBelowMaxRotateLength = extender.getNativePos() < kMaxRotationLength + 500;
+        boolean nextBelowMaxRotateLength = wantedState.length < kMaxRotationLength + 500;
+        boolean needsRotate = !pivot.angleReached(wantedState.angle, 1.5);
+        double nextExtender = kMaxRotationLength;
+        double nextPivot = pivot.getAngle();
+
+        if (needsRotate) {
+            if (currentBelowMaxRotateLength && nextBelowMaxRotateLength) {
+                nextExtender = wantedState.length;
+                nextPivot = wantedState.angle;
+            } else if (currentBelowMaxRotateLength) {
+                nextPivot = wantedState.angle;
+            }
+        } else {
+            nextExtender = wantedState.length;
+        }
+
+        extender.setLengthMeters(nextExtender);
+        pivot.setAngle(nextPivot);
     }
 
     public boolean extenderLengthReached(double extenderLength, double wantedLength) {
@@ -173,27 +157,19 @@ public class Superstructure {
     }
 
     public Command singleStation() {
-        return goToStateArmFirst(SuperstructureState.singleStation, 0.9);
+        return goToStateParallel(SuperstructureState.singleStation);
     }
 
     public Command doubleStation() {
-        return goToStateArmFirst(SuperstructureState.doubleStation, 0.9);
+        return goToStateParallel(SuperstructureState.doubleStation);
     }
 
     public Command groundIntake() {
         return goToStateParallel(SuperstructureState.groundIntake);
     }
 
-    public Command groundIntakeReverse() {
-        return goToStateParallel(SuperstructureState.groundIntakeReverse);
-    }
-
     public Command stow() {
         return goToStateParallel(() -> SuperstructureState.stow);
-    }
-
-    public Command stowArmFirst() {
-        return goToStateArmFirst(SuperstructureState.stow, 0.9);
     }
 
     public Command disableCompressor() {
@@ -212,9 +188,12 @@ public class Superstructure {
         return Commands.runOnce(() -> setWantedStation(station));
     }
 
+    public Command setWantedSideCommand(Side side) {
+        return Commands.runOnce(() -> setWantedSide(side));
+    }
+
     public Command enableAutoSteer() {
-        // return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
-        return Commands.none();
+        return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
     }
 
     public Command disableAutoSteer() {
@@ -251,12 +230,28 @@ public class Superstructure {
         this.wantedLevel = level;
     }
 
+    public Side getWantedSide() {
+        return this.wantedSide;
+    }
+
+    public void setWantedSide(Side side) {
+        this.wantedSide = side;
+    }
+
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
     }
 
-    public List<ScoringPosition> getScoringPositions() {
+    public List<ScoringPosition> getAllScoringPositions() {
         return this.scoringPositions;
+    }
+
+    public ScoringPosition getScoringPosition() {
+        return this.scoringPositionBySide;
+    }
+
+    public boolean validScoringPosition() {
+        return this.scoringPositionBySide != ScoringPosition.kNone;
     }
 
     // keep this at the bottom
@@ -268,6 +263,7 @@ public class Superstructure {
             PositionFinder finder,
             Compressor compressor,
             Trigger intakeButtons,
+            Trigger chooseSideButtons,
             BooleanSupplier drivetrainWantMove) {
         this.drive = drive;
         this.pivot = pivot;
@@ -281,6 +277,7 @@ public class Superstructure {
         extenderCommands = new ExtenderCommands(extender);
         rollersCommands = new RollersCommands(rollers);
         recheckIntakeMode = intakeButtons;
+        recheckSide = chooseSideButtons;
         this.drivetrainWantMove = drivetrainWantMove;
     }
 
@@ -293,6 +290,7 @@ public class Superstructure {
     private final GroupPrinter printer = GroupPrinter.getInstance();
     private final PositionFinder finder;
     private final Trigger recheckIntakeMode;
+    private final Trigger recheckSide;
     public final DrivetrainCommands drivetrainCommands;
     public final PivotCommands pivotCommands;
     public final ExtenderCommands extenderCommands;
