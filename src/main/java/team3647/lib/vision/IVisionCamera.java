@@ -50,16 +50,19 @@ public interface IVisionCamera {
     public static class CamConstants {
         public final double kCameraHeightMeters;
         public final Rotation2d kHorizontalToLens;
+        public final Rotation2d kCamRoll;
         public final double kVPH;
         public final double kVPW;
 
         public CamConstants(
                 double kCameraHeightMeters,
                 Rotation2d kHorizontalToLens,
+                Rotation2d kCamRoll,
                 double kVPH,
                 double kVPW) {
             this.kCameraHeightMeters = kCameraHeightMeters;
             this.kHorizontalToLens = Objects.requireNonNull(kHorizontalToLens);
+            this.kCamRoll = Objects.requireNonNull(kCamRoll);
             this.kVPH = kVPH;
             this.kVPW = kVPW;
         }

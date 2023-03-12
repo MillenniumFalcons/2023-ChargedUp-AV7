@@ -272,7 +272,7 @@ public class RobotContainer {
                                     LimelightConstant.kLimelightCenterIP,
                                     LimelightConstant.kLimelightCenterHost,
                                     0,
-                                    LimelightConstant.kCamConstatnts)),
+                                    LimelightConstant.kCamConstants)),
                     flightDeck::addVisionObservation,
                     FieldConstants.kScoreTargetHeightMeters,
                     FieldConstants.kIntakeTargetHeightMeters);

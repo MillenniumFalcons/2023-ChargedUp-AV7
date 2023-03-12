@@ -90,13 +90,15 @@ public class VisionController implements PeriodicSubsystem {
             double targetHeightMeters,
             CamConstants camConstants,
             VisionPipeline camPipeline) {
+
+        var actualXy = new Translation2d(corner.x, corner.y).rotateBy(camConstants.kCamRoll);
         double floorToCamMeters = camConstants.kCameraHeightMeters;
-        double angleToGoal = camConstants.kHorizontalToLens.getDegrees() + corner.y;
+        double angleToGoal = camConstants.kHorizontalToLens.getDegrees() + actualXy.getY();
         double range =
                 (targetHeightMeters - floorToCamMeters)
                         / (Math.tan(Units.degreesToRadians(angleToGoal))
-                                * Math.cos(Units.degreesToRadians(corner.x)));
-        return new Translation2d(range, Rotation2d.fromDegrees(-corner.x));
+                                * Math.cos(Units.degreesToRadians(actualXy.getX())));
+        return new Translation2d(range, Rotation2d.fromDegrees(-actualXy.getX()));
     }
 
     @Override
