@@ -9,9 +9,9 @@ import team3647.lib.vision.AprilTagCamera.AprilTagId;
 
 /** 254 GoalTrack class */
 public class TrackedTarget {
-    private static final double kCamFrameRate = 22;
+    private static final double kCamFrameRate = 45;
     private static final double kMaxTrackedTargetAge = 2.5; // seconds
-    private static final double kMaxTracedTargetSmoothingTime = 1;
+    private static final double kMaxTrackedTargetSmoothingTime = 1;
     private static final double kMaxTrackerDistance = 0.20;
 
     public final AprilTagId id;
@@ -24,22 +24,10 @@ public class TrackedTarget {
         this.smoothedPosition = firstObserved;
     }
 
-    public boolean attemptUpdate(double timestamp, Pose2d newObserved) {
-        if (!this.isAlive()) {
-            return false;
-        }
-
-        double distance = newObserved.relativeTo(smoothedPosition).getTranslation().getNorm();
+    public void update(double timestamp, Pose2d newObserved) {
         removeOldObservations();
-        if (distance < kMaxTrackerDistance) {
-            observedPositions.put(timestamp, newObserved);
-            smoothedPosition = isAlive() ? smoothPosition() : null;
-            return true;
-        } else {
-            removeOldObservations();
-            smoothedPosition = isAlive() ? smoothPosition() : null;
-            return false;
-        }
+        observedPositions.put(timestamp, newObserved);
+        smoothedPosition = smoothPosition();
     }
 
     public boolean isAlive() {
@@ -74,7 +62,7 @@ public class TrackedTarget {
         double timestamp = Timer.getFPGATimestamp();
         int numSamples = 0;
         for (var entry : observedPositions.entrySet()) {
-            if (timestamp - entry.getKey() > kMaxTracedTargetSmoothingTime) {
+            if (timestamp - entry.getKey() > kMaxTrackedTargetSmoothingTime) {
                 continue;
             }
             ++numSamples;

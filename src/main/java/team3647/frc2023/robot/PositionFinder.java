@@ -89,6 +89,8 @@ public class PositionFinder {
     }
 
     public static class ScoringPosition implements HasPose {
+        public static ScoringPosition kNone = new ScoringPosition(new Pose2d(), GamePiece.Cone);
+
         public ScoringPosition(Pose2d pose, GamePiece piece) {
             this.pose = pose;
             this.piece = piece;

@@ -78,7 +78,7 @@ public class FlightDeck {
     }
 
     private synchronized AimingParameters getAimingParameters(AprilTagId lastTargetId) {
-        List<TrackedTarget> targets = targetTracker.getTrackedTargets().values().stream().toList();
+        List<TrackedTarget> targets = targetTracker.getTrackedTargets();
         var currentPose = robotTracker.getFieldToRobot(Timer.getFPGATimestamp());
 
         if (currentPose == null) {
@@ -87,10 +87,15 @@ public class FlightDeck {
 
         SmartDashboard.putNumber("Number of targets", targets.size());
         if (targets.isEmpty()) {
-            return null;
+            return AimingParameters.None;
         }
-        var lastTarget = targetTracker.getTrackedTargets().get(lastTargetId);
+        var lastTarget = targetTracker.getById(lastTargetId);
         var closestTarget = getClosestTarget(targets, currentPose);
+
+        if (lastTarget == null) {
+            this.lastTargetId = closestTarget.id;
+            return AimingParameters.fromTarget(closestTarget, currentPose);
+        }
 
         TrackedTargetComparator comparator =
                 new TrackedTargetComparator(50, 50, Timer.getFPGATimestamp(), 100, lastTargetId);
@@ -104,12 +109,7 @@ public class FlightDeck {
 
         this.lastTargetId = bestTarget.id;
 
-        return new AimingParameters(
-                bestTarget.id,
-                currentPose,
-                bestTarget.getSmoothedPosition(),
-                bestTarget.getLatestTimestamp(),
-                bestTarget.getStability());
+        return AimingParameters.fromTarget(bestTarget, currentPose);
     }
 
     public AimingParameters getLatestParameters() {

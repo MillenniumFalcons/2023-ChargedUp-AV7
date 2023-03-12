@@ -168,6 +168,9 @@ public class FieldConstants {
                     new IntakePosition(kRedSingleStation, StationType.Single),
                     new IntakePosition(kGroundIntake, StationType.Ground));
 
+    public static final double kScoreTargetHeightMeters = 0.4318;
+    public static final double kIntakeTargetHeightMeters = 0;
+
     public static Translation2d flipTranslation(Translation2d translation) {
         return new Translation2d(
                 FieldConstants.kFieldLength - translation.getX(), translation.getY());

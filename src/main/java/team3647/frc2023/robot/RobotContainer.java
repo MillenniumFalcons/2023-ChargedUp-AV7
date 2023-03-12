@@ -54,7 +54,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -171,12 +171,13 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addPose("odo", swerve::getOdoPose);
-        printer.addPose("estim", swerve::getEstimPose);
-        printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
+        printer.addPose("Cube score", () -> superstructure.getScoringPositions().get(0).getPose());
+        printer.addPose("Cone 1", () -> superstructure.getScoringPositions().get(1).getPose());
+        printer.addPose("Cone 2", () -> superstructure.getScoringPositions().get(2).getPose());
         printer.addBoolean(
                 "Cube Ground",
                 () ->
@@ -260,7 +261,9 @@ public class RobotContainer {
                                     LimelightConstant.kLimelightCenterHost,
                                     0,
                                     LimelightConstant.kCamConstatnts)),
-                    flightDeck::addVisionObservation);
+                    flightDeck::addVisionObservation,
+                    FieldConstants.kScoreTargetHeightMeters,
+                    FieldConstants.kIntakeTargetHeightMeters);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =

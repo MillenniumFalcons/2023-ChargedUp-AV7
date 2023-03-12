@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -17,6 +18,7 @@ import team3647.frc2023.commands.RollersCommands;
 import team3647.frc2023.robot.PositionFinder;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
+import team3647.frc2023.robot.PositionFinder.ScoringPosition;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 
@@ -26,8 +28,12 @@ public class Superstructure {
     private StationType wantedStation = StationType.Double;
     private boolean isAutoSteerEnabled = false;
     private SuperstructureState currentState = SuperstructureState.stow;
+    private List<ScoringPosition> scoringPositions =
+            List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);
 
-    public void periodic(double timestamp) {}
+    public void periodic(double timestamp) {
+        scoringPositions = finder.getScoringPositions();
+    }
 
     public Command scoreStowHalfSecDelay() {
         return scoreAndStow(0.5);
@@ -245,6 +251,10 @@ public class Superstructure {
 
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
+    }
+
+    public List<ScoringPosition> getScoringPositions() {
+        return this.scoringPositions;
     }
 
     // keep this at the bottom

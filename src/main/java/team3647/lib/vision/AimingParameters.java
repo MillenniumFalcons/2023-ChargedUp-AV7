@@ -15,6 +15,15 @@ public class AimingParameters {
     private final double lastSeenTimestamp;
     private final double stability;
 
+    public static AimingParameters fromTarget(TrackedTarget target, Pose2d currentPose) {
+        return new AimingParameters(
+                target.id,
+                currentPose,
+                target.getSmoothedPosition(),
+                target.getLatestTimestamp(),
+                target.getStability());
+    }
+
     public AimingParameters(
             AprilTagId id,
             Pose2d fieldToRobot,
