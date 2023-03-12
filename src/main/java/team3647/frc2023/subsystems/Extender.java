@@ -46,9 +46,6 @@ public class Extender extends TalonFXSubsystem {
         return resetSensor.get();
     }
 
-    @Override
-    public void writePeriodicOutputs() {}
-
     public boolean reachedPosition(double targetPosition, double threshold) {
         return Math.abs(getNativePos() - targetPosition) < threshold;
     }

@@ -85,7 +85,7 @@ public class Superstructure {
                                         StationType.Ground,
                                         new WaitCommand(0.5).andThen(stow())),
                                 this::getWantedStation))
-                .andThen(rollersCommands.intake().withTimeout(1));
+                .andThen(rollersCommands.intake().withTimeout(0.5));
     }
 
     public Command armToPieceFromSide() {
@@ -141,6 +141,7 @@ public class Superstructure {
         SmartDashboard.putNumber("Wanted extender", nextExtender);
         SmartDashboard.putNumber("Wanted pivot", nextPivot);
         pivot.setAngle(nextPivot);
+        extender.setLengthMeters(nextExtender);
         wrist.setAngle(wantedState.wristAngle);
     }
 
@@ -184,7 +185,15 @@ public class Superstructure {
     }
 
     public Command stow() {
-        return goToStateParallel(SuperstructureState.stow);
+        return goToStateParallel(SuperstructureState.stow)
+                .until(
+                        () ->
+                                extenderLengthReached(
+                                                extender.getNativePos(),
+                                                SuperstructureState.stow.length)
+                                        && armAngleReached(
+                                                pivot.getAngle(),
+                                                SuperstructureState.stow.armAngle));
     }
 
     public Command disableCompressor() {

@@ -1,14 +1,14 @@
 package team3647.frc2023.constants;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 public class RollersConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.RollersIds.kMasterId);
 
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    public static final TalonFXInvertType kMasterInvert = TalonFXInvertType.Clockwise;
 
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
@@ -23,6 +23,7 @@ public class RollersConstants {
         kMaster.setNeutralMode(NeutralMode.Coast);
         kMaster.enableVoltageCompensation(true);
         kMaster.configVoltageCompSaturation(kNominalVoltage, GlobalConstants.kTimeoutMS);
+        kMaster.setInverted(kMasterInvert);
     }
 
     private RollersConstants() {}
