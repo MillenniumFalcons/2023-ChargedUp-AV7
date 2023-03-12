@@ -58,7 +58,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -144,7 +144,7 @@ public class RobotContainer {
                         autoSteer::findVelocities));
         // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
-        rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
+        // rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 

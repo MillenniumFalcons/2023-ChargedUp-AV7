@@ -27,7 +27,7 @@ public class AutoSteer {
         this.xController = xController;
         this.yController = yController;
         xController.setTolerance(0.015);
-        yController.setTolerance(0.015);
+        yController.setTolerance(0.005);
         this.thetaController = thetaController;
         this.thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }

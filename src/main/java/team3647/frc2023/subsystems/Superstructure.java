@@ -182,7 +182,7 @@ public class Superstructure {
     }
 
     public Command stow() {
-        return goToStateParallel(() -> SuperstructureState.stow);
+        return goToStateParallel(SuperstructureState.stow);
     }
 
     public Command disableCompressor() {
