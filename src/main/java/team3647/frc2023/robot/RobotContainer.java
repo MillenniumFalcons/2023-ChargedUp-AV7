@@ -24,6 +24,7 @@ import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
+import team3647.frc2023.constants.WristConstants;
 import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.robot.PositionFinder.ScoringPosition;
 import team3647.frc2023.robot.PositionFinder.Side;
@@ -35,6 +36,7 @@ import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.VisionController;
 import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
+import team3647.frc2023.subsystems.Wrist;
 import team3647.frc2023.util.AutoSteer;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
@@ -65,11 +67,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
-<<<<<<< HEAD
-        runningMode = autoCommands.redJustScore;
-=======
         runningMode = autoCommands.redConeConeBalanceFlatSideMode;
->>>>>>> 6d11de0b8747c15d5c4aa938534cdb91478b440c
 
         swerve.setRobotPose(new Pose2d(new Translation2d(5, 5), Rotation2d.fromDegrees(0)));
         swerve.setPathplanner(runningMode.getPathplannerPose2d());
@@ -149,6 +147,8 @@ public class RobotContainer {
         // pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
         // rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
+        wrist.setDefaultCommand(superstructure.wristCommands.openloop(coController::getLeftStickY));
+
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 
@@ -234,6 +234,15 @@ public class RobotContainer {
                     1,
                     RollersConstants.kNominalVoltage,
                     GlobalConstants.kDt);
+    public final Wrist wrist =
+            new Wrist(
+                    WristConstants.kMaster,
+                    WristConstants.kNativeVelToDPS,
+                    WristConstants.kNativePosToDegrees,
+                    WristConstants.kMinDegree,
+                    WristConstants.kMaxDegree,
+                    WristConstants.nominalVoltage,
+                    GlobalConstants.kDt);
 
     public final Pivot pivot =
             new Pivot(
@@ -300,6 +309,7 @@ public class RobotContainer {
                     pivot,
                     extender,
                     rollers,
+                    wrist,
                     positionFinder,
                     compressor,
                     intakeChanged,

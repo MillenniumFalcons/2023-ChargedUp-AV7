@@ -49,6 +49,7 @@ public class DrivetrainCommands {
                     double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.2 : 1;
                     boolean autoSteer = enableAutoSteer.getAsBoolean();
                     boolean fieldOriented = getIsFieldOriented.getAsBoolean();
+                    boolean openloop = true;
                     var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
                     // right stick X, (negative so that left positive)
                     var motionYComponent = -xSpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
@@ -73,21 +74,20 @@ public class DrivetrainCommands {
                                         : motionTurnComponent;
 
                         if (Math.abs(motionXComponent) < 0.1 && Math.abs(motionYComponent) < 0.1) {
-                            motionXComponent =
-                                    autoSteerVelocities.dx
-                                            + Math.signum(autoSteerVelocities.dx) * 0.15;
-                            motionYComponent =
-                                    autoSteerVelocities.dy
-                                            + Math.signum(autoSteerVelocities.dy) * 0.15;
+                            motionXComponent = autoSteerVelocities.dx;
+                            // + Math.signum(autoSteerVelocities.dx) * 0.15;
+                            motionYComponent = autoSteerVelocities.dy;
+                            // + Math.signum(autoSteerVelocities.dy) * 0.15;
                             SmartDashboard.putNumber("autoSteerVelocities.dx", motionXComponent);
                             SmartDashboard.putNumber("autoSteerVelocities.dy", motionYComponent);
                             translation = new Translation2d(motionXComponent, motionYComponent);
+                            openloop = false;
                         }
                     }
                     SmartDashboard.putNumber("wanted Y", translation.getY());
                     SmartDashboard.putNumber("wanted X", translation.getX());
                     var rotation = motionTurnComponent;
-                    swerve.drive(translation, rotation, fieldOriented, true);
+                    swerve.drive(translation, rotation, fieldOriented, openloop);
                 },
                 swerve);
     }

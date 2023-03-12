@@ -16,6 +16,7 @@ import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.PivotCommands;
 import team3647.frc2023.commands.RollersCommands;
+import team3647.frc2023.commands.WristCommands;
 import team3647.frc2023.robot.PositionFinder;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
@@ -273,6 +274,7 @@ public class Superstructure {
             Pivot pivot,
             Extender extender,
             Rollers rollers,
+            Wrist wrist,
             PositionFinder finder,
             Compressor compressor,
             Trigger intakeButtons,
@@ -282,6 +284,7 @@ public class Superstructure {
         this.pivot = pivot;
         this.extender = extender;
         this.rollers = rollers;
+        this.wrist = wrist;
         this.finder = finder;
         this.compressor = compressor;
 
@@ -289,6 +292,7 @@ public class Superstructure {
         pivotCommands = new PivotCommands(pivot);
         extenderCommands = new ExtenderCommands(extender);
         rollersCommands = new RollersCommands(rollers);
+        wristCommands = new WristCommands(wrist);
         recheckIntakeMode = intakeButtons;
         recheckSide = chooseSideButtons;
         this.drivetrainWantMove = drivetrainWantMove;
@@ -300,6 +304,7 @@ public class Superstructure {
     private final Pivot pivot;
     private final Extender extender;
     private final Rollers rollers;
+    private final Wrist wrist;
     private final GroupPrinter printer = GroupPrinter.getInstance();
     private final PositionFinder finder;
     private final Trigger recheckIntakeMode;
@@ -308,6 +313,7 @@ public class Superstructure {
     public final PivotCommands pivotCommands;
     public final ExtenderCommands extenderCommands;
     public final RollersCommands rollersCommands;
+    public final WristCommands wristCommands;
     private final BooleanSupplier drivetrainWantMove;
 
     public enum StationType {
