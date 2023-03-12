@@ -12,17 +12,17 @@ public class AutoConstants {
     public static final double kMaxAccelerationMetersPerSecSq = 2;
     public static final double kMaxRotAccelerationRadsPerSecSq = Math.PI;
 
-    public static final double kXControllerP = 5; // 1.4, 2.2;
+    public static final double kXControllerP = 12; // 1.4, 2.2;
     public static final double kXControllerI = 0; // 6;
     public static final double kXControllerD = 0; // 0;
 
-    public static final double kYControllerP = 10; // 1.4, 2.2;
+    public static final double kYControllerP = 12; // 1.4, 2.2;
     public static final double kYControllerI = 0; // 6;
     public static final double kYControllerD = 0; // 0;
 
-    public static final double xRotControllerP = 11; // 12;
-    public static final double xRotControllerI = 4; // 8;
-    public static final double xRotControllerD = 0;
+    public static final double xRotControllerP = 10; // 12;
+    public static final double xRotControllerI = 0; // 8;
+    public static final double xRotControllerD = 0.5;
 
     public static final Pose2d kRedJustScore =
             new Pose2d(

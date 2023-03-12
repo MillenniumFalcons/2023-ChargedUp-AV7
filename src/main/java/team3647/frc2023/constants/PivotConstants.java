@@ -19,7 +19,8 @@ public class PivotConstants {
 
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    private static final double kGearBoxRatio = 1 / 126.0;
+    // private static final double kGearBoxRatio = 1 / 91.022;
+    private static final double kGearBoxRatio = 1 / 120.0;
 
     public static final double kNativePosToDegrees =
             kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
