@@ -62,22 +62,30 @@ public class PositionFinder {
         var aprilTagPose = this.getBestTarget.get().getFieldToGoal();
 
         var cubePose = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCube);
-        var conePoseLeft = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCone1);
-        var conePoseRight = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagCone2);
+        var conePoseLeft = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagConeLeft);
+        var conePoseRight = aprilTagPose.transformBy(FieldConstants.kBlueTransformTagConeRight);
         if (getColor.get() == Alliance.Red) {
             cubePose = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCube);
-            conePoseLeft = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCone1);
-            conePoseRight = aprilTagPose.transformBy(FieldConstants.kRedTransformTagCone2);
+            conePoseLeft = aprilTagPose.transformBy(FieldConstants.kRedTransformTagConeLeft);
+            conePoseRight = aprilTagPose.transformBy(FieldConstants.kRedTransformTagConeRight);
         }
 
         return List.of(
-                new ScoringPosition(cubePose, GamePiece.Cube),
                 new ScoringPosition(conePoseLeft, GamePiece.Cone),
+                new ScoringPosition(cubePose, GamePiece.Cube),
                 new ScoringPosition(conePoseRight, GamePiece.Cone));
     }
 
     public final ScoringPosition getScoringPosition() {
         return getClosestScoring(robotPoseSupplier.get(), this.getScoringPositions());
+    }
+
+    public final ScoringPosition getPositionBySide(Side side) {
+        if (this.getScoringPositions().size() != 3) {
+            return ScoringPosition.kNone;
+        }
+
+        return this.getScoringPositions().get(side.listIndex);
     }
 
     public final IntakePosition getIntakePositionByStation(StationType station) {
@@ -172,5 +180,17 @@ public class PositionFinder {
         Two,
         Three,
         Stay
+    }
+
+    public enum Side {
+        Left(0),
+        Center(1),
+        Right(2);
+
+        final int listIndex;
+
+        private Side(int listIndex) {
+            this.listIndex = listIndex;
+        }
     }
 }

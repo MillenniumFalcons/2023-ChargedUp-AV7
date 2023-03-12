@@ -70,25 +70,25 @@ public class DrivetrainCommands {
                         motionTurnComponent =
                                 Math.abs(motionTurnComponent) < .1
                                         ? autoSteerVelocities.dtheta
-                                                + Math.signum(autoSteerVelocities.dtheta) * 0.1
+                                                + Math.signum(autoSteerVelocities.dtheta) * 0.05
                                         : motionTurnComponent;
 
                         if (Math.abs(motionXComponent) > 0.1 || Math.abs(motionYComponent) > 0.1) {
                             motionXComponent =
                                     motionXComponent * 0.5
                                             + autoSteerVelocities.dx
-                                            + Math.signum(autoSteerVelocities.dx) * 0.25;
+                                            + Math.signum(autoSteerVelocities.dx) * 0.05;
                             motionYComponent =
                                     motionYComponent * 0.5
                                             + autoSteerVelocities.dy
-                                            + Math.signum(autoSteerVelocities.dy) * 0.25;
-                            SmartDashboard.putNumber(
-                                    "autoSteerVelocities.dx", autoSteerVelocities.dx);
-                            SmartDashboard.putNumber(
-                                    "autoSteerVelocities.dy", autoSteerVelocities.dy);
+                                            + Math.signum(autoSteerVelocities.dy) * 0.05;
+                            SmartDashboard.putNumber("autoSteerVelocities.dx", motionXComponent);
+                            SmartDashboard.putNumber("autoSteerVelocities.dy", motionYComponent);
+                            translation = new Translation2d(motionXComponent, motionYComponent);
                         }
                     }
-                    SmartDashboard.putNumber("wanted x", translation.getY());
+                    SmartDashboard.putNumber("wanted Y", translation.getY());
+                    SmartDashboard.putNumber("wanted X", translation.getX());
                     var rotation = motionTurnComponent;
                     swerve.drive(translation, rotation, fieldOriented, true);
                 },

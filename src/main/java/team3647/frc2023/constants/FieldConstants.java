@@ -98,17 +98,17 @@ public class FieldConstants {
 
     public static final Transform2d kBlueTransformTagCube =
             new Transform2d(new Translation2d(0.72, 0), kZero);
-    public static final Transform2d kBlueTransformTagCone1 =
-            new Transform2d(new Translation2d(0.72, -0.55), kZero);
-    public static final Transform2d kBlueTransformTagCone2 =
+    public static final Transform2d kBlueTransformTagConeLeft =
             new Transform2d(new Translation2d(0.72, 0.55), kZero);
+    public static final Transform2d kBlueTransformTagConeRight =
+            new Transform2d(new Translation2d(0.72, -0.55), kZero);
 
     public static final Transform2d kRedTransformTagCube =
-            new Transform2d(new Translation2d(-0.72, 0), kZero);
-    public static final Transform2d kRedTransformTagCone1 =
-            new Transform2d(new Translation2d(-0.72, -0.55), kZero);
-    public static final Transform2d kRedTransformTagCone2 =
-            new Transform2d(new Translation2d(-0.72, 0.55), kZero);
+            new Transform2d(new Translation2d(-0.72, 0), kOneEighty);
+    public static final Transform2d kRedTransformTagConeLeft =
+            new Transform2d(new Translation2d(-0.72, -0.55), kOneEighty);
+    public static final Transform2d kRedTransformTagConeRight =
+            new Transform2d(new Translation2d(-0.72, 0.55), kOneEighty);
 
     private static final Pose2d kBlueDoubleSubstationLeft =
             new Pose2d(

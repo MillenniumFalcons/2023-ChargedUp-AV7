@@ -26,7 +26,7 @@ public class Superstructure {
 
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
-    private boolean isAutoSteerEnabled = false;
+    private boolean isAutoSteerEnabled = true;
     private SuperstructureState currentState = SuperstructureState.stow;
     private List<ScoringPosition> scoringPositions =
             List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);

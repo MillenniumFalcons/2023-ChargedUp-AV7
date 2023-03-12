@@ -83,10 +83,15 @@ public class RobotContainer {
         //                 Commands.waitUntil(new Trigger(autoSteer::almostArrived))
         //                         .andThen(superstructure.armAutomatic()));
         // .and(() -> !enableAutoSteer.getAsBoolean())
-        mainController
-                .rightTrigger
-                .onTrue(superstructure.armCone())
-                .onFalse(superstructure.scoreAndStow(0));
+        mainController.rightTrigger.onTrue(
+                Commands.runOnce(
+                        () ->
+                                autoSteer.initializeSteering(
+                                        positionFinder.getScoringPosition().pose)));
+        // mainController
+        //         .rightTrigger
+        //         .onTrue(superstructure.armCone())
+        //         .onFalse(superstructure.scoreAndStow(0));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -178,6 +183,7 @@ public class RobotContainer {
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
         printer.addPose("Cam pose", () -> flightDeck.getFieldToCamera());
+        printer.addPose("AutoSteerTarget", () -> positionFinder.getScoringPosition().pose);
         printer.addPose("Cube score", () -> superstructure.getScoringPositions().get(0).getPose());
         printer.addPose("Cone 1", () -> superstructure.getScoringPositions().get(1).getPose());
         printer.addPose("Cone 2", () -> superstructure.getScoringPositions().get(2).getPose());
