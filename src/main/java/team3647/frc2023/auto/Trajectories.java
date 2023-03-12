@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.List;
 import team3647.frc2023.constants.AutoConstants;
@@ -22,6 +23,18 @@ public final class Trajectories {
     private static final PathConstraints slowConstraints = new PathConstraints(2, 2);
 
     public static final class Blue {
+        public static final class Test {
+            public static final Pose2d kStart = new Pose2d(0.0, 0.0, FieldConstants.kZero);
+            public static final Pose2d kEnd =
+                    new Pose2d(0, Units.inchesToMeters(-120), FieldConstants.kZero);
+            public static final PathPlannerTrajectory kTrajectory =
+                    PathPlanner.generatePath(
+                            fastConstraints,
+                            List.of(
+                                    fromPose(kStart, Rotation2d.fromDegrees(-90)),
+                                    fromPose(kEnd, Rotation2d.fromDegrees(-90))));
+        }
+
         public static final class ConeCubeBumpSide {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
@@ -121,9 +134,9 @@ public final class Trajectories {
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathWaypoint1 =
-                    new Pose2d(4.03, 4.73, FieldConstants.kOneEighty);
+                    new Pose2d(4.03, 4.73, FieldConstants.kZero);
             private static final Pose2d kSecondPathFinal =
-                    new Pose2d(1.80, 4.95, FieldConstants.kOneEighty);
+                    new Pose2d(1.80, 4.95, FieldConstants.kZero);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
             private static final Pose2d kThirdPathWaypoint1 =
