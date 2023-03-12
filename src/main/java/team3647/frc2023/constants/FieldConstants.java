@@ -103,11 +103,12 @@ public class FieldConstants {
     public static final Transform2d kBlueTransformTagCone2 =
             new Transform2d(new Translation2d(0.72, 0.55), kZero);
 
-    public static final Transform2d kRedTransformTagCube = flipBlueTransform(kBlueTransformTagCube);
+    public static final Transform2d kRedTransformTagCube =
+            new Transform2d(new Translation2d(-0.72, 0), kZero);
     public static final Transform2d kRedTransformTagCone1 =
-            flipBlueTransform(kBlueTransformTagCone1);
+            new Transform2d(new Translation2d(-0.72, -0.55), kZero);
     public static final Transform2d kRedTransformTagCone2 =
-            flipBlueTransform(kBlueTransformTagCone2);
+            new Transform2d(new Translation2d(-0.72, 0.55), kZero);
 
     private static final Pose2d kBlueDoubleSubstationLeft =
             new Pose2d(

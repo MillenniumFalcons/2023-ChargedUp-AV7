@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.List;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
 import team3647.lib.vision.IVisionCamera.LEDMode;
@@ -19,9 +18,7 @@ public class Limelight implements AprilTagCamera {
     private final String ip;
     private final CamConstants kCamConstants;
 
-    private List<VisionPoint> corners;
-    private double captureTimestamp = 0.0;
-    private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
+    private VisionPipeline currentPipeline = new VisionPipeline(0, 1280, 960);
 
     public enum Data {
         VALID_TARGET("tv"),
@@ -31,6 +28,7 @@ public class Limelight implements AprilTagCamera {
         LATENCY_PIPE_MS("tl"),
         LATENCY_CAP_MS("cl"),
         TAG_ID("tid"),
+        CORNERS("tcornxy"),
         ROBOT_POSE("botpose_wpiblue"),
         TAG_POSE("targetpose_cameraspace");
 
@@ -131,10 +129,19 @@ public class Limelight implements AprilTagCamera {
         if (id == AprilTagId.ID_DNE) {
             return VisionUpdate.kNoUpdate;
         }
+        var corners = getDoubleArray(Data.CORNERS);
+        double totX = 0;
+        double totY = 0;
+        for (int i = 0; i < corners.length - 1; i += 2) {
+            totX += corners[i];
+            totY += corners[i + 1];
+        }
+
         var tx = getDouble(Data.X);
         var ty = getDouble(Data.Y);
         var totalTime =
                 getDouble(Data.LATENCY_CAP_MS) / 1000.0 + getDouble(Data.LATENCY_PIPE_MS) / 1000;
+        // System.out.printf("Update, x:%f, y:%f%n", tx, ty);
         return new VisionUpdate(Timer.getFPGATimestamp() - totalTime, new VisionPoint(tx, ty), id);
     }
 }

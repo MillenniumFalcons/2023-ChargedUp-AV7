@@ -7,6 +7,8 @@ package team3647.frc2023.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Map;
 import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
@@ -60,6 +62,8 @@ public class VisionController implements PeriodicSubsystem {
                             targetHeightMeters,
                             camera.getConstants(),
                             camera.getPipeline());
+            SmartDashboard.putNumber("Cam to target X", camToTarget.getX());
+            SmartDashboard.putNumber("Cam to target Y", camToTarget.getY());
             visionUpdate.accept(
                     new VisionInput(
                             update.captureTimestamp,
@@ -86,31 +90,13 @@ public class VisionController implements PeriodicSubsystem {
             double targetHeightMeters,
             CamConstants camConstants,
             VisionPipeline camPipeline) {
-        double yPixels = corner.x;
-        double zPixels = corner.y;
-        // robot frame, y is left right, z is up down, x is front back
-        // Limlieght additional theory
-        double halfWidth = camPipeline.width / 2.0;
-        double halfHeight = camPipeline.height / 2.0;
-        double nY = -(yPixels - halfWidth) / halfWidth;
-        double nZ = -(zPixels - halfHeight) / halfHeight;
-        Translation2d xzPlaneTranslation =
-                new Translation2d(1.0, camConstants.kVPH / 2.0 * nZ)
-                        .rotateBy(camConstants.kHorizontalToLens);
-        double x = xzPlaneTranslation.getX();
-        double y = camConstants.kVPW / 2.0 * nY;
-        // This plane is the XZ plane, so the y component of the translation is actually Z
-        double z = xzPlaneTranslation.getY();
-
-        double heightDiff = camConstants.kCameraHeightMeters - targetHeightMeters;
-        if ((z < 0.0) == (heightDiff > 0.0)) {
-            double scale = heightDiff / -z;
-            double range = Math.hypot(x, y) * scale;
-            Rotation2d angleToTarget = new Rotation2d(x, y);
-            return new Translation2d(
-                    range * angleToTarget.getCos(), range * angleToTarget.getSin());
-        }
-        return null;
+        double floorToCamMeters = camConstants.kCameraHeightMeters;
+        double angleToGoal = camConstants.kHorizontalToLens.getDegrees() + corner.y;
+        double range =
+                (targetHeightMeters - floorToCamMeters)
+                        / (Math.tan(Units.degreesToRadians(angleToGoal))
+                                * Math.cos(Units.degreesToRadians(corner.x)));
+        return new Translation2d(range, Rotation2d.fromDegrees(-corner.x));
     }
 
     @Override

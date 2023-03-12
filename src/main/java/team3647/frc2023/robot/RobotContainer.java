@@ -1,6 +1,7 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,6 +38,7 @@ import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
+import team3647.lib.vision.AimingParameters;
 import team3647.lib.vision.Limelight;
 import team3647.lib.vision.MultiTargetTracker;
 
@@ -175,9 +177,19 @@ public class RobotContainer {
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
         printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
+        printer.addPose("Cam pose", () -> flightDeck.getFieldToCamera());
         printer.addPose("Cube score", () -> superstructure.getScoringPositions().get(0).getPose());
         printer.addPose("Cone 1", () -> superstructure.getScoringPositions().get(1).getPose());
         printer.addPose("Cone 2", () -> superstructure.getScoringPositions().get(2).getPose());
+        printer.addPose(
+                "April Pose",
+                () -> {
+                    var params = flightDeck.getLatestParameters();
+                    if (params == AimingParameters.None) {
+                        return new Pose2d();
+                    }
+                    return params.getFieldToGoal();
+                });
         printer.addBoolean(
                 "Cube Ground",
                 () ->

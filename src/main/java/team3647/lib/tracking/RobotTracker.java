@@ -47,7 +47,11 @@ public class RobotTracker {
     }
 
     public synchronized Pose2d getFieldToRobot(double timestamp) {
-        return fieldToRobot.getSample(timestamp).get();
+        var ftrOption = fieldToRobot.getSample(timestamp);
+        if (ftrOption.isEmpty()) {
+            return null;
+        }
+        return ftrOption.get();
     }
 
     public synchronized Twist2d getMeasuredVelocity() {

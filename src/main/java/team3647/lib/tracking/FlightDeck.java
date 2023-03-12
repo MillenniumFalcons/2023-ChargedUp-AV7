@@ -1,7 +1,10 @@
 package team3647.lib.tracking;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Collections;
@@ -20,6 +23,9 @@ public class FlightDeck {
     public static double maxAge;
     private AprilTagId lastTargetId = AprilTagId.ID_1;
 
+    private static final Rotation2d kZero = Rotation2d.fromDegrees(0);
+    private static final Rotation2d kOneEighty = Rotation2d.fromDegrees(180);
+
     public FlightDeck(
             RobotTracker robotTracker,
             MultiTargetTracker targetTracker,
@@ -36,7 +42,14 @@ public class FlightDeck {
         }
         Pose2d fieldToTarget =
                 fieldToRobot.transformBy(kRobotToCamTransform).transformBy(input.cameraToTarget);
-        targetTracker.update(input.timestamp, input.id, fieldToTarget);
+        Rotation2d targetRotation = kZero;
+        if (DriverStation.getAlliance() == Alliance.Red) {
+            targetRotation = kOneEighty;
+        }
+        targetTracker.update(
+                input.timestamp,
+                input.id,
+                new Pose2d(fieldToTarget.getTranslation(), targetRotation));
     }
 
     public synchronized Pose2d getInFieldCoordinatesFromCamera(Pose2d pose) {
