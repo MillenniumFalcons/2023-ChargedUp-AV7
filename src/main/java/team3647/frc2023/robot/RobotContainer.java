@@ -73,8 +73,7 @@ public class RobotContainer {
 
         mainController
                 .rightTrigger
-                .and(superstructure::validScoringPosition)
-                .and(enableAutoSteer)
+                .and(goodForAutosteer)
                 .onTrue(
                         Commands.runOnce(
                                 () ->
@@ -85,10 +84,7 @@ public class RobotContainer {
                                 .andThen(superstructure.armAutomatic()));
         mainController
                 .rightTrigger
-                .and(
-                        new Trigger(superstructure::validScoringPosition)
-                                .negate()
-                                .or(() -> !enableAutoSteer.getAsBoolean()))
+                .and(() -> !goodForAutosteer.getAsBoolean())
                 .whileTrue(superstructure.armToPieceFromSide());
 
         mainController.rightTrigger.onFalse(superstructure.scoreAndStow(0));
@@ -140,7 +136,7 @@ public class RobotContainer {
                         mainController.leftTrigger,
                         // enable autosteer if going to actual station (bumper), or scoring
                         // (trigger)
-                        enableAutoSteer,
+                        goodForAutosteer,
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
@@ -166,14 +162,14 @@ public class RobotContainer {
         printer.addPose("odo", swerve::getOdoPose);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("extender", extender::getNativePos);
-        printer.addBoolean("autosteer", enableAutoSteer::getAsBoolean);
+        printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
         printer.addBoolean("auto steer almost ready", autoSteer::almostArrived);
         printer.addPose("Cam pose", flightDeck::getFieldToCamera);
         printer.addPose("AutoSteerTarget", () -> superstructure.getScoringPosition().pose);
         printer.addBoolean("Valid Target", superstructure::validScoringPosition);
         printer.addPose("Cube score", () -> getPoseIfLength(0).getPose());
-        printer.addPose("Cone 1", () -> getPoseIfLength(1).getPose());
-        printer.addPose("Cone 2", () -> getPoseIfLength(2).getPose());
+        printer.addPose("Cone Left", () -> getPoseIfLength(1).getPose());
+        printer.addPose("Cone Right", () -> getPoseIfLength(2).getPose());
         printer.addPose(
                 "April Pose",
                 () -> {
@@ -315,7 +311,9 @@ public class RobotContainer {
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
 
-    private final BooleanSupplier enableAutoSteer =
-            globalEnableAutosteer.and(mainController.rightTrigger);
+    private final BooleanSupplier goodForAutosteer =
+            globalEnableAutosteer
+                    .and(mainController.rightTrigger)
+                    .and(superstructure::validScoringPosition);
     private final Pose2d kEmptyPose = new Pose2d();
 }
