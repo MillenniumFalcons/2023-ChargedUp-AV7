@@ -1,19 +1,10 @@
 package team3647.lib.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.List;
 import team3647.lib.utils.NamedInt;
-import team3647.lib.vision.IVisionCamera.CamMode;
-import team3647.lib.vision.IVisionCamera.LEDMode;
 
 public class Limelight implements AprilTagCamera {
 
@@ -24,14 +15,8 @@ public class Limelight implements AprilTagCamera {
     private final double extraLatencySec;
     private final String ip;
     private final CamConstants kCamConstants;
-    private boolean validEntry = false;
-    private double skew = 0.0;
-    private double tx = 0.0;
-    private double ty = 0.0;
 
-    private List<VisionPoint> corners;
-    private double captureTimestamp = 0.0;
-    private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
+    private VisionPipeline currentPipeline = new VisionPipeline(0, 1280, 960);
 
     public enum Data {
         VALID_TARGET("tv"),
@@ -41,7 +26,9 @@ public class Limelight implements AprilTagCamera {
         LATENCY_PIPE_MS("tl"),
         LATENCY_CAP_MS("cl"),
         TAG_ID("tid"),
-        ROBOT_POSE("botpose_wpiblue");
+        CORNERS("tcornxy"),
+        ROBOT_POSE("botpose_wpiblue"),
+        TAG_POSE("targetpose_cameraspace");
 
         public final String str;
 
@@ -65,34 +52,7 @@ public class Limelight implements AprilTagCamera {
         table.getEntry(Data.LATENCY_CAP_MS.str);
     }
 
-    public synchronized void writeToInputs(VisionInputs inputs) {
-        inputs.corners = this.corners;
-        inputs.captureTimestamp = captureTimestamp;
-        inputs.validEntry = validEntry;
-        inputs.skew = this.skew;
-        inputs.angleToVisionCenter = -tx;
-        inputs.pitchToVisionCenter = ty;
-    }
-
-    public StampedPose getRobotPose() {
-        double[] arr = getDoubleArray(Data.ROBOT_POSE);
-        if (arr.length < 6 || arr[0] == 0.0) {
-            return AprilTagCamera.KNoAnswer;
-        }
-
-        Pose3d robotPose =
-                new Pose3d(
-                        new Translation3d(arr[0], arr[1], arr[2]),
-                        new Rotation3d(arr[3], arr[4], arr[5]));
-
-        double totalLatency = getDouble(Data.LATENCY_CAP_MS) + getDouble(Data.LATENCY_PIPE_MS);
-        SmartDashboard.putNumber("Limelight Latency", totalLatency);
-        return new StampedPose(
-                new Pose2d(
-                        new Translation2d(robotPose.getX(), robotPose.getY()),
-                        new Rotation2d(robotPose.getRotation().getZ())),
-                Timer.getFPGATimestamp() - totalLatency / 1000 - extraLatencySec);
-    }
+    public synchronized void writeToInputs(VisionInputs inputs) {}
 
     @Override
     public void setLED(LEDMode ledMode) {
@@ -154,5 +114,27 @@ public class Limelight implements AprilTagCamera {
     @Override
     public VisionPipeline getPipeline() {
         return currentPipeline;
+    }
+
+    @Override
+    public VisionUpdate getVisionUpdate() {
+        var isTarget = getDouble(Data.VALID_TARGET);
+        if (isTarget == 0) {
+            return VisionUpdate.kNoUpdate;
+        }
+        var tagIdInt = (int) getDouble(Data.TAG_ID);
+        AprilTagId id = AprilTagCamera.getId(tagIdInt);
+        if (id == AprilTagId.ID_DNE) {
+            return VisionUpdate.kNoUpdate;
+        }
+
+        var tx = getDouble(Data.X);
+        var ty = getDouble(Data.Y);
+        var totalTime =
+                getDouble(Data.LATENCY_CAP_MS) / 1000.0 + getDouble(Data.LATENCY_PIPE_MS) / 1000;
+        return new VisionUpdate(
+                Timer.getFPGATimestamp() - totalTime - extraLatencySec,
+                new VisionPoint(tx, ty),
+                id);
     }
 }

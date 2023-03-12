@@ -29,12 +29,9 @@ public class Extender extends TalonFXSubsystem {
         this.minLengthTicks = minLengthTicks;
     }
 
+    @Override
     public void setEncoder(double ticks) {
         super.setEncoder(ticks);
-    }
-
-    public void setOpenloop(double percentOut) {
-        super.setOpenloop(percentOut);
     }
 
     public void setLengthMeters(double meters) {
@@ -49,9 +46,12 @@ public class Extender extends TalonFXSubsystem {
         return resetSensor.get();
     }
 
+    public boolean reachedPosition(double targetPosition, double threshold) {
+        return Math.abs(getNativePos() - targetPosition) < threshold;
+    }
+
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return "Externder";
+        return "Extender";
     }
 }

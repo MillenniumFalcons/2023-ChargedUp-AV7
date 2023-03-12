@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -70,25 +69,25 @@ public class DrivetrainCommands {
                         motionTurnComponent =
                                 Math.abs(motionTurnComponent) < .1
                                         ? autoSteerVelocities.dtheta
-                                                + Math.signum(autoSteerVelocities.dtheta) * 0.1
+                                                + Math.signum(autoSteerVelocities.dtheta) * 0.05
                                         : motionTurnComponent;
 
                         if (Math.abs(motionXComponent) > 0.1 || Math.abs(motionYComponent) > 0.1) {
                             motionXComponent =
                                     motionXComponent * 0.5
                                             + autoSteerVelocities.dx
-                                            + Math.signum(autoSteerVelocities.dx) * 0.25;
+                                            + Math.signum(autoSteerVelocities.dx) * 0.05;
                             motionYComponent =
                                     motionYComponent * 0.5
                                             + autoSteerVelocities.dy
-                                            + Math.signum(autoSteerVelocities.dy) * 0.25;
-                            SmartDashboard.putNumber(
-                                    "autoSteerVelocities.dx", autoSteerVelocities.dx);
-                            SmartDashboard.putNumber(
-                                    "autoSteerVelocities.dy", autoSteerVelocities.dy);
+                                            + Math.signum(autoSteerVelocities.dy) * 0.05;
+                            SmartDashboard.putNumber("autoSteerVelocities.dx", motionXComponent);
+                            SmartDashboard.putNumber("autoSteerVelocities.dy", motionYComponent);
+                            translation = new Translation2d(motionXComponent, motionYComponent);
                         }
                     }
-                    SmartDashboard.putNumber("wanted x", translation.getY());
+                    SmartDashboard.putNumber("wanted Y", translation.getY());
+                    SmartDashboard.putNumber("wanted X", translation.getX());
                     var rotation = motionTurnComponent;
                     swerve.drive(translation, rotation, fieldOriented, true);
                 },
@@ -99,16 +98,6 @@ public class DrivetrainCommands {
         return Commands.run(() -> swerve.drive(t, rotation.getDegrees(), false, true), swerve)
                 .finallyDo(interupted -> swerve.end())
                 .withTimeout(seconds);
-    }
-
-    public Command rotateToTape(PIDController yController, DoubleSupplier angle, double offset) {
-        return Commands.run(
-                () -> {
-                    double distance = Math.sin(Units.degreesToRadians(angle.getAsDouble()));
-                    double yPID = yController.calculate(distance, offset);
-                    swerve.drive(new Translation2d(0, yPID), 0, false, false);
-                },
-                swerve);
     }
 
     private final SwerveDrive swerve;

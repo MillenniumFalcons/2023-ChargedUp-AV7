@@ -6,6 +6,7 @@ package team3647.frc2023.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import java.util.List;
@@ -31,8 +32,6 @@ public class FieldConstants {
 
     private static final Rotation2d kBlueSingleStationRotation = FieldConstants.kNinety;
     private static final Rotation2d kRedSingleStationRotation = FieldConstants.kNinety;
-
-    private static final Rotation2d kRotateOneEighty = FieldConstants.kOneEighty;
 
     public static final double kXAdjustment = Units.inchesToMeters(10);
 
@@ -73,6 +72,8 @@ public class FieldConstants {
     private static final double kRedDoubleSubstationRightYm = kBlueDoubleSubstationLeftYm;
     private static final double kRedDoubleSubstationXm = 0.8;
 
+    public static final Pose2d kOrigin = new Pose2d();
+
     public static final Pose2d kBlueOne = new Pose2d(kBlueXm, kBlueOneYm, kBlueScoreRotation);
     public static final Pose2d kBlueTwo = new Pose2d(kBlueXm, kBlueTwoYm, kBlueScoreRotation);
     public static final Pose2d kBlueThree = new Pose2d(kBlueXm, kBlueThreeYm, kBlueScoreRotation);
@@ -92,6 +93,20 @@ public class FieldConstants {
     public static final Pose2d kRedSeven = new Pose2d(kRedXm, kRedSevenYm, kRedRedRotation);
     public static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
     public static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
+
+    public static final Transform2d kBlueTransformTagCube =
+            new Transform2d(new Translation2d(0.72, 0), kZero);
+    public static final Transform2d kBlueTransformTagConeLeft =
+            new Transform2d(new Translation2d(0.72, 0.55), kZero);
+    public static final Transform2d kBlueTransformTagConeRight =
+            new Transform2d(new Translation2d(0.72, -0.55), kZero);
+
+    public static final Transform2d kRedTransformTagCube =
+            new Transform2d(new Translation2d(-0.72, 0), kOneEighty);
+    public static final Transform2d kRedTransformTagConeLeft =
+            new Transform2d(new Translation2d(-0.72, -0.55), kOneEighty);
+    public static final Transform2d kRedTransformTagConeRight =
+            new Transform2d(new Translation2d(-0.72, 0.55), kOneEighty);
 
     private static final Pose2d kBlueDoubleSubstationLeft =
             new Pose2d(
@@ -152,6 +167,9 @@ public class FieldConstants {
                     new IntakePosition(kRedSingleStation, StationType.Single),
                     new IntakePosition(kGroundIntake, StationType.Ground));
 
+    public static final double kScoreTargetHeightMeters = 0.4318;
+    public static final double kIntakeTargetHeightMeters = 0;
+
     public static Translation2d flipTranslation(Translation2d translation) {
         return new Translation2d(
                 FieldConstants.kFieldLength - translation.getX(), translation.getY());
@@ -160,7 +178,11 @@ public class FieldConstants {
     public static Pose2d flipBluePose(Pose2d pose) {
         return new Pose2d(
                 flipTranslation(pose.getTranslation()),
-                pose.getRotation().rotateBy(kRotateOneEighty));
+                new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
+    }
+
+    public static Transform2d flipBlueTransform(Transform2d transform) {
+        return new Transform2d(kOrigin, flipBluePose(kOrigin.transformBy(transform)));
     }
 
     private FieldConstants() {}

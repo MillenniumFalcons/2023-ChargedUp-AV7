@@ -1,35 +1,47 @@
 package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.auto.AutonomousMode;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
+import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.robot.PositionFinder.Level;
+import team3647.frc2023.robot.PositionFinder.ScoringPosition;
+import team3647.frc2023.robot.PositionFinder.Side;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
+import team3647.frc2023.subsystems.VisionController;
+import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
 import team3647.frc2023.util.AutoSteer;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
+import team3647.lib.tracking.FlightDeck;
+import team3647.lib.tracking.RobotTracker;
+import team3647.lib.vision.AimingParameters;
+import team3647.lib.vision.Limelight;
+import team3647.lib.vision.MultiTargetTracker;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,12 +52,11 @@ import team3647.lib.inputs.Joysticks;
 public class RobotContainer {
 
     private AutonomousMode runningMode;
-    private Alliance currentAlliance = Alliance.Invalid;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, visionController);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -60,22 +71,23 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        // mainController
-        //         .rightTrigger
-        //         .and(enableAutoSteer)
-        //         .onTrue(
-        //                 Commands.runOnce(
-        //                         () ->
-        //                                 autoSteer.initializeSteering(
-        //                                         positionFinder.getScoringPosition().pose)))
-        //         .whileTrue(
-        //                 Commands.waitUntil(new Trigger(autoSteer::almostArrived))
-        //                         .andThen(superstructure.armAutomatic()));
-        // .and(() -> !enableAutoSteer.getAsBoolean())
         mainController
                 .rightTrigger
-                .onTrue(superstructure.armCone())
-                .onFalse(superstructure.scoreAndStow(0));
+                .and(goodForAutosteer)
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        autoSteer.initializeSteering(
+                                                superstructure.getScoringPosition().pose)))
+                .whileTrue(
+                        Commands.waitUntil(autoSteer::almostArrived)
+                                .andThen(superstructure.armAutomatic()));
+        mainController
+                .rightTrigger
+                .and(() -> !goodForAutosteer.getAsBoolean())
+                .whileTrue(superstructure.armToPieceFromSide());
+
+        mainController.rightTrigger.onFalse(superstructure.scoreAndStow(0));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -86,19 +98,6 @@ public class RobotContainer {
 
         mainController
                 .rightBumper
-                .whileTrue(
-                        Commands.runOnce(
-                                        () -> {
-                                            var intakePos =
-                                                    positionFinder.getIntakePositionByStation(
-                                                            superstructure.getWantedStation());
-                                            if (intakePos.pose == FieldConstants.kGroundIntake) {
-                                                return;
-                                            }
-                                            autoSteer.initializeSteering(intakePos.pose);
-                                        })
-                                .andThen(Commands.waitUntil(intakeModeChanged))
-                                .repeatedly())
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
 
@@ -112,17 +111,16 @@ public class RobotContainer {
                 .onTrue(superstructure.disableAutoSteer())
                 .onTrue(superstructure.setWantedStationCommand(StationType.Ground));
 
-        coController.dPadDown.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
-        coController.dPadUp.onTrue(superstructure.setWantedStationCommand(StationType.Double));
-        coController
-                .dPadRight
-                .or(coController.dPadLeft)
-                .onTrue(superstructure.setWantedStationCommand(StationType.Single));
+        coController.dPadLeft.onTrue(superstructure.setWantedSideCommand(Side.Left));
+        coController.dPadRight.onTrue(superstructure.setWantedSideCommand(Side.Right));
+        coController.dPadDown.onTrue(superstructure.setWantedSideCommand(Side.Center));
+
+        coController.rightBumper.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
+        coController.leftBumper.onTrue(superstructure.setWantedStationCommand(StationType.Double));
 
         coController
-                .rightBumper
-                .whileTrue(
-                        superstructure.pivotCommands.openLoopConstant(coController::getRightStickY))
+                .rightTrigger
+                .whileTrue(superstructure.pivotCommands.openloop(coController::getRightStickY))
                 .whileTrue(
                         superstructure.extenderCommands.openLoopSlow(coController::getLeftStickY));
         coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
@@ -138,7 +136,7 @@ public class RobotContainer {
                         mainController.leftTrigger,
                         // enable autosteer if going to actual station (bumper), or scoring
                         // (trigger)
-                        enableAutoSteer,
+                        goodForAutosteer,
                         () -> true,
                         AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
@@ -162,17 +160,37 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addPose("odo", swerve::getOdoPose);
-        // printer.addPose("estim", swerve::getEstimPose);
-        // printer.addPose("Target", () -> positionFinder.getScoringPosition().pose);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("extender", extender::getNativePos);
-        printer.addBoolean("autosteer", () -> enableAutoSteer.getAsBoolean());
-        printer.addBoolean("auto steer almost ready", () -> autoSteer.almostArrived());
+        printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
+        printer.addBoolean("auto steer almost ready", autoSteer::almostArrived);
+        printer.addPose("Cam pose", flightDeck::getFieldToCamera);
+        printer.addPose("AutoSteerTarget", () -> superstructure.getScoringPosition().pose);
+        printer.addBoolean("Valid Target", superstructure::validScoringPosition);
+        printer.addPose("Cube score", () -> getPoseIfLength(0).getPose());
+        printer.addPose("Cone Left", () -> getPoseIfLength(1).getPose());
+        printer.addPose("Cone Right", () -> getPoseIfLength(2).getPose());
+        printer.addPose(
+                "April Pose",
+                () -> {
+                    var params = flightDeck.getLatestParameters();
+                    if (params == AimingParameters.None) {
+                        return kEmptyPose;
+                    }
+                    return params.getFieldToGoal();
+                });
         printer.addBoolean(
                 "Cube Ground",
                 () ->
                         superstructure.getWantedLevel() == Level.Ground
                                 && superstructure.getWantedStation() == StationType.Ground);
+    }
+
+    private ScoringPosition getPoseIfLength(int idx) {
+        if (superstructure.getAllScoringPositions().size() != 3) {
+            return ScoringPosition.kNone;
+        }
+        return superstructure.getAllScoringPositions().get(idx);
     }
 
     // counted relative to what driver sees
@@ -183,12 +201,14 @@ public class RobotContainer {
     private final Joysticks mainController = new Joysticks(0);
     private final Joysticks coController = new Joysticks(1);
 
-    private final Trigger intakeModeChanged =
+    private final Trigger wantedSideChanged =
             coController
                     .dPadLeft
                     .or(coController.dPadRight)
                     .or(coController.dPadUp)
                     .or(coController.dPadDown);
+
+    private final Trigger intakeChanged = coController.leftBumper.or(coController.rightBumper);
 
     public final SwerveDrive swerve =
             new SwerveDrive(
@@ -200,9 +220,6 @@ public class RobotContainer {
                     SwerveDriveConstants.kDriveKinematics,
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
                     SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
-
-    // right menu button cube, left menu button cone
-    //     public final Grabber grabber = new Grabber(GrabberConstants.pistons);
 
     public final Rollers rollers =
             new Rollers(
@@ -236,39 +253,36 @@ public class RobotContainer {
                     ExtenderConstants.nominalVoltage,
                     GlobalConstants.kDt);
 
-    //     private final VisionController visionController =
-    //             new VisionController(
-    //                     Map.of(
-    //                             CAMERA_NAME.CENTER,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightCenterIP,
-    //                                     LimelightConstant.kLimelightCenterHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts),
-    //                             CAMERA_NAME.LEFT,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightLeftIP,
-    //                                     LimelightConstant.kLimelightLeftHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts),
-    //                             CAMERA_NAME.RIGHT,
-    //                             new Limelight(
-    //                                     LimelightConstant.kLimelightRightIP,
-    //                                     LimelightConstant.kLimelightRightHost,
-    //                                     0,
-    //                                     LimelightConstant.kCamConstatnts)),
-    //                     swerve::addVisionMeasurement);
+    final FlightDeck flightDeck =
+            new FlightDeck(
+                    new RobotTracker(1.0, swerve::getOdoPose, swerve::getTimestamp),
+                    new MultiTargetTracker(),
+                    LimelightConstant.kRobotToCamFixed);
+
+    private final VisionController visionController =
+            new VisionController(
+                    Map.of(
+                            CAMERA_NAME.CENTER,
+                            new Limelight(
+                                    LimelightConstant.kLimelightCenterIP,
+                                    LimelightConstant.kLimelightCenterHost,
+                                    0,
+                                    LimelightConstant.kCamConstants)),
+                    flightDeck::addVisionObservation,
+                    FieldConstants.kScoreTargetHeightMeters,
+                    FieldConstants.kIntakeTargetHeightMeters);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
             new PositionFinder(
-                    swerve::getEstimPose,
-                    FieldConstants.kScoringPositions,
+                    swerve::getOdoPose,
+                    flightDeck::getLatestParameters,
+                    DriverStation::getAlliance,
                     FieldConstants.kIntakePositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(
-                    swerve::getEstimPose,
+                    swerve::getOdoPose,
                     SwerveDriveConstants.kAutoSteerXPIDController,
                     SwerveDriveConstants.kAutoSteerYPIDController,
                     SwerveDriveConstants.kAutoSteerHeadingController);
@@ -282,7 +296,8 @@ public class RobotContainer {
                     rollers,
                     positionFinder,
                     compressor,
-                    intakeModeChanged,
+                    intakeChanged,
+                    wantedSideChanged,
                     mainController::anyStickMovedFast);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
@@ -296,11 +311,9 @@ public class RobotContainer {
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
 
-    private final BooleanSupplier enableAutoSteer =
-            globalEnableAutosteer.and(
-                    mainController.rightTrigger.or(
-                            mainController.rightBumper.and(
-                                    () ->
-                                            superstructure.getWantedStation()
-                                                    != StationType.Ground)));
+    private final BooleanSupplier goodForAutosteer =
+            globalEnableAutosteer
+                    .and(mainController.rightTrigger)
+                    .and(superstructure::validScoringPosition);
+    private final Pose2d kEmptyPose = new Pose2d();
 }

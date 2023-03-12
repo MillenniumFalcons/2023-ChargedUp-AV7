@@ -4,15 +4,21 @@
 
 package team3647.frc2023.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Map;
 import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
+import team3647.lib.tracking.FlightDeck.VisionInput;
 import team3647.lib.vision.AprilTagCamera;
+import team3647.lib.vision.AprilTagCamera.AprilTagId;
+import team3647.lib.vision.AprilTagCamera.VisionUpdate;
+import team3647.lib.vision.IVisionCamera.CamConstants;
 import team3647.lib.vision.IVisionCamera.VisionPipeline;
-import team3647.lib.vision.Limelight;
-import team3647.lib.vision.Limelight.Data;
+import team3647.lib.vision.IVisionCamera.VisionPoint;
 
 /** Add your docs here. */
 public class VisionController implements PeriodicSubsystem {
@@ -23,58 +29,41 @@ public class VisionController implements PeriodicSubsystem {
         ALL
     }
 
-    public class PeriodicIO {
-        Pose2d averagedPose = new Pose2d();
-    }
-
-    public static class VisionInput {
-        public Pose2d pose;
-        public double timestamp;
-        public CAMERA_NAME name;
-
-        public VisionInput(double timestamp, Pose2d pose, CAMERA_NAME name) {
-            this.pose = pose;
-            this.timestamp = timestamp;
-            this.name = name;
-        }
-    }
-
     public VisionController(
-            Map<CAMERA_NAME, Limelight> cameras, Consumer<VisionInput> sendVisionUpdate) {
+            Map<CAMERA_NAME, AprilTagCamera> cameras,
+            Consumer<VisionInput> sendVisionUpdate,
+            double scoreTargetHeightMeters,
+            double intakeTargetHeightMeters) {
         this.cameras = cameras;
         this.visionUpdate = sendVisionUpdate;
+        this.scoreTargetHeightMeters = scoreTargetHeightMeters;
+        this.intakeTargetHeightMeters = intakeTargetHeightMeters;
     }
 
     @Override
     public void readPeriodicInputs() {
-        var totX = 0.0;
-        var totY = 0.0;
-        var totAngle = 0.0;
-        var totTimestamp = 0.0;
-        var divideBy = 0.0;
-        for (var name : cameras.keySet()) {
-            var camera = cameras.get(name);
-            var stampedPose = camera.getRobotPose();
-            if (stampedPose == AprilTagCamera.KNoAnswer) {
+        for (var camera : cameras.values()) {
+            VisionUpdate update = camera.getVisionUpdate();
+
+            if (update == VisionUpdate.kNoUpdate) {
                 continue;
             }
-            totTimestamp += stampedPose.timestamp;
-            totX += stampedPose.pose.getX();
-            totY += stampedPose.pose.getY();
-            totAngle += stampedPose.pose.getRotation().getRadians();
-            divideBy += 1;
-        }
 
-        if (divideBy != 0) {
-            periodicIO.averagedPose =
-                    new Pose2d(
-                            totX / divideBy,
-                            totY / divideBy,
-                            Rotation2d.fromRadians(totAngle / divideBy));
-            var timestamp = totTimestamp / divideBy;
-            VisionInput input =
-                    new VisionInput(timestamp, periodicIO.averagedPose, CAMERA_NAME.ALL);
-            visionUpdate.accept(input);
+            double targetHeightMeters = scoreTargetHeightMeters;
+            if (update.id == AprilTagId.ID_4 || update.id == AprilTagId.ID_5) {
+                targetHeightMeters = intakeTargetHeightMeters;
+            }
+
+            Translation2d camToTarget =
+                    solveTranslationToTarget(
+                            update.point, targetHeightMeters, camera.getConstants());
+            SmartDashboard.putNumber("Cam to target X", camToTarget.getX());
+            SmartDashboard.putNumber("Cam to target Y", camToTarget.getY());
+            visionUpdate.accept(
+                    new VisionInput(
+                            update.captureTimestamp,
+                            update.id,
+                            new Transform2d(camToTarget, rotation2d)));
         }
     }
 
@@ -84,18 +73,6 @@ public class VisionController implements PeriodicSubsystem {
         }
     }
 
-    public double getXToTape(CAMERA_NAME name) {
-        if (!cameras.containsKey(name)) {
-            return 0;
-        }
-        var camera = cameras.get(name);
-
-        if (camera.getPipeline().asInt == 1) {
-            return camera.getDouble(Data.X);
-        }
-        return 0;
-    }
-
     public double getCurrentPipeline(CAMERA_NAME name) {
         if (!cameras.containsKey(name)) {
             return -1;
@@ -103,16 +80,27 @@ public class VisionController implements PeriodicSubsystem {
         return cameras.get(name).getPipeline().asInt;
     }
 
+    public static Translation2d solveTranslationToTarget(
+            VisionPoint corner, double targetHeightMeters, CamConstants camConstants) {
+
+        var actualXy = new Translation2d(corner.x, corner.y).rotateBy(camConstants.kCamRoll);
+        double floorToCamMeters = camConstants.kCameraHeightMeters;
+        double angleToGoal = camConstants.kHorizontalToLens.getDegrees() + actualXy.getY();
+        double range =
+                (targetHeightMeters - floorToCamMeters)
+                        / (Math.tan(Units.degreesToRadians(angleToGoal))
+                                * Math.cos(Units.degreesToRadians(actualXy.getX())));
+        return new Translation2d(range, Rotation2d.fromDegrees(-actualXy.getX()));
+    }
+
     @Override
     public String getName() {
         return "VisionController";
     }
 
-    public Pose2d getAveragedPose() {
-        return periodicIO.averagedPose;
-    }
-
-    private final Map<CAMERA_NAME, Limelight> cameras;
+    private final Map<CAMERA_NAME, AprilTagCamera> cameras;
     private final Consumer<VisionInput> visionUpdate;
-    private PeriodicIO periodicIO = new PeriodicIO();
+    private final double scoreTargetHeightMeters;
+    private final double intakeTargetHeightMeters;
+    private final Rotation2d rotation2d = new Rotation2d();
 }

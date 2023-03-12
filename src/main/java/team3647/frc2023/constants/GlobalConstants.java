@@ -52,16 +52,10 @@ public final class GlobalConstants {
         private ExtenderIds() {}
     }
 
-    public static final class GrabberIds {
-        public static final int masterId = 28;
-        public static final int pistonChannel = 2;
-        public static final int sensorPort = 0;
-
-        private GrabberIds() {}
-    }
-
     public static final class RollersIds {
         public static final int kMasterId = 28;
+
+        private RollersIds() {}
     }
 
     private GlobalConstants() {}

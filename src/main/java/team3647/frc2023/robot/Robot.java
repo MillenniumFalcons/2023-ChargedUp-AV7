@@ -30,6 +30,7 @@ public class Robot extends TimedRobot {
                 () -> robotContainer.superstructure.periodic(Timer.getFPGATimestamp()),
                 kTwentyMSLoopTime,
                 0.019);
+        addPeriodic(robotContainer.flightDeck.getTracker()::update, kTwentyMSLoopTime, 0.05);
     }
 
     /**
@@ -68,15 +69,7 @@ public class Robot extends TimedRobot {
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {
-        // CommandScheduler.getInstance()
-        //         .schedule(
-        //                 robotContainer
-        //                         .superstructure
-        //                         .pivotCommands
-        //                         .setAngle(PivotConstants.kInitialAngle)
-        //                         .repeatedly());
-    }
+    public void disabledInit() {}
 
     @Override
     public void disabledPeriodic() {}
