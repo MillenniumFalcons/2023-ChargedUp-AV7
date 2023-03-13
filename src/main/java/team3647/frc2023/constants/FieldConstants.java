@@ -9,11 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import java.util.List;
-import team3647.frc2023.robot.PositionFinder.GamePiece;
-import team3647.frc2023.robot.PositionFinder.IntakePosition;
-import team3647.frc2023.robot.PositionFinder.ScoringPosition;
-import team3647.frc2023.subsystems.Superstructure.StationType;
 
 /** Add your docs here. */
 public class FieldConstants {
@@ -63,14 +58,7 @@ public class FieldConstants {
     private static final double kBlueDoubleSubstationRightYm = 6;
     private static final double kBlueDoubleSubstationXm = 15.66;
 
-    private static final double kBlueSingleStationXm = 0.0;
     private static final double kBlueSingleStationYm = 0.0;
-    private static final double kRedSingleStationXm = 0.0;
-    private static final double kRedSingleStationYm = kBlueSingleStationYm;
-
-    private static final double kRedDoubleSubstationLeftYm = kBlueDoubleSubstationRightYm;
-    private static final double kRedDoubleSubstationRightYm = kBlueDoubleSubstationLeftYm;
-    private static final double kRedDoubleSubstationXm = 0.8;
 
     public static final Pose2d kOrigin = new Pose2d();
 
@@ -96,78 +84,14 @@ public class FieldConstants {
 
     public static final double kTagXtoScoreX = 0.88;
     public static final double kTagYtoScoreY = 0.65;
-    public static final Transform2d kBlueTransformTagCube =
+    public static final Transform2d kTransformTagCube =
             new Transform2d(new Translation2d(kTagXtoScoreX, 0), kZero);
-    public static final Transform2d kBlueTransformTagConeLeft =
+    public static final Transform2d kTransformTagConeLeft =
             new Transform2d(new Translation2d(kTagXtoScoreX, kTagYtoScoreY), kZero);
-    public static final Transform2d kBlueTransformTagConeRight =
+    public static final Transform2d kTransformTagConeRight =
             new Transform2d(new Translation2d(kTagXtoScoreX, -kTagYtoScoreY), kZero);
 
-    public static final Transform2d kRedTransformTagCube =
-            new Transform2d(new Translation2d(-kTagXtoScoreX, 0), kZero);
-    public static final Transform2d kRedTransformTagConeLeft =
-            new Transform2d(new Translation2d(-kTagXtoScoreX, -kTagYtoScoreY), kZero);
-    public static final Transform2d kRedTransformTagConeRight =
-            new Transform2d(new Translation2d(-kTagXtoScoreX, kTagYtoScoreY), kZero);
-
-    private static final Pose2d kBlueDoubleSubstationLeft =
-            new Pose2d(
-                    kBlueDoubleSubstationXm,
-                    kBlueDoubleSubstationLeftYm,
-                    kBlueDoubleSubstationRotation);
-    private static final Pose2d kBlueDoubleSubstationRight =
-            new Pose2d(
-                    kBlueDoubleSubstationXm,
-                    kBlueDoubleSubstationRightYm,
-                    kBlueDoubleSubstationRotation);
-    private static final Pose2d kBlueSingleStation =
-            new Pose2d(kBlueSingleStationXm, kBlueSingleStationYm, kBlueSingleStationRotation);
-
-    private static final Pose2d kRedDoubleSubstationLeft =
-            new Pose2d(
-                    kRedDoubleSubstationXm,
-                    kRedDoubleSubstationLeftYm,
-                    kRedDoubleSubstationRotation);
-    private static final Pose2d kRedDoubleSubstationRight =
-            new Pose2d(
-                    kRedDoubleSubstationXm,
-                    kRedDoubleSubstationRightYm,
-                    kRedDoubleSubstationRotation);
-    private static final Pose2d kRedSingleStation =
-            new Pose2d(kRedSingleStationXm, kRedSingleStationYm, kRedSingleStationRotation);
-
     public static final Pose2d kGroundIntake = new Pose2d();
-
-    public static final List<ScoringPosition> kScoringPositions =
-            List.of(
-                    new ScoringPosition(kBlueOne, GamePiece.Cone),
-                    new ScoringPosition(kBlueTwo, GamePiece.Cube),
-                    new ScoringPosition(kBlueThree, GamePiece.Cone),
-                    new ScoringPosition(kBlueFour, GamePiece.Cone),
-                    new ScoringPosition(kBlueFive, GamePiece.Cube),
-                    new ScoringPosition(kBlueSix, GamePiece.Cone),
-                    new ScoringPosition(kBlueSeven, GamePiece.Cone),
-                    new ScoringPosition(kBlueEight, GamePiece.Cube),
-                    new ScoringPosition(kBlueNine, GamePiece.Cone),
-                    new ScoringPosition(kRedOne, GamePiece.Cone),
-                    new ScoringPosition(kRedTwo, GamePiece.Cube),
-                    new ScoringPosition(kRedThree, GamePiece.Cone),
-                    new ScoringPosition(kRedFour, GamePiece.Cone),
-                    new ScoringPosition(kRedFive, GamePiece.Cube),
-                    new ScoringPosition(kRedSix, GamePiece.Cone),
-                    new ScoringPosition(kRedSeven, GamePiece.Cone),
-                    new ScoringPosition(kRedEight, GamePiece.Cube),
-                    new ScoringPosition(kRedNine, GamePiece.Cone));
-
-    public static final List<IntakePosition> kIntakePositions =
-            List.of(
-                    new IntakePosition(kBlueDoubleSubstationLeft, StationType.Double),
-                    new IntakePosition(kBlueDoubleSubstationRight, StationType.Double),
-                    new IntakePosition(kRedDoubleSubstationLeft, StationType.Double),
-                    new IntakePosition(kRedDoubleSubstationRight, StationType.Double),
-                    new IntakePosition(kBlueSingleStation, StationType.Single),
-                    new IntakePosition(kRedSingleStation, StationType.Single),
-                    new IntakePosition(kGroundIntake, StationType.Ground));
 
     public static final double kScoreTargetHeightMeters = 0.4318;
     public static final double kIntakeTargetHeightMeters = 0;

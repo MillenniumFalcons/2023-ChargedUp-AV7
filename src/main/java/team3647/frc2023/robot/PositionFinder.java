@@ -3,7 +3,6 @@ package team3647.frc2023.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -17,8 +16,6 @@ import team3647.lib.vision.AimingParameters;
 public class PositionFinder {
     private final Supplier<Pose2d> robotPoseSupplier;
     private final Supplier<AimingParameters> getBestTarget;
-    private final Supplier<Alliance> getColor;
-    private final List<IntakePosition> possibleIntakePositions;
     private final Map<Level, Map<GamePiece, SuperstructureState>>
             levelAndPieceToSuperstrucutreState;
     private final List<ScoringPosition> kEmptyList = List.of();
@@ -26,13 +23,9 @@ public class PositionFinder {
     public PositionFinder(
             Supplier<Pose2d> robotPoseSupplier,
             Supplier<AimingParameters> getBestTarget,
-            Supplier<Alliance> getColor,
-            List<IntakePosition> possibleIntakePositions,
             Map<Level, Map<GamePiece, SuperstructureState>> levelAndPieceToSuperstrucutreState) {
         this.robotPoseSupplier = robotPoseSupplier;
-        this.possibleIntakePositions = possibleIntakePositions;
         this.getBestTarget = getBestTarget;
-        this.getColor = getColor;
         this.levelAndPieceToSuperstrucutreState = levelAndPieceToSuperstrucutreState;
     }
 
@@ -76,36 +69,18 @@ public class PositionFinder {
         var cubePose =
                 translatePose(
                         aprilTagPose,
-                        FieldConstants.kBlueTransformTagCube.getTranslation(),
+                        FieldConstants.kTransformTagCube.getTranslation(),
                         FieldConstants.kOneEighty);
         var conePoseLeft =
                 translatePose(
                         aprilTagPose,
-                        FieldConstants.kBlueTransformTagConeLeft.getTranslation(),
+                        FieldConstants.kTransformTagConeLeft.getTranslation(),
                         FieldConstants.kOneEighty);
         var conePoseRight =
                 translatePose(
                         aprilTagPose,
-                        FieldConstants.kBlueTransformTagConeRight.getTranslation(),
+                        FieldConstants.kTransformTagConeRight.getTranslation(),
                         FieldConstants.kOneEighty);
-
-        if (getColor.get() == Alliance.Red) {
-            cubePose =
-                    translatePose(
-                            aprilTagPose,
-                            FieldConstants.kRedTransformTagCube.getTranslation(),
-                            FieldConstants.kZero);
-            conePoseLeft =
-                    translatePose(
-                            aprilTagPose,
-                            FieldConstants.kRedTransformTagConeLeft.getTranslation(),
-                            FieldConstants.kZero);
-            conePoseRight =
-                    translatePose(
-                            aprilTagPose,
-                            FieldConstants.kRedTransformTagConeRight.getTranslation(),
-                            FieldConstants.kZero);
-        }
 
         return List.of(
                 new ScoringPosition(conePoseLeft, GamePiece.Cone),
@@ -124,14 +99,6 @@ public class PositionFinder {
         }
 
         return scoringPositions.get(side.listIndex);
-    }
-
-    public final IntakePosition getIntakePositionByStation(StationType station) {
-        return getClosestIntake(
-                getBestTarget.get().getFieldToGoal(),
-                this.possibleIntakePositions.stream()
-                        .filter(intakePos -> intakePos.station == station)
-                        .toList());
     }
 
     public static class ScoringPosition implements HasPose {

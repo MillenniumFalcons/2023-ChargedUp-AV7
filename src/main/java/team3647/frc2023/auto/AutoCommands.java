@@ -42,65 +42,50 @@ public class AutoCommands {
         this.drive = drive;
         this.driveKinematics = driveKinematics;
         this.superstructure = superstructure;
-        Test =
-                new AutonomousMode(
-                        drive(), Trajectories.Blue.Test.kStart, Trajectories.Blue.Test.kStart);
+        Test = new AutonomousMode(drive(), Trajectories.Blue.Test.kStart);
         // blue side modes
         blueConeCubeFlatSideMode =
                 new AutonomousMode(
                         coneCubeFlatSide(Alliance.Blue),
-                        Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial,
                         Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial);
         blueConeConeBalanceFlatSideMode =
                 new AutonomousMode(
                         coneConeBalanceFlatSide(Alliance.Blue),
-                        Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial,
                         Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial);
         blueConeCubeBalanceBumpSideMode =
                 new AutonomousMode(
                         coneCubeBalanceBumpSide(Alliance.Blue),
-                        Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial,
                         Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial);
         blueConeBalance =
                 new AutonomousMode(
                         justScoreBalance(
                                 () -> SuperstructureState.coneThreeReversed, Alliance.Blue),
-                        Trajectories.Blue.ConeBalance.kFirstPathInitial,
                         Trajectories.Blue.ConeBalance.kFirstPathInitial);
         blueJustScore =
                 new AutonomousMode(
                         justScore(() -> SuperstructureState.coneThreeReversed),
-                        getJustScore(FieldConstants.kBlueSix),
                         flipForPP(getJustScore(FieldConstants.kBlueSix)));
 
         // red side modes
         redConeCubeFlatSideMode =
                 new AutonomousMode(
                         coneCubeFlatSide(Alliance.Red),
-                        FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeCubeFlatSide.kFirstPathInitial));
         redConeCubeBalanceBumpSideMode =
                 new AutonomousMode(
                         coneCubeBalanceBumpSide(Alliance.Red),
-                        FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeCubeBumpSide.kFirstPathInitial));
         redConeConeBalanceFlatSideMode =
                 new AutonomousMode(
                         coneConeBalanceFlatSide(Alliance.Red),
-                        FieldConstants.flipBluePose(
-                                Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial),
                         flipForPP(Trajectories.Blue.ConeConeBalanceFlatSide.kFirstPathInitial));
         redConeBalance =
                 new AutonomousMode(
                         justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
-                        getJustScore(FieldConstants.kRedFour),
                         flipForPP(getJustScore(FieldConstants.kRedFour)));
         redJustScore =
                 new AutonomousMode(
                         justScore(() -> SuperstructureState.coneThreeReversed),
-                        getJustScore(FieldConstants.kRedFour),
                         flipForPP(getJustScore(FieldConstants.kRedFour)));
     }
 
@@ -276,22 +261,18 @@ public class AutoCommands {
 
     public AutonomousMode getJustScoreBlue(SuperstructureState state) {
         return new AutonomousMode(
-                justScore(() -> state),
-                new Pose2d(1.8, 3.26, FieldConstants.kZero),
-                new Pose2d(1.8, 3.26, FieldConstants.kZero));
+                justScore(() -> state), new Pose2d(1.8, 3.26, FieldConstants.kZero));
     }
 
     public AutonomousMode getJustScoreRed(SuperstructureState state) {
         return new AutonomousMode(
-                justScore(() -> state),
-                FieldConstants.flipBluePose(new Pose2d(1.8, 3.26, FieldConstants.kZero)),
-                flipForPP(new Pose2d(1.8, 3.26, FieldConstants.kZero)));
+                justScore(() -> state), flipForPP(new Pose2d(1.8, 3.26, FieldConstants.kZero)));
     }
 
     public Command followTrajectory(PathPlannerTrajectory trajectory) {
         return new PPSwerveControllerCommand(
                 trajectory,
-                drive::getPPPose,
+                drive::getOdoPose,
                 driveKinematics,
                 AutoConstants.kXController,
                 AutoConstants.kYController,

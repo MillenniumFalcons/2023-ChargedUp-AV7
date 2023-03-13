@@ -2,11 +2,8 @@ package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -70,8 +67,7 @@ public class RobotContainer {
         wrist.setEncoder(WristConstants.kInitialDegree);
         runningMode = autoCommands.redConeConeBalanceFlatSideMode;
 
-        swerve.setRobotPose(new Pose2d(new Translation2d(5, 5), Rotation2d.fromDegrees(0)));
-        swerve.setPathplanner(runningMode.getPathplannerPose2d());
+        swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
 
     private void configureButtonBindings() {
@@ -106,15 +102,10 @@ public class RobotContainer {
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
 
-        coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.One));
+        coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
         coController.buttonX.onTrue(superstructure.stow());
-        coController
-                .leftTrigger
-                .onTrue(superstructure.setWantedLevelCommand(Level.Ground))
-                .onTrue(superstructure.disableAutoSteer())
-                .onTrue(superstructure.setWantedStationCommand(StationType.Ground));
 
         coController.dPadLeft.onTrue(superstructure.setWantedSideCommand(Side.Left));
         coController.dPadRight.onTrue(superstructure.setWantedSideCommand(Side.Right));
@@ -147,7 +138,6 @@ public class RobotContainer {
                         // (trigger)
                         goodForAutosteer,
                         () -> true,
-                        AllianceFlipUtil::shouldFlip,
                         autoSteer::findVelocities));
 
         rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
@@ -298,8 +288,6 @@ public class RobotContainer {
             new PositionFinder(
                     swerve::getOdoPose,
                     flightDeck::getLatestParameters,
-                    DriverStation::getAlliance,
-                    FieldConstants.kIntakePositions,
                     SuperstructureState.kLevelPieceMap);
     private final AutoSteer autoSteer =
             new AutoSteer(

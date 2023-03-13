@@ -1,5 +1,7 @@
 package team3647.frc2023.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,17 +32,29 @@ public class Superstructure {
     private StationType wantedStation = StationType.Double;
     private Side wantedSide = Side.Center;
     private boolean isAutoSteerEnabled = true;
-    private SuperstructureState currentState = SuperstructureState.stow;
     private List<ScoringPosition> scoringPositions =
             List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);
     private ScoringPosition scoringPositionBySide = ScoringPosition.kNone;
+    private GamePiece gamePieceForManual = GamePiece.Cone;
+
+    private final Translation2d kMoveIntoField = new Translation2d(0.4, 0);
 
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
         scoringPositionBySide = finder.getPositionBySide(getWantedSide());
+        gamePieceForManual = getWantedSide() == Side.Center ? GamePiece.Cube : GamePiece.Cone;
+
         if (getWantedLevel() == Level.Ground) {
-            // shift pose into the field so we don't kill the arm (+x if blue alliance, -x if red
-            // alliance)
+            // shift pose into the field so we don't kill the arm +x
+            scoringPositionBySide =
+                    new ScoringPosition(
+                            new Pose2d(
+                                    scoringPositionBySide
+                                            .pose
+                                            .getTranslation()
+                                            .plus(kMoveIntoField),
+                                    scoringPositionBySide.pose.getRotation()),
+                            GamePiece.Cube);
         }
         SmartDashboard.putString(
                 "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
@@ -89,20 +103,7 @@ public class Superstructure {
 
     public Command armToPieceFromSide() {
         return goToStateParallel(
-                () ->
-                        finder.getSuperstructureStateByPiece(
-                                getWantedLevel(),
-                                getWantedSide() == Side.Center ? GamePiece.Cube : GamePiece.Cone));
-    }
-
-    public Command armCone() {
-        return goToStateParallel(
-                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone));
-    }
-
-    public Command armCube() {
-        return goToStateParallel(
-                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), GamePiece.Cone));
+                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), gamePieceForManual));
     }
 
     public Command goToStateParallel(SuperstructureState state) {

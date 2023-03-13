@@ -30,7 +30,6 @@ public class SwerveDrive implements PeriodicSubsystem {
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final SwerveDriveOdometry odometry;
-    private final SwerveDriveOdometry ppOdometry;
 
     public static class PeriodicIO {
         // inputs
@@ -77,11 +76,6 @@ public class SwerveDrive implements PeriodicSubsystem {
                         this.kinematics,
                         Rotation2d.fromDegrees(gyro.getYaw()),
                         getModulePositions());
-        this.ppOdometry =
-                new SwerveDriveOdometry(
-                        this.kinematics,
-                        Rotation2d.fromDegrees(gyro.getYaw()),
-                        getModulePositions());
     }
 
     @Override
@@ -107,7 +101,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         SmartDashboard.putNumber("br abs", backRight.getAbsEncoderPos().getDegrees());
 
         odometry.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
-        ppOdometry.update(Rotation2d.fromDegrees(periodicIO.rawHeading), getModulePositions());
     }
 
     @Override
@@ -128,14 +121,6 @@ public class SwerveDrive implements PeriodicSubsystem {
         gyro.setYaw(pose.getRotation().getDegrees());
         odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
         periodicIO = new PeriodicIO();
-    }
-
-    public void setPathplanner(Pose2d pose) {
-        ppOdometry.resetPosition(periodicIO.gyroRotation, getModulePositions(), pose);
-    }
-
-    public Pose2d getPPPose() {
-        return ppOdometry.getPoseMeters();
     }
 
     public void resetEncoders() {
