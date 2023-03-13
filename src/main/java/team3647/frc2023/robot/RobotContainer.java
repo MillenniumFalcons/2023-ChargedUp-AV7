@@ -302,8 +302,7 @@ public class RobotContainer {
                     wrist,
                     positionFinder,
                     compressor,
-                    intakeChanged,
-                    wantedSideChanged,
+                    coController.leftTrigger,
                     mainController::anyStickMovedFast);
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
