@@ -107,10 +107,7 @@ public class RobotContainer {
         coController.dPadLeft.onTrue(superstructure.setWantedSideCommand(Side.Left));
         coController.dPadRight.onTrue(superstructure.setWantedSideCommand(Side.Right));
         coController.dPadUp.onTrue(superstructure.setWantedSideCommand(Side.Center));
-        coController
-                .dPadDown
-                .onTrue(superstructure.setWantedLevelCommand(Level.Ground))
-                .onTrue(superstructure.setWantedStationCommand(StationType.Ground));
+        coController.dPadDown.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
 
         coController.rightBumper.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
         coController.leftBumper.onTrue(superstructure.setWantedStationCommand(StationType.Double));
