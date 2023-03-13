@@ -6,11 +6,10 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.commands.DrivetrainCommands;
@@ -36,6 +35,8 @@ public class Superstructure {
             List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);
     private ScoringPosition scoringPositionBySide = ScoringPosition.kNone;
     private GamePiece gamePieceForManual = GamePiece.Cone;
+    private SuperstructureState wantedIntakeState = SuperstructureState.doubleStation;
+    private GamePiece intakeGamePiece = GamePiece.Cone;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.4, 0);
 
@@ -43,6 +44,18 @@ public class Superstructure {
         scoringPositions = finder.getScoringPositions();
         scoringPositionBySide = finder.getPositionBySide(getWantedSide());
         gamePieceForManual = getWantedSide() == Side.Center ? GamePiece.Cube : GamePiece.Cone;
+        wantedIntakeState =
+                getWantedStation() == StationType.Ground
+                        ? SuperstructureState.groundIntake
+                        : SuperstructureState.doubleStation;
+
+        var defaultPiece = !switchPiece.getAsBoolean();
+        boolean groundIntake = getWantedStation() == StationType.Ground;
+        if (groundIntake == defaultPiece) {
+            intakeGamePiece = GamePiece.Cube;
+        } else {
+            intakeGamePiece = GamePiece.Cone;
+        }
 
         if (getWantedLevel() == Level.Ground) {
             // shift pose into the field so we don't kill the arm +x
@@ -64,6 +77,10 @@ public class Superstructure {
         return scoreAndStow(0.5);
     }
 
+    public Command scoreStowNoDelay() {
+        return scoreAndStow(0);
+    }
+
     public Command armAutomatic() {
         return goToStateParallel(
                 () ->
@@ -72,33 +89,33 @@ public class Superstructure {
     }
 
     public Command intakeAutomatic() {
-        return Commands.parallel(
-                Commands.select(
-                                Map.of(
-                                        StationType.Double,
-                                        Commands.parallel(
-                                                rollersCommands.intakeCone(), doubleStation()),
-                                        StationType.Ground,
-                                        Commands.parallel(
-                                                rollersCommands.intakeCube(), groundIntake())),
-                                this::getWantedStation)
-                        .until(recheckIntakeMode)
-                        .repeatedly());
+        return Commands.deadline(
+                        waitForCurrentSpike(),
+                        Commands.parallel(
+                                goToStateParallel(() -> this.wantedIntakeState),
+                                intakeForGamePiece(() -> this.intakeGamePiece)))
+                .finallyDo(interrupted -> stowFromIntake().schedule());
+    }
+
+    public Command intakeForGamePiece(Supplier<GamePiece> piece) {
+        return Commands.run(
+                () -> {
+                    if (piece.get() == GamePiece.Cone) {
+                        rollers.intakeCone();
+                    } else {
+                        rollers.intakeCube();
+                    }
+                },
+                rollers);
+    }
+
+    public Command waitForCurrentSpike() {
+        return Commands.sequence(
+                Commands.waitSeconds(1), Commands.waitUntil(() -> rollers.getMasterCurrent() > 20));
     }
 
     public Command stowFromIntake() {
-        return Commands.parallel(
-                        rollersCommands.intakeCone().withTimeout(1),
-                        Commands.select(
-                                Map.of(
-                                        StationType.Single,
-                                        new WaitCommand(0.5).andThen(stow()),
-                                        StationType.Double,
-                                        new WaitCommand(0.5).andThen(stow()),
-                                        StationType.Ground,
-                                        new WaitCommand(0.5).andThen(stow())),
-                                this::getWantedStation))
-                .andThen(rollersCommands.intakeCone().withTimeout(0.5));
+        return Commands.deadline(stow(), intakeForGamePiece(() -> this.intakeGamePiece));
     }
 
     public Command armToPieceFromSide() {
@@ -155,10 +172,20 @@ public class Superstructure {
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
-                pivotCommands.goDownDegrees(5),
-                rollersCommands.outCone().withTimeout(0.2),
+                new ConditionalCommand(
+                                score(getScoringPosition().piece),
+                                score(gamePieceForManual),
+                                () -> this.isAutoSteerEnabled)
+                        .withTimeout(0.5),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stow());
+    }
+
+    public Command score(GamePiece piece) {
+        return new ConditionalCommand(
+                rollersCommands.outCone(),
+                rollersCommands.outCube(),
+                () -> piece == GamePiece.Cone);
     }
 
     public Command scoreAndStowCube(double secsBetweenOpenAndStow) {
@@ -213,20 +240,6 @@ public class Superstructure {
         return Commands.runOnce(() -> this.isAutoSteerEnabled = false);
     }
 
-    public Command intakeIfArmMoves() {
-        return Commands.run(
-                () -> {
-                    if (Math.abs(pivot.getVelocity()) > 50) {
-                        rollers.setOpenloop(-1);
-                    } else if (this.drivetrainWantMove.getAsBoolean()) {
-                        rollers.setOpenloop(-0.4);
-                    } else {
-                        rollers.setOpenloop(0);
-                    }
-                },
-                rollers);
-    }
-
     public StationType getWantedStation() {
         return this.wantedStation;
     }
@@ -269,7 +282,7 @@ public class Superstructure {
      */
     public boolean validScoringPosition() {
         return this.scoringPositionBySide != ScoringPosition.kNone
-                && this.scoringPositionBySide
+                || this.scoringPositionBySide
                                 .pose
                                 .minus(drive.getOdoPose())
                                 .getTranslation()
@@ -286,7 +299,7 @@ public class Superstructure {
             Wrist wrist,
             PositionFinder finder,
             Compressor compressor,
-            Trigger intakeButtons,
+            BooleanSupplier switchPiece,
             Trigger chooseSideButtons,
             BooleanSupplier drivetrainWantMove) {
         this.drive = drive;
@@ -302,7 +315,7 @@ public class Superstructure {
         extenderCommands = new ExtenderCommands(extender);
         rollersCommands = new RollersCommands(rollers);
         wristCommands = new WristCommands(wrist);
-        recheckIntakeMode = intakeButtons;
+        this.switchPiece = switchPiece;
         recheckSide = chooseSideButtons;
         this.drivetrainWantMove = drivetrainWantMove;
     }
@@ -316,7 +329,7 @@ public class Superstructure {
     private final Wrist wrist;
     private final GroupPrinter printer = GroupPrinter.getInstance();
     private final PositionFinder finder;
-    private final Trigger recheckIntakeMode;
+    private final BooleanSupplier switchPiece;
     private final Trigger recheckSide;
     public final DrivetrainCommands drivetrainCommands;
     public final PivotCommands pivotCommands;

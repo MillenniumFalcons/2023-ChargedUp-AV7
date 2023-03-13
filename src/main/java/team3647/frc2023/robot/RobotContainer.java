@@ -88,7 +88,7 @@ public class RobotContainer {
                 .and(() -> !goodForAutosteer.getAsBoolean())
                 .onTrue(superstructure.armToPieceFromSide());
 
-        mainController.leftBumper.onTrue(superstructure.scoreAndStow(0));
+        mainController.leftBumper.onTrue(superstructure.scoreStowNoDelay());
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -97,10 +97,7 @@ public class RobotContainer {
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
 
-        mainController
-                .rightBumper
-                .onTrue(superstructure.intakeAutomatic())
-                .onFalse(superstructure.stowFromIntake());
+        mainController.rightBumper.onTrue(superstructure.intakeAutomatic());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
@@ -140,7 +137,6 @@ public class RobotContainer {
                         () -> true,
                         autoSteer::findVelocities));
 
-        rollers.setDefaultCommand(superstructure.intakeIfArmMoves());
         wrist.setDefaultCommand(superstructure.wristCommands.openloop(coController::getLeftStickY));
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
 
