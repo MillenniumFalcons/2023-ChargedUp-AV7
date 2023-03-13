@@ -43,7 +43,10 @@ public class Superstructure {
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
         scoringPositionBySide = finder.getPositionBySide(getWantedSide());
-        gamePieceForManual = getWantedSide() == Side.Center ? GamePiece.Cube : GamePiece.Cone;
+        gamePieceForManual =
+                getWantedSide() == Side.Center || getWantedLevel() == Level.Ground
+                        ? GamePiece.Cube
+                        : GamePiece.Cone;
         wantedIntakeState =
                 getWantedStation() == StationType.Ground
                         ? SuperstructureState.groundIntake
