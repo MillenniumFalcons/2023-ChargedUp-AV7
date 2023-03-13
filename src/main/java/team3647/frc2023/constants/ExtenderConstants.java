@@ -13,7 +13,7 @@ public class ExtenderConstants {
     public static final DigitalInput resetSensor =
             new DigitalInput(GlobalConstants.ExtenderIds.resetSensor);
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final InvertType kMasterInvert = InvertType.None;
+    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
 
     public static final double kRevTicksSoftLimit = 2000;
 

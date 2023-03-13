@@ -58,10 +58,6 @@ public class DrivetrainCommands {
                             -turnSpeedFunction.getAsDouble() * maxRotationRadpS * triggerSlow;
 
                     var translation = new Translation2d(motionXComponent, motionYComponent);
-                    translation =
-                            shouldFlip.getAsBoolean() && fieldOriented
-                                    ? translation.rotateBy(OneEightyRotation)
-                                    : translation;
 
                     if (autoSteer && fieldOriented) {
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();

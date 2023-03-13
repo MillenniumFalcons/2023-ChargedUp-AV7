@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,6 +38,10 @@ public class Superstructure {
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
         scoringPositionBySide = finder.getPositionBySide(getWantedSide());
+        if (getWantedLevel() == Level.Ground) {
+            // shift pose into the field so we don't kill the arm (+x if blue alliance, -x if red
+            // alliance)
+        }
         SmartDashboard.putString(
                 "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
     }
@@ -58,16 +61,12 @@ public class Superstructure {
         return Commands.parallel(
                 Commands.select(
                                 Map.of(
-                                        StationType.Single,
-                                        Commands.parallel(
-                                                rollersCommands.intake(), singleStation()),
                                         StationType.Double,
                                         Commands.parallel(
-                                                rollersCommands.intake(), doubleStation()),
+                                                rollersCommands.intakeCone(), doubleStation()),
                                         StationType.Ground,
                                         Commands.parallel(
-                                                rollersCommands.openloop(() -> -0.4),
-                                                groundIntake())),
+                                                rollersCommands.intakeCube(), groundIntake())),
                                 this::getWantedStation)
                         .until(recheckIntakeMode)
                         .repeatedly());
@@ -75,7 +74,7 @@ public class Superstructure {
 
     public Command stowFromIntake() {
         return Commands.parallel(
-                        rollersCommands.intake().withTimeout(1),
+                        rollersCommands.intakeCone().withTimeout(1),
                         Commands.select(
                                 Map.of(
                                         StationType.Single,
@@ -85,13 +84,15 @@ public class Superstructure {
                                         StationType.Ground,
                                         new WaitCommand(0.5).andThen(stow())),
                                 this::getWantedStation))
-                .andThen(rollersCommands.intake().withTimeout(0.5));
+                .andThen(rollersCommands.intakeCone().withTimeout(0.5));
     }
 
     public Command armToPieceFromSide() {
-        return new ConditionalCommand(armCube(), armCone(), () -> getWantedSide() == Side.Center)
-                .until(recheckSide)
-                .repeatedly();
+        return goToStateParallel(
+                () ->
+                        finder.getSuperstructureStateByPiece(
+                                getWantedLevel(),
+                                getWantedSide() == Side.Center ? GamePiece.Cube : GamePiece.Cone));
     }
 
     public Command armCone() {
@@ -105,7 +106,8 @@ public class Superstructure {
     }
 
     public Command goToStateParallel(SuperstructureState state) {
-        return Commands.run(() -> runPivotExtenderWrist(state), pivot, extender, wrist);
+        return Commands.run(() -> runPivotExtenderWrist(state), pivot, extender, wrist)
+                .until(() -> pivotExtenderReached(state));
     }
 
     public Command goToStateParallel(Supplier<SuperstructureState> getState) {
@@ -145,21 +147,15 @@ public class Superstructure {
         wrist.setAngle(wantedState.wristAngle);
     }
 
-    public boolean extenderLengthReached(double extenderLength, double wantedLength) {
-        return Math.abs(extenderLength - wantedLength) < 3000;
-    }
-
-    public boolean armAngleReached(double armAngle, double aimedAngle) {
-        if (armAngle < aimedAngle) {
-            return armAngle > aimedAngle * 0.8;
-        }
-        return aimedAngle < aimedAngle * 1.2;
+    public boolean pivotExtenderReached(SuperstructureState state) {
+        return extender.reachedPosition(state.length, 2000)
+                && pivot.angleReached(state.armAngle, 1.5);
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
                 pivotCommands.goDownDegrees(5),
-                rollersCommands.out().withTimeout(0.2),
+                rollersCommands.outCone().withTimeout(0.2),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stow());
     }
@@ -167,7 +163,7 @@ public class Superstructure {
     public Command scoreAndStowCube(double secsBetweenOpenAndStow) {
         return Commands.sequence(
                 pivotCommands.goDownDegrees(5),
-                rollersCommands.out().withTimeout(1),
+                rollersCommands.outCone().withTimeout(1),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stow());
     }
@@ -185,15 +181,7 @@ public class Superstructure {
     }
 
     public Command stow() {
-        return goToStateParallel(SuperstructureState.stow)
-                .until(
-                        () ->
-                                extenderLengthReached(
-                                                extender.getNativePos(),
-                                                SuperstructureState.stow.length)
-                                        && armAngleReached(
-                                                pivot.getAngle(),
-                                                SuperstructureState.stow.armAngle));
+        return goToStateParallel(SuperstructureState.stow);
     }
 
     public Command disableCompressor() {
@@ -274,8 +262,18 @@ public class Superstructure {
         return this.scoringPositionBySide;
     }
 
+    /**
+     * @return whether the current auto steer target exists, and if it exists whether it is within 1
+     *     meter from the robot
+     */
     public boolean validScoringPosition() {
-        return this.scoringPositionBySide != ScoringPosition.kNone;
+        return this.scoringPositionBySide != ScoringPosition.kNone
+                && this.scoringPositionBySide
+                                .pose
+                                .minus(drive.getOdoPose())
+                                .getTranslation()
+                                .getNorm()
+                        < 2;
     }
 
     // keep this at the bottom

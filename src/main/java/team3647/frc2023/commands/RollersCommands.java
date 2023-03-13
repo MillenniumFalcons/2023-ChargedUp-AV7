@@ -9,16 +9,24 @@ import team3647.frc2023.subsystems.Rollers;
 
 public class RollersCommands {
 
-    public Command intake() {
-        return Commands.run(rollers::intake, rollers);
+    public Command intakeCone() {
+        return Commands.run(rollers::intakeCone, rollers);
+    }
+
+    public Command intakeCube() {
+        return Commands.run(rollers::intakeCube, rollers);
     }
 
     public Command intakeGround() {
         return Commands.run(rollers::intakeGround, rollers);
     }
 
-    public Command out() {
-        return Commands.runEnd(rollers::outtake, rollers::end, rollers);
+    public Command outCone() {
+        return Commands.runEnd(rollers::outtakeCone, rollers::end, rollers);
+    }
+
+    public Command outCube() {
+        return Commands.runEnd(rollers::outtakeCube, rollers::end, rollers);
     }
 
     public Command openloop(DoubleSupplier speed) {

@@ -14,16 +14,24 @@ public class Rollers extends TalonFXSubsystem {
         super(motor, velocityConversion, positionConversion, nominalVoltage, kDt);
     }
 
-    public void intake() {
+    public void intakeCone() {
         super.setOpenloop(-1);
+    }
+
+    public void intakeCube() {
+        super.setOpenloop(0.5);
     }
 
     public void intakeGround() {
         super.setOpenloop(-0.5);
     }
 
-    public void outtake() {
-        super.setOpenloop(0.1);
+    public void outtakeCone() {
+        super.setOpenloop(0.4);
+    }
+
+    public void outtakeCube() {
+        super.setOpenloop(-0.4);
     }
 
     public void stop() {

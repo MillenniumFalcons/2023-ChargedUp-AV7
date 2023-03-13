@@ -90,9 +90,9 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !goodForAutosteer.getAsBoolean())
-                .whileTrue(superstructure.armToPieceFromSide());
+                .onTrue(superstructure.armToPieceFromSide());
 
-        mainController.rightTrigger.onFalse(superstructure.scoreAndStow(0));
+        mainController.leftBumper.onTrue(superstructure.scoreAndStow(0));
 
         mainController.rightStickMoved.onTrue(
                 Commands.waitUntil(mainController.rightStickMoved.negate())
@@ -105,8 +105,7 @@ public class RobotContainer {
                 .rightBumper
                 .onTrue(superstructure.intakeAutomatic())
                 .onFalse(superstructure.stowFromIntake());
-        coController.buttonA.onTrue(
-                superstructure.goToStateParallel(SuperstructureState.doubleStation));
+
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.One));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
@@ -119,7 +118,11 @@ public class RobotContainer {
 
         coController.dPadLeft.onTrue(superstructure.setWantedSideCommand(Side.Left));
         coController.dPadRight.onTrue(superstructure.setWantedSideCommand(Side.Right));
-        coController.dPadDown.onTrue(superstructure.setWantedSideCommand(Side.Center));
+        coController.dPadUp.onTrue(superstructure.setWantedSideCommand(Side.Center));
+        coController
+                .dPadDown
+                .onTrue(superstructure.setWantedLevelCommand(Level.Ground))
+                .onTrue(superstructure.setWantedStationCommand(StationType.Ground));
 
         coController.rightBumper.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
         coController.leftBumper.onTrue(superstructure.setWantedStationCommand(StationType.Double));

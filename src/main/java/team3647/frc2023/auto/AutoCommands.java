@@ -122,7 +122,7 @@ public class AutoCommands {
                 Commands.waitSeconds(1 - 0.5),
                 Commands.parallel(
                                 superstructure.groundIntake(),
-                                superstructure.rollersCommands.intake())
+                                superstructure.rollersCommands.intakeCone())
                         .withTimeout(2.5),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
@@ -141,7 +141,7 @@ public class AutoCommands {
                 Commands.waitSeconds(path3time * 0.2 - 3),
                 Commands.parallel(
                                 superstructure.groundIntake(),
-                                superstructure.rollersCommands.intake())
+                                superstructure.rollersCommands.intakeCone())
                         .withTimeout(path3time * 0.8 - 4 + path4time * 0.2 + 3),
                 superstructure.stow().withTimeout(0.4 + path4time * 0.4),
                 superstructure.goToStateParallel(SuperstructureState.coneThree),
@@ -156,7 +156,7 @@ public class AutoCommands {
                 Commands.waitSeconds(path1time * 0.2 - 3),
                 Commands.parallel(
                                 superstructure.groundIntake(),
-                                superstructure.rollersCommands.intake())
+                                superstructure.rollersCommands.intakeCone())
                         .withTimeout(path1time * 0.8 - 4 + path1time * 0.2 + 3),
                 superstructure.stow().withTimeout(0.8),
                 Commands.waitSeconds(path2time),
