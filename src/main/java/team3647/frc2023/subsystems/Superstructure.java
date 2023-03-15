@@ -96,7 +96,7 @@ public class Superstructure {
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
-                .finallyDo(interrupted -> stowFromIntake().schedule());
+                .andThen(stowFromIntake());
     }
 
     public Command intakeForGamePiece(Supplier<GamePiece> piece) {
