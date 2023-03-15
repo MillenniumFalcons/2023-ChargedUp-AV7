@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.TalonFXSubsystem;
 
 public class Extender extends TalonFXSubsystem {
@@ -35,6 +36,7 @@ public class Extender extends TalonFXSubsystem {
     }
 
     public void setLengthMeters(double meters) {
+        SmartDashboard.putNumber("extender set", meters);
         super.setPositionMotionMagic(MathUtil.clamp(meters, minLengthTicks, maxLengthTicks), 0);
     }
 

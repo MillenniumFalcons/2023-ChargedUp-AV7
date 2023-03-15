@@ -59,7 +59,7 @@ public class Superstructure {
             intakeGamePiece = GamePiece.Cone;
         }
 
-        if (getWantedLevel() == Level.Ground) {
+        if (getWantedLevel() == Level.Ground && scoringPositionBySide != ScoringPosition.kNone) {
             // shift pose into the field so we don't kill the arm +x
             scoringPositionBySide =
                     new ScoringPosition(
@@ -73,6 +73,8 @@ public class Superstructure {
         }
         SmartDashboard.putString(
                 "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
+        SmartDashboard.putString(
+                "Manual Game Piece", gamePieceForManual == GamePiece.Cone ? "CONE" : "CUBE");
     }
 
     public Command scoreStowHalfSecDelay() {
@@ -96,7 +98,7 @@ public class Superstructure {
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
-                .andThen(stowFromIntake());
+                .finallyDo(interrupted -> stowFromIntake().schedule());
     }
 
     public Command intakeForGamePiece(Supplier<GamePiece> piece) {
@@ -149,13 +151,13 @@ public class Superstructure {
     private final double kMaxRotationLength = 15000;
 
     private void runPivotExtenderWrist(SuperstructureState wantedState) {
-        boolean currentBelowMaxRotateLength = extender.getNativePos() < kMaxRotationLength + 500;
-        boolean nextBelowMaxRotateLength = wantedState.length < kMaxRotationLength + 500;
+        boolean currentBelowMaxRotateLength = extender.getNativePos() < kMaxRotationLength + 2048;
+        boolean nextBelowMaxRotateLength = wantedState.length <= kMaxRotationLength;
         boolean needsRotate = !pivot.angleReached(wantedState.armAngle, 5);
         boolean needsExtend = !extender.reachedPosition(wantedState.length, 5000);
         boolean closeEnoughForParallel = pivot.angleReached(wantedState.armAngle, 8);
         double nextExtender =
-                currentBelowMaxRotateLength ? extender.getNativePos() : kMaxRotationLength;
+                currentBelowMaxRotateLength ? extender.getNativePos() : kMaxRotationLength - 2048;
         double nextPivot = pivot.getAngle();
         if (needsRotate && !closeEnoughForParallel) {
             if (currentBelowMaxRotateLength && nextBelowMaxRotateLength) {
@@ -174,40 +176,38 @@ public class Superstructure {
         SmartDashboard.putNumber("Wanted Wrist", wantedState.wristAngle);
         SmartDashboard.putNumber("Wanted extender", nextExtender);
         SmartDashboard.putNumber("Wanted pivot", nextPivot);
+        System.out.println("RunPivotExtender");
         pivot.setAngle(nextPivot);
         extender.setLengthMeters(nextExtender);
         wrist.setAngle(wantedState.wristAngle);
     }
 
     public boolean pivotExtenderReached(SuperstructureState state) {
-        return extender.reachedPosition(state.length, 2000)
-                && pivot.angleReached(state.armAngle, 1.5);
+        return extender.reachedPosition(state.length, 5000)
+                && pivot.angleReached(state.armAngle, 1.5)
+                && wrist.angleReached(state.wristAngle, 2);
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
                 new ConditionalCommand(
-                                score(getScoringPosition().piece),
-                                score(gamePieceForManual),
+                                score(() -> getScoringPosition().piece),
+                                score(() -> gamePieceForManual),
                                 () -> this.isAutoSteerEnabled)
                         .withTimeout(0.5),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stowScore());
     }
 
-    public Command score(GamePiece piece) {
+    public Command score(Supplier<GamePiece> piece) {
         return new ConditionalCommand(
                 rollersCommands.outCone(),
                 rollersCommands.outCube(),
-                () -> piece == GamePiece.Cone);
+                () -> piece.get() == GamePiece.Cone);
     }
 
     public Command scoreAndStowCube(double secsBetweenOpenAndStow) {
-        return Commands.sequence(
-                pivotCommands.goDownDegrees(5),
-                rollersCommands.outCone().withTimeout(1),
-                Commands.waitSeconds(secsBetweenOpenAndStow),
-                stowScore());
+        return Commands.none();
     }
 
     public Command doubleStation() {

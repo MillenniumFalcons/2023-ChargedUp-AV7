@@ -32,7 +32,7 @@ public class Wrist extends TalonFXSubsystem {
     }
 
     public void setAngle(double angle) {
-        SmartDashboard.putNumber("setting angle", angle);
+        SmartDashboard.putNumber("Wrist set", angle);
         this.setPositionMotionMagic(angle, 0);
     }
 

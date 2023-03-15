@@ -97,10 +97,7 @@ public class RobotContainer {
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
 
-        mainController
-                .rightBumper
-                .whileTrue(superstructure.intakeAutomatic())
-                .onFalse(superstructure.stowFromIntake());
+        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));

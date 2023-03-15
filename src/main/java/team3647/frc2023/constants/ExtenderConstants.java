@@ -30,7 +30,7 @@ public class ExtenderConstants {
     public static final double kMaxAccelerationTicks = 30000.0;
 
     public static final double kMinimumPositionTicks = 0;
-    public static final double kMaximumPositionTicks = 80000.0;
+    public static final double kMaximumPositionTicks = 56000.0;
 
     public static final double kS = 0.0;
     public static final double kV = 0.0;
