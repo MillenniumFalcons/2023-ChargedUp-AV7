@@ -42,7 +42,7 @@ public class PositionFinder {
         }
 
         if (!this.levelAndPieceToSuperstrucutreState.containsKey(wantedLevel)) {
-            return SuperstructureState.stow; // stow position
+            return SuperstructureState.stowIntake; // stow position
         }
 
         var pieceToState = levelAndPieceToSuperstrucutreState.get(wantedLevel);

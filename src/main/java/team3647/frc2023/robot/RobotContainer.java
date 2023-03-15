@@ -57,7 +57,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, visionController);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, visionController, rollers);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -97,12 +97,15 @@ public class RobotContainer {
                                         autoSteer.lockHeading(
                                                 Units.degreesToRadians(swerve.getHeading()))));
 
-        mainController.rightBumper.onTrue(superstructure.intakeAutomatic());
+        mainController
+                .rightBumper
+                .whileTrue(superstructure.intakeAutomatic())
+                .onFalse(superstructure.stowFromIntake());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
         coController.buttonY.onTrue(superstructure.setWantedLevelCommand(Level.Three));
-        coController.buttonX.onTrue(superstructure.stow());
+        coController.buttonX.onTrue(superstructure.stowAll());
 
         coController.dPadLeft.onTrue(superstructure.setWantedSideCommand(Side.Left));
         coController.dPadRight.onTrue(superstructure.setWantedSideCommand(Side.Right));
@@ -134,9 +137,8 @@ public class RobotContainer {
                         () -> true,
                         autoSteer::findVelocities));
 
-        wrist.setDefaultCommand(superstructure.wristCommands.openloop(coController::getLeftStickY));
+        wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
-
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
 

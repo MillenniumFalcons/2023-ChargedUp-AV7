@@ -31,113 +31,46 @@ public class SuperstructureState {
         this(armAngle, length, WristConstants.kHoldPosition, name);
     }
 
-    public static final double kAdjustment = -4;
-    public static final SuperstructureState stow =
-            new SuperstructureState(
-                    PivotConstants.kInitialAngle, ExtenderConstants.kMinimumPositionTicks, "stow");
-
     public static final SuperstructureState groundIntake =
             new SuperstructureState(
-                    189.5, ExtenderConstants.kMinimumPositionTicks, "ground intake");
+                    193.6, ExtenderConstants.kMinimumPositionTicks, 62, "ground intake cone");
 
-    public static final SuperstructureState groundIntakeReverse =
-            new SuperstructureState(
-                    180 - groundIntake.armAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "ground intake reverse");
-
-    public static final SuperstructureState singleStation =
-            new SuperstructureState(146, ExtenderConstants.kMinimumPositionTicks, "station");
+    //     public static final SuperstructureState groundIntakeCube =
+    //             new SuperstructureState(
+    //                     193.6, ExtenderConstants.kMinimumPositionTicks, 73, "ground intake
+    // cube");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(
-                    122.2,
-                    ExtenderConstants.kDoubleStation,
-                    WristConstants.kDoubleStationDegrees,
-                    "double station");
-
-    public static final SuperstructureState doubleStationReversed =
-            new SuperstructureState(
-                    180 - doubleStation.armAngle,
-                    ExtenderConstants.kDoubleStation,
-                    "double station reversed");
+            new SuperstructureState(120, ExtenderConstants.kDoubleStation, 112, "double station");
 
     public static final SuperstructureState coneOne =
-            new SuperstructureState(
-                    150 + kAdjustment,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    WristConstants.kConeScoreAngle,
-                    "cone low");
+            new SuperstructureState(180, ExtenderConstants.kMinimumPositionTicks, 108, "cone low");
     public static final SuperstructureState coneTwo =
             new SuperstructureState(
-                    145 + kAdjustment - 2,
-                    ExtenderConstants.kLevelTwoExtendCone,
-                    WristConstants.kConeScoreAngle,
-                    "cone mid");
+                    137.4, ExtenderConstants.kLevelTwoExtendCone, 136.6, "cone mid");
     public static final SuperstructureState coneThree =
             new SuperstructureState(
-                    141 + kAdjustment,
-                    ExtenderConstants.kLevelThreeExtendCone,
-                    WristConstants.kConeScoreAngle,
-                    "cone high");
+                    137.4, ExtenderConstants.kLevelThreeExtendCone, 136.6, "cone high");
 
-    public static final SuperstructureState coneOneReversed =
-            new SuperstructureState(
-                    180 - coneOne.armAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "cone reversed low");
-    public static final SuperstructureState coneTwoReversed =
-            new SuperstructureState(
-                    180 - coneTwo.armAngle,
-                    ExtenderConstants.kLevelTwoExtendCone,
-                    "cone reversed mid");
+    // bade need to measure wrist
     public static final SuperstructureState coneThreeReversed =
             new SuperstructureState(
-                    180 - coneThree.armAngle,
-                    ExtenderConstants.kLevelThreeExtendCone - 4000,
-                    "cone reversed high");
+                    180 - 137.4,
+                    ExtenderConstants.kLevelThreeExtendCone,
+                    136.6,
+                    "cone high reversed");
 
-    public static final double kAngleAdjustment = 4.0;
     public static final SuperstructureState cubeZero =
-            new SuperstructureState(
-                    groundIntake.armAngle - 6 - kAngleAdjustment,
-                    WristConstants.kCubeScoreAngle,
-                    groundIntake.length,
-                    "cube zero");
-    public static final SuperstructureState cubeOne =
-            new SuperstructureState(
-                    125 - 5 - kAngleAdjustment,
-                    WristConstants.kCubeScoreAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "cube low");
-    public static final SuperstructureState cubeTwo =
-            new SuperstructureState(
-                    147.6 - 5 - kAngleAdjustment,
-                    WristConstants.kCubeScoreAngle,
-                    ExtenderConstants.kLevelTwoExtendCube,
-                    "cube mid");
-    public static final SuperstructureState cubeThree =
-            new SuperstructureState(
-                    145.3 - 5 - kAngleAdjustment,
-                    WristConstants.kCubeScoreAngle,
-                    ExtenderConstants.kLevelThreeExtendCube,
-                    "cube high");
+            new SuperstructureState(180, ExtenderConstants.kMinimumPositionTicks, 108, "cube zero");
 
-    public static final SuperstructureState cubeOneReversed =
-            new SuperstructureState(
-                    180 - cubeOne.armAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
-                    "cube reversed low");
-    public static final SuperstructureState cubeTwoReversed =
-            new SuperstructureState(
-                    180 - cubeTwo.armAngle,
-                    ExtenderConstants.kLevelTwoExtendCube,
-                    "cube reversed mid");
+    public static final SuperstructureState cubeTwo =
+            new SuperstructureState(146.5, 3300, 146.5, "cube mid");
+    public static final SuperstructureState cubeThree =
+            new SuperstructureState(146.5, 3300, 79, "cube high");
+
+    // bade need to measure wrist
     public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(
-                    180 - cubeThree.armAngle,
-                    ExtenderConstants.kLevelThreeExtendCube,
-                    "cube reversed high");
+            new SuperstructureState(180 - 146.5, 3300, 79, "cube high reversed");
 
     public static final SuperstructureState noLevel =
             new SuperstructureState(
@@ -145,12 +78,30 @@ public class SuperstructureState {
                     ExtenderConstants.kMinimumPositionTicks,
                     "no level");
 
+    public static final SuperstructureState stowScore =
+            new SuperstructureState(
+                    doubleStation.armAngle,
+                    ExtenderConstants.kMinimumPositionTicks,
+                    doubleStation.wristAngle,
+                    "stow");
+
+    public static final SuperstructureState stowIntake =
+            new SuperstructureState(
+                    doubleStation.armAngle, ExtenderConstants.kMinimumPositionTicks, 30, "stow");
+
+    public static final SuperstructureState stowAll =
+            new SuperstructureState(
+                    PivotConstants.kInitialAngle,
+                    ExtenderConstants.kMinimumPositionTicks,
+                    30,
+                    "stow");
+
     public static final Map<Level, Map<GamePiece, SuperstructureState>> kLevelPieceMap =
             Map.of(
                     Level.One,
                     Map.of(
                             GamePiece.Cone, coneOne,
-                            GamePiece.Cube, cubeOne),
+                            GamePiece.Cube, cubeZero),
                     Level.Two,
                     Map.of(
                             GamePiece.Cone, coneTwo,
@@ -166,6 +117,5 @@ public class SuperstructureState {
     public static final Map<StationType, SuperstructureState> kIntakePositionsMap =
             Map.of(
                     StationType.Double, doubleStation,
-                    StationType.Single, singleStation,
                     StationType.Ground, groundIntake);
 }

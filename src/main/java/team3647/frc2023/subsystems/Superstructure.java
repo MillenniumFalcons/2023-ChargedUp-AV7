@@ -111,13 +111,25 @@ public class Superstructure {
                 rollers);
     }
 
+    public Command holdForGamePiece(Supplier<GamePiece> piece) {
+        return Commands.run(
+                () -> {
+                    if (piece.get() == GamePiece.Cone) {
+                        rollers.setOpenloop(-0.05);
+                    } else {
+                        rollers.setOpenloop(0.01);
+                    }
+                },
+                rollers);
+    }
+
     public Command waitForCurrentSpike() {
         return Commands.sequence(
                 Commands.waitSeconds(1), Commands.waitUntil(() -> rollers.getMasterCurrent() > 20));
     }
 
     public Command stowFromIntake() {
-        return Commands.deadline(stow(), intakeForGamePiece(() -> this.intakeGamePiece));
+        return Commands.deadline(stowIntake(), holdForGamePiece(() -> this.intakeGamePiece));
     }
 
     public Command armToPieceFromSide() {
@@ -180,7 +192,7 @@ public class Superstructure {
                                 () -> this.isAutoSteerEnabled)
                         .withTimeout(0.5),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
-                stow());
+                stowScore());
     }
 
     public Command score(GamePiece piece) {
@@ -195,11 +207,7 @@ public class Superstructure {
                 pivotCommands.goDownDegrees(5),
                 rollersCommands.outCone().withTimeout(1),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
-                stow());
-    }
-
-    public Command singleStation() {
-        return goToStateParallel(SuperstructureState.singleStation);
+                stowScore());
     }
 
     public Command doubleStation() {
@@ -211,7 +219,19 @@ public class Superstructure {
     }
 
     public Command stow() {
-        return goToStateParallel(SuperstructureState.stow);
+        return goToStateParallel(SuperstructureState.stowAll);
+    }
+
+    public Command stowIntake() {
+        return goToStateParallel(SuperstructureState.stowIntake);
+    }
+
+    public Command stowScore() {
+        return goToStateParallel(SuperstructureState.stowScore);
+    }
+
+    public Command stowAll() {
+        return goToStateParallel(SuperstructureState.stowAll);
     }
 
     public Command disableCompressor() {

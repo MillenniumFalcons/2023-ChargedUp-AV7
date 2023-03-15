@@ -13,7 +13,7 @@ public class ExtenderConstants {
     public static final DigitalInput resetSensor =
             new DigitalInput(GlobalConstants.ExtenderIds.resetSensor);
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    public static final InvertType kMasterInvert = InvertType.None;
 
     public static final double kRevTicksSoftLimit = 2000;
 
@@ -45,15 +45,15 @@ public class ExtenderConstants {
     public static final double nominalVoltage = 11.0;
 
     /** ticks */
-    public static final double kLevelTwoExtendCone = 25006; // 32000 * 0.75;
+    public static final double kLevelTwoExtendCone = 22601; // 32000 * 0.75;
     /** ticks */
-    public static final double kLevelThreeExtendCone = 55870 * 1.1; // 78500 * 0.75;
+    public static final double kLevelThreeExtendCone = 53760; // 78500 * 0.75;
     /** ticks */
     public static final double kLevelTwoExtendCube = 0; // 30000 * 0.75;
     /** ticks */
     public static final double kLevelThreeExtendCube = 31929; // 74000 * 0.75;
 
-    public static final double kDoubleStation = 8000;
+    public static final double kDoubleStation = 8600;
 
     static {
         kMaster.configFactoryDefault();

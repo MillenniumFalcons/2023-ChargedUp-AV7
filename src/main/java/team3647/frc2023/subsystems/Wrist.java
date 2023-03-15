@@ -1,6 +1,7 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.TalonFXSubsystem;
 
 public class Wrist extends TalonFXSubsystem {
@@ -31,6 +32,7 @@ public class Wrist extends TalonFXSubsystem {
     }
 
     public void setAngle(double angle) {
+        SmartDashboard.putNumber("setting angle", angle);
         this.setPositionMotionMagic(angle, 0);
     }
 
