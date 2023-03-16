@@ -226,8 +226,12 @@ public class Superstructure {
         return goToStateParallel(SuperstructureState.doubleStation);
     }
 
-    public Command groundIntake() {
+    public Command groundIntakeCone() {
         return goToStateParallel(SuperstructureState.groundIntakeCone);
+    }
+
+    public Command groundIntakeCube() {
+        return goToStateParallel(SuperstructureState.groundIntakeCube);
     }
 
     public Command stow() {

@@ -91,12 +91,26 @@ public class AutoCommands {
                 new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
     }
 
-    private Command getSupestructureSequenceConeCube() {
+    private Command getSupestructureSequenceConeCubeFlat() {
         return Commands.sequence(
                 justScore(() -> SuperstructureState.coneThreeReversed),
                 Commands.waitSeconds(2),
                 Commands.parallel(
-                                superstructure.groundIntake(),
+                                superstructure.groundIntakeCube(),
+                                superstructure.rollersCommands.intakeCube())
+                        .withTimeout(2.5),
+                superstructure.stow().withTimeout(2),
+                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                superstructure.scoreAndStowCube(1));
+    }
+
+    private Command getSupestructureSequenceConeCubeBump() {
+        return Commands.sequence(
+                justScore(() -> SuperstructureState.coneThreeReversed),
+                // longer weight so the intake doesn't deploy on the bump and kill itself
+                Commands.waitSeconds(2.7),
+                Commands.parallel(
+                                superstructure.groundIntakeCube(),
                                 superstructure.rollersCommands.intakeCube())
                         .withTimeout(2.5),
                 superstructure.stow().withTimeout(2),
@@ -125,8 +139,12 @@ public class AutoCommands {
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceBumpSide.kGoToBalance,
-                                        color)));
-        return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCube());
+                                        color)),
+                        // lock wheels so no slip
+                        superstructure.drivetrainCommands.robotRelativeDrive(
+                                new Translation2d(), FieldConstants.kZero, 0.3));
+
+        return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCubeBump());
     }
 
     public Command coneCubeBalanceFlatSide(Alliance color) {
@@ -145,9 +163,13 @@ public class AutoCommands {
                         Commands.waitSeconds(1.2),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeBalanceFlatSide.kThirdTrajectory,
-                                        color)));
-        return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCube());
+                                        Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance,
+                                        color)),
+                        // lock wheels so no slip
+                        superstructure.drivetrainCommands.robotRelativeDrive(
+                                new Translation2d(), FieldConstants.kZero, 0.3));
+
+        return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCubeFlat());
     }
 
     public Command justScore(Supplier<SuperstructureState> state) {
