@@ -36,6 +36,7 @@ public class Superstructure {
     private GamePiece gamePieceForManual = GamePiece.Cone;
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStation;
     private GamePiece intakeGamePiece = GamePiece.Cone;
+    private GamePiece currentGamePiece = GamePiece.Cone;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.4, 0);
 
@@ -46,17 +47,13 @@ public class Superstructure {
                 getWantedSide() == Side.Center || getWantedLevel() == Level.Ground
                         ? GamePiece.Cube
                         : GamePiece.Cone;
-        wantedIntakeState =
-                getWantedStation() == StationType.Ground
-                        ? SuperstructureState.groundIntake
-                        : SuperstructureState.doubleStation;
-
-        var defaultPiece = !switchPiece.getAsBoolean();
-        boolean groundIntake = getWantedStation() == StationType.Ground;
-        if (groundIntake == defaultPiece) {
-            intakeGamePiece = GamePiece.Cube;
+        if (getWantedStation() == StationType.Ground) {
+            wantedIntakeState =
+                    intakeGamePiece == GamePiece.Cone
+                            ? SuperstructureState.groundIntakeCone
+                            : SuperstructureState.groundIntakeCube;
         } else {
-            intakeGamePiece = GamePiece.Cone;
+            wantedIntakeState = SuperstructureState.doubleStation;
         }
 
         if (getWantedLevel() == Level.Ground && scoringPositionBySide != ScoringPosition.kNone) {
@@ -98,7 +95,11 @@ public class Superstructure {
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
-                .finallyDo(interrupted -> stowFromIntake().schedule());
+                .finallyDo(
+                        interrupted -> {
+                            this.currentGamePiece = this.intakeGamePiece;
+                            stowFromIntake().schedule();
+                        });
     }
 
     public Command intakeForGamePiece(Supplier<GamePiece> piece) {
@@ -111,6 +112,10 @@ public class Superstructure {
                     }
                 },
                 rollers);
+    }
+
+    public Command holdForCurrentGamePiece() {
+        return holdForGamePiece(() -> this.currentGamePiece);
     }
 
     public Command holdForGamePiece(Supplier<GamePiece> piece) {
@@ -131,7 +136,7 @@ public class Superstructure {
     }
 
     public Command stowFromIntake() {
-        return Commands.deadline(stowIntake(), holdForGamePiece(() -> this.intakeGamePiece));
+        return Commands.deadline(stowIntake(), holdForCurrentGamePiece());
     }
 
     public Command armToPieceFromSide() {
@@ -222,7 +227,7 @@ public class Superstructure {
     }
 
     public Command groundIntake() {
-        return goToStateParallel(SuperstructureState.groundIntake);
+        return goToStateParallel(SuperstructureState.groundIntakeCone);
     }
 
     public Command stow() {
@@ -261,6 +266,10 @@ public class Superstructure {
         return Commands.runOnce(() -> setWantedSide(side));
     }
 
+    public Command setWantedIntakeGamePieceCommand(GamePiece piece) {
+        return Commands.runOnce(() -> this.intakeGamePiece = piece);
+    }
+
     public Command enableAutoSteer() {
         return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
     }
@@ -291,6 +300,10 @@ public class Superstructure {
 
     public void setWantedSide(Side side) {
         this.wantedSide = side;
+    }
+
+    public void setWantedIntakeGamePiece(GamePiece piece) {
+        this.intakeGamePiece = piece;
     }
 
     public boolean autoSteerEnabled() {

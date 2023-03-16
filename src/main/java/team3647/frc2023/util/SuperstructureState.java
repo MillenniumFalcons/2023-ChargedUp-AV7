@@ -31,14 +31,13 @@ public class SuperstructureState {
         this(armAngle, length, WristConstants.kHoldPosition, name);
     }
 
-    public static final SuperstructureState groundIntake =
+    public static final SuperstructureState groundIntakeCone =
             new SuperstructureState(
-                    193.6, ExtenderConstants.kMinimumPositionTicks, 62, "ground intake cone");
+                    189, ExtenderConstants.kMinimumPositionTicks, 62, "ground intake cone");
 
-    //     public static final SuperstructureState groundIntakeCube =
-    //             new SuperstructureState(
-    //                     193.6, ExtenderConstants.kMinimumPositionTicks, 73, "ground intake
-    // cube");
+    public static final SuperstructureState groundIntakeCube =
+            new SuperstructureState(
+                    195, ExtenderConstants.kMinimumPositionTicks, 57, "ground intake cube");
 
     public static final SuperstructureState doubleStation =
             new SuperstructureState(120, ExtenderConstants.kDoubleStation, 112, "double station");
@@ -46,11 +45,9 @@ public class SuperstructureState {
     public static final SuperstructureState coneOne =
             new SuperstructureState(180, ExtenderConstants.kMinimumPositionTicks, 108, "cone low");
     public static final SuperstructureState coneTwo =
-            new SuperstructureState(
-                    137.4, ExtenderConstants.kLevelTwoExtendCone, 136.6, "cone mid");
+            new SuperstructureState(136.8, 13584, 111, "cone mid");
     public static final SuperstructureState coneThree =
-            new SuperstructureState(
-                    137.4, ExtenderConstants.kLevelThreeExtendCone, 136.6, "cone high");
+            new SuperstructureState(139, 44500, 102.7, "cone high");
 
     // bade need to measure wrist
     public static final SuperstructureState coneThreeReversed =
@@ -60,9 +57,9 @@ public class SuperstructureState {
             new SuperstructureState(180, ExtenderConstants.kMinimumPositionTicks, 108, "cube zero");
 
     public static final SuperstructureState cubeTwo =
-            new SuperstructureState(146.5, 3300, 146.5, "cube mid");
+            new SuperstructureState(142, 10500, 85, "cube mid");
     public static final SuperstructureState cubeThree =
-            new SuperstructureState(146.5, 3300, 79, "cube high");
+            new SuperstructureState(142, 43372, 93.5, "cube high");
 
     // bade need to measure wrist
     public static final SuperstructureState cubeThreeReversed =
@@ -113,5 +110,5 @@ public class SuperstructureState {
     public static final Map<StationType, SuperstructureState> kIntakePositionsMap =
             Map.of(
                     StationType.Double, doubleStation,
-                    StationType.Ground, groundIntake);
+                    StationType.Ground, groundIntakeCone);
 }
