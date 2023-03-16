@@ -18,7 +18,7 @@ public final class WristConstants {
 
     public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
-    private static final double masterKP = 0.3;
+    private static final double masterKP = 5;
     private static final double masterKI = 0;
     private static final double masterKD = 0;
 

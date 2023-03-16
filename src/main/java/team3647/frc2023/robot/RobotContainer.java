@@ -22,6 +22,7 @@ import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
 import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.constants.WristConstants;
+import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.robot.PositionFinder.ScoringPosition;
 import team3647.frc2023.robot.PositionFinder.Side;
@@ -108,14 +109,25 @@ public class RobotContainer {
         coController.dPadRight.onTrue(superstructure.setWantedSideCommand(Side.Right));
         coController.dPadUp.onTrue(superstructure.setWantedSideCommand(Side.Center));
 
-        coController.rightBumper.onTrue(superstructure.setWantedStationCommand(StationType.Ground));
-        coController.leftBumper.onTrue(superstructure.setWantedStationCommand(StationType.Double));
-
+        coController
+                .rightBumper
+                .or(coController.leftBumper)
+                .onTrue(superstructure.setWantedStationCommand(StationType.Double));
         coController
                 .rightTrigger
-                .whileTrue(superstructure.pivotCommands.openloop(coController::getRightStickY))
-                .whileTrue(
-                        superstructure.extenderCommands.openLoopSlow(coController::getLeftStickY));
+                .or(coController.leftTrigger)
+                .onTrue(superstructure.setWantedStationCommand(StationType.Ground));
+
+        coController
+                .leftBumper
+                .or(coController.leftTrigger)
+                .onTrue(superstructure.setWantedIntakeGamePieceCommand(GamePiece.Cone));
+
+        coController
+                .rightBumper
+                .or(coController.rightTrigger)
+                .onTrue(superstructure.setWantedIntakeGamePieceCommand(GamePiece.Cube));
+
         coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
     }
@@ -136,6 +148,10 @@ public class RobotContainer {
         wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
+    }
+
+    public void teleopInit() {
+        rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
     }
 
     void configTestCommands() {
