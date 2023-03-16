@@ -199,6 +199,13 @@ public class Superstructure {
                 stowScore());
     }
 
+    public Command scoreAndStowConeReversed() {
+        return Commands.sequence(
+                rollersCommands.openloop(() -> -0.4).withTimeout(0.2),
+                Commands.waitSeconds(0.5),
+                stowScore());
+    }
+
     public Command score(Supplier<GamePiece> piece) {
         return new ConditionalCommand(
                 rollersCommands.outCone(),

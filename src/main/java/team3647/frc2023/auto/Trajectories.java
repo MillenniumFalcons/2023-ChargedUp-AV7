@@ -35,7 +35,7 @@ public final class Trajectories {
                                     fromPose(kEnd, Rotation2d.fromDegrees(-90))));
         }
 
-        public static final class ConeCubeBumpSide {
+        public static final class ConeCubeBalanceBumpSide {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
             private static final Pose2d kFirstPathFinal =
@@ -72,7 +72,7 @@ public final class Trajectories {
                                     fromPose(kThirdPathFinal, FieldConstants.kZero)));
         }
 
-        public static final class ConeCubeFlatSide {
+        public static final class ConeCubeBalanceFlatSide {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 3.85, FieldConstants.kZero);
             private static final Pose2d kFirstPathWaypoint1 =
@@ -87,13 +87,12 @@ public final class Trajectories {
             private static final Pose2d kSecondPathFinal =
                     new Pose2d(1.80, 4.39, FieldConstants.kZero);
 
-            private static final Pose2d kThirdPathInitial = kSecondPathFinal;
+            private static final Pose2d kThirdPathInitial =
+                    new Pose2d(1.80, 4.39, FieldConstants.kZero);
+            private static final Pose2d kThirdPathWaypoint1 =
+                    new Pose2d(5.77, 3.86, FieldConstants.kZero);
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(6.95, 3.60, Rotation2d.fromDegrees(-60));
-
-            private static final Pose2d kFourthPathInitial = kThirdPathFinal;
-            private static final Pose2d kFourthPathFinal =
-                    new Pose2d(1.8, 4.95, FieldConstants.kOneEighty);
+                    new Pose2d(3.5, 2.75, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
@@ -113,60 +112,8 @@ public final class Trajectories {
                     PathPlanner.generatePath(
                             fastConstraints,
                             List.of(
-                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(50)),
-                                    fromPose(kThirdPathFinal, Rotation2d.fromDegrees(-50))));
-            public static final PathPlannerTrajectory kFourthTrajectory =
-                    PathPlanner.generatePath(
-                            fastConstraints,
-                            List.of(
-                                    fromPose(kFourthPathInitial, Rotation2d.fromDegrees(120.00)),
-                                    fromPose(kFourthPathFinal, FieldConstants.kOneEighty)));
-        }
-
-        public static final class ConeConeBalanceFlatSide {
-            // TODO WRITE TRAJECT IN, STUFF IN PATH PLANNER
-            public static final Pose2d kFirstPathInitial =
-                    new Pose2d(1.80, 3.85, FieldConstants.kZero);
-            private static final Pose2d kFirstPathWaypoint1 =
-                    new Pose2d(4.61, 4.73, FieldConstants.kZero);
-            private static final Pose2d kFirstPathFinal =
-                    new Pose2d(6.90, 4.60, FieldConstants.kZero);
-
-            private static final Pose2d kSecondPathInitial = kFirstPathFinal;
-            private static final Pose2d kSecondPathWaypoint1 =
-                    new Pose2d(4.03, 4.73, FieldConstants.kZero);
-            private static final Pose2d kSecondPathFinal =
-                    new Pose2d(1.80, 4.95, FieldConstants.kZero);
-
-            private static final Pose2d kThirdPathInitial = kSecondPathFinal;
-            private static final Pose2d kThirdPathWaypoint1 =
-                    new Pose2d(5.77, 4.69, FieldConstants.kOneEighty);
-            private static final Pose2d kThirdPathWaypoint2 =
-                    new Pose2d(5.88, 3.08, FieldConstants.kOneEighty);
-            private static final Pose2d kThirdPathFinal =
-                    new Pose2d(3.6, 3.00, FieldConstants.kOneEighty);
-
-            public static final PathPlannerTrajectory kFirstTrajectory =
-                    PathPlanner.generatePath(
-                            fastConstraints,
-                            List.of(
-                                    fromPose(kFirstPathInitial, FieldConstants.kNinety),
-                                    fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
-                                    fromPose(kFirstPathFinal, FieldConstants.kZero)));
-            public static final PathPlannerTrajectory kSecondTrajectory =
-                    PathPlanner.generatePath(
-                            fastConstraints,
-                            List.of(
-                                    fromPose(kSecondPathInitial, FieldConstants.kOneEighty),
-                                    fromPose(kSecondPathWaypoint1, FieldConstants.kOneEighty),
-                                    fromPose(kSecondPathFinal, FieldConstants.kOneEighty)));
-            public static final PathPlannerTrajectory kThirdTrajectory =
-                    PathPlanner.generatePath(
-                            fastConstraints,
-                            List.of(
-                                    fromPose(kThirdPathInitial, FieldConstants.kZero),
-                                    fromPose(kThirdPathWaypoint1, Rotation2d.fromDegrees(35.41)),
-                                    fromPose(kThirdPathWaypoint2, Rotation2d.fromDegrees(-90.00)),
+                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(45)),
+                                    fromPose(kThirdPathWaypoint1, Rotation2d.fromDegrees(-90)),
                                     fromPose(kThirdPathFinal, FieldConstants.kOneEighty)));
         }
 
@@ -192,13 +139,13 @@ public final class Trajectories {
         public static final class ConeCubeBumpSide {
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlannerTrajectory.transformTrajectoryForAlliance(
-                            Blue.ConeCubeBumpSide.kFirstTrajectory, Alliance.Red);
+                            Blue.ConeCubeBalanceBumpSide.kFirstTrajectory, Alliance.Red);
             public static final PathPlannerTrajectory kSecondTrajectory =
                     PathPlannerTrajectory.transformTrajectoryForAlliance(
-                            Blue.ConeCubeBumpSide.kSecondTrajectory, Alliance.Red);
+                            Blue.ConeCubeBalanceBumpSide.kSecondTrajectory, Alliance.Red);
             public static final PathPlannerTrajectory kGoToBalance =
                     PathPlannerTrajectory.transformTrajectoryForAlliance(
-                            Blue.ConeCubeBumpSide.kGoToBalance, Alliance.Red);
+                            Blue.ConeCubeBalanceBumpSide.kGoToBalance, Alliance.Red);
         }
 
         private Red() {}
