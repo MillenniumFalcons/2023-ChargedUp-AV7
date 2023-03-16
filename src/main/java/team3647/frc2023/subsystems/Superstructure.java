@@ -97,8 +97,8 @@ public class Superstructure {
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
                 .finallyDo(
                         interrupted -> {
-                            stowFromIntake().schedule();
                             this.currentGamePiece = this.intakeGamePiece;
+                            stowFromIntake().schedule();
                         });
     }
 
@@ -136,7 +136,7 @@ public class Superstructure {
     }
 
     public Command stowFromIntake() {
-        return Commands.deadline(stowIntake(), holdForGamePiece(() -> this.intakeGamePiece));
+        return Commands.deadline(stowIntake(), holdForCurrentGamePiece());
     }
 
     public Command armToPieceFromSide() {
