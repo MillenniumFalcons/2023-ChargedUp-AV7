@@ -54,11 +54,7 @@ public class SuperstructureState {
 
     // bade need to measure wrist
     public static final SuperstructureState coneThreeReversed =
-            new SuperstructureState(
-                    180 - 137.4,
-                    ExtenderConstants.kLevelThreeExtendCone,
-                    136.6,
-                    "cone high reversed");
+            new SuperstructureState(35, 48655, 84.1, "cone high reversed");
 
     public static final SuperstructureState cubeZero =
             new SuperstructureState(180, ExtenderConstants.kMinimumPositionTicks, 108, "cube zero");
@@ -70,7 +66,7 @@ public class SuperstructureState {
 
     // bade need to measure wrist
     public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(180 - 146.5, 3300, 79, "cube high reversed");
+            new SuperstructureState(38, 38694, 22.9, "cube high reversed");
 
     public static final SuperstructureState noLevel =
             new SuperstructureState(
