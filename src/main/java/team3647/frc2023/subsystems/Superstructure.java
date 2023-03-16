@@ -194,7 +194,7 @@ public class Superstructure {
                                 score(() -> getScoringPosition().piece),
                                 score(() -> gamePieceForManual),
                                 () -> this.isAutoSteerEnabled)
-                        .withTimeout(0.5),
+                        .withTimeout(0.2),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stowScore());
     }
