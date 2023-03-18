@@ -1,12 +1,14 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.TalonFXSubsystem;
 
 public class Wrist extends TalonFXSubsystem {
     private final double minDegree;
     private final double maxDegree;
+    private final double kG;
 
     public Wrist(
             TalonFX master,
@@ -15,10 +17,13 @@ public class Wrist extends TalonFXSubsystem {
             double minDegree,
             double maxDegree,
             double nominalVoltage,
+            double kG,
             double kDt) {
         super(master, ticksToDegsPerSec, ticksToDegs, nominalVoltage, kDt);
         this.minDegree = minDegree;
         this.maxDegree = maxDegree;
+        this.kG = kG;
+
         // setToBrake();
     }
 
@@ -33,7 +38,9 @@ public class Wrist extends TalonFXSubsystem {
 
     public void setAngle(double angle) {
         SmartDashboard.putNumber("Wrist set", angle);
-        this.setPositionMotionMagic(angle, 0);
+        var ffVolts = kG * Math.cos(Units.degreesToRadians(angle));
+        SmartDashboard.putNumber("WRIST FF", ffVolts);
+        this.setPositionMotionMagic(angle, ffVolts);
     }
 
     public boolean angleReached(double targetAngle, double threshold) {

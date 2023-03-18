@@ -58,7 +58,8 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve, printer, pivot, extender, visionController, rollers);
+        scheduler.registerSubsystem(
+                swerve, printer, pivot, extender, visionController, rollers, wrist);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -66,7 +67,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
-        runningMode = autoCommands.redJustScore;
+        runningMode = autoCommands.redConeCubeBalanceFlatSideMode;
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -145,7 +146,7 @@ public class RobotContainer {
                         () -> true,
                         autoSteer::findVelocities));
 
-        wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
+        // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
     }
@@ -245,6 +246,7 @@ public class RobotContainer {
                     WristConstants.kMinDegree,
                     WristConstants.kMaxDegree,
                     WristConstants.nominalVoltage,
+                    WristConstants.kG,
                     GlobalConstants.kDt);
 
     public final Pivot pivot =
@@ -296,6 +298,7 @@ public class RobotContainer {
                     swerve::getOdoPose,
                     flightDeck::getLatestParameters,
                     SuperstructureState.kLevelPieceMap);
+
     private final AutoSteer autoSteer =
             new AutoSteer(
                     swerve::getOdoPose,

@@ -108,7 +108,7 @@ public class AutoCommands {
         return Commands.sequence(
                 justScore(() -> SuperstructureState.coneThreeReversed),
                 // longer weight so the intake doesn't deploy on the bump and kill itself
-                Commands.waitSeconds(2.7),
+                Commands.waitSeconds(3),
                 Commands.parallel(
                                 superstructure.groundIntakeCube(),
                                 superstructure.rollersCommands.intakeCube())
@@ -168,8 +168,8 @@ public class AutoCommands {
                         // lock wheels so no slip
                         superstructure.drivetrainCommands.robotRelativeDrive(
                                 new Translation2d(), FieldConstants.kZero, 0.3));
-
-        return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCubeFlat());
+        // , getSupestructureSequenceConeCubeFlat()
+        return Commands.parallel(drivetrainSequence);
     }
 
     public Command justScore(Supplier<SuperstructureState> state) {

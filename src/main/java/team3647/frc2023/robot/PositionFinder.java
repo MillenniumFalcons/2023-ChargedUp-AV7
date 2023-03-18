@@ -38,7 +38,7 @@ public class PositionFinder {
     public final SuperstructureState getSuperstructureStateByPiece(
             Level wantedLevel, GamePiece piece) {
         if (wantedLevel == Level.Ground) {
-            return SuperstructureState.cubeZero;
+            return SuperstructureState.cubeOne;
         }
 
         if (!this.levelAndPieceToSuperstrucutreState.containsKey(wantedLevel)) {
