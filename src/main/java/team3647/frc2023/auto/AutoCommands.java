@@ -88,7 +88,7 @@ public class AutoCommands {
     public Pose2d flipForPP(Pose2d pose) {
         return new Pose2d(
                 new Translation2d(pose.getX(), FieldConstants.kFieldWidth - pose.getY()),
-                new Rotation2d(pose.getRotation().getCos() * -1, pose.getRotation().getSin()));
+                pose.getRotation());
     }
 
     private Command getSupestructureSequenceConeCubeFlat() {
