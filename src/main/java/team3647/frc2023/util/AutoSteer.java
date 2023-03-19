@@ -17,6 +17,7 @@ public class AutoSteer {
     private final Supplier<Pose2d> drivePose;
 
     private static final Twist2d kNoTwist = new Twist2d();
+    private boolean stopped = false;
 
     public AutoSteer(
             Supplier<Pose2d> drivePose,
@@ -33,9 +34,13 @@ public class AutoSteer {
     }
 
     public Twist2d findVelocities() {
+        if (stopped) {
+            return kNoTwist;
+        }
         if (Timer.getFPGATimestamp() - lastUpdated > 20) {
             return kNoTwist;
         }
+
         var currentPose = drivePose.get();
         var dx = xController.calculate(currentPose.getX());
         var dy = yController.calculate(currentPose.getY());
@@ -56,7 +61,12 @@ public class AutoSteer {
         thetaController.setSetpoint(headingRads);
     }
 
+    public void stop() {
+        stopped = true;
+    }
+
     public void initializeSteering(Pose2d pose) {
+        stopped = false;
         this.targetPose = pose;
         lastUpdated = Timer.getFPGATimestamp();
         xController.setSetpoint(pose.getX());

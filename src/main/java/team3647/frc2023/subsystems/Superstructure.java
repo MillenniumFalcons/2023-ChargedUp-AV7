@@ -38,7 +38,7 @@ public class Superstructure {
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cone;
 
-    private final Translation2d kMoveIntoField = new Translation2d(0.4, 0);
+    private final Translation2d kMoveIntoField = new Translation2d(0.1, 0);
 
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
@@ -102,6 +102,19 @@ public class Superstructure {
                         });
     }
 
+    public Command intakeForCurrentGamePiece() {
+        return Commands.startEnd(
+                () -> {
+                    if (this.currentGamePiece == GamePiece.Cone) {
+                        rollers.intakeCone();
+                    } else {
+                        rollers.intakeCube();
+                    }
+                },
+                rollers::end,
+                rollers);
+    }
+
     public Command intakeForGamePiece(Supplier<GamePiece> piece) {
         return Commands.run(
                 () -> {
@@ -122,7 +135,7 @@ public class Superstructure {
         return Commands.run(
                 () -> {
                     if (piece.get() == GamePiece.Cone) {
-                        rollers.setOpenloop(-0.04);
+                        rollers.setOpenloop(-0.4);
                     } else {
                         rollers.setOpenloop(0);
                     }
@@ -132,7 +145,9 @@ public class Superstructure {
 
     public Command waitForCurrentSpike() {
         return Commands.sequence(
-                Commands.waitSeconds(1), Commands.waitUntil(() -> rollers.getMasterCurrent() > 20));
+                Commands.waitSeconds(1),
+                Commands.waitUntil(() -> rollers.getMasterCurrent() > 20),
+                Commands.waitSeconds(0.5));
     }
 
     public Command stowFromIntake() {

@@ -2,7 +2,6 @@ package team3647.frc2023.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -85,19 +84,13 @@ public class RobotContainer {
                 .whileTrue(
                         Commands.waitUntil(autoSteer::almostArrived)
                                 .andThen(superstructure.armAutomatic()));
+        mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
+        new Trigger(mainController::anyStickMovedStiff).onTrue(Commands.runOnce(autoSteer::stop));
+        mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController
                 .rightTrigger
                 .and(() -> !goodForAutosteer.getAsBoolean())
                 .onTrue(superstructure.armToPieceFromSide());
-
-        mainController.leftBumper.onTrue(superstructure.scoreStowNoDelay());
-
-        mainController.rightStickMoved.onTrue(
-                Commands.waitUntil(mainController.rightStickMoved.negate())
-                        .andThen(
-                                () ->
-                                        autoSteer.lockHeading(
-                                                Units.degreesToRadians(swerve.getHeading()))));
 
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
 
