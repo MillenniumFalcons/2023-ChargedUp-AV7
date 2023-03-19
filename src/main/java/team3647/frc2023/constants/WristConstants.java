@@ -24,7 +24,7 @@ public final class WristConstants {
 
     public static final double nominalVoltage = 11.0;
     public static final double kStallCurrent = 20.0;
-    public static final double kMaxCurrent = 60.0;
+    public static final double kMaxCurrent = 15;
 
     public static final double kG = 0.0;
 
@@ -62,7 +62,7 @@ public final class WristConstants {
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);
         kMaster.configGetStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
+                new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 5));
 
         kMaster.setNeutralMode(NeutralMode.Brake);
         kMaster.enableVoltageCompensation(true);
