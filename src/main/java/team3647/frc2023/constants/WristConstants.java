@@ -31,7 +31,10 @@ public final class WristConstants {
     public static final double kMaxVelocityTicks = 300.0 / kNativeVelToDPS;
     public static final double kMaxAccelerationTicks = 200.0 / kNativeVelToDPS;
 
-    public static final double kMinDegree = 5;
+    // public static final double kMinDegree = 5;
+    // public static final double kMaxDegree = 135;
+
+    public static final double kMinDegree = -50;
     public static final double kMaxDegree = 135;
 
     public static final double kInitialDegree = 140;

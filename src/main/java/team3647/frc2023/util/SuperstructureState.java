@@ -100,25 +100,27 @@ public class SuperstructureState {
     // ================================ comp bot values ==================================
     public static final SuperstructureState groundIntakeCone =
             new SuperstructureState(
-                    191.63, ExtenderConstants.kMinimumPositionTicks, 41, "ground intake cone");
+                    187.5, ExtenderConstants.kMinimumPositionTicks, 38, "ground intake cone");
 
     public static final SuperstructureState groundIntakeCube =
             new SuperstructureState(
-                    200.389, ExtenderConstants.kMinimumPositionTicks, 21.98, "ground intake cube");
+                    196 - 1, ExtenderConstants.kMinimumPositionTicks, 35, "ground intake cube");
+
+    public static final SuperstructureState groundIntakeCubeLong =
+            new SuperstructureState(184, 57500, 43, "ground intake long");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(121.1, 15000, 105.0, "double station");
+            new SuperstructureState(118, 12500 + 2048 + 500, 104, "double station");
 
     public static final SuperstructureState coneOne =
-            new SuperstructureState(
-                    150.45, ExtenderConstants.kMinimumPositionTicks, 130.53, "cone low");
+            new SuperstructureState(136, ExtenderConstants.kMinimumPositionTicks, 125, "cone low");
     public static final SuperstructureState coneTwo =
-            new SuperstructureState(134.43, 27309, 126.12, "cone mid");
+            new SuperstructureState(135, 17000, 93, "cone mid");
     public static final SuperstructureState coneThree =
-            new SuperstructureState(139.7, 54440, 103.53, "cone high");
+            new SuperstructureState(140, 44500 + 2048, 82.5, "cone high");
 
     public static final SuperstructureState coneThreeReversed =
-            new SuperstructureState(37.95, 50755, 89.3, "cone high reversed");
+            new SuperstructureState(34, 50500, 89, "cone high reversed");
 
     public static final SuperstructureState cubeOne = coneOne;
 
@@ -126,7 +128,10 @@ public class SuperstructureState {
     public static final SuperstructureState cubeThree = coneThree;
 
     public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(37.95, 50755, -42.655, "cube high reversed");
+            new SuperstructureState(34, 50500, 25, "cube high reversed");
+
+    public static final SuperstructureState cubeOneReversedLong =
+            new SuperstructureState(180, 56000, 30.5, "cube high reversed");
 
     public static final SuperstructureState noLevel =
             new SuperstructureState(

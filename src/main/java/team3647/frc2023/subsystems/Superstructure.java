@@ -122,9 +122,9 @@ public class Superstructure {
         return Commands.run(
                 () -> {
                     if (piece.get() == GamePiece.Cone) {
-                        rollers.setOpenloop(-0.05);
+                        rollers.setOpenloop(-0.04);
                     } else {
-                        rollers.setOpenloop(0.01);
+                        rollers.setOpenloop(0);
                     }
                 },
                 rollers);
@@ -182,9 +182,9 @@ public class Superstructure {
         SmartDashboard.putNumber("Wanted extender", nextExtender);
         SmartDashboard.putNumber("Wanted pivot", nextPivot);
         System.out.println("RunPivotExtender");
+        wrist.setAngle(wantedState.wristAngle);
         pivot.setAngle(nextPivot);
         extender.setLengthMeters(nextExtender);
-        wrist.setAngle(wantedState.wristAngle);
     }
 
     public boolean pivotExtenderReached(SuperstructureState state) {
