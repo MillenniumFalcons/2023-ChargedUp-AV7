@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -135,7 +136,7 @@ public class Superstructure {
         return Commands.run(
                 () -> {
                     if (piece.get() == GamePiece.Cone) {
-                        rollers.setOpenloop(-0.4);
+                        rollers.setOpenloop(-0.2);
                     } else {
                         rollers.setOpenloop(0);
                     }
@@ -146,7 +147,8 @@ public class Superstructure {
     public Command waitForCurrentSpike() {
         return Commands.sequence(
                 Commands.waitSeconds(1),
-                Commands.waitUntil(() -> rollers.getMasterCurrent() > 20),
+                Commands.waitUntil(
+                        new Trigger(() -> rollers.getMasterCurrent() > 20).debounce(0.5)),
                 Commands.waitSeconds(0.5));
     }
 
