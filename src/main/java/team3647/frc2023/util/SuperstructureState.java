@@ -110,14 +110,14 @@ public class SuperstructureState {
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
     public static final SuperstructureState doubleStation =
-            new SuperstructureState(118, 12500 + 2048 + 500, 101, "double station");
+            new SuperstructureState(118 - 10 + 5, 12500 + 2048 + 500, 101, "double station");
 
     public static final SuperstructureState coneOne =
             new SuperstructureState(136, ExtenderConstants.kMinimumPositionTicks, 125, "cone low");
     public static final SuperstructureState coneTwo =
             new SuperstructureState(135, 17000, 93, "cone mid");
     public static final SuperstructureState coneThree =
-            new SuperstructureState(137, 44500 + 2048, 82.5, "cone high");
+            new SuperstructureState(137 - 2, 44500 + 2048, 82.5, "cone high");
 
     public static final SuperstructureState coneThreeReversed =
             new SuperstructureState(34, 50500, 89, "cone high reversed");

@@ -27,7 +27,7 @@ public class Rollers extends TalonFXSubsystem {
     }
 
     public void outtakeCone() {
-        super.setOpenloop(0.2);
+        super.setOpenloop(0.35);
     }
 
     public void outtakeCube() {
