@@ -39,7 +39,7 @@ public class Superstructure {
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cone;
 
-    private final Translation2d kMoveIntoField = new Translation2d(0.1, 0);
+    private final Translation2d kMoveIntoField = new Translation2d(0.25, 0);
 
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();

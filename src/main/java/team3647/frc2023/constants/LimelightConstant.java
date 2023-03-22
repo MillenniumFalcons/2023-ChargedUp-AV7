@@ -17,7 +17,8 @@ public class LimelightConstant {
     public static final String kLimelightLeftIP = "10.36.47.14";
     public static final String kLimelightLeftHost = "limelight-left";
 
-    public static final double kCameraHeightMeters = Units.inchesToMeters(8.75);
+    public static final double kCameraHeightMeters =
+            Units.inchesToMeters(7.08); // Units.inchesToMeters(8.75);
     public static final Rotation2d kHorizontalToLens = Rotation2d.fromDegrees(27.7);
     public static final Rotation2d kCameraRoll = Rotation2d.fromDegrees(0.0);
     public static final double kVPH = 2.0 * Math.tan(Math.toRadians(49.7) / 2.0);
