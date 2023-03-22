@@ -73,6 +73,7 @@ public class Superstructure {
                 "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
         SmartDashboard.putString(
                 "Manual Game Piece", gamePieceForManual == GamePiece.Cone ? "CONE" : "CUBE");
+        SmartDashboard.putNumber("rollers current", rollers.getMasterCurrent());
     }
 
     public Command scoreStowHalfSecDelay() {
@@ -145,11 +146,20 @@ public class Superstructure {
     }
 
     public Command waitForCurrentSpike() {
+        return waitForCurrentSpike(20);
+    }
+
+    public Command waitForCurrentSpike(double amps) {
         return Commands.sequence(
                 Commands.waitSeconds(1),
-                Commands.waitUntil(
-                        new Trigger(() -> rollers.getMasterCurrent() > 20).debounce(0.5)),
+                Commands.waitUntil(new Trigger(() -> rollers.getMasterCurrent() > amps)),
                 Commands.waitSeconds(0.5));
+    }
+
+    public Command waitForCurrentSpikeFast(double amps) {
+        return Commands.sequence(
+                Commands.waitSeconds(0.2),
+                Commands.waitUntil(new Trigger(() -> rollers.getMasterCurrent() > amps)));
     }
 
     public Command stowFromIntake() {
@@ -198,7 +208,6 @@ public class Superstructure {
         SmartDashboard.putNumber("Wanted Wrist", wantedState.wristAngle);
         SmartDashboard.putNumber("Wanted extender", nextExtender);
         SmartDashboard.putNumber("Wanted pivot", nextPivot);
-        System.out.println("RunPivotExtender");
         wrist.setAngle(wantedState.wristAngle);
         pivot.setAngle(nextPivot);
         extender.setLengthMeters(nextExtender);
@@ -221,11 +230,20 @@ public class Superstructure {
                 stowScore());
     }
 
-    public Command scoreAndStowConeReversed() {
+    public Command scoreAndStowConeReversed(SuperstructureState nextState) {
         return Commands.sequence(
-                rollersCommands.openloop(() -> -0.4).withTimeout(0.2),
-                Commands.waitSeconds(0.5),
-                stowScore());
+                rollersCommands.openloop(() -> -0.3).withTimeout(0.2),
+                goToStateParallel(nextState));
+    }
+
+    public Command scoreAndStowCube() {
+        return scoreAndStowCube(0.5, SuperstructureState.stowScore);
+    }
+
+    public Command scoreAndStowCube(double timeout, SuperstructureState nextState) {
+        return Commands.sequence(
+                rollersCommands.openloop(() -> -0.3).withTimeout(timeout),
+                goToStateParallel(nextState));
     }
 
     public Command score(Supplier<GamePiece> piece) {
@@ -233,10 +251,6 @@ public class Superstructure {
                 rollersCommands.outCone(),
                 rollersCommands.outCube(),
                 () -> piece.get() == GamePiece.Cone);
-    }
-
-    public Command scoreAndStowCube(double secsBetweenOpenAndStow) {
-        return Commands.none();
     }
 
     public Command doubleStation() {

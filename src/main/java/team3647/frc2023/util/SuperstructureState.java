@@ -120,7 +120,7 @@ public class SuperstructureState {
             new SuperstructureState(137 - 2, 44500 + 2048, 82.5, "cone high");
 
     public static final SuperstructureState coneThreeReversed =
-            new SuperstructureState(34, 50500, 89, "cone high reversed");
+            new SuperstructureState(38, 51742, 108.31, "cone high reversed");
 
     public static final SuperstructureState cubeOne = coneOne;
 
@@ -128,7 +128,7 @@ public class SuperstructureState {
     public static final SuperstructureState cubeThree = coneThree;
 
     public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(34, 50500, 25, "cube high reversed");
+            new SuperstructureState(42, 49384, 7.3, "cube high reversed");
 
     public static final SuperstructureState cubeOneReversedLong =
             new SuperstructureState(180, 56000, 30.5, "cube high reversed");

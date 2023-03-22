@@ -317,9 +317,9 @@ public class RobotContainer {
             new AutoCommands(swerve, SwerveDriveConstants.kDriveKinematics, superstructure);
 
     private final Command justScoreLevel3Cone =
-            autoCommands.justScore(() -> SuperstructureState.coneThreeReversed);
+            autoCommands.justScore(SuperstructureState.coneThreeReversed);
     private final Command justScoreLevel3Cube =
-            autoCommands.justScore(() -> SuperstructureState.cubeThreeReversed);
+            autoCommands.justScore(SuperstructureState.cubeThreeReversed);
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
 

@@ -7,9 +7,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import java.util.function.Supplier;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure;
@@ -52,12 +53,11 @@ public class AutoCommands {
                         Trajectories.Blue.ConeCubeBalanceBumpSide.kFirstPathInitial);
         blueConeBalance =
                 new AutonomousMode(
-                        justScoreBalance(
-                                () -> SuperstructureState.coneThreeReversed, Alliance.Blue),
+                        justScoreBalance(SuperstructureState.coneThreeReversed, Alliance.Blue),
                         Trajectories.Blue.ConeBalance.kFirstPathInitial);
         blueJustScore =
                 new AutonomousMode(
-                        justScore(() -> SuperstructureState.coneThreeReversed),
+                        justScore(SuperstructureState.coneThreeReversed),
                         flipForPP(getJustScore(FieldConstants.kBlueSix)));
 
         // red side modes
@@ -72,11 +72,11 @@ public class AutoCommands {
 
         redConeBalance =
                 new AutonomousMode(
-                        justScoreBalance(() -> SuperstructureState.coneThreeReversed, Alliance.Red),
+                        justScoreBalance(SuperstructureState.coneThreeReversed, Alliance.Red),
                         flipForPP(getJustScore(FieldConstants.kRedFour)));
         redJustScore =
                 new AutonomousMode(
-                        justScore(() -> SuperstructureState.coneThreeReversed),
+                        justScore(SuperstructureState.coneThreeReversed),
                         flipForPP(getJustScore(FieldConstants.kRedFour)));
     }
 
@@ -91,31 +91,41 @@ public class AutoCommands {
                 pose.getRotation());
     }
 
-    private Command getSupestructureSequenceConeCubeFlat() {
+    private Command getSupestructureSequenceConeCubeFlat(
+            double firstPathTime, double secondPathTime, double thirdPathTime) {
         return Commands.sequence(
-                justScore(() -> SuperstructureState.coneThreeReversed),
-                Commands.waitSeconds(2),
-                Commands.parallel(
-                                superstructure.groundIntakeCube(),
-                                superstructure.rollersCommands.intakeCube())
-                        .withTimeout(2.5),
+                justScore(
+                        SuperstructureState.coneThreeReversed,
+                        SuperstructureState.groundIntakeCube),
+                new PrintCommand("monke: " + Timer.getFPGATimestamp()),
+                Commands.deadline(
+                        superstructure.waitForCurrentSpikeFast(2),
+                        superstructure.goToStateParallel(SuperstructureState.groundIntakeCube),
+                        superstructure.rollersCommands.openloop(() -> 0.3)),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStowCube(1));
+                superstructure.scoreAndStowCube(0.2, SuperstructureState.groundIntakeCone),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpikeFast(20),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeCone),
+                                superstructure.rollersCommands.openloop(() -> -1))
+                        .withTimeout(4),
+                superstructure.goToStateParallel(SuperstructureState.stowScore));
     }
 
     private Command getSupestructureSequenceConeCubeBump() {
         return Commands.sequence(
-                justScore(() -> SuperstructureState.coneThreeReversed),
+                justScore(SuperstructureState.coneThreeReversed),
                 // longer weight so the intake doesn't deploy on the bump and kill itself
                 Commands.waitSeconds(3),
-                Commands.parallel(
-                                superstructure.groundIntakeCube(),
-                                superstructure.rollersCommands.intakeCube())
-                        .withTimeout(2.5),
-                superstructure.stow().withTimeout(2),
+                Commands.deadline(
+                        superstructure.waitForCurrentSpike(),
+                        superstructure.groundIntakeCube(),
+                        superstructure.rollersCommands.intakeCube()),
+                superstructure.stow().withTimeout(1.5),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStowCube(1));
+                superstructure.scoreAndStowCube());
     }
 
     public Command drive() {
@@ -150,7 +160,7 @@ public class AutoCommands {
     public Command coneCubeBalanceFlatSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(1.75), // score cone
+                        Commands.waitSeconds(2.5), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceFlatSide.kFirstTrajectory,
@@ -160,7 +170,7 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceFlatSide.kSecondTrajectory,
                                         color)),
-                        Commands.waitSeconds(1.2),
+                        Commands.waitSeconds(0),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance,
@@ -169,20 +179,30 @@ public class AutoCommands {
                         superstructure.drivetrainCommands.robotRelativeDrive(
                                 new Translation2d(), FieldConstants.kZero, 0.3));
         // , getSupestructureSequenceConeCubeFlat()
-        return Commands.parallel(drivetrainSequence);
+        return Commands.parallel(
+                drivetrainSequence,
+                getSupestructureSequenceConeCubeFlat(
+                        Trajectories.Blue.ConeCubeBalanceFlatSide.kFirstTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeBalanceFlatSide.kSecondTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance
+                                .getTotalTimeSeconds()));
     }
 
-    public Command justScore(Supplier<SuperstructureState> state) {
+    public Command justScore(SuperstructureState state, SuperstructureState nextState) {
         return Commands.sequence(
-                superstructure
-                        .goToStateParallel(state.get())
-                        .alongWith(superstructure.rollersCommands.outCone())
-                        .withTimeout(1),
-                Commands.waitSeconds(0.5),
-                superstructure.scoreAndStowConeReversed());
+                Commands.parallel(
+                        superstructure.goToStateParallel(state),
+                        superstructure.rollersCommands.outCone().withTimeout(1)),
+                superstructure.scoreAndStowConeReversed(nextState));
     }
 
-    public Command justScoreBalance(Supplier<SuperstructureState> state, Alliance alliance) {
+    public Command justScore(SuperstructureState state) {
+        return justScore(state, SuperstructureState.stowScore);
+    }
+
+    public Command justScoreBalance(SuperstructureState state, Alliance alliance) {
         var drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(6),
@@ -200,13 +220,12 @@ public class AutoCommands {
     }
 
     public AutonomousMode getJustScoreBlue(SuperstructureState state) {
-        return new AutonomousMode(
-                justScore(() -> state), new Pose2d(1.8, 3.26, FieldConstants.kZero));
+        return new AutonomousMode(justScore(state), new Pose2d(1.8, 3.26, FieldConstants.kZero));
     }
 
     public AutonomousMode getJustScoreRed(SuperstructureState state) {
         return new AutonomousMode(
-                justScore(() -> state), flipForPP(new Pose2d(1.8, 3.26, FieldConstants.kZero)));
+                justScore(state), flipForPP(new Pose2d(1.8, 3.26, FieldConstants.kZero)));
     }
 
     public Command followTrajectory(PathPlannerTrajectory trajectory) {
