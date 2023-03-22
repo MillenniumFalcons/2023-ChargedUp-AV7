@@ -104,11 +104,11 @@ public class AutoCommands {
                         superstructure.rollersCommands.openloop(() -> 0.3)),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStowCube(0.2, SuperstructureState.groundIntakeCone),
+                superstructure.scoreAndStowCube(0.2, SuperstructureState.groundIntakeConeAuto),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpikeFast(20),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCone),
+                                        SuperstructureState.groundIntakeConeAuto),
                                 superstructure.rollersCommands.openloop(() -> -1))
                         .withTimeout(4),
                 superstructure.goToStateParallel(SuperstructureState.stowScore));
