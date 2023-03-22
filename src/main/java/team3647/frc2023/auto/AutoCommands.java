@@ -99,9 +99,11 @@ public class AutoCommands {
                         SuperstructureState.groundIntakeCube),
                 new PrintCommand("monke: " + Timer.getFPGATimestamp()),
                 Commands.deadline(
-                        superstructure.waitForCurrentSpikeFast(2),
-                        superstructure.goToStateParallel(SuperstructureState.groundIntakeCube),
-                        superstructure.rollersCommands.openloop(() -> 0.3)),
+                                superstructure.waitForCurrentSpikeFast(3),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeCube),
+                                superstructure.rollersCommands.openloop(() -> 0.4))
+                        .withTimeout(3),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure.scoreAndStowCube(0.2, SuperstructureState.groundIntakeConeAuto),
@@ -111,7 +113,7 @@ public class AutoCommands {
                                         SuperstructureState.groundIntakeConeAuto),
                                 superstructure.rollersCommands.openloop(() -> -1))
                         .withTimeout(4),
-                superstructure.goToStateParallel(SuperstructureState.stowScore));
+                superstructure.goToStateParallel(SuperstructureState.stowAll));
     }
 
     private Command getSupestructureSequenceConeCubeBump() {
