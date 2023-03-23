@@ -173,6 +173,7 @@ public class RobotContainer {
         printer.addPose("Cube score", () -> getPoseIfLength(Side.Center.listIndex).getPose());
         printer.addPose("Cone Left", () -> getPoseIfLength(Side.Left.listIndex).getPose());
         printer.addPose("Cone Right", () -> getPoseIfLength(Side.Right.listIndex).getPose());
+
         printer.addPose(
                 "April Pose",
                 () -> {
@@ -227,6 +228,7 @@ public class RobotContainer {
     public final Rollers rollers =
             new Rollers(
                     RollersConstants.kMaster,
+                    RollersConstants.kCubeSensor,
                     1,
                     1,
                     RollersConstants.kNominalVoltage,
@@ -257,7 +259,6 @@ public class RobotContainer {
     public final Extender extender =
             new Extender(
                     ExtenderConstants.kMaster,
-                    ExtenderConstants.resetSensor,
                     new SimpleMotorFeedforward(0, 0, 0),
                     ExtenderConstants.kNativeVelToMpS,
                     ExtenderConstants.kNativePosToMeters,

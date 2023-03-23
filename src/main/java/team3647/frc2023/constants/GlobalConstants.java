@@ -54,6 +54,7 @@ public final class GlobalConstants {
 
     public static final class RollersIds {
         public static final int kMasterId = 28;
+        public static final int kSensorId = 0;
 
         private RollersIds() {}
     }

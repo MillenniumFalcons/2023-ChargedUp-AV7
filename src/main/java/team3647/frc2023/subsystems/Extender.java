@@ -3,19 +3,16 @@ package team3647.frc2023.subsystems;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.TalonFXSubsystem;
 
 public class Extender extends TalonFXSubsystem {
     private final SimpleMotorFeedforward feedforward;
-    private final DigitalInput resetSensor;
     private final double maxLengthTicks;
     private final double minLengthTicks;
 
     public Extender(
             TalonFX master,
-            DigitalInput resetSensor,
             SimpleMotorFeedforward feedforward,
             double ticksToMetersPerSec,
             double ticksToMeters,
@@ -24,7 +21,6 @@ public class Extender extends TalonFXSubsystem {
             double nominalVoltage,
             double kDt) {
         super(master, ticksToMetersPerSec, ticksToMeters, nominalVoltage, kDt);
-        this.resetSensor = resetSensor;
         this.feedforward = feedforward;
         this.maxLengthTicks = maxLengthTicks;
         this.minLengthTicks = minLengthTicks;
@@ -42,10 +38,6 @@ public class Extender extends TalonFXSubsystem {
 
     public double getNativeTicks() {
         return super.getNativePos();
-    }
-
-    public boolean getResetSensorVal() {
-        return resetSensor.get();
     }
 
     public boolean reachedPosition(double targetPosition, double threshold) {

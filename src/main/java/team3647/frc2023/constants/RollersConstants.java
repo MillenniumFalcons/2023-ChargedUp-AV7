@@ -5,9 +5,12 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class RollersConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.RollersIds.kMasterId);
+    public static final DigitalInput kCubeSensor =
+            new DigitalInput(GlobalConstants.RollersIds.kSensorId);
 
     public static final TalonFXInvertType kMasterInvert = TalonFXInvertType.Clockwise;
 

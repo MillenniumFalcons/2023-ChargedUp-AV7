@@ -118,16 +118,26 @@ public class AutoCommands {
 
     private Command getSupestructureSequenceConeCubeBump() {
         return Commands.sequence(
-                justScore(SuperstructureState.coneThreeReversed),
-                // longer weight so the intake doesn't deploy on the bump and kill itself
-                Commands.waitSeconds(3),
+                justScore(
+                        SuperstructureState.coneThreeReversed,
+                        SuperstructureState.groundIntakeCube),
+                new PrintCommand("monke: " + Timer.getFPGATimestamp()),
                 Commands.deadline(
-                        superstructure.waitForCurrentSpike(),
-                        superstructure.groundIntakeCube(),
-                        superstructure.rollersCommands.intakeCube()),
-                superstructure.stow().withTimeout(1.5),
+                                superstructure.waitForCurrentSpikeFast(3),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeCube),
+                                superstructure.rollersCommands.openloop(() -> 0.4))
+                        .withTimeout(3),
+                superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStowCube());
+                superstructure.scoreAndStowCube(0.2, SuperstructureState.groundIntakeConeAuto),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpikeFast(20),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeConeAuto),
+                                superstructure.rollersCommands.openloop(() -> -1))
+                        .withTimeout(4),
+                superstructure.goToStateParallel(SuperstructureState.stowAll));
     }
 
     public Command drive() {

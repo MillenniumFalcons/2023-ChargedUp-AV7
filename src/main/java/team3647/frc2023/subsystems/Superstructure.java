@@ -92,8 +92,32 @@ public class Superstructure {
     }
 
     public Command intakeAutomatic() {
+        // return Commands.deadline(
+        //                 waitForCurrentSpike(),
+        //                 Commands.parallel(
+        //                         goToStateParallel(() -> this.wantedIntakeState),
+        //                         intakeForGamePiece(() -> this.intakeGamePiece)))
+        //         .finallyDo(
+        //                 interrupted -> {
+        //                     this.currentGamePiece = this.intakeGamePiece;
+        //                     stowFromIntake().schedule();
+        //                 });
+
+        if (this.intakeGamePiece == GamePiece.Cone) {
+            Commands.deadline(
+                            waitForCurrentSpike(),
+                            Commands.parallel(
+                                    goToStateParallel(() -> this.wantedIntakeState),
+                                    intakeForGamePiece(() -> this.intakeGamePiece)))
+                    .finallyDo(
+                            interrupted -> {
+                                this.currentGamePiece = this.intakeGamePiece;
+                                stowFromIntake().schedule();
+                            });
+        }
+
         return Commands.deadline(
-                        waitForCurrentSpike(),
+                        waitForHasCube(),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
@@ -154,6 +178,12 @@ public class Superstructure {
                 Commands.waitSeconds(1),
                 Commands.waitUntil(new Trigger(() -> rollers.getMasterCurrent() > amps)),
                 Commands.waitSeconds(0.5));
+    }
+
+    public Command waitForHasCube() {
+        return Commands.sequence(
+                Commands.waitSeconds(2.0),
+                Commands.waitUntil(new Trigger(() -> rollers.hasCube())));
     }
 
     public Command waitForCurrentSpikeFast(double amps) {

@@ -28,12 +28,6 @@ public class ExtenderCommands {
                 .andThen(Commands.run(() -> {}, extender));
     }
 
-    public Command zero() {
-        return Commands.run(() -> extender.setOpenloop(-0.2))
-                .until(extender::getResetSensorVal)
-                .andThen(() -> extender.setEncoder(0));
-    }
-
     public Command holdPositionAtCall() {
         return new Command() {
             double lengthAtStart = ExtenderConstants.kMinimumPositionTicks;
