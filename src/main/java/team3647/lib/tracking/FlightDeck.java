@@ -36,6 +36,7 @@ public class FlightDeck {
     public synchronized void addVisionObservation(VisionInput input) {
         Pose2d fieldToRobot = robotTracker.getFieldToRobot(input.timestamp);
         if (fieldToRobot == null || input.cameraToTarget == null) {
+            targetTracker.removeDeadTargets();
             return;
         }
         Pose2d fieldToTarget =

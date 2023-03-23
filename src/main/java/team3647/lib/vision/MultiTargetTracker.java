@@ -31,6 +31,7 @@ public class MultiTargetTracker {
 
     public void removeDeadTargets() {
         for (var entry : trackedTargets.entrySet()) {
+            entry.getValue().removeOldObservations();
             if (!entry.getValue().isAlive()) {
                 trackedTargets.remove(entry.getKey());
             }

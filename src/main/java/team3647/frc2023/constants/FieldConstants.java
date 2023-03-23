@@ -82,7 +82,7 @@ public class FieldConstants {
     public static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
     public static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
 
-    public static final double kTagXtoScoreX = 0.88;
+    public static final double kTagXtoScoreX = 0.85;
     public static final double kTagYtoScoreY = 0.65;
     public static final Transform2d kTransformTagCube =
             new Transform2d(new Translation2d(kTagXtoScoreX, 0), kZero);

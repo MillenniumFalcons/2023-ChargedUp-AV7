@@ -27,7 +27,7 @@ public class PivotConstants {
 
     public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
-    public static final double kMaxVelocityTicks = 200.0 / kNativeVelToDPS;
+    public static final double kMaxVelocityTicks = 400 / kNativeVelToDPS;
     public static final double kMaxAccelerationTicks = 200.0 / kNativeVelToDPS;
 
     public static final double kMinDegree = -30.0;

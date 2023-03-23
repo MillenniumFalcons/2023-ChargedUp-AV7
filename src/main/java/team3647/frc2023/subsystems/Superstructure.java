@@ -1,6 +1,5 @@
 package team3647.frc2023.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -59,15 +58,7 @@ public class Superstructure {
 
         if (getWantedLevel() == Level.Ground && scoringPositionBySide != ScoringPosition.kNone) {
             // shift pose into the field so we don't kill the arm +x
-            scoringPositionBySide =
-                    new ScoringPosition(
-                            new Pose2d(
-                                    scoringPositionBySide
-                                            .pose
-                                            .getTranslation()
-                                            .plus(kMoveIntoField),
-                                    scoringPositionBySide.pose.getRotation()),
-                            GamePiece.Cube);
+            scoringPositionBySide = new ScoringPosition(scoringPositionBySide.pose, GamePiece.Cube);
         }
         SmartDashboard.putString(
                 "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
@@ -253,7 +244,7 @@ public class Superstructure {
                                 score(() -> getScoringPosition().piece),
                                 score(() -> gamePieceForManual),
                                 () -> this.isAutoSteerEnabled)
-                        .withTimeout(0.2),
+                        .withTimeout(0.3),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stowScore());
     }
@@ -270,7 +261,7 @@ public class Superstructure {
 
     public Command scoreAndStowCube(double timeout, SuperstructureState nextState) {
         return Commands.sequence(
-                rollersCommands.openloop(() -> -0.3).withTimeout(timeout),
+                rollersCommands.openloop(() -> -0.6).withTimeout(timeout),
                 goToStateParallel(nextState));
     }
 
@@ -427,7 +418,7 @@ public class Superstructure {
     private final Compressor compressor;
     private final SwerveDrive drive;
     private final Pivot pivot;
-    private final Extender extender;
+    public final Extender extender;
     private final Rollers rollers;
     private final Wrist wrist;
     private final GroupPrinter printer = GroupPrinter.getInstance();
