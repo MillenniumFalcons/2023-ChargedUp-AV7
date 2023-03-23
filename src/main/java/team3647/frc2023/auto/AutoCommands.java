@@ -99,7 +99,7 @@ public class AutoCommands {
                         SuperstructureState.groundIntakeCube),
                 new PrintCommand("monke: " + Timer.getFPGATimestamp()),
                 Commands.deadline(
-                                superstructure.waitForCurrentSpikeFast(3),
+                                superstructure.waitForHasCube(),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.groundIntakeCube),
                                 superstructure.rollersCommands.openloop(() -> 0.4))
@@ -123,20 +123,14 @@ public class AutoCommands {
                         SuperstructureState.groundIntakeCube),
                 new PrintCommand("monke: " + Timer.getFPGATimestamp()),
                 Commands.deadline(
-                                superstructure.waitForCurrentSpikeFast(3),
+                                superstructure.waitForHasCube(),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.groundIntakeCube),
-                                superstructure.rollersCommands.openloop(() -> 0.4))
+                                superstructure.rollersCommands.openloop(() -> 0.45))
                         .withTimeout(3),
                 superstructure.stow().withTimeout(2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                superstructure.scoreAndStowCube(0.2, SuperstructureState.groundIntakeConeAuto),
-                Commands.deadline(
-                                superstructure.waitForCurrentSpikeFast(20),
-                                superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeConeAuto),
-                                superstructure.rollersCommands.openloop(() -> -1))
-                        .withTimeout(4),
+                superstructure.scoreAndStowCube(),
                 superstructure.goToStateParallel(SuperstructureState.stowAll));
     }
 
@@ -147,7 +141,7 @@ public class AutoCommands {
     public Command coneCubeBalanceBumpSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(2), // score cone
+                        Commands.waitSeconds(2.5), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceBumpSide.kFirstTrajectory,
@@ -165,7 +159,7 @@ public class AutoCommands {
                         // lock wheels so no slip
                         superstructure.drivetrainCommands.robotRelativeDrive(
                                 new Translation2d(), FieldConstants.kZero, 0.3));
-
+        // ,
         return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCubeBump());
     }
 

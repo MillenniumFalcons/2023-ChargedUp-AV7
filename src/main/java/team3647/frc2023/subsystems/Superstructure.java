@@ -39,7 +39,7 @@ public class Superstructure {
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cone;
 
-    private final Translation2d kMoveIntoField = new Translation2d(0.25, 0);
+    private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
 
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
@@ -181,9 +181,7 @@ public class Superstructure {
     }
 
     public Command waitForHasCube() {
-        return Commands.sequence(
-                Commands.waitSeconds(2.0),
-                Commands.waitUntil(new Trigger(() -> rollers.hasCube())));
+        return Commands.sequence(Commands.waitUntil(new Trigger(() -> rollers.hasCube())));
     }
 
     public Command waitForCurrentSpikeFast(double amps) {
