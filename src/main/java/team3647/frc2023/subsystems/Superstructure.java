@@ -62,7 +62,8 @@ public class Superstructure {
 
         if (getWantedLevel() == Level.Ground && scoringPositionBySide != ScoringPosition.kNone) {
             // shift pose into the field so we don't kill the arm +x
-            scoringPositionBySide = new ScoringPosition(scoringPositionBySide.pose, GamePiece.Cube);
+            scoringPositionBySide =
+                    new ScoringPosition(scoringPositionBySide.pose, currentGamePiece);
         }
         SmartDashboard.putString(
                 "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
@@ -87,32 +88,9 @@ public class Superstructure {
     }
 
     public Command intakeAutomatic() {
-        // return Commands.deadline(
-        //                 waitForCurrentSpike(),
-        //                 Commands.parallel(
-        //                         goToStateParallel(() -> this.wantedIntakeState),
-        //                         intakeForGamePiece(() -> this.intakeGamePiece)))
-        //         .finallyDo(
-        //                 interrupted -> {
-        //                     this.currentGamePiece = this.intakeGamePiece;
-        //                     stowFromIntake().schedule();
-        //                 });
-
-        if (this.intakeGamePiece == GamePiece.Cone) {
-            Commands.deadline(
-                            waitForCurrentSpike(),
-                            Commands.parallel(
-                                    goToStateParallel(() -> this.wantedIntakeState),
-                                    intakeForGamePiece(() -> this.intakeGamePiece)))
-                    .finallyDo(
-                            interrupted -> {
-                                this.currentGamePiece = this.intakeGamePiece;
-                                stowFromIntake().schedule();
-                            });
-        }
 
         return Commands.deadline(
-                        waitForHasCube(),
+                        waitForCurrentSpike(),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
@@ -176,7 +154,7 @@ public class Superstructure {
     }
 
     public Command waitForHasCube() {
-        return Commands.sequence(Commands.waitUntil(new Trigger(() -> rollers.hasCube())));
+        return Commands.sequence(Commands.waitUntil(rollers::hasCube));
     }
 
     public Command waitForCurrentSpikeFast(double amps) {
@@ -399,7 +377,7 @@ public class Superstructure {
                                 .minus(drive.getOdoPose())
                                 .getTranslation()
                                 .getNorm()
-                        < 2;
+                        < 1;
     }
 
     // keep this at the bottom
@@ -411,7 +389,6 @@ public class Superstructure {
             Wrist wrist,
             PositionFinder finder,
             Compressor compressor,
-            BooleanSupplier switchPiece,
             BooleanSupplier drivetrainWantMove) {
         this.drive = drive;
         this.pivot = pivot;
@@ -426,11 +403,9 @@ public class Superstructure {
         extenderCommands = new ExtenderCommands(extender);
         rollersCommands = new RollersCommands(rollers);
         wristCommands = new WristCommands(wrist);
-        this.switchPiece = switchPiece;
         this.drivetrainWantMove = drivetrainWantMove;
     }
 
-    private double kGPivot;
     private final Compressor compressor;
     private final SwerveDrive drive;
     private final Pivot pivot;
@@ -439,7 +414,6 @@ public class Superstructure {
     private final Wrist wrist;
     private final GroupPrinter printer = GroupPrinter.getInstance();
     private final PositionFinder finder;
-    private final BooleanSupplier switchPiece;
     public final DrivetrainCommands drivetrainCommands;
     public final PivotCommands pivotCommands;
     public final ExtenderCommands extenderCommands;
