@@ -37,6 +37,7 @@ public class Superstructure {
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStation;
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cone;
+    private double wristAdjust = 0.0;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
 
@@ -54,6 +55,9 @@ public class Superstructure {
                             : SuperstructureState.groundIntakeCube;
         } else {
             wantedIntakeState = SuperstructureState.doubleStation;
+        }
+        if (Math.abs(wristAdjust) > 0.01) {
+            wantedIntakeState = wantedIntakeState.addWrist(wristAdjust);
         }
 
         if (getWantedLevel() == Level.Ground && scoringPositionBySide != ScoringPosition.kNone) {
@@ -260,8 +264,12 @@ public class Superstructure {
     }
 
     public Command scoreAndStowCube(double timeout, SuperstructureState nextState) {
+        return scoreAndStowCube(timeout, -0.6, nextState);
+    }
+
+    public Command scoreAndStowCube(double timeout, double demand, SuperstructureState nextState) {
         return Commands.sequence(
-                rollersCommands.openloop(() -> -0.6).withTimeout(timeout),
+                rollersCommands.openloop(() -> demand).withTimeout(timeout),
                 goToStateParallel(nextState));
     }
 
@@ -322,6 +330,14 @@ public class Superstructure {
 
     public Command setWantedIntakeGamePieceCommand(GamePiece piece) {
         return Commands.runOnce(() -> this.intakeGamePiece = piece);
+    }
+
+    public Command lowerWristOffset() {
+        return Commands.runOnce(() -> this.wristAdjust += 1);
+    }
+
+    public Command higherWristOffset() {
+        return Commands.runOnce(() -> this.wristAdjust -= 1);
     }
 
     public Command enableAutoSteer() {

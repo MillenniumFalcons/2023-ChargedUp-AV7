@@ -10,7 +10,7 @@ import team3647.lib.vision.AprilTagCamera.AprilTagId;
 /** 254 GoalTrack class */
 public class TrackedTarget {
     private static final double kCamFrameRate = 40;
-    private static final double kMaxTrackedTargetAge = 2.5; // seconds
+    private static final double kMaxTrackedTargetAge = 1; // seconds
     private static final double kMaxTrackedTargetSmoothingTime = 1;
     private static final double kMaxTrackerDistance = 0.20;
 

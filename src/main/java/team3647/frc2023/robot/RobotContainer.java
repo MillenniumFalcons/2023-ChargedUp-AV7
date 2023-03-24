@@ -66,7 +66,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeBalanceBumpSideMode;
+        runningMode = autoCommands.redConeCubeBalanceFlatSideMode;
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -93,6 +93,9 @@ public class RobotContainer {
                 .onTrue(superstructure.armToPieceFromSide());
 
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+
+        mainController.dPadUp.onTrue(superstructure.higherWristOffset());
+        mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));

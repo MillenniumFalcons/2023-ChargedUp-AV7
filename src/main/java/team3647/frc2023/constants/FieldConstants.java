@@ -72,16 +72,6 @@ public class FieldConstants {
     public static final Pose2d kBlueEight = new Pose2d(kBlueXm, kBlueEightYm, kBlueScoreRotation);
     public static final Pose2d kBlueNine = new Pose2d(kBlueXm, kBlueNineYm, kBlueScoreRotation);
 
-    public static final Pose2d kRedOne = new Pose2d(kRedXm, kRedOneYm, kRedRedRotation);
-    public static final Pose2d kRedTwo = new Pose2d(kRedXm, kRedTwoYm, kRedRedRotation);
-    public static final Pose2d kRedThree = new Pose2d(kRedXm, kRedThreeYm, kRedRedRotation);
-    public static final Pose2d kRedFour = new Pose2d(kRedXm, kRedFourYm, kRedRedRotation);
-    public static final Pose2d kRedFive = new Pose2d(kRedXm, kRedFiveYm, kRedRedRotation);
-    public static final Pose2d kRedSix = new Pose2d(kRedXm, kRedSixYm, kRedRedRotation);
-    public static final Pose2d kRedSeven = new Pose2d(kRedXm, kRedSevenYm, kRedRedRotation);
-    public static final Pose2d kRedEight = new Pose2d(kRedXm, kRedEightYm, kRedRedRotation);
-    public static final Pose2d kRedNine = new Pose2d(kRedXm, kRedNineYm, kRedRedRotation);
-
     public static final double kTagXtoScoreX = 0.85;
     public static final double kTagYtoScoreY = 0.65;
     public static final Transform2d kTransformTagCube =
