@@ -36,7 +36,7 @@ public class Superstructure {
     private GamePiece gamePieceForManual = GamePiece.Cone;
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStation;
     private GamePiece intakeGamePiece = GamePiece.Cone;
-    private GamePiece currentGamePiece = GamePiece.Cone;
+    private GamePiece currentGamePiece = GamePiece.Cube;
     private double wristAdjust = 0.0;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
@@ -311,11 +311,11 @@ public class Superstructure {
     }
 
     public Command lowerWristOffset() {
-        return Commands.runOnce(() -> this.wristAdjust += 1);
+        return Commands.runOnce(() -> this.wristAdjust += 2);
     }
 
     public Command higherWristOffset() {
-        return Commands.runOnce(() -> this.wristAdjust -= 1);
+        return Commands.runOnce(() -> this.wristAdjust -= 2);
     }
 
     public Command enableAutoSteer() {

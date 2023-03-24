@@ -83,7 +83,7 @@ public class FieldConstants {
 
     public static final Pose2d kGroundIntake = new Pose2d();
 
-    public static final double kScoreTargetHeightMeters = 0.4318;
+    public static final double kScoreTargetHeightMeters = 0.462;
     public static final double kIntakeTargetHeightMeters = 0;
 
     public static Translation2d flipTranslation(Translation2d translation) {

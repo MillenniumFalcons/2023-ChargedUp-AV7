@@ -299,17 +299,17 @@ public class AutoCommands {
     public Command justScoreBalance(SuperstructureState state, Alliance alliance) {
         var drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(6),
+                        Commands.waitSeconds(5),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)),
+                        superstructure.drivetrainCommands.robotRelativeDrive(
+                                new Translation2d(0.3, 0), FieldConstants.kZero, 0.3).until(() -> Math.abs(drive.getPitch()) < 8).withTimeout(3),
                         superstructure
                                 .drivetrainCommands
                                 .robotRelativeDrive(
                                         new Translation2d(), Rotation2d.fromDegrees(5), 0.3)
-                                .withTimeout(0.2),
-                        superstructure.drivetrainCommands.robotRelativeDrive(
-                                new Translation2d(), FieldConstants.kZero, 0.3));
+                                .withTimeout(0.2));
         return Commands.parallel(drivetrainSequence, justScore(state));
     }
 

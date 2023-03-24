@@ -42,7 +42,7 @@ public final class Trajectories {
                     new Pose2d(1.80, 5.0, FieldConstants.kZero);
             //     private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60, kZero);
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(6.70, 4.65, FieldConstants.kZero);
+                    new Pose2d(6.75, 4.65, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
@@ -96,7 +96,7 @@ public final class Trajectories {
             private static final Pose2d kFirstPathWaypoint1 =
                     new Pose2d(3.67, 0.79, FieldConstants.kZero);
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(6.9, 0.9, FieldConstants.kZero);
+                    new Pose2d(6.9, 0.8, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathWaypoint1 = kFirstPathWaypoint1;
@@ -133,6 +133,7 @@ public final class Trajectories {
                             defaultConstraintHigherAccel,
                             List.of(
                                     fromPose(kThirdPathInitial, FieldConstants.kZero),
+                                    fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
                                     fromPose(kThirdPathFinal, FieldConstants.kZero)));
 
             public static final PathPlannerTrajectory kIntakeCube =
@@ -163,7 +164,7 @@ public final class Trajectories {
             private static final Pose2d kThirdPathWaypoint2 =
                     new Pose2d(6.78, 3.64, Rotation2d.fromDegrees(-45.0));
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(3.5, 2.75, FieldConstants.kZero);
+                    new Pose2d(3.2, 2.75, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
@@ -191,7 +192,7 @@ public final class Trajectories {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 3.3, FieldConstants.kZero);
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(5.2, 3.3, FieldConstants.kZero);
+                    new Pose2d(1.80+Units.inchesToMeters(60), 3.3, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(

@@ -81,9 +81,7 @@ public class RobotContainer {
                                 () ->
                                         autoSteer.initializeSteering(
                                                 superstructure.getScoringPosition().pose)))
-                .whileTrue(
-                        Commands.waitUntil(autoSteer::almostArrived)
-                                .andThen(superstructure.armAutomatic()));
+                .whileTrue(superstructure.armAutomatic());
         mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
         new Trigger(mainController::anyStickMovedStiff).onTrue(Commands.runOnce(autoSteer::stop));
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
