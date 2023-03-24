@@ -13,6 +13,7 @@ import team3647.frc2023.constants.FieldConstants;
 
 public final class Trajectories {
     private static final PathConstraints fastConstraints = new PathConstraints(3, 2);
+    private static final PathConstraints reallyFastConstraints = new PathConstraints(5, 3);
 
     private static final PathConstraints defaultConstraints =
             new PathConstraints(
@@ -36,7 +37,7 @@ public final class Trajectories {
                                     fromPose(kEnd, Rotation2d.fromDegrees(-90))));
         }
 
-        public static final class ConeCubeCubeBalanceFlatSide {
+        public static final class ConeCubeCubeFlatSide {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 5.0, FieldConstants.kZero);
             //     private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60, kZero);
@@ -55,7 +56,11 @@ public final class Trajectories {
             private static final Pose2d kThirdPathWaypoint2 =
                     new Pose2d(6.78, 3.64, Rotation2d.fromDegrees(-45.0));
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(3.5, 2.75, FieldConstants.kZero);
+                    new Pose2d(4.00, 5.03, FieldConstants.kZero);
+
+            private static final Pose2d kFourthPathInitial = kThirdPathFinal;
+            private static final Pose2d kFourthPathFinal =
+                    new Pose2d(6.76, 2.73, Rotation2d.fromDegrees(-60));
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
@@ -69,14 +74,20 @@ public final class Trajectories {
                             List.of(
                                     fromPose(kSecondPathInitial, FieldConstants.kOneEighty),
                                     fromPose(kSecondPathFinal, Rotation2d.fromDegrees(-160))));
-            public static final PathPlannerTrajectory kGoToBalance =
+            public static final PathPlannerTrajectory kThirdTrajectory =
                     PathPlanner.generatePath(
-                            defaultConstraints,
+                            reallyFastConstraints,
                             List.of(
                                     fromPose(kThirdPathInitial, Rotation2d.fromDegrees(20)),
                                     fromPose(kThirdPathWaypoint1, Rotation2d.fromDegrees(-45.00)),
                                     fromPose(kThirdPathWaypoint2, Rotation2d.fromDegrees(-45.00)),
                                     fromPose(kThirdPathFinal, FieldConstants.kOneEighty)));
+            public static final PathPlannerTrajectory kGetLastCube =
+                    PathPlanner.generatePath(
+                            reallyFastConstraints,
+                            List.of(
+                                    fromPose(kFourthPathInitial, FieldConstants.kZero),
+                                    fromPose(kFourthPathFinal, Rotation2d.fromDegrees(-60))));
         }
 
         public static final class ConeCubeBalanceBumpSide {
