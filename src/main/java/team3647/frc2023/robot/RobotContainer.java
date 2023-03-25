@@ -66,7 +66,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
-        runningMode = autoCommands.blueConeCubeBalanceBumpSideMode;
+        runningMode = autoCommands.redConeCubeCubeFlatSideMode;
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
