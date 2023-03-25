@@ -111,7 +111,7 @@ public final class Trajectories {
             private static final Pose2d kFourthPathWaypoint1 =
                     new Pose2d(6.57, 1.66, Rotation2d.fromDegrees(45));
             private static final Pose2d kFourthPathFinal =
-                    new Pose2d(7.17, 2.25, Rotation2d.fromDegrees(45));
+                    new Pose2d(7.17 + 0.20, 2.25, Rotation2d.fromDegrees(45));
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
