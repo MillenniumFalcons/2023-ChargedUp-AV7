@@ -80,7 +80,7 @@ public final class Trajectories {
                                     fromPose(kThirdPathInitial, Rotation2d.fromDegrees(20)),
                                     fromPose(kThirdPathWaypoint1, Rotation2d.fromDegrees(-45.00)),
                                     fromPose(kThirdPathWaypoint2, Rotation2d.fromDegrees(-45.00)),
-                                    fromPose(kThirdPathFinal, FieldConstants.kOneEighty)));
+                                    fromPose(kThirdPathFinal, Rotation2d.fromDegrees(195))));
             public static final PathPlannerTrajectory kGetLastCube =
                     PathPlanner.generatePath(
                             reallyFastConstraints,
