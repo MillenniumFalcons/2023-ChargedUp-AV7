@@ -308,8 +308,8 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)),
                         Commands.run(() -> 
-                                        drive.drive(new Translation2d(0.5, 0), 0, false, true), drive)
-                                .until(() -> Math.abs(drive.getPitch()) < 10).withTimeout(3),
+                                        drive.drive(new Translation2d(1, 0), 0, false, true), drive)
+                                .until(() -> Math.abs(drive.getPitch()) < 10).withTimeout(5),
                         superstructure
                                 .drivetrainCommands
                                 .robotRelativeDrive(
