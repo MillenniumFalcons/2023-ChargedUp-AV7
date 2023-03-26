@@ -231,6 +231,10 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance,
                                         color)),
+                                        Commands.run(() -> 
+                                                drive.drive(new Translation2d(-0.5, 0), 0, false, true), drive)
+                                        .until(() -> Math.abs(drive.getPitch()) < 10).withTimeout(3),
+
                         // lock wheels so no slip
                         superstructure.drivetrainCommands.robotRelativeDrive(
                                 new Translation2d(), FieldConstants.kZero, 0.3));
@@ -303,8 +307,9 @@ public class AutoCommands {
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeBalance.kFirstTrajectory, alliance)),
-                        superstructure.drivetrainCommands.robotRelativeDrive(
-                                new Translation2d(0.3, 0), FieldConstants.kZero, 0.3).until(() -> Math.abs(drive.getPitch()) < 8).withTimeout(3),
+                        Commands.run(() -> 
+                                        drive.drive(new Translation2d(0.5, 0), 0, false, true), drive)
+                                .until(() -> Math.abs(drive.getPitch()) < 10).withTimeout(3),
                         superstructure
                                 .drivetrainCommands
                                 .robotRelativeDrive(
