@@ -42,7 +42,7 @@ public final class Trajectories {
                     new Pose2d(1.80, 5.0, FieldConstants.kZero);
             //     private static final Pose2d kFirstPathFinal = new Pose2d(6.90, 4.60, kZero);
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(6.75, 4.65 - 0.19, FieldConstants.kZero);
+                    new Pose2d(6.93, 4.65 - 0.19, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
