@@ -18,7 +18,7 @@ public final class WristConstants {
 
     public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
-    private static final double masterKP = 5.5;
+    private static final double masterKP = 0.5;
     private static final double masterKI = 0;
     private static final double masterKD = 0;
 
@@ -57,7 +57,6 @@ public final class WristConstants {
         kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
         kMasterConfig.forwardSoftLimitEnable = true;
         kMasterConfig.forwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
-        kMasterConfig.peakOutputReverse = -0.8;
 
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInvert);

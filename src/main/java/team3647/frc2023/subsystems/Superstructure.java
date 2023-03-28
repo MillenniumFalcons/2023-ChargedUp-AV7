@@ -33,8 +33,7 @@ public class Superstructure {
     private List<ScoringPosition> scoringPositions =
             List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);
     private ScoringPosition scoringPositionBySide = ScoringPosition.kNone;
-    private GamePiece gamePieceForManual = GamePiece.Cone;
-    private SuperstructureState wantedIntakeState = SuperstructureState.doubleStation;
+    private SuperstructureState wantedIntakeState = SuperstructureState.doubleStationCone;
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
     private double wristAdjust = 0.0;
@@ -44,31 +43,25 @@ public class Superstructure {
     public void periodic(double timestamp) {
         scoringPositions = finder.getScoringPositions();
         scoringPositionBySide = finder.getPositionBySide(getWantedSide());
-        gamePieceForManual =
-                getWantedSide() == Side.Center || getWantedLevel() == Level.Ground
-                        ? GamePiece.Cube
-                        : GamePiece.Cone;
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
                             ? SuperstructureState.groundIntakeCone
                             : SuperstructureState.groundIntakeCube;
         } else {
-            wantedIntakeState = SuperstructureState.doubleStation;
+            wantedIntakeState = intakeGamePiece == GamePiece.Cone ? SuperstructureState.doubleStationCone : SuperstructureState.doubleStationCube;
         }
         if (Math.abs(wristAdjust) > 0.01) {
             wantedIntakeState = wantedIntakeState.addWrist(wristAdjust);
         }
 
-        if (getWantedLevel() == Level.Ground && scoringPositionBySide != ScoringPosition.kNone) {
+        if (getWantedLevel() == Level.Ground) {
             // shift pose into the field so we don't kill the arm +x
             scoringPositionBySide =
                     new ScoringPosition(scoringPositionBySide.pose, currentGamePiece);
         }
         SmartDashboard.putString(
-                "Game Piece", scoringPositionBySide.piece == GamePiece.Cone ? "CONE" : "CUBE");
-        SmartDashboard.putString(
-                "Manual Game Piece", gamePieceForManual == GamePiece.Cone ? "CONE" : "CUBE");
+                "Game Piece", currentGamePiece == GamePiece.Cone ? "CONE" : "CUBE");
         SmartDashboard.putNumber("rollers current", rollers.getMasterCurrent());
     }
 
@@ -169,7 +162,7 @@ public class Superstructure {
 
     public Command armToPieceFromSide() {
         return goToStateParallel(
-                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), gamePieceForManual));
+                () -> finder.getSuperstructureStateByPiece(getWantedLevel(), currentGamePiece));
     }
 
     public Command goToStateParallel(SuperstructureState state) {
@@ -224,7 +217,7 @@ public class Superstructure {
         return Commands.sequence(
                 new ConditionalCommand(
                                 score(() -> getScoringPosition().piece),
-                                score(() -> gamePieceForManual),
+                                score(() -> currentGamePiece),
                                 () -> this.isAutoSteerEnabled)
                         .withTimeout(0.3),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
@@ -258,8 +251,12 @@ public class Superstructure {
                 () -> piece.get() == GamePiece.Cone);
     }
 
-    public Command doubleStation() {
-        return goToStateParallel(SuperstructureState.doubleStation);
+    public Command doubleStationCone() {
+        return goToStateParallel(SuperstructureState.doubleStationCone);
+    }
+
+    public Command doubleStationCube() {
+        return goToStateParallel(SuperstructureState.doubleStationCube);
     }
 
     public Command groundIntakeCone() {

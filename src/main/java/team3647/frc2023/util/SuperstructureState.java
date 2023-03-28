@@ -105,10 +105,10 @@ public class SuperstructureState {
     // ================================ comp bot values ==================================
     public static final SuperstructureState groundIntakeCone =
             new SuperstructureState(
-                    189, ExtenderConstants.kMinimumPositionTicks, 37, "ground intake cone");
+                    189, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");
     public static final SuperstructureState groundIntakeConeAuto =
             new SuperstructureState(
-                    187.5, ExtenderConstants.kMinimumPositionTicks, 30, "ground intake cone");
+                    187.5, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");
 
     public static final SuperstructureState groundIntakeCube =
             new SuperstructureState(
@@ -117,15 +117,17 @@ public class SuperstructureState {
     public static final SuperstructureState groundIntakeCubeLong =
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
-    public static final SuperstructureState doubleStation =
-            new SuperstructureState(118, 12800, 105, "double station");
+    public static final SuperstructureState doubleStationCone =
+            new SuperstructureState(118, 15000, 91, "double station");
+    public static final SuperstructureState doubleStationCube =
+            new SuperstructureState(118, 12000, 91, "double station");
 
     public static final SuperstructureState coneOne =
-            new SuperstructureState(129, ExtenderConstants.kMinimumPositionTicks, 155, "cone low");
+            new SuperstructureState(128, ExtenderConstants.kMinimumPositionTicks, 155, "cone low");
     public static final SuperstructureState coneTwo =
-            new SuperstructureState(140, 16000, 92, "cone mid");
+            new SuperstructureState(138, 16000, 92, "cone mid");
     public static final SuperstructureState coneThree =
-            new SuperstructureState(140, 50000, 92, "cone high");
+            new SuperstructureState(138, 50000, 92, "cone high");
 
     public static final SuperstructureState coneThreeReversed =
             new SuperstructureState(38, 51742, 108.31, "cone high reversed");
@@ -150,14 +152,14 @@ public class SuperstructureState {
 
     public static final SuperstructureState stowScore =
             new SuperstructureState(
-                    doubleStation.armAngle,
+                    doubleStationCone.armAngle,
                     ExtenderConstants.kMinimumPositionTicks,
-                    doubleStation.wristAngle,
+                    doubleStationCone.wristAngle,
                     "stow");
 
     public static final SuperstructureState stowIntake =
             new SuperstructureState(
-                    doubleStation.armAngle, ExtenderConstants.kMinimumPositionTicks, 10, "stow");
+                    doubleStationCone.armAngle, ExtenderConstants.kMinimumPositionTicks, 10, "stow");
 
     public static final SuperstructureState stowAll =
             new SuperstructureState(
@@ -186,6 +188,6 @@ public class SuperstructureState {
                             GamePiece.Cube, noLevel));
     public static final Map<StationType, SuperstructureState> kIntakePositionsMap =
             Map.of(
-                    StationType.Double, doubleStation,
+                    StationType.Double, doubleStationCone,
                     StationType.Ground, groundIntakeCone);
 }
