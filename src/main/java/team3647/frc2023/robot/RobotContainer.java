@@ -163,6 +163,7 @@ public class RobotContainer {
 
     public void configureSmartDashboardLogging() {
         printer.addPose("odo", swerve::getOdoPose);
+        printer.addDouble("Extender amps", extender::getMasterCurrent);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);

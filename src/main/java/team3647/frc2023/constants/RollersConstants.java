@@ -12,7 +12,7 @@ public class RollersConstants {
     public static final DigitalInput kCubeSensor =
             new DigitalInput(GlobalConstants.RollersIds.kSensorId);
 
-    public static final TalonFXInvertType kMasterInvert = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType kMasterInvert = TalonFXInvertType.CounterClockwise;
 
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
