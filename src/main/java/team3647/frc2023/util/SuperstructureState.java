@@ -133,10 +133,14 @@ public class SuperstructureState {
             new SuperstructureState(38, 51742, 108.31, "cone high reversed");
     public static final SuperstructureState stowAfterConeThreeReversed =
             new SuperstructureState(90, 0, 112, "cone high reversed");
-    public static final SuperstructureState cubeOne = new SuperstructureState(144, 0, 114, "cube one");
+    public static final SuperstructureState cubeOne =
+            new SuperstructureState(144, 0, 114, "cube one");
 
-    public static final SuperstructureState cubeTwo = new SuperstructureState(144, 14300, 63, "Cube two");
-    public static final SuperstructureState cubeThree =  new SuperstructureState(144, 50000, 63, "cube three");;
+    public static final SuperstructureState cubeTwo =
+            new SuperstructureState(144, 14300, 63, "Cube two");
+    public static final SuperstructureState cubeThree =
+            new SuperstructureState(144, 50000, 63, "cube three");
+    ;
 
     public static final SuperstructureState cubeThreeReversed =
             new SuperstructureState(42, 49384, 7.3, "cube high reversed");
@@ -159,7 +163,10 @@ public class SuperstructureState {
 
     public static final SuperstructureState stowIntake =
             new SuperstructureState(
-                    doubleStationCone.armAngle, ExtenderConstants.kMinimumPositionTicks, 10, "stow");
+                    doubleStationCone.armAngle,
+                    ExtenderConstants.kMinimumPositionTicks,
+                    10,
+                    "stow");
 
     public static final SuperstructureState stowAll =
             new SuperstructureState(

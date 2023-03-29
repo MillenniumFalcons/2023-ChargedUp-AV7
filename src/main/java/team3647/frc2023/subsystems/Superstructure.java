@@ -49,7 +49,10 @@ public class Superstructure {
                             ? SuperstructureState.groundIntakeCone
                             : SuperstructureState.groundIntakeCube;
         } else {
-            wantedIntakeState = intakeGamePiece == GamePiece.Cone ? SuperstructureState.doubleStationCone : SuperstructureState.doubleStationCube;
+            wantedIntakeState =
+                    intakeGamePiece == GamePiece.Cone
+                            ? SuperstructureState.doubleStationCone
+                            : SuperstructureState.doubleStationCube;
         }
         if (Math.abs(wristAdjust) > 0.01) {
             wantedIntakeState = wantedIntakeState.addWrist(wristAdjust);
