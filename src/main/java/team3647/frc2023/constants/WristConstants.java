@@ -34,7 +34,7 @@ public final class WristConstants {
     // public static final double kMinDegree = 5;
     // public static final double kMaxDegree = 135;
 
-    public static final double kMinDegree = -50;
+    public static final double kMinDegree = -90;
     public static final double kMaxDegree = 135;
 
     public static final double kInitialDegree = 140;
