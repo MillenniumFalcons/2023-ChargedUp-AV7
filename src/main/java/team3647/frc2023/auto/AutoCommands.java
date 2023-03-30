@@ -234,9 +234,9 @@ public class AutoCommands {
                         Commands.run(
                                         () ->
                                                 drive.drive(
-                                                        new Translation2d(-1.0, 0), 0, false, true),
+                                                        new Translation2d(-0.7, 0), 0, false, true),
                                         drive)
-                                .until(() -> Math.abs(drive.getPitch()) < 10)
+                                .until(() -> Math.abs(drive.getPitch()) < 11)
                                 .withTimeout(5),
 
                         // lock wheels so no slip

@@ -55,7 +55,7 @@ public final class Trajectories {
                     ConeCubeBalanceFlatSide.kThirdPathWaypoint2;
             // yeet cube point into the community
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(4.00, 5.03, Rotation2d.fromDegrees(-160));
+                    new Pose2d(4.00, 5.03, Rotation2d.fromDegrees(25));
 
             private static final Pose2d kFourthPathInitial = kThirdPathFinal;
             private static final Pose2d kFourthPathFinal =

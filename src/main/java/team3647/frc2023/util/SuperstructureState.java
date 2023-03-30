@@ -112,15 +112,15 @@ public class SuperstructureState {
 
     public static final SuperstructureState groundIntakeCube =
             new SuperstructureState(
-                    197, ExtenderConstants.kMinimumPositionTicks, 16, "ground intake cube");
+                    197, ExtenderConstants.kMinimumPositionTicks, 12, "ground intake cube");
 
     public static final SuperstructureState groundIntakeCubeLong =
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
     public static final SuperstructureState doubleStationCone =
-            new SuperstructureState(123.2, 18000, 100.7, "double station");
+            new SuperstructureState(120, 20000, 100.7, "double station");
     public static final SuperstructureState doubleStationCube =
-            new SuperstructureState(120, 13000, 111, "double station");
+            new SuperstructureState(120, 16000, 111, "double station");
 
     public static final SuperstructureState coneOne =
             new SuperstructureState(
@@ -139,10 +139,10 @@ public class SuperstructureState {
     public static final SuperstructureState cubeTwo =
             new SuperstructureState(144, 14300, 63, "Cube two");
     public static final SuperstructureState cubeThree =
-            new SuperstructureState(144, 35000, 39, "cube three");
+            new SuperstructureState(140, 40000, 39, "cube three");
 
     public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(37, 49950, -3, "cube high reversed");
+            new SuperstructureState(42, 49950, -3, "cube high reversed");
 
     public static final SuperstructureState cubeOneReversedLong =
             new SuperstructureState(45, 0, 30.5, "cube high reversed");
