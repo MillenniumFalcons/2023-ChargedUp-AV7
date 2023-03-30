@@ -165,7 +165,7 @@ public final class Trajectories {
                     new Pose2d(5.9, 4.53, Rotation2d.fromDegrees(-45.0));
             // pick up cube 2
             private static final Pose2d kThirdPathWaypoint2 =
-                    new Pose2d(6.78 + 0.05, 3.64, Rotation2d.fromDegrees(-45.0));
+                    new Pose2d(6.78 + 0.15, 3.64, Rotation2d.fromDegrees(-45.0));
             // go on top of charging station
             private static final Pose2d kThirdPathFinal =
                     new Pose2d(2.99, 2.75, FieldConstants.kZero);

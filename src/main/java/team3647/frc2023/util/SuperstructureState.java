@@ -105,7 +105,7 @@ public class SuperstructureState {
     // ================================ comp bot values ==================================
     public static final SuperstructureState groundIntakeCone =
             new SuperstructureState(
-                    191, ExtenderConstants.kMinimumPositionTicks, 34.12, "ground intake cone");
+                    191, ExtenderConstants.kMinimumPositionTicks, 28.12, "ground intake cone");
     public static final SuperstructureState groundIntakeConeAuto =
             new SuperstructureState(
                     187.5, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");
@@ -118,7 +118,7 @@ public class SuperstructureState {
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
     public static final SuperstructureState doubleStationCone =
-            new SuperstructureState(120, 20000, 102, "double station");
+            new SuperstructureState(120, 18000, 104, "double station");
     public static final SuperstructureState doubleStationCube =
             new SuperstructureState(120, 16000, 111, "double station");
 
@@ -131,7 +131,7 @@ public class SuperstructureState {
             new SuperstructureState(138, 48750, 96.6, "cone high");
 
     public static final SuperstructureState coneThreeReversed =
-            new SuperstructureState(42, 49725, 90.3, "cone high reversed");
+            new SuperstructureState(41, 53000, 82, "cone high reversed");
     public static final SuperstructureState stowAfterConeThreeReversed =
             new SuperstructureState(90, 0, 112, "cone high reversed");
     public static final SuperstructureState cubeOne = coneOne;
