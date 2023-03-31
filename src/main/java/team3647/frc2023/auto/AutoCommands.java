@@ -147,7 +147,7 @@ public class AutoCommands {
                 superstructure.stow().withTimeout(0.5),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.75, SuperstructureState.groundIntakeCube)
+                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCube)
                         .raceWith(endRightAfterExtenderRetracted()),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(8),
