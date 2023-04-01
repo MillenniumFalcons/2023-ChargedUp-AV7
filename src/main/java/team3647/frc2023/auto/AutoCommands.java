@@ -234,7 +234,7 @@ public class AutoCommands {
                         Commands.run(
                                         () ->
                                                 drive.drive(
-                                                        new Translation2d(-0.85, 0), 0, false, true),
+                                                        new Translation2d(-0.80, 0), 0, false, true),
                                         drive)
                                 .until(() -> Math.abs(drive.getPitch()) < 11)
                                 .withTimeout(5),
