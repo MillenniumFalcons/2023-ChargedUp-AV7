@@ -142,7 +142,7 @@ public class SuperstructureState {
             new SuperstructureState(140, 40000, 39, "cube three");
 
     public static final SuperstructureState cubeThreeReversed =
-            new SuperstructureState(42+1, 49950, -3, "cube high reversed");
+            new SuperstructureState(42 + 1, 49950, -3, "cube high reversed");
 
     public static final SuperstructureState cubeOneReversedLong =
             new SuperstructureState(45, 0, 30.5, "cube high reversed");
