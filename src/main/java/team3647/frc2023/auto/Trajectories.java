@@ -100,7 +100,7 @@ public final class Trajectories {
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathWaypoint1 = kFirstPathWaypoint1;
             private static final Pose2d kSecondPathFinal =
-                    new Pose2d(1.80, 1.05 - 0.15, FieldConstants.kZero);
+                    new Pose2d(2.0, 1.05 - 0.15, FieldConstants.kZero);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
             private static final Pose2d kThirdPathFinal =

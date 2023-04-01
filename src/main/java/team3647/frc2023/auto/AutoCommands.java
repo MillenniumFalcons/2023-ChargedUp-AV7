@@ -172,6 +172,7 @@ public class AutoCommands {
                                 superstructure.rollersCommands.openloop(() -> 0.45))
                         .withTimeout(3),
                 superstructure.stow().withTimeout(2),
+                Commands.waitSeconds(1),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 Commands.waitSeconds(0.8),
                 superstructure.scoreAndStowCube(),
