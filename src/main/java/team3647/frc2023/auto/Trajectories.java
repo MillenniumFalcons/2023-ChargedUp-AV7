@@ -192,18 +192,23 @@ public final class Trajectories {
                                     fromPose(kThirdPathFinal, FieldConstants.kOneEighty)));
         }
 
-        public static final class ConeBalance {
+        public static final class ConeExitBalance {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 3.3, FieldConstants.kZero);
-            private static final Pose2d kFirstPathFinal =
-                    new Pose2d(1.80 + Units.inchesToMeters(60), 3.3, FieldConstants.kZero);
+            public static final Pose2d kFirstPathWaypoint1 =
+                    new Pose2d(4.5, 3.3, FieldConstants.kZero);
+            public static final Pose2d kFirstPathWaypoint2 =
+                    new Pose2d(6.5, 3.3, FieldConstants.kZero);
+            public static final Pose2d kFinalClimb = new Pose2d(2.9, 3.3, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
                             defaultConstraints,
                             List.of(
                                     fromPose(kFirstPathInitial, FieldConstants.kZero),
-                                    fromPose(kFirstPathFinal, FieldConstants.kZero)));
+                                    fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
+                                    fromPose(kFirstPathWaypoint2, FieldConstants.kOneEighty),
+                                    fromPose(kFinalClimb, FieldConstants.kZero)));
         }
 
         private Blue() {}

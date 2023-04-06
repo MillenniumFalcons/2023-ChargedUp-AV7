@@ -145,7 +145,9 @@ public class SuperstructureState {
             new SuperstructureState(42 + 1, 49950, -3, "cube high reversed");
 
     public static final SuperstructureState cubeOneReversedLong =
-            new SuperstructureState(45, 0, 30.5, "cube high reversed");
+            new SuperstructureState(180, 0, 30.5, "cube high reversed");
+
+    public static final SuperstructureState lowCG = new SuperstructureState(0, 0, 104, "low cg");
 
     public static final SuperstructureState noLevel =
             new SuperstructureState(
