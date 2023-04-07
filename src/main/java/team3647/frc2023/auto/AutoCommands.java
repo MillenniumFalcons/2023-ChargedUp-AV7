@@ -147,13 +147,13 @@ public class AutoCommands {
                 superstructure.stow().withTimeout(0.5),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCube)
+                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCone)
                         .raceWith(endRightAfterExtenderRetracted()),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(8),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCube),
-                                superstructure.rollersCommands.openloop(() -> 0.6))
+                                        SuperstructureState.groundIntakeCone),
+                                superstructure.rollersCommands.openloop(() -> -0.6))
                         .withTimeout(4),
                 superstructure.goToStateParallel(nextState));
     }

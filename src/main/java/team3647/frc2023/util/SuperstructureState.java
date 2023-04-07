@@ -105,7 +105,7 @@ public class SuperstructureState {
     // ================================ comp bot values ==================================
     public static final SuperstructureState groundIntakeCone =
             new SuperstructureState(
-                    191, ExtenderConstants.kMinimumPositionTicks, 28.12, "ground intake cone");
+                    191, ExtenderConstants.kMinimumPositionTicks, 22.12, "ground intake cone");
     public static final SuperstructureState groundIntakeConeAuto =
             new SuperstructureState(
                     187.5, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");
