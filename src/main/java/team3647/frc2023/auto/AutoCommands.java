@@ -23,12 +23,14 @@ public class AutoCommands {
     public final AutonomousMode Test;
 
     public final AutonomousMode blueConeCubeCubeFlatSideMode;
+    public final AutonomousMode blueConeCubeCubeMidFlatSideMode;
     public final AutonomousMode blueConeCubeBalanceFlatSideMode;
     public final AutonomousMode blueConeCubeBalanceBumpSideMode;
     public final AutonomousMode blueConeScoreExitBalance;
     public final AutonomousMode blueJustScore;
 
     public final AutonomousMode redConeCubeCubeFlatSideMode;
+    public final AutonomousMode redConeCubeCubeMidFlatSideMode;
     public final AutonomousMode redConeCubeBalanceFlatSideMode;
     public final AutonomousMode redConeCubeBalanceBumpSideMode;
     public final AutonomousMode redConeScoreExitBalance;
@@ -63,6 +65,10 @@ public class AutoCommands {
                 new AutonomousMode(
                         justScore(SuperstructureState.coneThreeReversed),
                         new Pose2d(0, 0, FieldConstants.kZero));
+        blueConeCubeCubeMidFlatSideMode =
+                new AutonomousMode(
+                        coneCubeCubeMidBalanceFlatSide(Alliance.Blue),
+                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kFirstPathInitial);
 
         // red side modes
         redConeCubeCubeFlatSideMode =
@@ -86,6 +92,12 @@ public class AutoCommands {
                 new AutonomousMode(
                         justScore(SuperstructureState.coneThreeReversed),
                         new Pose2d(0, 0, FieldConstants.kZero));
+        redConeCubeCubeMidFlatSideMode =
+                new AutonomousMode(
+                        coneCubeCubeMidBalanceFlatSide(Alliance.Red),
+                        flipForPP(
+                                Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide
+                                        .kFirstPathInitial));
     }
 
     public static Pose2d getJustScore(Pose2d pose) {
@@ -132,7 +144,7 @@ public class AutoCommands {
             double secondPathTime,
             double thirdPathTime,
             SuperstructureState nextState) {
-        ;
+
         return Commands.sequence(
                 justScore(
                                 SuperstructureState.coneThreeReversed,
@@ -155,6 +167,42 @@ public class AutoCommands {
                                         SuperstructureState.groundIntakeCone),
                                 superstructure.rollersCommands.openloop(() -> -0.6))
                         .withTimeout(4),
+                superstructure.goToStateParallel(nextState));
+    }
+
+    private Command getSupestructureSequenceConeCubeCubeMidFlat(
+            double firstPathTime,
+            double secondPathTime,
+            double thirdPathTime,
+            SuperstructureState nextState) {
+
+        return Commands.sequence(
+                justScore(
+                                SuperstructureState.coneThreeReversed,
+                                SuperstructureState.stowAfterConeThreeReversed)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(12),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeCube),
+                                superstructure.rollersCommands.openloop(() -> 0.8))
+                        .withTimeout(3),
+                superstructure.stow().withTimeout(0.5),
+                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                superstructure
+                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCube)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(8),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeCube),
+                                superstructure.rollersCommands.openloop(() -> -0.6))
+                        .withTimeout(4),
+                superstructure.stow().withTimeout(0.5),
+                superstructure.goToStateParallel(SuperstructureState.coneTwoReversed),
+                superstructure
+                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCube)
+                        .raceWith(endRightAfterExtenderRetracted()),
                 superstructure.goToStateParallel(nextState));
     }
 
@@ -250,6 +298,44 @@ public class AutoCommands {
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceConeCubeFlat(
+                        Trajectories.Blue.ConeCubeBalanceFlatSide.kFirstTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeBalanceFlatSide.kSecondTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance
+                                .getTotalTimeSeconds(),
+                        SuperstructureState.stowAll));
+    }
+
+    public Command coneCubeCubeMidBalanceFlatSide(Alliance color) {
+        Command drivetrainSequence =
+                Commands.sequence(
+                        Commands.waitSeconds(2), // score cone
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide
+                                                .kFirstTrajectory,
+                                        color)),
+                        // intake rollers don't need waiting
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide
+                                                .kSecondTrajectory,
+                                        color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide
+                                                .kThirdTrajectory,
+                                        color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide
+                                                .kFourthTrajectory,
+                                        color)));
+
+        return Commands.parallel(
+                drivetrainSequence,
+                getSupestructureSequenceConeCubeCubeMidFlat(
                         Trajectories.Blue.ConeCubeBalanceFlatSide.kFirstTrajectory
                                 .getTotalTimeSeconds(),
                         Trajectories.Blue.ConeCubeBalanceFlatSide.kSecondTrajectory
