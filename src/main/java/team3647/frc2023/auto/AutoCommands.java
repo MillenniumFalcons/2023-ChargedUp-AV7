@@ -328,7 +328,6 @@ public class AutoCommands {
                                 .robotRelativeDrive(
                                         new Translation2d(), Rotation2d.fromDegrees(5), 0.3)
                                 .withTimeout(0.2));
-
         return Commands.parallel(drivetrainSequence, justScore(state, SuperstructureState.lowCG));
     }
 
