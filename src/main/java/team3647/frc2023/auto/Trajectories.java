@@ -14,6 +14,7 @@ import team3647.frc2023.constants.FieldConstants;
 public final class Trajectories {
     private static final PathConstraints fastConstraints = new PathConstraints(3, 2);
     private static final PathConstraints reallyFastConstraints = new PathConstraints(5, 3);
+    private static final PathConstraints slowerConstraints = new PathConstraints(1.5, 1);
 
     private static final PathConstraints defaultConstraints =
             new PathConstraints(
@@ -258,17 +259,17 @@ public final class Trajectories {
             public static final Pose2d kFirstPathWaypoint1 =
                     new Pose2d(4.5, 3.3, FieldConstants.kZero);
             public static final Pose2d kFirstPathWaypoint2 =
-                    new Pose2d(6.5, 3.3, FieldConstants.kZero);
-            public static final Pose2d kFinalClimb = new Pose2d(2.9, 3.3, FieldConstants.kZero);
+                    new Pose2d(5.8, 3.3, FieldConstants.kZero);
+            public static final Pose2d kFinalClimb = new Pose2d(3.7, 3.3, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
-                            defaultConstraints,
+                            slowerConstraints,
                             List.of(
                                     fromPose(kFirstPathInitial, FieldConstants.kZero),
-                                    fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
-                                    fromPose(kFirstPathWaypoint2, FieldConstants.kOneEighty),
-                                    fromPose(kFinalClimb, FieldConstants.kZero)));
+                                    fromPose(kFirstPathWaypoint1, FieldConstants.kZero, 0.3),
+                                    fromPose(kFirstPathWaypoint2, FieldConstants.kOneEighty, 0),
+                                    fromPose(kFinalClimb, FieldConstants.kZero, -0.3)));
         }
 
         private Blue() {}

@@ -66,7 +66,7 @@ public class PivotConstants {
         kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
         kMasterConfig.forwardSoftLimitEnable = true;
         kMasterConfig.forwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
-        kMasterConfig.peakOutputReverse = -0.8;
+        // kMasterConfig.peakOutputReverse = -0.8;
 
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kSlave.follow(kMaster);

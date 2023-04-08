@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team3647.frc2023.constants.AutoConstants;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.subsystems.Superstructure;
@@ -206,10 +207,16 @@ public class AutoCommands {
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversedLoong),
                 Commands.waitSeconds(0.3),
                 superstructure
-                        .scoreAndStowCube(0.3, -0.8, SuperstructureState.stowAll)
+                        .scoreAndStowCube(0.3, -0.7, SuperstructureState.stowAll)
                         .raceWith(endRightAfterExtenderRetracted()),
                 superstructure.goToStateParallel(nextState));
     }
+
+    //     private Command getSuperstructureExitCone() {
+    //         return Commands.sequence(
+    //                 justScore(state, SuperstructureState.lowCG)
+    //         )
+    //     }
 
     private Command getSupestructureSequenceConeCubeBump() {
         return Commands.sequence(
@@ -404,7 +411,7 @@ public class AutoCommands {
     public Command justScoreExitBalance(SuperstructureState state, Alliance alliance) {
         var drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(5),
+                        Commands.waitSeconds(1.5),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeExitBalance.kFirstTrajectory,
@@ -412,15 +419,24 @@ public class AutoCommands {
                         Commands.run(
                                         () ->
                                                 drive.drive(
-                                                        new Translation2d(0.8, 0), 0, false, true),
+                                                        new Translation2d(-0.8, 0), 0, false, true),
                                         drive)
-                                .until(() -> Math.abs(drive.getPitch()) < 11)
+                                .until(() -> Math.abs(drive.getPitch()) > 12)
+                                .withTimeout(5),
+                        Commands.run(
+                                        () ->
+                                                drive.drive(
+                                                        new Translation2d(-0.8, 0), 0, false, true),
+                                        drive)
+                                .until(
+                                        new Trigger(() -> Math.abs(drive.getPitch()) < 10.5)
+                                                .debounce(0.1))
                                 .withTimeout(5),
                         superstructure
                                 .drivetrainCommands
                                 .robotRelativeDrive(
-                                        new Translation2d(), Rotation2d.fromDegrees(5), 0.3)
-                                .withTimeout(0.2));
+                                        new Translation2d(), Rotation2d.fromDegrees(90), 0.3)
+                                .withTimeout(0.02));
         return Commands.parallel(drivetrainSequence, justScore(state, SuperstructureState.lowCG));
     }
 

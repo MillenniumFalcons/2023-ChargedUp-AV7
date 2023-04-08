@@ -31,6 +31,8 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     private final SwerveDriveOdometry odometry;
 
+    private double pitchZero = 0;
+
     public static class PeriodicIO {
         // inputs
         public boolean isOpenloop = true;
@@ -78,11 +80,15 @@ public class SwerveDrive implements PeriodicSubsystem {
                         getModulePositions());
     }
 
+    public void zeroPitch() {
+        this.pitchZero = this.getPitch();
+    }
+
     @Override
     public void readPeriodicInputs() {
         periodicIO.roll = gyro.getRoll();
         periodicIO.heading = gyro.getYaw();
-        periodicIO.pitch = gyro.getPitch();
+        periodicIO.pitch = gyro.getPitch() - this.pitchZero;
         periodicIO.rawHeading = gyro.getYaw();
         periodicIO.frontLeftState = frontLeft.getState();
         periodicIO.frontRightState = frontRight.getState();
