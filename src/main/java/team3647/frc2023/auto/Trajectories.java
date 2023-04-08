@@ -199,7 +199,7 @@ public final class Trajectories {
 
             // Pick up cube 1
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(6.75, 4.65, FieldConstants.kZero);
+                    new Pose2d(5.8, 4.65, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
@@ -213,14 +213,14 @@ public final class Trajectories {
                     new Pose2d(5.9, 4.53, Rotation2d.fromDegrees(-45.0));
             // pick up cube 2
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(
-                            6.78 + 0.19 + 0.15 - 0.2, 3.64 + 0.10, Rotation2d.fromDegrees(-45.0));
+                    new Pose2d(6.3, 4, Rotation2d.fromDegrees(-45.0));
 
             private static final Pose2d kFourthPathInitial = kThirdPathFinal;
             private static final Pose2d kFourthPathWaypoint1 =
-                    new Pose2d(5.66, 4.66, new Rotation2d(0));
+                    new Pose2d(5.66, 4.8, new Rotation2d(0));
 
-            private static final Pose2d kFourthPathFinal = kThirdPathInitial;
+            private static final Pose2d kFourthPathFinal =
+                    new Pose2d(2.5, 4.39, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(

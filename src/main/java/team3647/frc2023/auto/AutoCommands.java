@@ -185,25 +185,28 @@ public class AutoCommands {
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(12),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCube),
+                                        SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.8))
                         .withTimeout(3),
                 superstructure.stow().withTimeout(0.5),
+                Commands.waitSeconds(0.7),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCube)
+                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.beforeLongTongueCube)
                         .raceWith(endRightAfterExtenderRetracted()),
+                Commands.waitSeconds(1),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(8),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCube),
+                                        SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.8))
                         .withTimeout(4.5),
                 superstructure.stow().withTimeout(0.5),
-                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
-                Commands.waitSeconds(2.5),
+                Commands.waitSeconds(1),
+                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversedLoong),
+                Commands.waitSeconds(0.3),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.8, SuperstructureState.groundIntakeCube)
+                        .scoreAndStowCube(0.3, -0.8, SuperstructureState.stowAll)
                         .raceWith(endRightAfterExtenderRetracted()),
                 superstructure.goToStateParallel(nextState));
     }
@@ -312,7 +315,7 @@ public class AutoCommands {
     public Command coneCubeCubeMidBalanceFlatSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(2), // score cone
+                        Commands.waitSeconds(1.6), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide

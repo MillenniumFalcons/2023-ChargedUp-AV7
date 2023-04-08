@@ -110,6 +110,10 @@ public class SuperstructureState {
             new SuperstructureState(
                     187.5, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");
 
+    public static final SuperstructureState longTongueCube =
+            new SuperstructureState(183, 47000, 34.2, "longTonguer");
+    public static final SuperstructureState beforeLongTongueCube =
+            new SuperstructureState(183, 0, -3, "longTonguer");
     public static final SuperstructureState groundIntakeCube =
             new SuperstructureState(
                     196, ExtenderConstants.kMinimumPositionTicks, 12, "ground intake cube");
@@ -133,7 +137,9 @@ public class SuperstructureState {
     public static final SuperstructureState coneThreeReversed =
             new SuperstructureState(41, 53000, 82, "cone high reversed");
     public static final SuperstructureState cubeTwoReversed =
-            new SuperstructureState(36.35 + 1.5, 14136, -17.3, "cone mid reversed");
+            new SuperstructureState(40, 14136, -17.3, "cone mid reversed");
+    public static final SuperstructureState cubeTwoReversedLoong =
+            new SuperstructureState(40, 40000, -10, "cone mid reversed long");
     public static final SuperstructureState stowAfterConeThreeReversed =
             new SuperstructureState(90, 0, 112, "cone high reversed");
     public static final SuperstructureState cubeOne = coneOne;
