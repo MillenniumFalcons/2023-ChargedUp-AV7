@@ -24,8 +24,8 @@ public class ExtenderConstants {
     // kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS = 10 * kNativePosToMeters;
 
-    public static final double kMaxVelocityTicks = 30000.0;
-    public static final double kMaxAccelerationTicks = 30000.0;
+    public static final double kMaxVelocityTicks = 30000.0 * 3.0;
+    public static final double kMaxAccelerationTicks = 30000.0 * 3.0;
 
     public static final double kMinimumPositionTicks = 2000;
     public static final double kMaximumPositionTicks = 56000.0;

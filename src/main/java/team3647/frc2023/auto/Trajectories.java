@@ -217,7 +217,9 @@ public final class Trajectories {
                             6.78 + 0.19 + 0.15 - 0.2, 3.64 + 0.10, Rotation2d.fromDegrees(-45.0));
 
             private static final Pose2d kFourthPathInitial = kThirdPathFinal;
-            private static final Pose2d kFourthPathWaypoint1 = kThirdPathWaypoint1;
+            private static final Pose2d kFourthPathWaypoint1 =
+                    new Pose2d(5.66, 4.66, new Rotation2d(0));
+
             private static final Pose2d kFourthPathFinal = kThirdPathInitial;
 
             public static final PathPlannerTrajectory kFirstTrajectory =
@@ -246,7 +248,7 @@ public final class Trajectories {
                             defaultConstraints,
                             List.of(
                                     fromPose(kFourthPathInitial, Rotation2d.fromDegrees(135)),
-                                    fromPose(kFourthPathWaypoint1, Rotation2d.fromDegrees(135)),
+                                    fromPose(kFourthPathWaypoint1, Rotation2d.fromDegrees(150)),
                                     fromPose(kFourthPathFinal, Rotation2d.fromDegrees(-160))));
         }
 

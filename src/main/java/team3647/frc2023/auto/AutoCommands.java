@@ -174,6 +174,7 @@ public class AutoCommands {
             double firstPathTime,
             double secondPathTime,
             double thirdPathTime,
+            double fourthPathTime,
             SuperstructureState nextState) {
 
         return Commands.sequence(
@@ -196,12 +197,13 @@ public class AutoCommands {
                                 superstructure.waitForCurrentSpike(8),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.groundIntakeCube),
-                                superstructure.rollersCommands.openloop(() -> -0.6))
-                        .withTimeout(4),
+                                superstructure.rollersCommands.openloop(() -> 0.8))
+                        .withTimeout(4.5),
                 superstructure.stow().withTimeout(0.5),
-                superstructure.goToStateParallel(SuperstructureState.coneTwoReversed),
+                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
+                Commands.waitSeconds(2.5),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCube)
+                        .scoreAndStowCube(0.2, -0.8, SuperstructureState.groundIntakeCube)
                         .raceWith(endRightAfterExtenderRetracted()),
                 superstructure.goToStateParallel(nextState));
     }
@@ -336,11 +338,13 @@ public class AutoCommands {
         return Commands.parallel(
                 drivetrainSequence,
                 getSupestructureSequenceConeCubeCubeMidFlat(
-                        Trajectories.Blue.ConeCubeBalanceFlatSide.kFirstTrajectory
+                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kFirstTrajectory
                                 .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeBalanceFlatSide.kSecondTrajectory
+                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kSecondTrajectory
                                 .getTotalTimeSeconds(),
-                        Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance
+                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kThirdTrajectory
+                                .getTotalTimeSeconds(),
+                        Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kFourthTrajectory
                                 .getTotalTimeSeconds(),
                         SuperstructureState.stowAll));
     }
