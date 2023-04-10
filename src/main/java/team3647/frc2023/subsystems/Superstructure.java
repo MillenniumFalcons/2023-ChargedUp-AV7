@@ -86,7 +86,7 @@ public class Superstructure {
     public Command intakeAutomatic() {
 
         return Commands.deadline(
-                        waitForCurrentSpike(),
+                        waitForCurrentSpikeDebounce(0.6),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
                                 intakeForGamePiece(() -> this.intakeGamePiece)))
@@ -140,6 +140,14 @@ public class Superstructure {
 
     public Command waitForCurrentSpike() {
         return waitForCurrentSpike(20);
+    }
+
+    public Command waitForCurrentSpikeDebounce(double seconds) {
+        return Commands.sequence(
+                Commands.waitSeconds(1),
+                Commands.waitUntil(
+                        new Trigger(() -> rollers.getMasterCurrent() > 20).debounce(seconds)),
+                Commands.waitSeconds(0.5));
     }
 
     public Command waitForCurrentSpike(double amps) {

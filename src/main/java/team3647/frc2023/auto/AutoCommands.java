@@ -3,7 +3,6 @@ package team3647.frc2023.auto;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -212,11 +211,25 @@ public class AutoCommands {
                 superstructure.goToStateParallel(nextState));
     }
 
-    //     private Command getSuperstructureExitCone() {
-    //         return Commands.sequence(
-    //                 justScore(state, SuperstructureState.lowCG)
-    //         )
-    //     }
+    private Command getSuperstructureExitCone(SuperstructureState state) {
+        return Commands.sequence(
+                justScore(state, SuperstructureState.lowCG),
+                Commands.waitSeconds(2.5),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(8),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.groundIntakeCubeLong),
+                                superstructure.rollersCommands.openloop(() -> 0.6))
+                        .withTimeout(2),
+                Commands.parallel(
+                        superstructure.goToStateParallel(SuperstructureState.coneThrow),
+                        Commands.waitSeconds(6)
+                                .andThen(
+                                        superstructure
+                                                .rollersCommands
+                                                .openloop(() -> -1)
+                                                .withTimeout(0.4))));
+    }
 
     private Command getSupestructureSequenceConeCubeBump() {
         return Commands.sequence(
@@ -409,6 +422,7 @@ public class AutoCommands {
     }
 
     public Command justScoreExitBalance(SuperstructureState state, Alliance alliance) {
+        final Trigger closeToBalanced = new Trigger(() -> Math.abs(drive.getPitch()) < 10);
         var drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(1.5),
@@ -422,22 +436,28 @@ public class AutoCommands {
                                                         new Translation2d(-0.8, 0), 0, false, true),
                                         drive)
                                 .until(() -> Math.abs(drive.getPitch()) > 12)
+                                .withTimeout(2),
+                        Commands.run(
+                                        () ->
+                                                drive.drive(
+                                                        new Translation2d(-0.5, 0), 0, false, true),
+                                        drive)
+                                .until(closeToBalanced.debounce(0.05))
                                 .withTimeout(5),
                         Commands.run(
                                         () ->
                                                 drive.drive(
-                                                        new Translation2d(-0.8, 0), 0, false, true),
+                                                        new Translation2d(0, 0),
+                                                        Math.PI / 2.0,
+                                                        false,
+                                                        true),
                                         drive)
-                                .until(
-                                        new Trigger(() -> Math.abs(drive.getPitch()) < 10.5)
-                                                .debounce(0.1))
-                                .withTimeout(5),
-                        superstructure
-                                .drivetrainCommands
-                                .robotRelativeDrive(
-                                        new Translation2d(), Rotation2d.fromDegrees(90), 0.3)
-                                .withTimeout(0.02));
-        return Commands.parallel(drivetrainSequence, justScore(state, SuperstructureState.lowCG));
+                                .withTimeout(0.1),
+                        Commands.run(
+                                        () -> drive.drive(new Translation2d(0, 0), 0, false, true),
+                                        drive)
+                                .withTimeout(0.1));
+        return Commands.parallel(drivetrainSequence, getSuperstructureExitCone(state));
     }
 
     public AutonomousMode getJustScoreBlue(SuperstructureState state) {

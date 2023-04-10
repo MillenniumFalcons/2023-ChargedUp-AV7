@@ -259,8 +259,8 @@ public final class Trajectories {
             public static final Pose2d kFirstPathWaypoint1 =
                     new Pose2d(4.5, 3.3, FieldConstants.kZero);
             public static final Pose2d kFirstPathWaypoint2 =
-                    new Pose2d(5.8, 3.3, FieldConstants.kZero);
-            public static final Pose2d kFinalClimb = new Pose2d(3.7, 3.3, FieldConstants.kZero);
+                    new Pose2d(6.3, 3.3, FieldConstants.kZero);
+            public static final Pose2d kFinalClimb = new Pose2d(4, 3.3, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
@@ -269,7 +269,7 @@ public final class Trajectories {
                                     fromPose(kFirstPathInitial, FieldConstants.kZero),
                                     fromPose(kFirstPathWaypoint1, FieldConstants.kZero, 0.3),
                                     fromPose(kFirstPathWaypoint2, FieldConstants.kOneEighty, 0),
-                                    fromPose(kFinalClimb, FieldConstants.kZero, -0.3)));
+                                    fromPose(kFinalClimb, FieldConstants.kZero, -0.2)));
         }
 
         private Blue() {}
