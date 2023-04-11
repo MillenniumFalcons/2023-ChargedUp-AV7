@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -30,6 +31,10 @@ public class SwerveDrive implements PeriodicSubsystem {
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final SwerveDriveOdometry odometry;
+
+    private final Pose2d zeroPose2d = new Pose2d();
+
+    private final double kDt;
 
     private double pitchZero = 0;
 
@@ -63,7 +68,8 @@ public class SwerveDrive implements PeriodicSubsystem {
             Pigeon2 gyro,
             SwerveDriveKinematics kinematics,
             double maxSpeedMpS,
-            double maxRotRadPerSec) {
+            double maxRotRadPerSec,
+            double kDt) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
@@ -72,6 +78,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.kinematics = kinematics;
         this.maxSpeedMpS = maxSpeedMpS;
         this.maxRotRadPerSec = maxRotRadPerSec;
+        this.kDt = kDt;
 
         this.odometry =
                 new SwerveDriveOdometry(
@@ -220,17 +227,25 @@ public class SwerveDrive implements PeriodicSubsystem {
     public void drive(
             Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates = null;
+        ChassisSpeeds speeds =
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                translation.getX(),
+                                translation.getY(),
+                                rotation,
+                                Rotation2d.fromDegrees(getRawHeading()))
+                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
-        swerveModuleStates =
-                this.kinematics.toSwerveModuleStates(
-                        fieldRelative
-                                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        translation.getX(),
-                                        translation.getY(),
-                                        rotation,
-                                        Rotation2d.fromDegrees(getRawHeading()))
-                                : new ChassisSpeeds(
-                                        translation.getX(), translation.getY(), rotation));
+        Pose2d robot_pose_vel =
+                new Pose2d(
+                        speeds.vxMetersPerSecond * this.kDt,
+                        speeds.vyMetersPerSecond * this.kDt,
+                        Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * kDt));
+        Twist2d twist_vel = robot_pose_vel.log(zeroPose2d);
+        ChassisSpeeds updated_chassis_speeds =
+                new ChassisSpeeds(twist_vel.dx / kDt, twist_vel.dy / kDt, twist_vel.dtheta / kDt);
+
+        swerveModuleStates = this.kinematics.toSwerveModuleStates(updated_chassis_speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, this.maxSpeedMpS);
 
         periodicIO.frontLeftOutputState = swerveModuleStates[0];

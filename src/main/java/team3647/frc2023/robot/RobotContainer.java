@@ -66,7 +66,7 @@ public class RobotContainer {
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeScoreExitBalance;
+        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -225,7 +225,8 @@ public class RobotContainer {
                     SwerveDriveConstants.kGyro,
                     SwerveDriveConstants.kDriveKinematics,
                     SwerveDriveConstants.kDrivePossibleMaxSpeedMPS,
-                    SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec);
+                    SwerveDriveConstants.kRotPossibleMaxSpeedRadPerSec,
+                    GlobalConstants.kDt);
 
     public final Rollers rollers =
             new Rollers(

@@ -33,32 +33,32 @@ public class SwerveDriveConstants {
     public static final NeutralMode kDriveNeutralMode = NeutralMode.Brake;
 
     public static final TalonFX kFrontLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "drive");
     public static final TalonFX kFrontLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "drive");
     public static final CANCoder kFrontLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort);
+            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "drive");
 
     public static final TalonFX kFrontRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "drive");
     public static final TalonFX kFrontRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "drive");
     public static final CANCoder kFrontRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort);
+            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "drive");
 
     public static final TalonFX kBackLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "drive");
     public static final TalonFX kBackLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "drive");
     public static final CANCoder kBackLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort);
+            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "drive");
 
     public static final TalonFX kBackRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "drive");
     public static final TalonFX kBackRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId);
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "drive");
     public static final CANCoder kBackRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort);
+            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "drive");
 
     public static final Pigeon2Configuration kGyroConfig = new Pigeon2Configuration();
 
@@ -229,7 +229,8 @@ public class SwerveDriveConstants {
                     kTurnMotorNativeToDeg,
                     kNominalVoltage);
 
-    public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin);
+    public static final Pigeon2 kGyro =
+            new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "drive");
 
     public static final double kRollP = 0.025;
     public static final double kRollI = 0.0;
