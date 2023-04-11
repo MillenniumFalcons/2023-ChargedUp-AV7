@@ -243,7 +243,8 @@ public class SwerveDrive implements PeriodicSubsystem {
                         Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * kDt));
         Twist2d twist_vel = robot_pose_vel.log(zeroPose2d);
         ChassisSpeeds updated_chassis_speeds =
-                new ChassisSpeeds(twist_vel.dx / kDt, twist_vel.dy / kDt, twist_vel.dtheta / kDt);
+                new ChassisSpeeds(
+                        -twist_vel.dx / kDt, -twist_vel.dy / kDt, -twist_vel.dtheta / kDt);
 
         swerveModuleStates = this.kinematics.toSwerveModuleStates(updated_chassis_speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, this.maxSpeedMpS);
