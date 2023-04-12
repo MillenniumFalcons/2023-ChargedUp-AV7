@@ -9,12 +9,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.Map;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.auto.AutonomousMode;
 import team3647.frc2023.constants.ExtenderConstants;
-import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
@@ -31,8 +29,6 @@ import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
-import team3647.frc2023.subsystems.VisionController;
-import team3647.frc2023.subsystems.VisionController.CAMERA_NAME;
 import team3647.frc2023.subsystems.Wrist;
 import team3647.frc2023.util.AutoSteer;
 import team3647.frc2023.util.SuperstructureState;
@@ -41,7 +37,7 @@ import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
 import team3647.lib.vision.AimingParameters;
-import team3647.lib.vision.Limelight;
+import team3647.lib.vision.LimelightHelpers;
 import team3647.lib.vision.MultiTargetTracker;
 
 /**
@@ -57,8 +53,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(
-                swerve, printer, pivot, extender, visionController, rollers, wrist);
+        scheduler.registerSubsystem(swerve, printer, pivot, extender, rollers, wrist);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -67,29 +62,21 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
+        LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
 
     private void configureButtonBindings() {
 
-        mainController
-                .rightTrigger
-                .and(goodForAutosteer)
-                .onTrue(
-                        Commands.runOnce(
-                                () ->
-                                        autoSteer.initializeSteering(
-                                                superstructure.getScoringPosition().pose)))
-                .whileTrue(superstructure.armAutomatic());
-        mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
+        mainController.rightTrigger.whileTrue(
+                superstructure.drivetrainCommands.greenLightAim(
+                        SwerveDriveConstants.kAutoSteerXYPIDController,
+                        SwerveDriveConstants.kRollController));
+
+        // mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
         new Trigger(mainController::anyStickMovedStiff).onTrue(Commands.runOnce(autoSteer::stop));
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
-        mainController
-                .rightTrigger
-                .and(() -> !goodForAutosteer.getAsBoolean())
-                .onTrue(superstructure.armToPieceFromSide());
-
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
@@ -276,18 +263,18 @@ public class RobotContainer {
                     new MultiTargetTracker(),
                     LimelightConstant.kRobotToCamFixed);
 
-    private final VisionController visionController =
-            new VisionController(
-                    Map.of(
-                            CAMERA_NAME.CENTER,
-                            new Limelight(
-                                    LimelightConstant.kLimelightCenterIP,
-                                    LimelightConstant.kLimelightCenterHost,
-                                    0,
-                                    LimelightConstant.kCamConstants)),
-                    flightDeck::addVisionObservation,
-                    FieldConstants.kScoreTargetHeightMeters,
-                    FieldConstants.kIntakeTargetHeightMeters);
+    //     private final VisionController visionController =
+    //             new VisionController(
+    //                     Map.of(
+    //                             CAMERA_NAME.CENTER,
+    //                             new Limelight(
+    //                                     LimelightConstant.kLimelightCenterIP,
+    //                                     LimelightConstant.kLimelightCenterHost,
+    //                                     0,
+    //                                     LimelightConstant.kCamConstants)),
+    //                     flightDeck::addVisionObservation,
+    //                     FieldConstants.kScoreTargetHeightMeters,
+    //                     FieldConstants.kIntakeTargetHeightMeters);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
@@ -299,8 +286,8 @@ public class RobotContainer {
     private final AutoSteer autoSteer =
             new AutoSteer(
                     swerve::getOdoPose,
-                    SwerveDriveConstants.kAutoSteerXPIDController,
-                    SwerveDriveConstants.kAutoSteerYPIDController,
+                    SwerveDriveConstants.kAutoSteerXYPIDController,
+                    SwerveDriveConstants.kAutoSteerXYPIDController,
                     SwerveDriveConstants.kAutoSteerHeadingController);
 
     private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
@@ -325,10 +312,10 @@ public class RobotContainer {
             autoCommands.justScore(SuperstructureState.cubeThreeReversed);
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
-
     private final BooleanSupplier goodForAutosteer =
             globalEnableAutosteer
                     .and(mainController.rightTrigger)
                     .and(superstructure::validScoringPosition);
+
     private final Pose2d kEmptyPose = new Pose2d();
 }

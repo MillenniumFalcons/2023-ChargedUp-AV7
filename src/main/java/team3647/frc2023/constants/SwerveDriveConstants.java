@@ -179,8 +179,7 @@ public class SwerveDriveConstants {
 
     public static final PIDController kYController = new PIDController(kYP, kYI, kYD);
 
-    public static final PIDController kAutoSteerXPIDController = new PIDController(2, 0, 0);
-    public static final PIDController kAutoSteerYPIDController = new PIDController(2, 0, 0.05);
+    public static final PIDController kAutoSteerXYPIDController = new PIDController(0.05, 0, 0);
     // 3*Pi = move at 10 rads per second if we are 180* away from target heading
     public static final PIDController kAutoSteerHeadingController = new PIDController(1.5, 0, 0);
     // PID constants for roll and yaw

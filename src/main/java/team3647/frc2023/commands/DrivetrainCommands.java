@@ -7,11 +7,14 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.FieldConstants;
+import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.subsystems.SwerveDrive;
+import team3647.lib.vision.LimelightHelpers;
 
 public class DrivetrainCommands {
 
@@ -81,6 +84,27 @@ public class DrivetrainCommands {
                     SmartDashboard.putNumber("wanted X", translation.getX());
                     var rotation = motionTurnComponent;
                     swerve.drive(translation, rotation, fieldOriented, openloop);
+                },
+                swerve);
+    }
+
+    public Command greenLightAim(PIDController strafeController, PIDController turnController) {
+        strafeController.setTolerance(2);
+        turnController.setTolerance(2);
+
+        return new RunCommand(
+                () -> {
+                    double tx = -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost);
+                    double strafeDemand = strafeController.calculate(tx, 0);
+
+                    if (Math.abs(strafeDemand) < 0.1) {
+                        strafeDemand = 0;
+                    }
+
+                    double turnDemand =
+                            turnController.calculate(
+                                    swerve.getHeading(), FieldConstants.kOneEighty.getDegrees());
+                    swerve.drive(new Translation2d(0, strafeDemand), turnDemand, true, false);
                 },
                 swerve);
     }
