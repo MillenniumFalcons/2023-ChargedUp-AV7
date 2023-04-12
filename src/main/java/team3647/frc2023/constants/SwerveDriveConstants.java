@@ -237,9 +237,9 @@ public class SwerveDriveConstants {
     public static final Pigeon2 kGyro =
             new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "drive");
 
-    public static final double kRollP = 0.025;
+    public static final double kRollP = 0.04;
     public static final double kRollI = 0.0;
-    public static final double kRollD = 0.000025;
+    public static final double kRollD = 0.0;
     public static final PIDController kRollController = new PIDController(kRollP, kRollI, kRollD);
     public static final PIDController kPitchController = new PIDController(kRollP, kRollI, kRollD);
 

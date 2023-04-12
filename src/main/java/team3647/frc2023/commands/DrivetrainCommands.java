@@ -7,7 +7,9 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -95,30 +97,43 @@ public class DrivetrainCommands {
             DoubleSupplier ySpeed) {
         strafeController.setTolerance(2);
         turnController.setTolerance(2);
+        Command align =
+                new RunCommand(
+                        () -> {
+                            double tx =
+                                    -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost);
+                            double error =
+                                    swerve.getOdoRot()
+                                            .rotateBy(FieldConstants.kOneEighty)
+                                            .getDegrees();
+                            double turnDemand = turnController.calculate(error);
 
-        return new RunCommand(
-                () -> {
-                    double tx = -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost);
-                    double strafeDemand = strafeController.calculate(tx, 0);
+                            boolean turnDone = Math.abs(turnDemand) < 0.01;
+                            boolean turnAlmostDone = Math.abs(turnDemand) < 0.1;
 
-                    if (Math.abs(strafeDemand) < 0.1) {
-                        strafeDemand = 0;
-                    }
+                            if (turnDone) {
+                                turnDemand = 0;
+                            }
+                            double strafeDemand = strafeController.calculate(tx, 0);
 
-                    double error =
-                            swerve.getOdoRot().rotateBy(FieldConstants.kOneEighty).getDegrees();
-                    double turnDemand = turnController.calculate(error);
+                            if (Math.abs(strafeDemand) < 0.1 || !turnAlmostDone) {
+                                strafeDemand = 0;
+                            }
+                            swerve.drive(
+                                    new Translation2d(
+                                            -ySpeed.getAsDouble() * maxSpeed, strafeDemand),
+                                    turnDemand,
+                                    true,
+                                    false);
+                        },
+                        swerve);
+        Command ledOn =
+                new InstantCommand(
+                        () ->
+                                LimelightHelpers.setLEDMode_ForceOn(
+                                        LimelightConstant.kLimelightCenterHost));
 
-                    if (Math.abs(turnDemand) < 0.01) {
-                        turnDemand = 0;
-                    }
-                    swerve.drive(
-                            new Translation2d(-ySpeed.getAsDouble() * maxSpeed, strafeDemand),
-                            turnDemand,
-                            true,
-                            false);
-                },
-                swerve);
+        return new SequentialCommandGroup(ledOn, align);
     }
 
     public Command robotRelativeDrive(Translation2d t, Rotation2d rotation, double seconds) {
