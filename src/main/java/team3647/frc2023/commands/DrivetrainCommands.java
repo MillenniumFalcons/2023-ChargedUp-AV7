@@ -88,7 +88,11 @@ public class DrivetrainCommands {
                 swerve);
     }
 
-    public Command greenLightAim(PIDController strafeController, PIDController turnController) {
+    public Command greenLightAim(
+            PIDController strafeController,
+            PIDController turnController,
+            DoubleSupplier xSpeed,
+            DoubleSupplier ySpeed) {
         strafeController.setTolerance(2);
         turnController.setTolerance(2);
 
@@ -101,10 +105,18 @@ public class DrivetrainCommands {
                         strafeDemand = 0;
                     }
 
-                    double turnDemand =
-                            turnController.calculate(
-                                    swerve.getHeading(), FieldConstants.kOneEighty.getDegrees());
-                    swerve.drive(new Translation2d(0, strafeDemand), turnDemand, true, false);
+                    double error =
+                            swerve.getOdoRot().rotateBy(FieldConstants.kOneEighty).getDegrees();
+                    double turnDemand = turnController.calculate(error);
+
+                    if (Math.abs(turnDemand) < 0.01) {
+                        turnDemand = 0;
+                    }
+                    swerve.drive(
+                            new Translation2d(-ySpeed.getAsDouble() * maxSpeed, strafeDemand),
+                            turnDemand,
+                            true,
+                            false);
                 },
                 swerve);
     }

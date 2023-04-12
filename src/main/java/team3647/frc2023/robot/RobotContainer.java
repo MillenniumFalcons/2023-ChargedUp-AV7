@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -70,9 +71,15 @@ public class RobotContainer {
     private void configureButtonBindings() {
 
         mainController.rightTrigger.whileTrue(
-                superstructure.drivetrainCommands.greenLightAim(
-                        SwerveDriveConstants.kAutoSteerXYPIDController,
-                        SwerveDriveConstants.kRollController));
+                Commands.parallel(
+                        superstructure.drivetrainCommands.greenLightAim(
+                                SwerveDriveConstants.kAutoSteerXYPIDController,
+                                SwerveDriveConstants.kRollController,
+                                mainController::getLeftStickX,
+                                mainController::getLeftStickY),
+                        superstructure.armAutomatic()));
+        ;
+        mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
 
         // mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
         new Trigger(mainController::anyStickMovedStiff).onTrue(Commands.runOnce(autoSteer::stop));
@@ -162,6 +169,8 @@ public class RobotContainer {
         printer.addPose("Cube score", () -> getPoseIfLength(Side.Center.listIndex).getPose());
         printer.addPose("Cone Left", () -> getPoseIfLength(Side.Left.listIndex).getPose());
         printer.addPose("Cone Right", () -> getPoseIfLength(Side.Right.listIndex).getPose());
+        SmartDashboard.putNumber("pee eye dee", 0);
+        SmartDashboard.putNumber("peee eyee deee", 0);
 
         printer.addPose(
                 "April Pose",

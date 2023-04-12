@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.SwerveModule;
 
@@ -128,6 +129,8 @@ public class SwerveDrive implements PeriodicSubsystem {
     public void periodic() {
         readPeriodicInputs();
         writePeriodicOutputs();
+        SwerveDriveConstants.kRollController.setP(SmartDashboard.getNumber("pee eye dee", 0));
+        SwerveDriveConstants.kRollController.setD(SmartDashboard.getNumber("peee eyee deee", 0));
     }
 
     public void setRobotPose(Pose2d pose) {
@@ -181,6 +184,10 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public Pose2d getOdoPose() {
         return odometry.getPoseMeters();
+    }
+
+    public Rotation2d getOdoRot() {
+        return odometry.getPoseMeters().getRotation();
     }
 
     public double getPoseX() {
