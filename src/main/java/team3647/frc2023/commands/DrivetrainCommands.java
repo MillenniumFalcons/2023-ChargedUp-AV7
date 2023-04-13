@@ -66,6 +66,8 @@ public class DrivetrainCommands {
 
                     if (autoSteer && fieldOriented) {
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
+                        SmartDashboard.putNumber("autoSteerVelocities.dx", autoSteerVelocities.dx);
+                        SmartDashboard.putNumber("autoSteerVelocities.dy", autoSteerVelocities.dy);
                         // completely take over rotation for heading lock unless driver wants to
                         // change setpoint
                         motionTurnComponent =
@@ -77,8 +79,10 @@ public class DrivetrainCommands {
                         if (Math.abs(motionXComponent) < 0.1 && Math.abs(motionYComponent) < 0.1) {
                             motionXComponent = autoSteerVelocities.dx;
                             motionYComponent = autoSteerVelocities.dy;
-                            SmartDashboard.putNumber("autoSteerVelocities.dx", motionXComponent);
-                            SmartDashboard.putNumber("autoSteerVelocities.dy", motionYComponent);
+                            SmartDashboard.putNumber(
+                                    "autoSteerVelocities.dx after", motionXComponent);
+                            SmartDashboard.putNumber(
+                                    "autoSteerVelocities.dy after", motionYComponent);
                             translation = new Translation2d(motionXComponent, motionYComponent);
                             openloop = false;
                         }
@@ -125,11 +129,10 @@ public class DrivetrainCommands {
                             double ySpeedDemand =
                                     Math.abs(ySpeed.getAsDouble()) > 0.3 ? ySpeed.getAsDouble() : 0;
 
-                            strafeDemand = 1.4 * -ySpeedDemand + 1.0 * strafeDemand;
-
                             if (Math.abs(strafeDemand) < 0.1 || !turnAlmostDone) {
                                 strafeDemand = 0;
                             }
+                            strafeDemand = 1.4 * -ySpeedDemand + 1.0 * strafeDemand;
 
                             if (getCurrentGamePiece.get() == GamePiece.Cube) {
                                 strafeDemand = 0;

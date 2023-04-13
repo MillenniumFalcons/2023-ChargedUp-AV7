@@ -32,9 +32,10 @@ public class AutoSteer {
         this.xController = xController;
         this.yController = yController;
         xController.setTolerance(2);
-        yController.setTolerance(0.005);
+        yController.setTolerance(1);
         this.thetaController = thetaController;
-        this.thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        thetaController.setTolerance(2);
+        this.thetaController.enableContinuousInput(-180.0, 180);
     }
 
     public Twist2d findVelocities() {
@@ -46,18 +47,28 @@ public class AutoSteer {
         }
 
         var currentPose = drivePose.get();
-        var dx = xController.calculate(txSupplier.getAsDouble());
-        var dy = 0.0;
+        var dx = 0.0;
+        var dy = yController.calculate(txSupplier.getAsDouble());
         var dtheta = thetaController.calculate(currentPose.getRotation().getDegrees());
         if (xController.atSetpoint()) {
             dx = 0.0;
         }
+        SmartDashboard.putBoolean("Y AT Setpoint", yController.atSetpoint());
         if (yController.atSetpoint()) {
             dy = 0.0;
         }
         if (thetaController.atSetpoint()) {
             dtheta = 0.0;
         }
+
+        // don't strafe until turned to target
+        if (Math.abs(dtheta) > 0.1) {
+            dy = 0.0;
+        }
+        SmartDashboard.putNumber("TX", txSupplier.getAsDouble());
+        SmartDashboard.putNumber("dtheta", dtheta);
+        SmartDashboard.putNumber("dy", dy);
+
         return new Twist2d(dx, dy, dtheta);
     }
 
@@ -66,25 +77,17 @@ public class AutoSteer {
     }
 
     public void stop() {
-        stopped = true;
+        stopped = false;
     }
 
-    public void initializeSteering(Pose2d pose) {
+    public void initializeSteering() {
         stopped = false;
-        this.targetPose = pose;
         lastUpdated = Timer.getFPGATimestamp();
-        xController.setSetpoint(0);
+        yController.setSetpoint(0);
         lockHeading(180);
     }
 
     public boolean arrived() {
         return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
-    }
-
-    public boolean almostArrived() {
-        SmartDashboard.putNumber(
-                "Distance to target",
-                this.targetPose.minus(drivePose.get()).getTranslation().getNorm());
-        return this.targetPose.minus(drivePose.get()).getTranslation().getNorm() < 0.50;
     }
 }

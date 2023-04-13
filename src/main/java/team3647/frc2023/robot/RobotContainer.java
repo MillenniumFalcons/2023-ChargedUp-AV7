@@ -1,6 +1,5 @@
 package team3647.frc2023.robot;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
@@ -10,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
@@ -70,27 +68,25 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        mainController.rightTrigger.whileTrue(
-                Commands.parallel(
-                        superstructure.drivetrainCommands.greenLightAim(
-                                SwerveDriveConstants.kAutoSteerXYPIDController,
-                                new PIDController(0.04, 0, 0),
-                                superstructure::getGamePiece,
-                                // SwerveDriveConstants.kAutoSteerHeadingController,
-                                mainController::getLeftStickX,
-                                mainController::getLeftStickY,
-                                mainController::getRightStickX),
-                        superstructure.armAutomatic()));
+        mainController
+                .rightTrigger
+                .whileTrue(superstructure.armAutomatic())
+                .onTrue(Commands.runOnce(autoSteer::initializeSteering))
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        LimelightHelpers.setLEDMode_ForceOn(
+                                                LimelightConstant.kLimelightCenterHost)));
 
-        mainController.rightTrigger.onFalse(
-                new InstantCommand(
+        mainController
+                .rightTrigger
+                .onFalse(
+                        Commands.runOnce(
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOff(
-                                                LimelightConstant.kLimelightCenterHost))
-                        .andThen(superstructure.scoreStowNoDelay()));
+                                                LimelightConstant.kLimelightCenterHost)))
+                .onFalse(superstructure.scoreStowNoDelay());
 
-        // mainController.rightTrigger.onFalse(superstructure.scoreStowNoDelay());
-        new Trigger(mainController::anyStickMovedStiff).onTrue(Commands.runOnce(autoSteer::stop));
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
 
@@ -166,7 +162,6 @@ public class RobotContainer {
         printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
-        printer.addBoolean("auto steer almost ready", autoSteer::almostArrived);
         printer.addPose("Cam pose", flightDeck::getFieldToCamera);
 
         SmartDashboard.putNumber("pee eye dee", 0);
@@ -307,7 +302,9 @@ public class RobotContainer {
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
     private final BooleanSupplier goodForAutosteer =
-            globalEnableAutosteer.and(mainController.rightTrigger);
+            globalEnableAutosteer
+                    .and(mainController.rightTrigger)
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone);
 
     private final Pose2d kEmptyPose = new Pose2d();
 }
