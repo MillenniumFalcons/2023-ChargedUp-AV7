@@ -1,5 +1,6 @@
 package team3647.frc2023.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
@@ -75,11 +76,13 @@ public class RobotContainer {
                 Commands.parallel(
                         superstructure.drivetrainCommands.greenLightAim(
                                 SwerveDriveConstants.kAutoSteerXYPIDController,
-                                SwerveDriveConstants.kRollController,
+                                new PIDController(0.04, 0, 0),
+                                // SwerveDriveConstants.kAutoSteerHeadingController,
                                 mainController::getLeftStickX,
-                                mainController::getLeftStickY),
+                                mainController::getLeftStickY,
+                                mainController::getRightStickX),
                         superstructure.armAutomatic()));
-        ;
+
         mainController.rightTrigger.onFalse(
                 new InstantCommand(
                                 () ->

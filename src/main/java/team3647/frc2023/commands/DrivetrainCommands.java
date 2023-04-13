@@ -93,8 +93,9 @@ public class DrivetrainCommands {
     public Command greenLightAim(
             PIDController strafeController,
             PIDController turnController,
+            DoubleSupplier ySpeed,
             DoubleSupplier xSpeed,
-            DoubleSupplier ySpeed) {
+            DoubleSupplier rotSpeed) {
         strafeController.setTolerance(2);
         turnController.setTolerance(2);
         Command align =
@@ -106,7 +107,9 @@ public class DrivetrainCommands {
                                     swerve.getOdoRot()
                                             .rotateBy(FieldConstants.kOneEighty)
                                             .getDegrees();
+
                             double turnDemand = turnController.calculate(error);
+                            turnDemand = 1.2 * rotSpeed.getAsDouble() + 1.0 * turnDemand;
 
                             boolean turnDone = Math.abs(turnDemand) < 0.01;
                             boolean turnAlmostDone = Math.abs(turnDemand) < 0.1;
@@ -114,14 +117,20 @@ public class DrivetrainCommands {
                             if (turnDone) {
                                 turnDemand = 0;
                             }
+
                             double strafeDemand = strafeController.calculate(tx, 0);
+                            double ySpeedDemand =
+                                    Math.abs(ySpeed.getAsDouble()) > 0.3 ? ySpeed.getAsDouble() : 0;
+
+                            strafeDemand = 1.4 * ySpeedDemand + 1.0 * strafeDemand;
 
                             if (Math.abs(strafeDemand) < 0.1 || !turnAlmostDone) {
                                 strafeDemand = 0;
                             }
+
                             swerve.drive(
                                     new Translation2d(
-                                            -ySpeed.getAsDouble() * maxSpeed, strafeDemand),
+                                            -xSpeed.getAsDouble() * maxSpeed, strafeDemand),
                                     turnDemand,
                                     true,
                                     false);

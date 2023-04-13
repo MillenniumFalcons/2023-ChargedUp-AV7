@@ -181,7 +181,7 @@ public class SwerveDriveConstants {
 
     public static final PIDController kAutoSteerXYPIDController = new PIDController(0.05, 0, 0);
     // 3*Pi = move at 10 rads per second if we are 180* away from target heading
-    public static final PIDController kAutoSteerHeadingController = new PIDController(1.5, 0, 0);
+    public static final PIDController kAutoSteerHeadingController = new PIDController(0.04, 0, 0);
     // PID constants for roll and yaw
 
     // is stored as reference?
@@ -236,12 +236,6 @@ public class SwerveDriveConstants {
 
     public static final Pigeon2 kGyro =
             new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "drive");
-
-    public static final double kRollP = 0.04;
-    public static final double kRollI = 0.0;
-    public static final double kRollD = 0.0;
-    public static final PIDController kRollController = new PIDController(kRollP, kRollI, kRollD);
-    public static final PIDController kPitchController = new PIDController(kRollP, kRollI, kRollD);
 
     private static void setTurnMotorConfig(TalonFXConfiguration config) {
         config.slot0.kP = kTurnP;
