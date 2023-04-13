@@ -127,7 +127,6 @@ public class RobotContainer {
         wantCone.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.SOLID_YELLOW)));
         wantCube.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.SOLID_PURPLE)));
         almostThere.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.BREATHE_GREEN)));
-
     }
 
     private void configureDefaultCommands() {
@@ -324,9 +323,10 @@ public class RobotContainer {
 
     private final LEDSubsystem LEDS = LEDSubsystem.getInstance();
 
-    private final Trigger wantCone = new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cone);
-    private final Trigger wantCube = new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cube);
+    private final Trigger wantCone =
+            new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cone);
+    private final Trigger wantCube =
+            new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cube);
 
     private final Trigger almostThere = new Trigger(autoSteer::almostArrived);
-
 }

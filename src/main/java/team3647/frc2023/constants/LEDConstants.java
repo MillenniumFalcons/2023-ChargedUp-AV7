@@ -6,12 +6,12 @@ package team3647.frc2023.constants;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.ColorFlowAnimation;
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
-import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 
 /** Add your docs here. */
 public class LEDConstants {
@@ -22,22 +22,21 @@ public class LEDConstants {
 
     // Animations List
     public static final Animation RAINBOW = new RainbowAnimation(1, 0.1, LEDCOUNT);
-    public static final Animation GREEN_STROBE = new StrobeAnimation(0, 255, 0, 0, 56.0/256.0, LEDCOUNT);
-    public static final Animation LARSON = new LarsonAnimation(255, 0, 0, 0, 0.75, LEDCOUNT, BounceMode.Front, 50);
-    public static final Animation COLOR_FLOW = new ColorFlowAnimation(255, 0, 0, 0, 0.7, LEDCOUNT, Direction.Forward);
-    public static final Animation SOLID_YELLOW =
-            new StrobeAnimation(
-                    256, 256, 0, 128, 1, LEDCOUNT);
+    public static final Animation GREEN_STROBE =
+            new StrobeAnimation(0, 255, 0, 0, 56.0 / 256.0, LEDCOUNT);
+    public static final Animation LARSON =
+            new LarsonAnimation(255, 0, 0, 0, 0.75, LEDCOUNT, BounceMode.Front, 50);
+    public static final Animation COLOR_FLOW =
+            new ColorFlowAnimation(255, 0, 0, 0, 0.7, LEDCOUNT, Direction.Forward);
+    public static final Animation SOLID_YELLOW = new StrobeAnimation(256, 256, 0, 128, 1, LEDCOUNT);
     public static final Animation SOLID_PURPLE =
-            new StrobeAnimation(
-                    162, 25, 255, 128, 1, LEDCOUNT);
+            new StrobeAnimation(162, 25, 255, 128, 1, LEDCOUNT);
     public static final Animation SOLID_WHITE =
-            new StrobeAnimation(
-                    255, 255, 255, 128, 1, LEDCOUNT);
-    public static final Animation BREATHE_RED = new SingleFadeAnimation(255, 0, 0, 0, 0.8, LEDCOUNT);
-    public static final Animation BREATHE_GREEN = new SingleFadeAnimation(0, 255, 0, 0, 0.65, LEDCOUNT);
-
+            new StrobeAnimation(255, 255, 255, 128, 1, LEDCOUNT);
+    public static final Animation BREATHE_RED =
+            new SingleFadeAnimation(255, 0, 0, 0, 0.8, LEDCOUNT);
+    public static final Animation BREATHE_GREEN =
+            new SingleFadeAnimation(0, 255, 0, 0, 0.65, LEDCOUNT);
 
     public static final int CANdleID = 17;
-
 }

@@ -371,7 +371,7 @@ public class Superstructure {
         this.drivetrainWantMove = drivetrainWantMove;
     }
 
-    private final Compressor compressor;    
+    private final Compressor compressor;
     private final SwerveDrive drive;
     private final Pivot pivot;
     public final Extender extender;

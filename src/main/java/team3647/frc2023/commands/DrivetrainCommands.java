@@ -77,10 +77,8 @@ public class DrivetrainCommands {
 
                         var driverY = Math.abs(motionYComponent) > 0.3 ? motionYComponent : 0.0;
                         motionYComponent = driverY * 1.4 + autoSteerVelocities.dy;
-                        SmartDashboard.putNumber(
-                                "autoSteerVelocities.dx after", motionXComponent);
-                        SmartDashboard.putNumber(
-                                "autoSteerVelocities.dy after", motionYComponent);
+                        SmartDashboard.putNumber("autoSteerVelocities.dx after", motionXComponent);
+                        SmartDashboard.putNumber("autoSteerVelocities.dy after", motionYComponent);
                         translation = new Translation2d(motionXComponent, motionYComponent);
                         openloop = false;
                     }
