@@ -337,6 +337,10 @@ public class Superstructure {
         this.intakeGamePiece = piece;
     }
 
+    public GamePiece getWantedIntakePiece() {
+        return this.intakeGamePiece;
+    }
+
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
     }
@@ -367,7 +371,7 @@ public class Superstructure {
         this.drivetrainWantMove = drivetrainWantMove;
     }
 
-    private final Compressor compressor;
+    private final Compressor compressor;    
     private final SwerveDrive drive;
     private final Pivot pivot;
     public final Extender extender;

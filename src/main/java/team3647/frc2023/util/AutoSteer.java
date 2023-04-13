@@ -5,6 +5,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import team3647.frc2023.constants.LimelightConstant;
+import team3647.lib.vision.LimelightHelpers;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -42,14 +45,11 @@ public class AutoSteer {
         if (stopped) {
             return kNoTwist;
         }
-        if (Timer.getFPGATimestamp() - lastUpdated > 20) {
-            return kNoTwist;
-        }
 
         var currentPose = drivePose.get();
         var dx = 0.0;
         var dy = yController.calculate(txSupplier.getAsDouble());
-        var dtheta = thetaController.calculate(currentPose.getRotation().getDegrees());
+        var dtheta = 0.8 * thetaController.calculate(currentPose.getRotation().getDegrees());
         if (xController.atSetpoint()) {
             dx = 0.0;
         }
@@ -64,6 +64,9 @@ public class AutoSteer {
         // don't strafe until turned to target
         if (Math.abs(dtheta) > 0.1) {
             dy = 0.0;
+        }
+        if (Math.abs(dtheta) < 0.01) {
+            dtheta = 0.0;
         }
         SmartDashboard.putNumber("TX", txSupplier.getAsDouble());
         SmartDashboard.putNumber("dtheta", dtheta);
@@ -89,5 +92,9 @@ public class AutoSteer {
 
     public boolean arrived() {
         return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
+    }
+
+    public boolean almostArrived() {
+        return LimelightHelpers.getTV(LimelightConstant.kLimelightCenterHost) && !stopped;
     }
 }

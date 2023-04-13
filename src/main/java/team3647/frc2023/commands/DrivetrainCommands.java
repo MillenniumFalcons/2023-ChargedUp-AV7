@@ -66,7 +66,6 @@ public class DrivetrainCommands {
 
                     if (autoSteer && fieldOriented) {
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
-                        SmartDashboard.putNumber("autoSteerVelocities.dx", autoSteerVelocities.dx);
                         SmartDashboard.putNumber("autoSteerVelocities.dy", autoSteerVelocities.dy);
                         // completely take over rotation for heading lock unless driver wants to
                         // change setpoint
@@ -76,16 +75,14 @@ public class DrivetrainCommands {
                                                 + Math.signum(autoSteerVelocities.dtheta) * 0.1
                                         : motionTurnComponent;
 
-                        if (Math.abs(motionXComponent) < 0.1 && Math.abs(motionYComponent) < 0.1) {
-                            motionXComponent = autoSteerVelocities.dx;
-                            motionYComponent = autoSteerVelocities.dy;
-                            SmartDashboard.putNumber(
-                                    "autoSteerVelocities.dx after", motionXComponent);
-                            SmartDashboard.putNumber(
-                                    "autoSteerVelocities.dy after", motionYComponent);
-                            translation = new Translation2d(motionXComponent, motionYComponent);
-                            openloop = false;
-                        }
+                        var driverY = Math.abs(motionYComponent) > 0.3 ? motionYComponent : 0.0;
+                        motionYComponent = driverY * 1.4 + autoSteerVelocities.dy;
+                        SmartDashboard.putNumber(
+                                "autoSteerVelocities.dx after", motionXComponent);
+                        SmartDashboard.putNumber(
+                                "autoSteerVelocities.dy after", motionYComponent);
+                        translation = new Translation2d(motionXComponent, motionYComponent);
+                        openloop = false;
                     }
                     SmartDashboard.putNumber("wanted Y", translation.getY());
                     SmartDashboard.putNumber("wanted X", translation.getX());

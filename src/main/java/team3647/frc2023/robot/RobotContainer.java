@@ -15,6 +15,7 @@ import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.auto.AutonomousMode;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
+import team3647.frc2023.constants.LEDConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
@@ -23,6 +24,7 @@ import team3647.frc2023.constants.WristConstants;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
 import team3647.frc2023.subsystems.Extender;
+import team3647.frc2023.subsystems.LEDSubsystem;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
@@ -85,7 +87,8 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOff(
                                                 LimelightConstant.kLimelightCenterHost)))
-                .onFalse(superstructure.scoreStowNoDelay());
+                .onFalse(superstructure.scoreStowNoDelay())
+                .onFalse(Commands.runOnce(() -> autoSteer.stop()));
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
@@ -119,6 +122,12 @@ public class RobotContainer {
 
         coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
+
+        // LED Triggers
+        wantCone.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.SOLID_YELLOW)));
+        wantCube.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.SOLID_PURPLE)));
+        almostThere.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.BREATHE_GREEN)));
+
     }
 
     private void configureDefaultCommands() {
@@ -141,6 +150,11 @@ public class RobotContainer {
 
     public void teleopInit() {
         rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
+        if (superstructure.getWantedIntakePiece() == GamePiece.Cone) {
+            LEDS.setAnimation(LEDConstants.SOLID_YELLOW);
+        } else if (superstructure.getWantedIntakePiece() == GamePiece.Cube) {
+            LEDS.setAnimation(LEDConstants.SOLID_PURPLE);
+        }
     }
 
     void configTestCommands() {
@@ -307,4 +321,12 @@ public class RobotContainer {
                     .and(() -> superstructure.getGamePiece() == GamePiece.Cone);
 
     private final Pose2d kEmptyPose = new Pose2d();
+
+    private final LEDSubsystem LEDS = LEDSubsystem.getInstance();
+
+    private final Trigger wantCone = new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cone);
+    private final Trigger wantCube = new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cube);
+
+    private final Trigger almostThere = new Trigger(autoSteer::almostArrived);
+
 }
