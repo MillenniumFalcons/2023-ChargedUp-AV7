@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class AutoSteer {
@@ -14,6 +15,7 @@ public class AutoSteer {
 
     private final PIDController xController, yController;
     private final PIDController thetaController;
+    private final DoubleSupplier txSupplier;
     private final Supplier<Pose2d> drivePose;
 
     private static final Twist2d kNoTwist = new Twist2d();
@@ -21,13 +23,15 @@ public class AutoSteer {
 
     public AutoSteer(
             Supplier<Pose2d> drivePose,
+            DoubleSupplier txSupplier,
             PIDController xController,
             PIDController yController,
             PIDController thetaController) {
         this.drivePose = drivePose;
+        this.txSupplier = txSupplier;
         this.xController = xController;
         this.yController = yController;
-        xController.setTolerance(0.015);
+        xController.setTolerance(2);
         yController.setTolerance(0.005);
         this.thetaController = thetaController;
         this.thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -42,9 +46,9 @@ public class AutoSteer {
         }
 
         var currentPose = drivePose.get();
-        var dx = xController.calculate(currentPose.getX());
-        var dy = yController.calculate(currentPose.getY());
-        var dtheta = thetaController.calculate(currentPose.getRotation().getRadians());
+        var dx = xController.calculate(txSupplier.getAsDouble());
+        var dy = 0.0;
+        var dtheta = thetaController.calculate(currentPose.getRotation().getDegrees());
         if (xController.atSetpoint()) {
             dx = 0.0;
         }
@@ -69,9 +73,8 @@ public class AutoSteer {
         stopped = false;
         this.targetPose = pose;
         lastUpdated = Timer.getFPGATimestamp();
-        xController.setSetpoint(pose.getX());
-        yController.setSetpoint(pose.getY());
-        lockHeading(pose.getRotation().getRadians());
+        xController.setSetpoint(0);
+        lockHeading(180);
     }
 
     public boolean arrived() {

@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.commands.DrivetrainCommands;
@@ -19,8 +18,6 @@ import team3647.frc2023.commands.WristCommands;
 import team3647.frc2023.robot.PositionFinder;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
-import team3647.frc2023.robot.PositionFinder.ScoringPosition;
-import team3647.frc2023.robot.PositionFinder.Side;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 
@@ -28,11 +25,8 @@ public class Superstructure {
 
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
-    private Side wantedSide = Side.Center;
     private boolean isAutoSteerEnabled = true;
-    private List<ScoringPosition> scoringPositions =
-            List.of(ScoringPosition.kNone, ScoringPosition.kNone, ScoringPosition.kNone);
-    private ScoringPosition scoringPositionBySide = ScoringPosition.kNone;
+
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStationCone;
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
@@ -41,8 +35,6 @@ public class Superstructure {
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
 
     public void periodic(double timestamp) {
-        scoringPositions = finder.getScoringPositions();
-        scoringPositionBySide = finder.getPositionBySide(getWantedSide());
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
@@ -58,11 +50,6 @@ public class Superstructure {
             wantedIntakeState = wantedIntakeState.addWrist(wristAdjust);
         }
 
-        if (getWantedLevel() == Level.Ground) {
-            // shift pose into the field so we don't kill the arm +x
-            scoringPositionBySide =
-                    new ScoringPosition(scoringPositionBySide.pose, currentGamePiece);
-        }
         SmartDashboard.putString(
                 "Game Piece", currentGamePiece == GamePiece.Cone ? "CONE" : "CUBE");
         SmartDashboard.putNumber("rollers current", rollers.getMasterCurrent());
@@ -80,7 +67,7 @@ public class Superstructure {
         return goToStateParallel(
                 () ->
                         finder.getSuperstructureStateByPiece(
-                                getWantedLevel(), getScoringPosition().piece));
+                                getWantedLevel(), this.currentGamePiece));
     }
 
     public Command intakeAutomatic() {
@@ -226,11 +213,7 @@ public class Superstructure {
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
-                new ConditionalCommand(
-                                score(() -> getScoringPosition().piece),
-                                score(() -> currentGamePiece),
-                                () -> this.isAutoSteerEnabled)
-                        .withTimeout(0.3),
+                score(() -> currentGamePiece).withTimeout(0.3),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
                 stowScore());
     }
@@ -282,6 +265,10 @@ public class Superstructure {
         return goToStateParallel(SuperstructureState.stowAll);
     }
 
+    public GamePiece getGamePiece() {
+        return currentGamePiece;
+    }
+
     public Command stowIntake() {
         return goToStateParallel(SuperstructureState.stowIntake);
     }
@@ -308,10 +295,6 @@ public class Superstructure {
 
     public Command setWantedStationCommand(StationType station) {
         return Commands.runOnce(() -> setWantedStation(station));
-    }
-
-    public Command setWantedSideCommand(Side side) {
-        return Commands.runOnce(() -> setWantedSide(side));
     }
 
     public Command setWantedIntakeGamePieceCommand(GamePiece piece) {
@@ -350,42 +333,12 @@ public class Superstructure {
         this.wantedLevel = level;
     }
 
-    public Side getWantedSide() {
-        return this.wantedSide;
-    }
-
-    public void setWantedSide(Side side) {
-        this.wantedSide = side;
-    }
-
     public void setWantedIntakeGamePiece(GamePiece piece) {
         this.intakeGamePiece = piece;
     }
 
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
-    }
-
-    public List<ScoringPosition> getAllScoringPositions() {
-        return this.scoringPositions;
-    }
-
-    public ScoringPosition getScoringPosition() {
-        return this.scoringPositionBySide;
-    }
-
-    /**
-     * @return whether the current auto steer target exists, and if it exists whether it is within 1
-     *     meter from the robot
-     */
-    public boolean validScoringPosition() {
-        return this.scoringPositionBySide != ScoringPosition.kNone
-                || this.scoringPositionBySide
-                                .pose
-                                .minus(drive.getOdoPose())
-                                .getTranslation()
-                                .getNorm()
-                        < 1;
     }
 
     // keep this at the bottom

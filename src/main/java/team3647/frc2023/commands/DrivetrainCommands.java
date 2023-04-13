@@ -15,6 +15,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.LimelightConstant;
+import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.lib.vision.LimelightHelpers;
 
@@ -93,6 +94,7 @@ public class DrivetrainCommands {
     public Command greenLightAim(
             PIDController strafeController,
             PIDController turnController,
+            Supplier<GamePiece> getCurrentGamePiece,
             DoubleSupplier ySpeed,
             DoubleSupplier xSpeed,
             DoubleSupplier rotSpeed) {
@@ -127,6 +129,11 @@ public class DrivetrainCommands {
 
                             if (Math.abs(strafeDemand) < 0.1 || !turnAlmostDone) {
                                 strafeDemand = 0;
+                            }
+
+                            if (getCurrentGamePiece.get() == GamePiece.Cube) {
+                                strafeDemand = 0;
+                                turnDemand = 0;
                             }
 
                             swerve.drive(

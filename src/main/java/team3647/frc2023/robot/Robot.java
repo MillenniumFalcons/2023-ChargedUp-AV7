@@ -30,7 +30,6 @@ public class Robot extends TimedRobot {
                 () -> robotContainer.superstructure.periodic(Timer.getFPGATimestamp()),
                 kTwentyMSLoopTime,
                 0.019);
-        addPeriodic(robotContainer.flightDeck.getTracker()::update, kTwentyMSLoopTime, 0.05);
     }
 
     /**
