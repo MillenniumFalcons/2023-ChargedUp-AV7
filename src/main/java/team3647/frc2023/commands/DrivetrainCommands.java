@@ -109,7 +109,8 @@ public class DrivetrainCommands {
                                             .getDegrees();
 
                             double turnDemand = turnController.calculate(error);
-                            turnDemand = 1.2 * rotSpeed.getAsDouble() + 1.0 * turnDemand;
+
+                            turnDemand = 1 * -rotSpeed.getAsDouble() + 0.8 * turnDemand;
 
                             boolean turnDone = Math.abs(turnDemand) < 0.01;
                             boolean turnAlmostDone = Math.abs(turnDemand) < 0.1;
@@ -122,7 +123,7 @@ public class DrivetrainCommands {
                             double ySpeedDemand =
                                     Math.abs(ySpeed.getAsDouble()) > 0.3 ? ySpeed.getAsDouble() : 0;
 
-                            strafeDemand = 1.4 * ySpeedDemand + 1.0 * strafeDemand;
+                            strafeDemand = 1.4 * -ySpeedDemand + 1.0 * strafeDemand;
 
                             if (Math.abs(strafeDemand) < 0.1 || !turnAlmostDone) {
                                 strafeDemand = 0;
@@ -130,7 +131,7 @@ public class DrivetrainCommands {
 
                             swerve.drive(
                                     new Translation2d(
-                                            -xSpeed.getAsDouble() * maxSpeed, strafeDemand),
+                                            xSpeed.getAsDouble() * maxSpeed, strafeDemand),
                                     turnDemand,
                                     true,
                                     false);
