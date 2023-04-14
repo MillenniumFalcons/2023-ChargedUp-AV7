@@ -65,5 +65,17 @@ public final class GlobalConstants {
         private WristIds() {}
     }
 
+    public static final class CubeShooterIds {
+        public static final int kMasterId = 21;
+
+        private CubeShooterIds() {}
+    }
+
+    public static final class CubeWristIds {
+        public static final int kMasterId = 22;
+
+        private CubeWristIds() {}
+    }
+
     private GlobalConstants() {}
 }

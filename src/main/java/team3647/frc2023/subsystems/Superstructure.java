@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import team3647.frc2023.commands.CubeShooterCommands;
 import team3647.frc2023.commands.DrivetrainCommands;
 import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.PivotCommands;
@@ -123,6 +124,19 @@ public class Superstructure {
                     }
                 },
                 rollers);
+    }
+
+    public Command cubeShooterIntakeGround() {
+        return Commands.run(
+                () -> {
+                    currentGamePiece = GamePiece.CubeShooter;
+                    // make sure when score, arm doesn't move
+                    wantedLevel = Level.Stay;
+                    cubeShooterCommands.intake();
+                },
+                cubeShooterTop,
+                cubeShooterBottom,
+                cubeWrist);
     }
 
     public Command waitForCurrentSpike() {
@@ -352,6 +366,9 @@ public class Superstructure {
             Extender extender,
             Rollers rollers,
             Wrist wrist,
+            CubeShooterTop cubeShooterTop,
+            CubeShooterBottom cubeShooterBottom,
+            CubeWrist cubeWrist,
             PositionFinder finder,
             Compressor compressor,
             BooleanSupplier drivetrainWantMove) {
@@ -360,6 +377,9 @@ public class Superstructure {
         this.extender = extender;
         this.rollers = rollers;
         this.wrist = wrist;
+        this.cubeShooterTop = cubeShooterTop;
+        this.cubeShooterBottom = cubeShooterBottom;
+        this.cubeWrist = cubeWrist;
         this.finder = finder;
         this.compressor = compressor;
 
@@ -368,6 +388,7 @@ public class Superstructure {
         extenderCommands = new ExtenderCommands(extender);
         rollersCommands = new RollersCommands(rollers);
         wristCommands = new WristCommands(wrist);
+        cubeShooterCommands = new CubeShooterCommands(cubeShooterTop, cubeShooterBottom, cubeWrist);
         this.drivetrainWantMove = drivetrainWantMove;
     }
 
@@ -377,6 +398,9 @@ public class Superstructure {
     public final Extender extender;
     private final Rollers rollers;
     private final Wrist wrist;
+    private final CubeShooterTop cubeShooterTop;
+    private final CubeShooterBottom cubeShooterBottom;
+    private final CubeWrist cubeWrist;
     private final GroupPrinter printer = GroupPrinter.getInstance();
     private final PositionFinder finder;
     public final DrivetrainCommands drivetrainCommands;
@@ -384,6 +408,7 @@ public class Superstructure {
     public final ExtenderCommands extenderCommands;
     public final RollersCommands rollersCommands;
     public final WristCommands wristCommands;
+    public final CubeShooterCommands cubeShooterCommands;
     private final BooleanSupplier drivetrainWantMove;
 
     public enum StationType {

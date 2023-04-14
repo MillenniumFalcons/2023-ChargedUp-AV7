@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
 import team3647.frc2023.auto.AutonomousMode;
+import team3647.frc2023.constants.CubeShooterConstants;
+import team3647.frc2023.constants.CubeWristConstants;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
 import team3647.frc2023.constants.LEDConstants;
@@ -23,6 +25,9 @@ import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.constants.WristConstants;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
+import team3647.frc2023.subsystems.CubeShooterBottom;
+import team3647.frc2023.subsystems.CubeShooterTop;
+import team3647.frc2023.subsystems.CubeWrist;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.LEDSubsystem;
 import team3647.frc2023.subsystems.Pivot;
@@ -69,7 +74,8 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-
+        // need to change this to a conditional command so it doesn't start auto aiming when doing
+        // cubes from cube shooter
         mainController
                 .rightTrigger
                 .whileTrue(superstructure.armAutomatic())
@@ -92,6 +98,10 @@ public class RobotContainer {
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+
+        mainController.leftBumper.whileTrue(
+                superstructure.cubeShooterCommands.cubeWristOpenloop(
+                        SmartDashboard.getNumber("Wrist Cube Open Loop", 0)));
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
@@ -177,8 +187,7 @@ public class RobotContainer {
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
         printer.addPose("Cam pose", flightDeck::getFieldToCamera);
 
-        SmartDashboard.putNumber("pee eye dee", 0);
-        SmartDashboard.putNumber("peee eyee deee", 0);
+        SmartDashboard.putNumber("Wrist Cube Open Loop", 0);
 
         printer.addPose(
                 "April Pose",
@@ -258,6 +267,33 @@ public class RobotContainer {
                     ExtenderConstants.nominalVoltage,
                     GlobalConstants.kDt);
 
+    public final CubeWrist cubeWrist =
+            new CubeWrist(
+                    CubeWristConstants.kMaster,
+                    CubeWristConstants.kNativeVelToDPS,
+                    CubeWristConstants.kNativePosToDegrees,
+                    CubeWristConstants.nominalVoltage,
+                    CubeWristConstants.kG,
+                    CubeWristConstants.kMinDegree,
+                    CubeWristConstants.kMaxDegree,
+                    GlobalConstants.kDt);
+
+    public final CubeShooterTop cubeShooterTop =
+            new CubeShooterTop(
+                    CubeShooterConstants.kTopRoller,
+                    1,
+                    1,
+                    CubeShooterConstants.kNominalVoltage,
+                    GlobalConstants.kDt);
+
+    public final CubeShooterBottom cubeShooterBottom =
+            new CubeShooterBottom(
+                    CubeShooterConstants.kBottomRoller,
+                    1,
+                    1,
+                    CubeShooterConstants.kNominalVoltage,
+                    GlobalConstants.kDt);
+
     final FlightDeck flightDeck =
             new FlightDeck(
                     new RobotTracker(1.0, swerve::getOdoPose, swerve::getTimestamp),
@@ -300,6 +336,9 @@ public class RobotContainer {
                     extender,
                     rollers,
                     wrist,
+                    cubeShooterTop,
+                    cubeShooterBottom,
+                    cubeWrist,
                     positionFinder,
                     compressor,
                     mainController::anyStickMovedFast);

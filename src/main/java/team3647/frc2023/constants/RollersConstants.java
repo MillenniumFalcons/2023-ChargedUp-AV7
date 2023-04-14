@@ -19,7 +19,6 @@ public class RollersConstants {
     public static final double kNominalVoltage = 11.0;
     public static final double kStallCurrent = 25.0;
     public static final double kMaxCurrent = 20.0;
-    public static final double kCurrentLimitTimeMs = 1000;
 
     static {
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
