@@ -9,24 +9,65 @@ import com.ctre.phoenix.led.CANdle;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team3647.frc2023.constants.LEDConstants;
+import team3647.frc2023.robot.RobotContainer;
+import team3647.frc2023.robot.PositionFinder.GamePiece;
+import team3647.lib.PeriodicSubsystem;
 
-public class LEDSubsystem extends SubsystemBase {
+public class LEDSubsystem implements PeriodicSubsystem {
     /** Creates a new LEDSubsystem. */
-    private Animation animation = null;
-    private CANdle m_candle = LEDConstants.m_candle;
+    private Animation pieceAnim = LEDConstants.SOLID_PURPLE;
+    private Animation targetAnim = LEDConstants.BREATHE_GREEN;
+    private Animation currentAnim = pieceAnim;
+    private boolean target = false;
 
+    private CANdle m_candle = LEDConstants.m_candle;
     public LEDSubsystem() {
         setAnimation(LEDConstants.BREATHE_RED);
     }
 
-    public void setAnimation(Animation animation) {
-        this.animation = animation;
-        m_candle.animate(this.animation);
-        System.out.println("Setting LEDs");
+    private void setAnimation(Animation animation) {
+        m_candle.animate(animation);
+        this.currentAnim = animation;
+    }
+
+    public void setPiece(Animation anim) {
+        this.pieceAnim = anim;
+        System.out.println("Setting Piece");
+    }
+
+    public void setTarget(Animation anim) {
+        this.targetAnim = anim;
+        System.out.println("Setting Target");
+    }
+
+    public void setToPiece() {
+        this.target = false;
+    }
+
+    public void setToTarget() {
+        this.target = true;
+    }
+
+    public void setRainbow() {
+        this.setAnimation(LEDConstants.RAINBOWCONTROLLER);
+    }
+
+    public void setRed() {
+        this.setAnimation(LEDConstants.BREATHE_RED);
     }
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        if (target && currentAnim != this.targetAnim) {
+            this.setAnimation(this.targetAnim);
+        } else if (!target && currentAnim != this.pieceAnim) {
+            this.setAnimation(this.pieceAnim);
+        }
+    }
+
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return "LED Subystem";
     }
 }

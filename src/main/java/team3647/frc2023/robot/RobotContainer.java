@@ -72,7 +72,8 @@ public class RobotContainer {
 				wrist,
 				cubeWrist,
 				cubeShooterBottom,
-				cubeShooterTop);
+				cubeShooterTop,
+				LEDS);
 
 		configureDefaultCommands();
 		configureButtonBindings();
@@ -98,7 +99,8 @@ public class RobotContainer {
 				.onTrue(
 						Commands.runOnce(
 								() -> LimelightHelpers.setLEDMode_ForceOn(
-										LimelightConstant.kLimelightCenterHost)));
+										LimelightConstant.kLimelightCenterHost)))
+				.onTrue(Commands.runOnce(() -> LEDS.setToTarget()));
 
 		mainController.rightTrigger
 				.and(() -> !superstructure.isBottomF())
@@ -108,7 +110,8 @@ public class RobotContainer {
 								() -> LimelightHelpers.setLEDMode_ForceOff(
 										LimelightConstant.kLimelightCenterHost)))
 				.onFalse(superstructure.scoreStowNoDelay())
-				.onFalse(Commands.runOnce(() -> autoSteer.stop()));
+				.onFalse(Commands.runOnce(() -> autoSteer.stop()))
+				.onFalse(Commands.runOnce(() -> LEDS.setToPiece()));
 
 		mainController.rightTrigger
 				.and(superstructure::isBottomF)
@@ -147,15 +150,15 @@ public class RobotContainer {
 		coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
 		// LED Triggers
-		wantCone.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.SOLID_YELLOW)));
-		wantCube.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.SOLID_PURPLE)));
-		almostThere.onTrue(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.BREATHE_GREEN)));
-		almostThere.onFalse(Commands.runOnce(() -> LEDS.setAnimation(LEDConstants.BREATHE_RED)));
+		wantCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(LEDConstants.SOLID_YELLOW)));
+		wantCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(LEDConstants.SOLID_PURPLE)));
+		almostThere.onTrue(Commands.runOnce(() -> LEDS.setTarget(LEDConstants.BREATHE_GREEN)));
+		almostThere.onFalse(Commands.runOnce(() -> LEDS.setTarget(LEDConstants.BREATHE_RED)));
 
 		coControllerRightJoystickMoved.onTrue(
 				Commands.runOnce(
 						() -> {
-							LEDS.setAnimation(LEDConstants.RAINBOWCONTROLLER);
+							LEDS.setRainbow();;
 						}));
 		coControllerRightJoystickMoved.whileTrue(
 				Commands.runOnce(() -> {
@@ -165,7 +168,7 @@ public class RobotContainer {
 		coControllerRightJoystickMoved.onFalse(
 				Commands.runOnce(
 						() -> {
-							LEDS.setAnimation(LEDConstants.BREATHE_RED);
+							LEDS.setToPiece();
 						}));
 	}
 
@@ -190,10 +193,11 @@ public class RobotContainer {
 	public void teleopInit() {
 		rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
 		if (superstructure.getWantedIntakePiece() == GamePiece.Cone) {
-			LEDS.setAnimation(LEDConstants.SOLID_YELLOW);
+			LEDS.setPiece(LEDConstants.SOLID_YELLOW);
 		} else if (superstructure.getWantedIntakePiece() == GamePiece.Cube) {
-			LEDS.setAnimation(LEDConstants.SOLID_PURPLE);
+			LEDS.setPiece(LEDConstants.SOLID_PURPLE);
 		}
+		LEDS.setToPiece();
 	}
 
 	void configTestCommands() {
@@ -351,7 +355,7 @@ public class RobotContainer {
 			SwerveDriveConstants.kAutoSteerHeadingController);
 
 	private final PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
-	final Superstructure superstructure = new Superstructure(
+	public final Superstructure superstructure = new Superstructure(
 			swerve,
 			pivot,
 			extender,

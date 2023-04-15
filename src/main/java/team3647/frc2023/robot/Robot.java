@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
-        robotContainer.LEDS.setAnimation(LEDConstants.BREATHE_RED);
+        robotContainer.LEDS.setRed();
         robotContainer.wrist.setNeutralMode(NeutralMode.Coast);
     }
 
