@@ -257,9 +257,9 @@ public class Superstructure {
                 Commands.waitUntil(
                         new Trigger(
                                         () ->
-                                                cubeShooterBottom.getMasterCurrent() > 12
-                                                        || cubeShooterTop.getMasterCurrent() > 12)
-                                .debounce(0.1)));
+                                                cubeShooterBottom.getMasterCurrent() > 11.5
+                                                        || cubeShooterTop.getMasterCurrent() > 11.5)
+                                .debounce(0.07)));
     }
 
     public Command cubeShooterIntake() {
