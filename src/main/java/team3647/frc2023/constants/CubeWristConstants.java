@@ -19,14 +19,14 @@ public class CubeWristConstants {
 
     public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
 
-    public static final double kMaxVelocityTicks = (50.0 / kNativeVelToDPS) * 1.8;
-    public static final double kMaxAccelerationTicks = (50.0 / kNativeVelToDPS) * 1.8;
+    public static final double kMaxVelocityTicks = (2000 / kNativeVelToDPS);
+    public static final double kMaxAccelerationTicks = (4000.0 / kNativeVelToDPS);
 
     public static final double kInitialDegree = 0.0;
     public static final double kMinDegree = 0.0;
-    public static final double kMaxDegree = 0.0;
+    public static final double kMaxDegree = 100.0;
 
-    public static final double masterKP = 0.0;
+    public static final double masterKP = 0.5;
     public static final double masterKI = 0.0;
     public static final double masterKD = 0.0;
 
@@ -35,7 +35,7 @@ public class CubeWristConstants {
     public static final double kMaxCurrent = 60.0;
 
     // kG at max extension
-    public static final double kG = 0.63;
+    public static final double kG = 0.00;
 
     static {
         kMaster.configFactoryDefault();
@@ -47,6 +47,7 @@ public class CubeWristConstants {
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
+        kMasterConfig.peakOutputReverse = -0.5;
         kMasterConfig.reverseSoftLimitEnable = true;
         kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
         kMasterConfig.forwardSoftLimitEnable = true;

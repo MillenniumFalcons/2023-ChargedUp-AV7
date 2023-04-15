@@ -18,18 +18,35 @@ public class CubeShooterCommands {
         return Commands.run(() -> cubeWrist.setOpenloop(demand), cubeWrist);
     }
 
-    public Command intake() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(-0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(70), cubeWrist));
+    public Command cubeShooterRun(double angle, double topDemand, double bottomDemand) {
+        return Commands.sequence(
+                Commands.run(() -> cubeWrist.setAngle(angle), cubeWrist)
+                        .until(() -> cubeWrist.angleReached(angle, 5)),
+                Commands.parallel(
+                        Commands.runEnd(
+                                () -> cubeShooterBottom.openLoop(bottomDemand),
+                                cubeShooterBottom::end,
+                                cubeShooterBottom),
+                        Commands.runEnd(
+                                () -> cubeShooterTop.openLoop(topDemand),
+                                cubeShooterTop::end,
+                                cubeShooterTop)));
     }
 
-    public Command score(double topSpeed, double bottomSpeed, double wristAngle) {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(-0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(60), cubeWrist));
+    public Command intake() {
+        return cubeShooterRun(94, -0.8, -0.8);
+    }
+
+    public Command scoreHybrid() {
+        return cubeShooterRun(80, 1, 1);
+    }
+
+    public Command scoreMid() {
+        return cubeShooterRun(20, 1, 1);
+    }
+
+    public Command scoreHigh() {
+        return cubeShooterRun(2, 1, 1);
     }
 
     public Command yeetAcrossCS() {
@@ -40,10 +57,7 @@ public class CubeShooterCommands {
     }
 
     public Command stow() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(0), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(0), cubeWrist));
+        return cubeShooterRun(2, 0, 0).until(() -> cubeWrist.angleReached(2, 5));
     }
 
     public Command holdPositionAtCall() {
