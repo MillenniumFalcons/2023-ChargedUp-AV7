@@ -85,6 +85,21 @@ public class Superstructure {
                         });
     }
 
+    public Command cubeShooterIntake() {
+        return Commands.deadline(
+                        waitForCurrentSpikeDebounceCubeShooter(0.6),
+                        Commands.parallel(cubeShooterCommands.intake()))
+                .finallyDo(
+                        interrupted -> {
+                            this.currentGamePiece = GamePiece.Cube;
+                            cubeShooterStow().schedule();
+                        });
+    }
+
+    public Command cubeShooterStow() {
+        return Commands.deadline(cubeShooterCommands.stow(), holdForCurrentGamePiece());
+    }
+
     public Command intakeForCurrentGamePiece() {
         return Commands.startEnd(
                 () -> {
@@ -126,19 +141,6 @@ public class Superstructure {
                 rollers);
     }
 
-    public Command cubeShooterIntakeGround() {
-        return Commands.run(
-                () -> {
-                    currentGamePiece = GamePiece.CubeShooter;
-                    // make sure when score, arm doesn't move
-                    wantedLevel = Level.Stay;
-                    cubeShooterCommands.intake();
-                },
-                cubeShooterTop,
-                cubeShooterBottom,
-                cubeWrist);
-    }
-
     public Command waitForCurrentSpike() {
         return waitForCurrentSpike(20);
     }
@@ -148,6 +150,20 @@ public class Superstructure {
                 Commands.waitSeconds(1),
                 Commands.waitUntil(
                         new Trigger(() -> rollers.getMasterCurrent() > 20).debounce(seconds)),
+                Commands.waitSeconds(0.5));
+    }
+
+    public Command waitForCurrentSpikeDebounceCubeShooter(double seconds) {
+
+        return Commands.sequence(
+                Commands.waitSeconds(1),
+                Commands.waitUntil(
+                        new Trigger(
+                                        () ->
+                                                cubeShooterTop.getMasterCurrent() > 20
+                                                        && cubeShooterBottom.getMasterCurrent()
+                                                                > 20)
+                                .debounce(seconds)),
                 Commands.waitSeconds(0.5));
     }
 

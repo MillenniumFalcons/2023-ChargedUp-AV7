@@ -99,9 +99,10 @@ public class RobotContainer {
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
 
-        mainController.leftBumper.whileTrue(
-                superstructure.cubeShooterCommands.cubeWristOpenloop(
-                        SmartDashboard.getNumber("Wrist Cube Open Loop", 0)));
+        // mainController.leftBumper.whileTrue(
+        //         superstructure.cubeShooterCommands.cubeWristOpenloop(
+        //                 SmartDashboard.getNumber("Wrist Cube Open Loop", 0)));
+        mainController.leftBumper.whileTrue(superstructure.cubeShooterIntake());
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
@@ -356,7 +357,8 @@ public class RobotContainer {
     private final BooleanSupplier goodForAutosteer =
             globalEnableAutosteer
                     .and(mainController.rightTrigger)
-                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone);
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                    .and(() -> superstructure.getWantedLevel() != Level.Ground);
 
     private final Pose2d kEmptyPose = new Pose2d();
 

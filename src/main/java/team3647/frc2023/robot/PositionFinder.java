@@ -177,8 +177,7 @@ public class PositionFinder {
 
     public enum GamePiece {
         Cone,
-        Cube,
-        CubeShooter
+        Cube
     }
 
     public enum Level {

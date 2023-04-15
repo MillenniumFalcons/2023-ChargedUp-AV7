@@ -25,21 +25,7 @@ public class CubeShooterCommands {
                 Commands.run(() -> cubeWrist.setAngle(70), cubeWrist));
     }
 
-    public Command scoreHybrid() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(-0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(60), cubeWrist));
-    }
-
-    public Command scoreMid() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(-0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(60), cubeWrist));
-    }
-
-    public Command scoreHigh() {
+    public Command score(double topSpeed, double bottomSpeed, double wristAngle) {
         return Commands.parallel(
                 Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
                 Commands.run(() -> cubeShooterBottom.openLoop(-0.5), cubeShooterBottom),
