@@ -253,16 +253,18 @@ public class Superstructure {
     public Command waitForCubeShooterSpike() {
         return Commands.sequence(
                 Commands.waitUntil(() -> cubeWrist.angleReached(94, 5)),
-                Commands.waitSeconds(0.3),
+                Commands.waitSeconds(0.2),
                 Commands.waitUntil(
                         new Trigger(
-                                () ->
-                                        cubeShooterBottom.getMasterCurrent() > 20
-                                                || cubeShooterTop.getMasterCurrent() > 20)));
+                                        () ->
+                                                cubeShooterBottom.getMasterCurrent() > 12
+                                                        || cubeShooterTop.getMasterCurrent() > 12)
+                                .debounce(0.1)));
     }
 
     public Command cubeShooterIntake() {
         return Commands.deadline(waitForCubeShooterSpike(), cubeShooterCommands.intake())
+                .andThen(cubeShooterCommands.stow())
                 .finallyDo(interrupted -> this.isBottom = true);
     }
 
