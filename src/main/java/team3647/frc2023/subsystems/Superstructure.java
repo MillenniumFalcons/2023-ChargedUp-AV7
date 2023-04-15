@@ -88,17 +88,6 @@ public class Superstructure {
                         });
     }
 
-    public Command cubeShooterIntake() {
-        return Commands.deadline(
-                        waitForCurrentSpikeDebounceCubeShooter(0.6),
-                        Commands.parallel(cubeShooterCommands.intake()))
-                .finallyDo(
-                        interrupted -> {
-                            this.currentGamePiece = GamePiece.Cube;
-                            cubeShooterStow().schedule();
-                        });
-    }
-
     public Command cubeShooterStow() {
         return Commands.deadline(cubeShooterCommands.stow(), holdForCurrentGamePiece());
     }
