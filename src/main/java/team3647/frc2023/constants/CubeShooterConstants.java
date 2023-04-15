@@ -3,16 +3,19 @@ package team3647.frc2023.constants;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 public class CubeShooterConstants {
-    public static final TalonFX kTopRoller = new TalonFX(GlobalConstants.CubeWristIds.kMasterId);
-    public static final TalonFX kBottomRoller = new TalonFX(GlobalConstants.CubeWristIds.kMasterId);
+    public static final TalonFX kTopRoller =
+            new TalonFX(GlobalConstants.CubeShooterIds.kTopMasterId);
+    public static final TalonFX kBottomRoller =
+            new TalonFX(GlobalConstants.CubeShooterIds.kBottomMasterId);
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    public static final InvertType kTopMotorInvert = InvertType.None;
-    public static final InvertType kBottomMotorInvert = InvertType.None;
+    public static final TalonFXInvertType kTopMotorInvert = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType kBottomMotorInvert = TalonFXInvertType.Clockwise;
 
     // kG at max extension
     public static final double kNominalVoltage = 11.0;

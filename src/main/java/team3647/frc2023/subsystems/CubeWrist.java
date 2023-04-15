@@ -2,8 +2,6 @@ package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.TalonFXSubsystem;
 
 public class CubeWrist extends TalonFXSubsystem {
@@ -32,10 +30,7 @@ public class CubeWrist extends TalonFXSubsystem {
     }
 
     public void setAngle(double angle) {
-        SmartDashboard.putNumber("Pivot set", angle);
-        var ffVolts = this.kG * Math.cos(Units.degreesToRadians(angle));
-        super.setPositionMotionMagic(MathUtil.clamp(angle, minDegree, maxDegree), ffVolts);
-        SmartDashboard.putNumber("Pivot ff volts", ffVolts);
+        super.setPositionMotionMagic(MathUtil.clamp(angle, minDegree, maxDegree), 0);
     }
 
     public double getAngle() {

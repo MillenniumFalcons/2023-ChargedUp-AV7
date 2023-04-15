@@ -225,6 +225,10 @@ public class Superstructure {
                 && wrist.angleReached(state.wristAngle, 2);
     }
 
+    public boolean cubeReached(double length) {
+        return cubeWrist.angleReached(length, 5);
+    }
+
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
         return Commands.sequence(
                 score(() -> currentGamePiece).withTimeout(0.3),
@@ -277,6 +281,10 @@ public class Superstructure {
 
     public Command stow() {
         return goToStateParallel(SuperstructureState.stowAll);
+    }
+
+    public Command stowCubeShooter() {
+        return cubeShooterCommands.stow().until(() -> cubeReached(0));
     }
 
     public GamePiece getGamePiece() {

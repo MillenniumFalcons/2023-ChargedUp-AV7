@@ -66,13 +66,14 @@ public final class GlobalConstants {
     }
 
     public static final class CubeShooterIds {
-        public static final int kMasterId = 21;
+        public static final int kBottomMasterId = 32;
+        public static final int kTopMasterId = 33;
 
         private CubeShooterIds() {}
     }
 
     public static final class CubeWristIds {
-        public static final int kMasterId = 22;
+        public static final int kMasterId = 31;
 
         private CubeWristIds() {}
     }
