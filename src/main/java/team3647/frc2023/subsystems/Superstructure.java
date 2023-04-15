@@ -244,6 +244,11 @@ public class Superstructure {
                 stowScore());
     }
 
+    public Command scoreAndStowLonger(double secsBetweenOpenAndStow) {
+        return Commands.sequence(
+                score(() -> currentGamePiece).withTimeout(secsBetweenOpenAndStow), stowScore());
+    }
+
     public Command scoreAndStowConeReversed(SuperstructureState nextState) {
         return Commands.sequence(
                 rollersCommands.openloop(() -> -0.3).withTimeout(0.2),

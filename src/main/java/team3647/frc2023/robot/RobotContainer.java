@@ -97,7 +97,7 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
                                                 LimelightConstant.kLimelightCenterHost)))
-                .onTrue(Commands.runOnce(() -> LEDS.setToTarget()));
+                .onTrue(Commands.runOnce(LEDS::setToTarget));
 
         mainController
                 .rightTrigger
@@ -108,9 +108,9 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOff(
                                                 LimelightConstant.kLimelightCenterHost)))
-                .onFalse(superstructure.scoreStowNoDelay())
-                .onFalse(Commands.runOnce(() -> autoSteer.stop()))
-                .onFalse(Commands.runOnce(() -> LEDS.setToPiece()));
+                .onFalse(superstructure.scoreAndStowLonger(0.8))
+                .onFalse(Commands.runOnce(autoSteer::stop))
+                .onFalse(Commands.runOnce(LEDS::setToPiece));
 
         mainController
                 .rightTrigger
