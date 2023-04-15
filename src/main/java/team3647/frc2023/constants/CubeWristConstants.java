@@ -47,6 +47,7 @@ public class CubeWristConstants {
         kMasterConfig.voltageCompSaturation = nominalVoltage;
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;
         kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
+        kMasterConfig.peakOutputReverse = -0.5;
         kMasterConfig.reverseSoftLimitEnable = true;
         kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
         kMasterConfig.forwardSoftLimitEnable = true;

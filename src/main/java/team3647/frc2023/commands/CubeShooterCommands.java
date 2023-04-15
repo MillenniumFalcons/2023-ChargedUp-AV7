@@ -38,24 +38,15 @@ public class CubeShooterCommands {
     }
 
     public Command scoreHybrid() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(60), cubeWrist));
+        return cubeShooterRun(80, 1, 1);
     }
 
     public Command scoreMid() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(60), cubeWrist));
+        return cubeShooterRun(20, 1, 1);
     }
 
     public Command scoreHigh() {
-        return Commands.parallel(
-                Commands.run(() -> cubeShooterTop.openLoop(0.5), cubeShooterTop),
-                Commands.run(() -> cubeShooterBottom.openLoop(0.5), cubeShooterBottom),
-                Commands.run(() -> cubeWrist.setAngle(60), cubeWrist));
+        return cubeShooterRun(2, 1, 1);
     }
 
     public Command yeetAcrossCS() {
@@ -66,7 +57,7 @@ public class CubeShooterCommands {
     }
 
     public Command stow() {
-        return cubeShooterRun(2, 0, 0);
+        return cubeShooterRun(2, 0, 0).until(() -> cubeWrist.angleReached(2, 5));
     }
 
     public Command holdPositionAtCall() {

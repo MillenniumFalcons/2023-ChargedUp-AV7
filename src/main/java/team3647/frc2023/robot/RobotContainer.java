@@ -87,6 +87,7 @@ public class RobotContainer {
         // cubes from cube shooter
         mainController
                 .rightTrigger
+                .and(() -> !superstructure.isBottomF())
                 .whileTrue(superstructure.armAutomatic())
                 .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(
@@ -97,6 +98,8 @@ public class RobotContainer {
 
         mainController
                 .rightTrigger
+                .and(() -> !superstructure.isBottomF())
+                .and(mainController.leftBumper.negate())
                 .onFalse(
                         Commands.runOnce(
                                 () ->
@@ -105,10 +108,15 @@ public class RobotContainer {
                 .onFalse(superstructure.scoreStowNoDelay())
                 .onFalse(Commands.runOnce(() -> autoSteer.stop()));
 
+        mainController
+                .rightTrigger
+                .and(superstructure::isBottomF)
+                .onTrue(superstructure.shootAutomatic());
+
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
 
-        mainController.leftBumper.whileTrue(superstructure.cubeShooterCommands.intake());
+        mainController.leftBumper.whileTrue(superstructure.cubeShooterIntake());
         mainController.leftBumper.onFalse(superstructure.cubeShooterCommands.stow());
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
@@ -209,7 +217,7 @@ public class RobotContainer {
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
         printer.addPose("Cam pose", flightDeck::getFieldToCamera);
 
-        printer.addDouble("cube intake", cubeWrist::getAngle);
+        printer.addBoolean("ground intake", superstructure::isBottomF);
 
         printer.addPose(
                 "April Pose",
@@ -380,6 +388,8 @@ public class RobotContainer {
     private final BooleanSupplier goodForAutosteer =
             globalEnableAutosteer
                     .and(mainController.rightTrigger)
+                    .and(() -> !superstructure.isBottomF())
+                    .and(() -> superstructure.getWantedLevel() != Level.Ground)
                     .and(() -> superstructure.getGamePiece() == GamePiece.Cone);
 
     private final Pose2d kEmptyPose = new Pose2d();

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.commands.CubeShooterCommands;
@@ -32,6 +33,7 @@ public class Superstructure {
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
     private double wristAdjust = 0.0;
+    private boolean isBottom = false;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
 
@@ -81,6 +83,7 @@ public class Superstructure {
                 .finallyDo(
                         interrupted -> {
                             this.currentGamePiece = this.intakeGamePiece;
+                            this.isBottom = false;
                             stowFromIntake().schedule();
                         });
     }
@@ -242,6 +245,36 @@ public class Superstructure {
                 goToStateParallel(nextState));
     }
 
+    public Command waitForCubeShooterSpike() {
+        return Commands.sequence(
+                Commands.waitUntil(() -> cubeWrist.angleReached(94, 5)),
+                Commands.waitSeconds(0.3),
+                Commands.waitUntil(
+                        new Trigger(
+                                () ->
+                                        cubeShooterBottom.getMasterCurrent() > 20
+                                                || cubeShooterTop.getMasterCurrent() > 20)));
+    }
+
+    public Command cubeShooterIntake() {
+        return Commands.deadline(waitForCubeShooterSpike(), cubeShooterCommands.intake())
+                .finallyDo(interrupted -> this.isBottom = true);
+    }
+
+    public Command shootAutomatic() {
+        return Commands.select(
+                        Map.of(
+                                Level.Ground,
+                                cubeShooterCommands.scoreHybrid(),
+                                Level.Two,
+                                cubeShooterCommands.scoreMid(),
+                                Level.Three,
+                                cubeShooterCommands.scoreHigh()),
+                        () -> this.wantedLevel)
+                .withTimeout(0.6)
+                .andThen(cubeShooterCommands.stow());
+    }
+
     public Command scoreAndStowCube() {
         return scoreAndStowCube(0.5, SuperstructureState.stowScore);
     }
@@ -365,6 +398,10 @@ public class Superstructure {
 
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
+    }
+
+    public boolean isBottomF() {
+        return this.isBottom;
     }
 
     // keep this at the bottom
