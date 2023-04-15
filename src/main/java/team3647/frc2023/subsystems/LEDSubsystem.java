@@ -6,21 +6,19 @@ package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team3647.frc2023.constants.LEDConstants;
-import team3647.frc2023.robot.RobotContainer;
-import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.lib.PeriodicSubsystem;
 
 public class LEDSubsystem implements PeriodicSubsystem {
     /** Creates a new LEDSubsystem. */
     private Animation pieceAnim = LEDConstants.SOLID_PURPLE;
+
     private Animation targetAnim = LEDConstants.BREATHE_GREEN;
     private Animation currentAnim = pieceAnim;
     private boolean target = false;
 
     private CANdle m_candle = LEDConstants.m_candle;
+
     public LEDSubsystem() {
         setAnimation(LEDConstants.BREATHE_RED);
     }

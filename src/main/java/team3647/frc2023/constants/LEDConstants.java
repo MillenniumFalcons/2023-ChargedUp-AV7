@@ -16,7 +16,7 @@ import com.ctre.phoenix.led.StrobeAnimation;
 
 /** Add your docs here. */
 public class LEDConstants {
-    public final static CANdle m_candle = new CANdle(LEDConstants.CANdleID, "drive");
+    public static final CANdle m_candle = new CANdle(LEDConstants.CANdleID, "drive");
 
     // LED Counts
     public static final int candleLEDS = 8;
@@ -32,8 +32,7 @@ public class LEDConstants {
             new LarsonAnimation(255, 0, 0, 0, 0.75, LEDCOUNT, BounceMode.Front, 50);
     public static final Animation COLOR_FLOW =
             new ColorFlowAnimation(255, 0, 0, 0, 0.7, LEDCOUNT, Direction.Forward);
-    public static final Animation SOLID_YELLOW =
-            new StrobeAnimation(255, 255, 0, 128, 1, LEDCOUNT);
+    public static final Animation SOLID_YELLOW = new StrobeAnimation(255, 255, 0, 128, 1, LEDCOUNT);
     public static final Animation SOLID_PURPLE =
             new StrobeAnimation(162, 25, 255, 128, 1, LEDCOUNT);
     public static final Animation SOLID_WHITE =
