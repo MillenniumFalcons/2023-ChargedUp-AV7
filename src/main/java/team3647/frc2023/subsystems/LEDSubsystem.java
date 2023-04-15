@@ -5,12 +5,15 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.led.Animation;
+import com.ctre.phoenix.led.CANdle;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team3647.frc2023.constants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
     /** Creates a new LEDSubsystem. */
     private Animation animation = null;
+    private CANdle m_candle = LEDConstants.m_candle;
 
     public LEDSubsystem() {
         setAnimation(LEDConstants.BREATHE_RED);
@@ -18,7 +21,7 @@ public class LEDSubsystem extends SubsystemBase {
 
     public void setAnimation(Animation animation) {
         this.animation = animation;
-        // m_candle.animate(this.animation);
+        m_candle.animate(this.animation);
         System.out.println("Setting LEDs");
     }
 
