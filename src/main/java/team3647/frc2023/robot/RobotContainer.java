@@ -155,10 +155,10 @@ public class RobotContainer {
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
         // LED Triggers
-        wantCone.onTrue(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.CONE)));
-        wantCube.onTrue(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.CUBE)));
-        almostThere.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
-        almostThere.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
+        wantCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(true)));
+        wantCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(false)));
+        seesTarget.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
+        seesTarget.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
 
         coControllerRightJoystickMoved.onTrue(
                 Commands.runOnce(
@@ -199,10 +199,11 @@ public class RobotContainer {
     public void teleopInit() {
         rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
         if (superstructure.getWantedIntakePiece() == GamePiece.Cone) {
-            LEDS.setLEDState(LEDStates.CONE);
+            LEDS.setPiece(true);
         } else if (superstructure.getWantedIntakePiece() == GamePiece.Cube) {
-            LEDS.setLEDState(LEDStates.CUBE);
+            LEDS.setPiece(false);
         }
+        LEDS.setLEDState(LEDStates.IDLE);
     }
 
     void configTestCommands() {
@@ -227,6 +228,7 @@ public class RobotContainer {
         printer.addPose("Cam pose", flightDeck::getFieldToCamera);
 
         printer.addBoolean("ground intake", superstructure::isBottomF);
+        printer.addString("LED State", LEDS::getLEDState);
 
         printer.addPose(
                 "April Pose",
@@ -413,7 +415,7 @@ public class RobotContainer {
                             superstructure.getWantedIntakePiece() == GamePiece.Cube
                                     || superstructure.isBottomF());
 
-    private final Trigger almostThere = new Trigger(autoSteer::almostArrived);
+    private final Trigger seesTarget = new Trigger(autoSteer::almostArrived);
 
     private final Trigger coControllerRightJoystickMoved =
             new Trigger(() -> Math.abs(coController.getRightStickY()) >= 0.2);

@@ -17,9 +17,19 @@ public class LEDSubsystem implements PeriodicSubsystem {
     private boolean cone = false;
 
     public static enum LEDStates {
-        TARGET,
-        RAINBOW,
-        IDLE
+        TARGET("TARGET"),
+        RAINBOW("RAINBOW"),
+        IDLE("IDLE");
+
+        private String name;
+
+        LEDStates(String name) {
+            this.name = name;
+        }
+
+        public String getLEDState() {
+            return name;
+        }
     }
 
     private LEDStates currentState;
@@ -45,6 +55,10 @@ public class LEDSubsystem implements PeriodicSubsystem {
 
     public void setPiece(boolean cone) {
         this.cone = cone;
+    }
+
+    public String getLEDState() {
+        return wantedState.getLEDState();
     }
 
     @Override
