@@ -30,12 +30,10 @@ public class LEDSubsystem implements PeriodicSubsystem {
 
     public void setPiece(Animation anim) {
         this.pieceAnim = anim;
-        System.out.println("Setting Piece");
     }
 
     public void setTarget(Animation anim) {
         this.targetAnim = anim;
-        System.out.println("Setting Target");
     }
 
     public void setToPiece() {

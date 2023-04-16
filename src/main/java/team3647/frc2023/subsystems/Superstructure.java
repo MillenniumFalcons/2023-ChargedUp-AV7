@@ -55,7 +55,6 @@ public class Superstructure {
 
         SmartDashboard.putString(
                 "Game Piece", currentGamePiece == GamePiece.Cone ? "CONE" : "CUBE");
-        SmartDashboard.putNumber("rollers current", rollers.getMasterCurrent());
     }
 
     public Command scoreStowHalfSecDelay() {

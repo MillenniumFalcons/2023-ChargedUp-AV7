@@ -41,7 +41,6 @@ import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
-import team3647.lib.vision.AimingParameters;
 import team3647.lib.vision.LimelightHelpers;
 import team3647.lib.vision.MultiTargetTracker;
 
@@ -72,7 +71,7 @@ public class RobotContainer {
 
         configureDefaultCommands();
         configureButtonBindings();
-        configureSmartDashboardLogging();
+        // configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
@@ -225,19 +224,9 @@ public class RobotContainer {
         printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
-        printer.addPose("Cam pose", flightDeck::getFieldToCamera);
 
         printer.addBoolean("ground intake", superstructure::isBottomF);
 
-        printer.addPose(
-                "April Pose",
-                () -> {
-                    var params = flightDeck.getLatestParameters();
-                    if (params == AimingParameters.None) {
-                        return kEmptyPose;
-                    }
-                    return params.getFieldToGoal();
-                });
         printer.addBoolean(
                 "Cube Ground",
                 () ->
@@ -342,19 +331,6 @@ public class RobotContainer {
                     new RobotTracker(1.0, swerve::getOdoPose, swerve::getTimestamp),
                     new MultiTargetTracker(),
                     LimelightConstant.kRobotToCamFixed);
-
-    // private final VisionController visionController =
-    // new VisionController(
-    // Map.of(
-    // CAMERA_NAME.CENTER,
-    // new Limelight(
-    // LimelightConstant.kLimelightCenterIP,
-    // LimelightConstant.kLimelightCenterHost,
-    // 0,
-    // LimelightConstant.kCamConstants)),
-    // flightDeck::addVisionObservation,
-    // FieldConstants.kScoreTargetHeightMeters,
-    // FieldConstants.kIntakeTargetHeightMeters);
 
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
