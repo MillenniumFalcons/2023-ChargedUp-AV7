@@ -287,6 +287,12 @@ public class Superstructure {
                 .andThen(cubeShooterCommands.stow());
     }
 
+    public Command shootCube() {
+        return Commands.sequence(
+                rollersCommands.openloop(() -> -1.0).withTimeout(0.5),
+                goToStateParallel(SuperstructureState.stowAll));
+    }
+
     public Command scoreAndStowCube() {
         return scoreAndStowCube(0.5, SuperstructureState.stowScore);
     }

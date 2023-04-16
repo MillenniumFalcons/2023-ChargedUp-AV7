@@ -77,7 +77,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
+        runningMode = autoCommands.redConeCubeBalanceBumpSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
@@ -194,6 +194,7 @@ public class RobotContainer {
         // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
+        cubeWrist.setDefaultCommand(superstructure.cubeShooterCommands.holdPositionAtCall());
     }
 
     public void teleopInit() {
