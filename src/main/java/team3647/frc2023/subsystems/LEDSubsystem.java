@@ -11,11 +11,19 @@ import team3647.lib.PeriodicSubsystem;
 
 public class LEDSubsystem implements PeriodicSubsystem {
     /** Creates a new LEDSubsystem. */
-    private Animation pieceAnim = LEDConstants.SOLID_PURPLE;
-
     private Animation targetAnim = LEDConstants.BREATHE_GREEN;
-    private Animation currentAnim = pieceAnim;
+
     private boolean target = false;
+    private boolean cone = false;
+
+    public static enum LEDStates {
+        TARGET,
+        RAINBOW,
+        IDLE
+    }
+
+    private LEDStates currentState;
+    private LEDStates wantedState = LEDStates.IDLE;
 
     private CANdle m_candle = LEDConstants.m_candle;
 
@@ -25,41 +33,37 @@ public class LEDSubsystem implements PeriodicSubsystem {
 
     private void setAnimation(Animation animation) {
         m_candle.animate(animation);
-        this.currentAnim = animation;
     }
 
-    public void setPiece(Animation anim) {
-        this.pieceAnim = anim;
-        System.out.println("Setting Piece");
+    public void setLEDState(LEDStates state) {
+        wantedState = state;
     }
 
-    public void setTarget(Animation anim) {
-        this.targetAnim = anim;
-        System.out.println("Setting Target");
+    public void setTarget(boolean bool) {
+        this.target = bool;
     }
 
-    public void setToPiece() {
-        this.target = false;
-    }
-
-    public void setToTarget() {
-        this.target = true;
-    }
-
-    public void setRainbow() {
-        this.setAnimation(LEDConstants.RAINBOWCONTROLLER);
-    }
-
-    public void setRed() {
-        this.setAnimation(LEDConstants.BREATHE_RED);
+    public void setPiece(boolean cone) {
+        this.cone = cone;
     }
 
     @Override
     public void periodic() {
-        if (target && currentAnim != this.targetAnim) {
-            this.setAnimation(this.targetAnim);
-        } else if (!target && currentAnim != this.pieceAnim) {
-            this.setAnimation(this.pieceAnim);
+        switch (wantedState) {
+            case TARGET:
+                if (target) {
+                    this.setAnimation(LEDConstants.BREATHE_GREEN);
+                } else {
+                    this.setAnimation(LEDConstants.BREATHE_RED);
+                }
+            case RAINBOW:
+                this.setAnimation(LEDConstants.RAINBOWCONTROLLER);
+            case IDLE:
+                if (cone) {
+                    this.setAnimation(LEDConstants.SOLID_YELLOW);
+                } else {
+                    this.setAnimation(LEDConstants.SOLID_PURPLE);
+                }
         }
     }
 

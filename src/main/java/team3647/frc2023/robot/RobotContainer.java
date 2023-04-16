@@ -29,6 +29,7 @@ import team3647.frc2023.subsystems.CubeShooterTop;
 import team3647.frc2023.subsystems.CubeWrist;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.LEDSubsystem;
+import team3647.frc2023.subsystems.LEDSubsystem.LEDStates;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
@@ -97,7 +98,7 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
                                                 LimelightConstant.kLimelightCenterHost)))
-                .onTrue(Commands.runOnce(LEDS::setToTarget));
+                .onTrue(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.TARGET)));
 
         mainController
                 .rightTrigger
@@ -110,7 +111,7 @@ public class RobotContainer {
                                                 LimelightConstant.kLimelightCenterHost)))
                 .onFalse(superstructure.scoreAndStowLonger(0.4))
                 .onFalse(Commands.runOnce(autoSteer::stop))
-                .onFalse(Commands.runOnce(LEDS::setToPiece));
+                .onFalse(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.IDLE)));
 
         mainController
                 .rightTrigger
@@ -154,16 +155,15 @@ public class RobotContainer {
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
         // LED Triggers
-        wantCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(LEDConstants.SOLID_YELLOW)));
-        wantCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(LEDConstants.SOLID_PURPLE)));
-        almostThere.onTrue(Commands.runOnce(() -> LEDS.setTarget(LEDConstants.BREATHE_GREEN)));
-        almostThere.onFalse(Commands.runOnce(() -> LEDS.setTarget(LEDConstants.BREATHE_RED)));
+        wantCone.onTrue(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.CONE)));
+        wantCube.onTrue(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.CUBE)));
+        almostThere.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
+        almostThere.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
 
         coControllerRightJoystickMoved.onTrue(
                 Commands.runOnce(
                         () -> {
-                            LEDS.setRainbow();
-                            ;
+                            LEDS.setLEDState(LEDStates.RAINBOW);
                         }));
         coControllerRightJoystickMoved.whileTrue(
                 Commands.runOnce(
@@ -174,7 +174,7 @@ public class RobotContainer {
         coControllerRightJoystickMoved.onFalse(
                 Commands.runOnce(
                         () -> {
-                            LEDS.setToPiece();
+                            LEDS.setLEDState(LEDStates.IDLE);
                         }));
     }
 
@@ -199,11 +199,10 @@ public class RobotContainer {
     public void teleopInit() {
         rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
         if (superstructure.getWantedIntakePiece() == GamePiece.Cone) {
-            LEDS.setPiece(LEDConstants.SOLID_YELLOW);
+            LEDS.setLEDState(LEDStates.CONE);
         } else if (superstructure.getWantedIntakePiece() == GamePiece.Cube) {
-            LEDS.setPiece(LEDConstants.SOLID_PURPLE);
+            LEDS.setLEDState(LEDStates.CUBE);
         }
-        LEDS.setToPiece();
     }
 
     void configTestCommands() {
@@ -418,6 +417,4 @@ public class RobotContainer {
 
     private final Trigger coControllerRightJoystickMoved =
             new Trigger(() -> Math.abs(coController.getRightStickY()) >= 0.2);
-    private final Trigger coControllerLeftJoystickMoved =
-            new Trigger(() -> Math.abs(coController.getLeftStickY()) >= 0.3);
 }
