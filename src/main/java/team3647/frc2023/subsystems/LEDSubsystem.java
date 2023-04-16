@@ -11,10 +11,14 @@ import team3647.lib.PeriodicSubsystem;
 
 public class LEDSubsystem implements PeriodicSubsystem {
     /** Creates a new LEDSubsystem. */
-    private Animation targetAnim = LEDConstants.BREATHE_GREEN;
-
     private boolean target = false;
-    private boolean cone = false;
+
+    private boolean currentCone = false;
+    private boolean wantedCone = false;
+    private boolean pieceIn = false;
+
+    private Animation cubeColor = LEDConstants.SOLID_PURPLE;
+    private Animation coneColor = LEDConstants.SOLID_YELLOW;
 
     public static enum LEDStates {
         TARGET("TARGET"),
@@ -54,7 +58,19 @@ public class LEDSubsystem implements PeriodicSubsystem {
     }
 
     public void setPiece(boolean cone) {
-        this.cone = cone;
+        this.currentCone = cone;
+    }
+
+    public void setWantedPiece(boolean cone) {
+        this.wantedCone = cone;
+    }
+
+    public void setPieceIn(boolean in) {
+        this.pieceIn = in;
+    }
+
+    public boolean getPieceIn() {
+        return pieceIn;
     }
 
     public String getLEDState() {
@@ -70,14 +86,25 @@ public class LEDSubsystem implements PeriodicSubsystem {
                 } else {
                     this.setAnimation(LEDConstants.BREATHE_RED);
                 }
+                break;
             case RAINBOW:
                 this.setAnimation(LEDConstants.RAINBOWCONTROLLER);
+                break;
             case IDLE:
-                if (cone) {
-                    this.setAnimation(LEDConstants.SOLID_YELLOW);
+                if (pieceIn) {
+                    if (currentCone) {
+                        this.setAnimation(coneColor);
+                    } else {
+                        this.setAnimation(cubeColor);
+                    }
                 } else {
-                    this.setAnimation(LEDConstants.SOLID_PURPLE);
+                    if (wantedCone) {
+                        this.setAnimation(coneColor);
+                    } else {
+                        this.setAnimation(cubeColor);
+                    }
                 }
+                break;
         }
     }
 

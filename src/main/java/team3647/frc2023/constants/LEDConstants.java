@@ -24,19 +24,27 @@ public class LEDConstants {
     public static final int LEDCOUNT = candleLEDS + 2 * stripLEDS;
 
     // Animations List
+    // Rainbows
     public static final Animation RAINBOW = new RainbowAnimation(1, 0.1, LEDCOUNT);
     public static final Animation RAINBOWCONTROLLER = new RainbowAnimation(1, 0.5, LEDCOUNT);
+
+    // Unused
     public static final Animation GREEN_STROBE =
             new StrobeAnimation(0, 255, 0, 0, 56.0 / 256.0, LEDCOUNT);
     public static final Animation LARSON =
             new LarsonAnimation(255, 0, 0, 0, 0.75, LEDCOUNT, BounceMode.Front, 50);
     public static final Animation COLOR_FLOW =
             new ColorFlowAnimation(255, 0, 0, 0, 0.7, LEDCOUNT, Direction.Forward);
-    public static final Animation SOLID_YELLOW = new StrobeAnimation(255, 255, 0, 128, 1, LEDCOUNT);
+
+    // Solid Colors
+    public static final Animation SOLID_YELLOW = new StrobeAnimation(246, 190, 0, 128, 1, LEDCOUNT);
     public static final Animation SOLID_PURPLE =
             new StrobeAnimation(162, 25, 255, 128, 1, LEDCOUNT);
+    public static final Animation SOLID_PINK = new StrobeAnimation(255, 0, 255, 128, 1, LEDCOUNT);
     public static final Animation SOLID_WHITE =
             new StrobeAnimation(255, 255, 255, 128, 1, LEDCOUNT);
+
+    // Breathing Animations
     public static final Animation BREATHE_RED =
             new SingleFadeAnimation(255, 0, 0, 0, 0.8, LEDCOUNT);
     public static final Animation BREATHE_GREEN =
