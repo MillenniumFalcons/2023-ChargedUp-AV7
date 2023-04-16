@@ -108,7 +108,7 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOff(
                                                 LimelightConstant.kLimelightCenterHost)))
-                .onFalse(superstructure.scoreAndStowLonger(0.8))
+                .onFalse(superstructure.scoreAndStowLonger(0.4))
                 .onFalse(Commands.runOnce(autoSteer::stop))
                 .onFalse(Commands.runOnce(LEDS::setToPiece));
 
@@ -310,6 +310,7 @@ public class RobotContainer {
     public final CubeWrist cubeWrist =
             new CubeWrist(
                     CubeWristConstants.kMaster,
+                    CubeWristConstants.timeOfFlight,
                     CubeWristConstants.kNativeVelToDPS,
                     CubeWristConstants.kNativePosToDegrees,
                     CubeWristConstants.nominalVoltage,

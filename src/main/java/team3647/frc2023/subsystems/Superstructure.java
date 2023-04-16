@@ -262,8 +262,8 @@ public class Superstructure {
                 Commands.waitUntil(
                         new Trigger(
                                         () ->
-                                                cubeShooterBottom.getMasterCurrent() > 11.5
-                                                        || cubeShooterTop.getMasterCurrent() > 11.5)
+                                                cubeWrist.isSensorTriggered()
+                                                        && cubeShooterTop.getMasterCurrent() > 11.5)
                                 .debounce(0.07)));
     }
 

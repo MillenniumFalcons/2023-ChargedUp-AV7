@@ -1,6 +1,7 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.math.MathUtil;
 import team3647.lib.TalonFXSubsystem;
 
@@ -8,9 +9,12 @@ public class CubeWrist extends TalonFXSubsystem {
     private double minDegree;
     private double maxDegree;
     private double kG;
+    private TimeOfFlight tof;
+    private final double triggerDistance = 600;
 
     public CubeWrist(
             TalonFX master,
+            TimeOfFlight tof,
             double ticksToDegPerSecConversion,
             double ticksToDegConversion,
             double nominalVoltage,
@@ -22,6 +26,7 @@ public class CubeWrist extends TalonFXSubsystem {
         this.minDegree = minDegree;
         this.maxDegree = maxDegree;
         this.kG = kG;
+        this.tof = tof;
     }
 
     @Override
@@ -39,6 +44,14 @@ public class CubeWrist extends TalonFXSubsystem {
 
     public boolean angleReached(double targetAngle, double threshold) {
         return Math.abs(getAngle() - targetAngle) < threshold;
+    }
+
+    public double getTofDist() {
+        return this.tof.getRange();
+    }
+
+    public boolean isSensorTriggered() {
+        return getTofDist() < triggerDistance;
     }
 
     @Override

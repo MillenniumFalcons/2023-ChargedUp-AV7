@@ -74,6 +74,7 @@ public final class GlobalConstants {
 
     public static final class CubeWristIds {
         public static final int kMasterId = 31;
+        public static final int timeOfFlightId = 0;
 
         private CubeWristIds() {}
     }
