@@ -5,10 +5,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.playingwithfusion.TimeOfFlight;
 
 public class CubeWristConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.CubeWristIds.kMasterId);
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
+    public static final TimeOfFlight timeOfFlight =
+            new TimeOfFlight(GlobalConstants.CubeWristIds.timeOfFlightId);
 
     public static final InvertType kMasterInvert = InvertType.None;
 
