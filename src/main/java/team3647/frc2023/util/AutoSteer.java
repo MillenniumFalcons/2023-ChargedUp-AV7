@@ -19,6 +19,7 @@ public class AutoSteer {
     private final PIDController thetaController;
     private final DoubleSupplier txSupplier;
     private final Supplier<Pose2d> drivePose;
+    private boolean useHeadingOnly = false;
 
     private static final Twist2d kNoTwist = new Twist2d();
     private boolean stopped = false;
@@ -49,6 +50,7 @@ public class AutoSteer {
         var dx = 0.0;
         var dy = yController.calculate(txSupplier.getAsDouble());
         var dtheta = 0.8 * thetaController.calculate(currentPose.getRotation().getDegrees());
+
         if (xController.atSetpoint()) {
             dx = 0.0;
         }
@@ -71,6 +73,10 @@ public class AutoSteer {
         SmartDashboard.putNumber("dtheta", dtheta);
         SmartDashboard.putNumber("dy", dy);
 
+        if (useHeadingOnly) {
+            return new Twist2d(0.0, 0.0, dtheta);
+        }
+
         return new Twist2d(dx, dy, dtheta);
     }
 
@@ -84,9 +90,16 @@ public class AutoSteer {
 
     public void initializeSteering() {
         stopped = false;
+        useHeadingOnly = false;
         lastUpdated = Timer.getFPGATimestamp();
         yController.setSetpoint(0);
         lockHeading(180);
+    }
+
+    public void justHeading(double heading) {
+        lockHeading(heading);
+        lastUpdated = Timer.getFPGATimestamp();
+        useHeadingOnly = true;
     }
 
     public boolean arrived() {

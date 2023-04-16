@@ -118,6 +118,10 @@ public class RobotContainer {
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+        mainController
+                .rightBumper
+                .and(() -> superstructure.getWantedStation() == StationType.Double)
+                .onTrue(Commands.runOnce(() -> autoSteer.justHeading(0)));
 
         mainController.leftBumper.whileTrue(superstructure.cubeShooterIntake());
         mainController.leftBumper.onFalse(superstructure.cubeShooterCommands.stow());
@@ -378,7 +382,10 @@ public class RobotContainer {
                     .and(mainController.rightTrigger)
                     .and(() -> !superstructure.isBottomF())
                     .and(() -> superstructure.getWantedLevel() != Level.Ground)
-                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone);
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                    .or(
+                            mainController.rightBumper.and(
+                                    () -> superstructure.getWantedStation() == StationType.Double));
 
     private final Pose2d kEmptyPose = new Pose2d();
 
