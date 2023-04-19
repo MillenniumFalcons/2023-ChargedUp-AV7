@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.DoubleSupplier;
 import team3647.lib.TalonFXSubsystem;
 
@@ -41,10 +40,8 @@ public class Pivot extends TalonFXSubsystem {
         // ff should be negative when going towards big angle (towards front of robot)
         // ff should be positive when going towards small angle (towards back of robot)
         // because ff should always be towards the 90 deg
-        SmartDashboard.putNumber("Pivot set", angle);
         var ffVolts = getKG.getAsDouble() * Math.cos(Units.degreesToRadians(angle));
         super.setPositionMotionMagic(MathUtil.clamp(angle, minDegree, maxDegree), ffVolts);
-        SmartDashboard.putNumber("Pivot ff volts", ffVolts);
     }
 
     public double getAngle() {

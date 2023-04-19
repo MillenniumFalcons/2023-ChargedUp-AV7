@@ -55,7 +55,6 @@ public class Superstructure {
 
         SmartDashboard.putString(
                 "Game Piece", currentGamePiece == GamePiece.Cone ? "CONE" : "CUBE");
-        SmartDashboard.putNumber("rollers current", rollers.getMasterCurrent());
     }
 
     public Command scoreStowHalfSecDelay() {
@@ -285,6 +284,12 @@ public class Superstructure {
                         () -> this.wantedLevel)
                 .withTimeout(0.6)
                 .andThen(cubeShooterCommands.stow());
+    }
+
+    public Command shootCube() {
+        return Commands.sequence(
+                rollersCommands.openloop(() -> -1.0).withTimeout(0.5),
+                goToStateParallel(SuperstructureState.stowAll));
     }
 
     public Command scoreAndStowCube() {

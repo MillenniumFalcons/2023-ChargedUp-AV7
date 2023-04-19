@@ -237,25 +237,28 @@ public class AutoCommands {
                                 SuperstructureState.coneThreeReversed,
                                 SuperstructureState.stowAfterConeThreeReversed)
                         .raceWith(endRightAfterExtenderRetracted()),
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(0.3),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCube),
+                                        SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.45))
                         .withTimeout(3),
-                superstructure.stow().withTimeout(2),
-                Commands.waitSeconds(1),
+                superstructure.stow().withTimeout(1.3),
+                // Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
-                Commands.waitSeconds(0.8),
+                // Commands.waitSeconds(0.5),
                 superstructure.scoreAndStowCube(),
-                Commands.waitSeconds(2),
+                Commands.waitSeconds(0.6),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCube),
-                                superstructure.rollersCommands.openloop(() -> 0.4))
-                        .withTimeout(3));
+                                        SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(2.35),
+                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
+                Commands.waitSeconds(0.4),
+                superstructure.scoreAndStowCube());
     }
 
     public Command drive() {
@@ -265,7 +268,7 @@ public class AutoCommands {
     public Command coneCubeBalanceBumpSide(Alliance color) {
         Command drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(2), // score cone
+                        Commands.waitSeconds(1.8), // score cone
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceBumpSide.kFirstTrajectory,
@@ -275,14 +278,18 @@ public class AutoCommands {
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
                                         Trajectories.Blue.ConeCubeBalanceBumpSide.kSecondTrajectory,
                                         color)),
-                        Commands.waitSeconds(1),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeBalanceBumpSide.kGoToOutside,
+                                        Trajectories.Blue.ConeCubeBalanceBumpSide
+                                                .kGoToOutsideAndIntake,
                                         color)),
+                        // followTrajectory(
+                        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
+                        //                 Trajectories.Blue.ConeCubeBalanceBumpSide.kIntakeCube,
+                        //                 color)),
                         followTrajectory(
                                 PathPlannerTrajectory.transformTrajectoryForAlliance(
-                                        Trajectories.Blue.ConeCubeBalanceBumpSide.kIntakeCube,
+                                        Trajectories.Blue.ConeCubeBalanceBumpSide.kShootFromBump,
                                         color)));
         // ,
         return Commands.parallel(drivetrainSequence, getSupestructureSequenceConeCubeBump());

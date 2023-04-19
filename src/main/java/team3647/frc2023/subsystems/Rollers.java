@@ -24,26 +24,6 @@ public class Rollers extends TalonFXSubsystem {
         this.cubeSensor = cubeSensor;
     }
 
-    @Override
-    public void readPeriodicInputs() {
-        super.readPeriodicInputs();
-        if (getCubeSensorStatus() && !hasCube) {
-            gamePiecetimer.start();
-        }
-
-        if (getCubeSensorStatus()
-                && !hasCube
-                && gamePiecetimer.get() > hasCubeWaitTime
-                && super.getMasterCurrent() > cubeCurrent) {
-            hasCube = true;
-            gamePiecetimer.reset();
-        }
-
-        if (!getCubeSensorStatus()) {
-            hasCube = false;
-        }
-    }
-
     public void intakeCone() {
         super.setOpenloop(-1);
     }

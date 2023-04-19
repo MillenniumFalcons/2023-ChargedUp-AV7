@@ -111,7 +111,7 @@ public class SuperstructureState {
                     187.5, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");
 
     public static final SuperstructureState longTongueCube =
-            new SuperstructureState(183, 47000, 34.2, "longTonguer");
+            new SuperstructureState(185, 47000, 34.2, "longTonguer");
     public static final SuperstructureState beforeLongTongueCube =
             new SuperstructureState(183, 0, -3, "longTonguer");
     public static final SuperstructureState groundIntakeCube =
@@ -157,6 +157,8 @@ public class SuperstructureState {
 
     public static final SuperstructureState cubeOneReversedLong =
             new SuperstructureState(180, 0, 30.5, "cube high reversed");
+    public static final SuperstructureState cubeShootReversedParallel =
+            new SuperstructureState(25, 30000, "cube yeeter");
 
     public static final SuperstructureState lowCG = new SuperstructureState(160, 0, 104, "low cg");
 

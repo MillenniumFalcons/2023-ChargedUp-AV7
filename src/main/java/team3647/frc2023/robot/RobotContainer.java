@@ -42,7 +42,6 @@ import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
-import team3647.lib.vision.AimingParameters;
 import team3647.lib.vision.LimelightHelpers;
 import team3647.lib.vision.MultiTargetTracker;
 
@@ -73,12 +72,12 @@ public class RobotContainer {
 
         configureDefaultCommands();
         configureButtonBindings();
-        configureSmartDashboardLogging();
+        // configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
+        runningMode = autoCommands.redConeCubeBalanceBumpSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
@@ -127,7 +126,12 @@ public class RobotContainer {
                 .onTrue(superstructure.shootAutomatic());
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
+
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+        mainController
+                .rightBumper
+                .and(() -> superstructure.getWantedStation() == StationType.Double)
+                .onTrue(Commands.runOnce(() -> autoSteer.justHeading(0)));
         // LED
         mainController.rightBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
@@ -209,6 +213,7 @@ public class RobotContainer {
         // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
+        cubeWrist.setDefaultCommand(superstructure.cubeShooterCommands.holdPositionAtCall());
     }
 
     public void teleopInit() {
@@ -240,21 +245,11 @@ public class RobotContainer {
         printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
-        printer.addPose("Cam pose", flightDeck::getFieldToCamera);
 
         printer.addBoolean("ground intake", superstructure::isBottomF);
         printer.addString("LED State", LEDS::getLEDState);
         printer.addBoolean("pieceIn", LEDS::getPieceIn);
 
-        printer.addPose(
-                "April Pose",
-                () -> {
-                    var params = flightDeck.getLatestParameters();
-                    if (params == AimingParameters.None) {
-                        return kEmptyPose;
-                    }
-                    return params.getFieldToGoal();
-                });
         printer.addBoolean(
                 "Cube Ground",
                 () ->
@@ -360,19 +355,6 @@ public class RobotContainer {
                     new MultiTargetTracker(),
                     LimelightConstant.kRobotToCamFixed);
 
-    // private final VisionController visionController =
-    // new VisionController(
-    // Map.of(
-    // CAMERA_NAME.CENTER,
-    // new Limelight(
-    // LimelightConstant.kLimelightCenterIP,
-    // LimelightConstant.kLimelightCenterHost,
-    // 0,
-    // LimelightConstant.kCamConstants)),
-    // flightDeck::addVisionObservation,
-    // FieldConstants.kScoreTargetHeightMeters,
-    // FieldConstants.kIntakeTargetHeightMeters);
-
     private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
     private final PositionFinder positionFinder =
             new PositionFinder(
@@ -418,7 +400,10 @@ public class RobotContainer {
                     .and(mainController.rightTrigger)
                     .and(() -> !superstructure.isBottomF())
                     .and(() -> superstructure.getWantedLevel() != Level.Ground)
-                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone);
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                    .or(
+                            mainController.rightBumper.and(
+                                    () -> superstructure.getWantedStation() == StationType.Double));
 
     private final Pose2d kEmptyPose = new Pose2d();
 

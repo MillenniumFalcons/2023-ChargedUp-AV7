@@ -12,6 +12,8 @@ public class CubeWrist extends TalonFXSubsystem {
     private TimeOfFlight tof;
     private final double triggerDistance = 600;
 
+    private double sensorDistance = 1000;
+
     public CubeWrist(
             TalonFX master,
             TimeOfFlight tof,
@@ -46,8 +48,14 @@ public class CubeWrist extends TalonFXSubsystem {
         return Math.abs(getAngle() - targetAngle) < threshold;
     }
 
+    @Override
+    public void readPeriodicInputs() {
+        super.readPeriodicInputs();
+        this.sensorDistance = this.tof.getRange();
+    }
+
     public double getTofDist() {
-        return this.tof.getRange();
+        return this.sensorDistance;
     }
 
     public boolean isSensorTriggered() {
@@ -56,7 +64,6 @@ public class CubeWrist extends TalonFXSubsystem {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return "Cube Wrist";
     }
 }
