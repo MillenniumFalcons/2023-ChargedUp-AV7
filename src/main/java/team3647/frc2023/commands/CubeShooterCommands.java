@@ -38,7 +38,7 @@ public class CubeShooterCommands {
     }
 
     public Command scoreHybrid() {
-        return cubeShooterRun(80, 1, 1);
+        return cubeShooterRun(80, 0.6, 0.6);
     }
 
     public Command scoreMid() {

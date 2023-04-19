@@ -110,7 +110,7 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOff(
                                                 LimelightConstant.kLimelightCenterHost)))
-                .onFalse(superstructure.scoreAndStowLonger(0.4))
+                .onFalse(superstructure.scoreAndStowLonger(0.4).unless(mainController.buttonB))
                 .onFalse(Commands.runOnce(autoSteer::stop));
         // LED
         mainController.rightTrigger.onFalse(
@@ -421,7 +421,7 @@ public class RobotContainer {
             new Trigger(
                     () ->
                             superstructure.getWantedIntakePiece() == GamePiece.Cube
-                                    || superstructure.isBottomF());
+                                    && !superstructure.isBottomF());
 
     private final Trigger seesTarget = new Trigger(autoSteer::almostArrived);
 
