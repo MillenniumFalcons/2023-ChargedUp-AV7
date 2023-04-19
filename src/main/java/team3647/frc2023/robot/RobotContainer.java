@@ -29,6 +29,7 @@ import team3647.frc2023.subsystems.CubeShooterTop;
 import team3647.frc2023.subsystems.CubeWrist;
 import team3647.frc2023.subsystems.Extender;
 import team3647.frc2023.subsystems.LEDSubsystem;
+import team3647.frc2023.subsystems.LEDSubsystem.LEDStates;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
@@ -95,8 +96,10 @@ public class RobotContainer {
                         Commands.runOnce(
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
-                                                LimelightConstant.kLimelightCenterHost)))
-                .onTrue(Commands.runOnce(LEDS::setToTarget));
+                                                LimelightConstant.kLimelightCenterHost)));
+        // LED
+        mainController.rightTrigger.onTrue(
+                Commands.runOnce(() -> LEDS.setLEDState(LEDStates.TARGET)));
 
         mainController
                 .rightTrigger
@@ -108,8 +111,14 @@ public class RobotContainer {
                                         LimelightHelpers.setLEDMode_ForceOff(
                                                 LimelightConstant.kLimelightCenterHost)))
                 .onFalse(superstructure.scoreAndStowLonger(0.4))
-                .onFalse(Commands.runOnce(autoSteer::stop))
-                .onFalse(Commands.runOnce(LEDS::setToPiece));
+                .onFalse(Commands.runOnce(autoSteer::stop));
+        // LED
+        mainController.rightTrigger.onFalse(
+                Commands.runOnce(
+                        () -> {
+                            LEDS.setPieceIn(false);
+                            LEDS.setLEDState(LEDStates.IDLE);
+                        }));
 
         mainController
                 .rightTrigger
@@ -117,14 +126,19 @@ public class RobotContainer {
                 .onTrue(superstructure.shootAutomatic());
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
+
         mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
         mainController
                 .rightBumper
                 .and(() -> superstructure.getWantedStation() == StationType.Double)
                 .onTrue(Commands.runOnce(() -> autoSteer.justHeading(0)));
+        // LED
+        mainController.rightBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
         mainController.leftBumper.whileTrue(superstructure.cubeShooterIntake());
         mainController.leftBumper.onFalse(superstructure.cubeShooterCommands.stow());
+        // LED
+        mainController.leftBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
@@ -157,16 +171,18 @@ public class RobotContainer {
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
         // LED Triggers
-        wantCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(LEDConstants.SOLID_YELLOW)));
-        wantCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(LEDConstants.SOLID_PURPLE)));
-        almostThere.onTrue(Commands.runOnce(() -> LEDS.setTarget(LEDConstants.BREATHE_GREEN)));
-        almostThere.onFalse(Commands.runOnce(() -> LEDS.setTarget(LEDConstants.BREATHE_RED)));
+        currentCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(true)));
+        currentCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(false)));
+        wantedCone.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(true)));
+        wantedCube.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(false)));
+
+        seesTarget.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
+        seesTarget.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
 
         coControllerRightJoystickMoved.onTrue(
                 Commands.runOnce(
                         () -> {
-                            LEDS.setRainbow();
-                            ;
+                            LEDS.setLEDState(LEDStates.RAINBOW);
                         }));
         coControllerRightJoystickMoved.whileTrue(
                 Commands.runOnce(
@@ -177,7 +193,7 @@ public class RobotContainer {
         coControllerRightJoystickMoved.onFalse(
                 Commands.runOnce(
                         () -> {
-                            LEDS.setToPiece();
+                            LEDS.setLEDState(LEDStates.IDLE);
                         }));
     }
 
@@ -203,11 +219,11 @@ public class RobotContainer {
     public void teleopInit() {
         rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
         if (superstructure.getWantedIntakePiece() == GamePiece.Cone) {
-            LEDS.setPiece(LEDConstants.SOLID_YELLOW);
+            LEDS.setPiece(true);
         } else if (superstructure.getWantedIntakePiece() == GamePiece.Cube) {
-            LEDS.setPiece(LEDConstants.SOLID_PURPLE);
+            LEDS.setPiece(false);
         }
-        LEDS.setToPiece();
+        LEDS.setLEDState(LEDStates.IDLE);
     }
 
     void configTestCommands() {
@@ -231,6 +247,8 @@ public class RobotContainer {
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
 
         printer.addBoolean("ground intake", superstructure::isBottomF);
+        printer.addString("LED State", LEDS::getLEDState);
+        printer.addBoolean("pieceIn", LEDS::getPieceIn);
 
         printer.addBoolean(
                 "Cube Ground",
@@ -390,18 +408,23 @@ public class RobotContainer {
     private final Pose2d kEmptyPose = new Pose2d();
 
     // LED Triggers
-    private final Trigger wantCone =
+    private final Trigger currentCone =
+            new Trigger(() -> superstructure.getCurrentIntakePiece() == GamePiece.Cone);
+    private final Trigger currentCube =
+            new Trigger(
+                    () ->
+                            superstructure.getCurrentIntakePiece() == GamePiece.Cube
+                                    || superstructure.isBottomF());
+    private final Trigger wantedCone =
             new Trigger(() -> superstructure.getWantedIntakePiece() == GamePiece.Cone);
-    private final Trigger wantCube =
+    private final Trigger wantedCube =
             new Trigger(
                     () ->
                             superstructure.getWantedIntakePiece() == GamePiece.Cube
                                     || superstructure.isBottomF());
 
-    private final Trigger almostThere = new Trigger(autoSteer::almostArrived);
+    private final Trigger seesTarget = new Trigger(autoSteer::almostArrived);
 
     private final Trigger coControllerRightJoystickMoved =
             new Trigger(() -> Math.abs(coController.getRightStickY()) >= 0.2);
-    private final Trigger coControllerLeftJoystickMoved =
-            new Trigger(() -> Math.abs(coController.getLeftStickY()) >= 0.3);
 }

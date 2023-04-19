@@ -409,6 +409,10 @@ public class Superstructure {
         this.intakeGamePiece = piece;
     }
 
+    public GamePiece getCurrentIntakePiece() {
+        return this.currentGamePiece;
+    }
+
     public GamePiece getWantedIntakePiece() {
         return this.intakeGamePiece;
     }
