@@ -97,8 +97,10 @@ public class RobotContainer {
                         Commands.runOnce(
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
-                                                LimelightConstant.kLimelightCenterHost)))
-                .onTrue(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.TARGET)));
+                                                LimelightConstant.kLimelightCenterHost)));
+        // LED
+        mainController.rightTrigger.onTrue(
+                Commands.runOnce(() -> LEDS.setLEDState(LEDStates.TARGET)));
 
         mainController
                 .rightTrigger
@@ -110,9 +112,14 @@ public class RobotContainer {
                                         LimelightHelpers.setLEDMode_ForceOff(
                                                 LimelightConstant.kLimelightCenterHost)))
                 .onFalse(superstructure.scoreAndStowLonger(0.4))
-                .onFalse(Commands.runOnce(autoSteer::stop))
-                .onFalse(Commands.runOnce(() -> LEDS.setLEDState(LEDStates.IDLE)))
-                .onFalse(Commands.runOnce(() -> LEDS.setPieceIn(false)));
+                .onFalse(Commands.runOnce(autoSteer::stop));
+        // LED
+        mainController.rightTrigger.onFalse(
+                Commands.runOnce(
+                        () -> {
+                            LEDS.setPieceIn(false);
+                            LEDS.setLEDState(LEDStates.IDLE);
+                        }));
 
         mainController
                 .rightTrigger
@@ -120,16 +127,14 @@ public class RobotContainer {
                 .onTrue(superstructure.shootAutomatic());
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
-        mainController
-                .rightBumper
-                .whileTrue(superstructure.intakeAutomatic())
-                .onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
+        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+        // LED
+        mainController.rightBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
         mainController.leftBumper.whileTrue(superstructure.cubeShooterIntake());
-        mainController
-                .leftBumper
-                .onFalse(superstructure.cubeShooterCommands.stow())
-                .onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
+        mainController.leftBumper.onFalse(superstructure.cubeShooterCommands.stow());
+        // LED
+        mainController.leftBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
