@@ -77,7 +77,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeBalanceFlatSideMode;
+        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
 
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
@@ -178,9 +178,11 @@ public class RobotContainer {
         wantedCube.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(false)));
 
         bottomCubeIn.onTrue(
-                Commands.runOnce(() -> LEDS.setBottomCubeIn(true))
-                        .withTimeout(2)
-                        .andThen(() -> LEDS.setBottomCubeIn(false)));
+                Commands.sequence(
+                        Commands.runOnce(() -> LEDS.setBottomCubeIn(true)),
+                        Commands.waitSeconds(2),
+                        Commands.runOnce(() -> LEDS.setBottomCubeIn(false))));
+
         bottomCubeIn.onFalse(Commands.runOnce(() -> LEDS.setBottomCubeIn(false)));
 
         seesTarget.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
