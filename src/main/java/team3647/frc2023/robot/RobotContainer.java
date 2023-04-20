@@ -79,7 +79,6 @@ public class RobotContainer {
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
         runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
-
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
 

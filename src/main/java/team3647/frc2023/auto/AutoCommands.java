@@ -187,12 +187,12 @@ public class AutoCommands {
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.8))
-                        .withTimeout(3),
+                        .withTimeout(2.8),
                 superstructure.stow().withTimeout(0.5),
-                Commands.waitSeconds(0.7),
+                Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.beforeLongTongueCube)
+                        .scoreAndStowCube(0.2, -0.4, SuperstructureState.beforeLongTongueCube)
                         .raceWith(endRightAfterExtenderRetracted()),
                 Commands.waitSeconds(1),
                 Commands.deadline(
@@ -206,7 +206,7 @@ public class AutoCommands {
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversedLoong),
                 Commands.waitSeconds(0.3),
                 superstructure
-                        .scoreAndStowCube(0.3, -0.7, SuperstructureState.stowAll)
+                        .scoreAndStowCube(0.3, -0.4, SuperstructureState.stowAll)
                         .raceWith(endRightAfterExtenderRetracted()),
                 superstructure.goToStateParallel(nextState));
     }
@@ -248,7 +248,7 @@ public class AutoCommands {
                 // Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 // Commands.waitSeconds(0.5),
-                superstructure.scoreAndStowCube(),
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
                 Commands.waitSeconds(0.5),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
@@ -259,7 +259,7 @@ public class AutoCommands {
                 superstructure.stow().withTimeout(1.3),
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
                 Commands.waitSeconds(0.4),
-                superstructure.scoreAndStowCube());
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore));
     }
 
     public Command drive() {

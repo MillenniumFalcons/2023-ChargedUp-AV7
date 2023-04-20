@@ -98,12 +98,12 @@ public final class Trajectories {
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
             private static final Pose2d kFirstPathWaypoint1 =
                     new Pose2d(3.67, 0.79, FieldConstants.kZero);
-            private static final Pose2d kFirstPathFinal = new Pose2d(6, 0.91, FieldConstants.kZero);
+            private static final Pose2d kFirstPathFinal = new Pose2d(6, 0.91 + 0.1, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathWaypoint1 = kFirstPathWaypoint1;
             private static final Pose2d kSecondPathFinal =
-                    new Pose2d(2.2 + 0.2, 1.05 - 0.07, FieldConstants.kZero);
+                    new Pose2d(2.2 + 0.2, 1.05 + 0.03, FieldConstants.kZero);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
             private static final Pose2d kThirdPathFinal =
@@ -120,7 +120,7 @@ public final class Trajectories {
             private static final Pose2d kFifthPathWaypoint2 =
                     new Pose2d(3, 0.79, FieldConstants.kZero);
             private static final Pose2d kFifthPathFinal =
-                    new Pose2d(2.2, 0.98 + 0.25, FieldConstants.kZero);
+                    new Pose2d(2.2, 0.98 + 0.25 + 0.1, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
