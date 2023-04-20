@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -66,7 +65,8 @@ public class DrivetrainCommands {
 
                     if (autoSteer && fieldOriented) {
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
-                        SmartDashboard.putNumber("autoSteerVelocities.dy", autoSteerVelocities.dy);
+                        // SmartDashboard.putNumber("autoSteerVelocities.dy",
+                        // autoSteerVelocities.dy);
                         // completely take over rotation for heading lock unless driver wants to
                         // change setpoint
                         motionTurnComponent =
@@ -77,13 +77,15 @@ public class DrivetrainCommands {
 
                         var driverY = Math.abs(motionYComponent) > 0.3 ? motionYComponent : 0.0;
                         motionYComponent = driverY * 1.4 + autoSteerVelocities.dy;
-                        SmartDashboard.putNumber("autoSteerVelocities.dx after", motionXComponent);
-                        SmartDashboard.putNumber("autoSteerVelocities.dy after", motionYComponent);
+                        // SmartDashboard.putNumber("autoSteerVelocities.dx after",
+                        // motionXComponent);
+                        // SmartDashboard.putNumber("autoSteerVelocities.dy after",
+                        // motionYComponent);
                         translation = new Translation2d(motionXComponent, motionYComponent);
                         openloop = false;
                     }
-                    SmartDashboard.putNumber("wanted Y", translation.getY());
-                    SmartDashboard.putNumber("wanted X", translation.getX());
+                    // SmartDashboard.putNumber("wanted Y", translation.getY());
+                    // SmartDashboard.putNumber("wanted X", translation.getX());
                     var rotation = motionTurnComponent;
                     swerve.drive(translation, rotation, fieldOriented, openloop);
                 },

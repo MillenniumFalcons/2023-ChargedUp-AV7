@@ -242,7 +242,7 @@ public final class Trajectories {
                     new Pose2d(5.66, 4.65, new Rotation2d(0));
 
             private static final Pose2d kFourthPathFinal =
-                    new Pose2d(2.5, 4.39, FieldConstants.kZero);
+                    new Pose2d(2.5, 4.33, FieldConstants.kZero);
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(

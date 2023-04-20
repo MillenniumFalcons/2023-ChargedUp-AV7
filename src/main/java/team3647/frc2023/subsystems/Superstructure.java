@@ -218,9 +218,9 @@ public class Superstructure {
             nextExtender = wantedState.length;
         }
 
-        SmartDashboard.putNumber("Wanted Wrist", wantedState.wristAngle);
-        SmartDashboard.putNumber("Wanted extender", nextExtender);
-        SmartDashboard.putNumber("Wanted pivot", nextPivot);
+        // SmartDashboard.putNumber("Wanted Wrist", wantedState.wristAngle);
+        // SmartDashboard.putNumber("Wanted extender", nextExtender);
+        // SmartDashboard.putNumber("Wanted pivot", nextPivot);
         wrist.setAngle(wantedState.wristAngle);
         pivot.setAngle(nextPivot);
         extender.setLengthMeters(nextExtender);

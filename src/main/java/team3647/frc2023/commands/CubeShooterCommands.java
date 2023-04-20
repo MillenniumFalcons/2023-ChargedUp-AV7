@@ -67,7 +67,6 @@ public class CubeShooterCommands {
             @Override
             public void initialize() {
                 degreeAtStart = cubeWrist.getAngle();
-                System.out.println("Initialized: " + degreeAtStart);
             }
 
             @Override

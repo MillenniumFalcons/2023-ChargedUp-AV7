@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.LimelightConstant;
@@ -54,7 +53,7 @@ public class AutoSteer {
         if (xController.atSetpoint()) {
             dx = 0.0;
         }
-        SmartDashboard.putBoolean("Y AT Setpoint", yController.atSetpoint());
+        // SmartDashboard.putBoolean("Y AT Setpoint", yController.atSetpoint());
         if (yController.atSetpoint()) {
             dy = 0.0;
         }
@@ -69,9 +68,9 @@ public class AutoSteer {
         if (Math.abs(dtheta) < 0.01) {
             dtheta = 0.0;
         }
-        SmartDashboard.putNumber("TX", txSupplier.getAsDouble());
-        SmartDashboard.putNumber("dtheta", dtheta);
-        SmartDashboard.putNumber("dy", dy);
+        // SmartDashboard.putNumber("TX", txSupplier.getAsDouble());
+        // SmartDashboard.putNumber("dtheta", dtheta);
+        // SmartDashboard.putNumber("dy", dy);
 
         if (useHeadingOnly) {
             return new Twist2d(0.0, 0.0, dtheta);

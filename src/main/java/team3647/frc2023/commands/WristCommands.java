@@ -30,7 +30,6 @@ public class WristCommands {
             @Override
             public void initialize() {
                 degreeAtStart = wrist.getAngle();
-                System.out.println("Initialized: " + degreeAtStart);
             }
 
             @Override

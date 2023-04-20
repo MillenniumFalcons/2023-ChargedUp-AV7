@@ -5,7 +5,6 @@
 package team3647.frc2023.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.pathplanner.lib.server.PathPlannerServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -47,7 +46,7 @@ public class Robot extends TimedRobot {
         // and put our
         // // autonomous chooser on the dashboard.
         robotContainer.swerve.resetModuleAngle();
-        PathPlannerServer.startServer(5811);
+        // robotContainer.swerve.reduceCancoderStatusframes();
     }
 
     /**

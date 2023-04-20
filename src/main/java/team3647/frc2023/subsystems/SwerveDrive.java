@@ -1,5 +1,6 @@
 package team3647.frc2023.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -168,6 +169,19 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public double getPitch() {
         return periodicIO.pitch;
+    }
+
+    private void reduceCancoderStatusframes() {
+        this.backLeft.getCanCoderObject().setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+        this.backRight
+                .getCanCoderObject()
+                .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+        this.frontLeft
+                .getCanCoderObject()
+                .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+        this.frontRight
+                .getCanCoderObject()
+                .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
     }
 
     // Probably want to moving average filter pitch and roll.
