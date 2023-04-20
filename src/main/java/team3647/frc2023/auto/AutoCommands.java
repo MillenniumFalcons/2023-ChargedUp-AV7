@@ -249,13 +249,14 @@ public class AutoCommands {
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 // Commands.waitSeconds(0.5),
                 superstructure.scoreAndStowCube(),
-                Commands.waitSeconds(0.6),
+                Commands.waitSeconds(0.5),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.45))
                         .withTimeout(2.35),
+                superstructure.stow().withTimeout(1.3);
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
                 Commands.waitSeconds(0.4),
                 superstructure.scoreAndStowCube());
