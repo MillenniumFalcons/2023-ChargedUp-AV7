@@ -98,7 +98,8 @@ public final class Trajectories {
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
             private static final Pose2d kFirstPathWaypoint1 =
                     new Pose2d(3.67, 0.79, FieldConstants.kZero);
-            private static final Pose2d kFirstPathFinal = new Pose2d(6, 0.91 + 0.1, FieldConstants.kZero);
+            private static final Pose2d kFirstPathFinal =
+                    new Pose2d(6, 0.91 + 0.1, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathWaypoint1 = kFirstPathWaypoint1;
@@ -177,7 +178,7 @@ public final class Trajectories {
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
             // kZero);
             private static final Pose2d kSecondPathFinal =
-                    new Pose2d(2.2, 4.39, FieldConstants.kZero);
+                    new Pose2d(2.2, 4.35, FieldConstants.kZero);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
 
@@ -226,7 +227,7 @@ public final class Trajectories {
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
             // kZero);
             private static final Pose2d kSecondPathFinal =
-                    new Pose2d(2.2, 4.39, FieldConstants.kZero);
+                    new Pose2d(2.2, 4.35, FieldConstants.kZero);
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
             // avoid charging station

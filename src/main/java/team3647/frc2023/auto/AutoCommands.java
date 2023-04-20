@@ -321,7 +321,7 @@ public class AutoCommands {
                                                         false,
                                                         true),
                                         drive)
-                                .until(() -> Math.abs(drive.getPitch()) < 11)
+                                .until(() -> Math.abs(drive.getPitch()) < 10.5)
                                 .withTimeout(5),
 
                         // lock wheels so no slip
@@ -430,7 +430,7 @@ public class AutoCommands {
     }
 
     public Command justScoreExitBalance(SuperstructureState state, Alliance alliance) {
-        final Trigger closeToBalanced = new Trigger(() -> Math.abs(drive.getPitch()) < 10);
+        final Trigger closeToBalanced = new Trigger(() -> Math.abs(drive.getPitch()) < 10.4);
         var drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(1.5),
@@ -443,7 +443,7 @@ public class AutoCommands {
                                                 drive.drive(
                                                         new Translation2d(-0.8, 0), 0, false, true),
                                         drive)
-                                .until(() -> Math.abs(drive.getPitch()) > 12)
+                                .until(() -> Math.abs(drive.getPitch()) > 9)
                                 .withTimeout(2),
                         Commands.run(
                                         () ->
