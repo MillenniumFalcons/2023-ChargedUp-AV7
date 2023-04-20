@@ -72,7 +72,7 @@ public class RobotContainer {
 
         configureDefaultCommands();
         configureButtonBindings();
-        // configureSmartDashboardLogging();
+        configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
@@ -214,6 +214,8 @@ public class RobotContainer {
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
         extender.setDefaultCommand(superstructure.extenderCommands.holdPositionAtCall());
         cubeWrist.setDefaultCommand(superstructure.cubeShooterCommands.holdPositionAtCall());
+        cubeShooterTop.setDefaultCommand(superstructure.cubeShooterTopDefault());
+        cubeShooterBottom.setDefaultCommand(superstructure.cubeShooterBottomDefault());
     }
 
     public void teleopInit() {
@@ -249,6 +251,7 @@ public class RobotContainer {
         printer.addBoolean("ground intake", superstructure::isBottomF);
         printer.addString("LED State", LEDS::getLEDState);
         printer.addBoolean("pieceIn", LEDS::getPieceIn);
+        printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
 
         printer.addBoolean(
                 "Cube Ground",

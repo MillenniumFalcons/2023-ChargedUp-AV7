@@ -272,6 +272,30 @@ public class Superstructure {
                 .finallyDo(interrupted -> this.isBottom = true);
     }
 
+    public Command cubeShooterBottomDefault() {
+        return Commands.run(
+                () -> {
+                    if (cubeWrist.isSensorTriggered()) {
+                        cubeShooterBottom.setOpenloop(-0.16);
+                    } else {
+                        cubeShooterBottom.setOpenloop(0.0);
+                    }
+                },
+                cubeShooterBottom);
+    }
+
+    public Command cubeShooterTopDefault() {
+        return Commands.run(
+                () -> {
+                    if (cubeWrist.isSensorTriggered()) {
+                        cubeShooterTop.setOpenloop(-0.16);
+                    } else {
+                        cubeShooterTop.setOpenloop(0.0);
+                    }
+                },
+                cubeShooterTop);
+    }
+
     public Command shootAutomatic() {
         return Commands.select(
                         Map.of(

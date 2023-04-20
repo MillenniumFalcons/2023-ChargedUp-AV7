@@ -77,12 +77,14 @@ public class CubeShooterCommands {
 
             @Override
             public Set<Subsystem> getRequirements() {
-                return requirements;
+                return requirementsWrist;
             }
         };
     }
 
     private final Set<Subsystem> requirements;
+    private final Set<Subsystem> requirementsWrist;
+
 
     public CubeShooterCommands(
             CubeShooterTop cubeShooterTop,
@@ -92,5 +94,7 @@ public class CubeShooterCommands {
         this.cubeShooterTop = cubeShooterTop;
         this.cubeWrist = cubeWrist;
         this.requirements = Set.of(cubeShooterBottom, cubeShooterTop, cubeWrist);
+        this.requirementsWrist = Set.of(cubeWrist);
+
     }
 }
