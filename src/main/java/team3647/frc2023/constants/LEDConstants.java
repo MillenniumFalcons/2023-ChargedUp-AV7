@@ -16,6 +16,7 @@ import com.ctre.phoenix.led.StrobeAnimation;
 
 /** Add your docs here. */
 public class LEDConstants {
+    public static final int CANdleID = 17;
     public static final CANdle m_candle = new CANdle(LEDConstants.CANdleID, "drive");
 
     // LED Counts
@@ -44,11 +45,11 @@ public class LEDConstants {
     public static final Animation SOLID_WHITE =
             new StrobeAnimation(255, 255, 255, 128, 1, LEDCOUNT);
 
-    // Breathing Animations
+    // Breathing/Flashing Animations
     public static final Animation BREATHE_RED =
             new SingleFadeAnimation(255, 0, 0, 0, 0.8, LEDCOUNT);
     public static final Animation BREATHE_GREEN =
             new SingleFadeAnimation(0, 255, 0, 0, 0.65, LEDCOUNT);
-
-    public static final int CANdleID = 17;
+    public static final Animation FLASH_PURPLE =
+            new StrobeAnimation(162, 25, 255, 128, 0.3, LEDCOUNT);
 }
