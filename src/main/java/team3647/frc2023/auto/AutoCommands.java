@@ -162,10 +162,10 @@ public class AutoCommands {
                         .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCone)
                         .raceWith(endRightAfterExtenderRetracted()),
                 Commands.deadline(
-                                superstructure.waitForCurrentSpike(8),
+                                superstructure.waitForCurrentSpike(12),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCone),
-                                superstructure.rollersCommands.openloop(() -> -0.6))
+                                        SuperstructureState.groundIntakeCube),
+                                superstructure.rollersCommands.openloop(() -> 0.6))
                         .withTimeout(4),
                 superstructure.goToStateParallel(nextState));
     }
