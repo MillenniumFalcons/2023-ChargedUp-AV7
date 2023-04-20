@@ -77,7 +77,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.blueConeCubeCubeMidFlatSideMode;
+        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -134,8 +134,13 @@ public class RobotContainer {
         // LED
         mainController.rightBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
-        mainController.leftBumper.whileTrue(superstructure.cubeShooterIntake());
+        mainController
+                .leftBumper
+                .whileTrue(superstructure.cubeShooterIntake())
+                .onTrue(superstructure.stowAll());
         mainController.leftBumper.onFalse(superstructure.cubeShooterCommands.stow());
+
+        mainController.buttonX.whileTrue(superstructure.untipReverse());
         // LED
         mainController.leftBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 

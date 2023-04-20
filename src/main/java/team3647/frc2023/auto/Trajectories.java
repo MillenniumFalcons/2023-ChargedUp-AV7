@@ -239,7 +239,7 @@ public final class Trajectories {
 
             private static final Pose2d kFourthPathInitial = kThirdPathFinal;
             private static final Pose2d kFourthPathWaypoint1 =
-                    new Pose2d(5.66, 4.8, new Rotation2d(0));
+                    new Pose2d(5.66, 4.65, new Rotation2d(0));
 
             private static final Pose2d kFourthPathFinal =
                     new Pose2d(2.5, 4.39, FieldConstants.kZero);

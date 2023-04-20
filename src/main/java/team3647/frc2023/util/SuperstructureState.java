@@ -160,6 +160,9 @@ public class SuperstructureState {
     public static final SuperstructureState cubeShootReversedParallel =
             new SuperstructureState(25, 30000, "cube yeeter");
 
+    public static final SuperstructureState untipReverse =
+            new SuperstructureState(-10, 0, -40, "untip");
+
     public static final SuperstructureState lowCG = new SuperstructureState(160, 0, 104, "low cg");
 
     public static final SuperstructureState noLevel =

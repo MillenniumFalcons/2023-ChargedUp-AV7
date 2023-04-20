@@ -377,6 +377,10 @@ public class Superstructure {
         return goToStateParallel(SuperstructureState.stowAll);
     }
 
+    public Command untipReverse() {
+        return goToStateParallel(SuperstructureState.untipReverse);
+    }
+
     public Command disableCompressor() {
         return new InstantCommand(compressor::disable);
     }
