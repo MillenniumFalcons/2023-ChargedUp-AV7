@@ -173,8 +173,15 @@ public class RobotContainer {
         // LED Triggers
         currentCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(true)));
         currentCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(false)));
+
         wantedCone.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(true)));
         wantedCube.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(false)));
+
+        bottomCubeIn.onTrue(
+                Commands.runOnce(() -> LEDS.setBottomCubeIn(true))
+                        .withTimeout(2)
+                        .andThen(() -> LEDS.setBottomCubeIn(false)));
+        bottomCubeIn.onFalse(Commands.runOnce(() -> LEDS.setBottomCubeIn(false)));
 
         seesTarget.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
         seesTarget.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
@@ -188,7 +195,7 @@ public class RobotContainer {
                 Commands.runOnce(
                         () -> {
                             LEDConstants.RAINBOWCONTROLLER.setSpeed(
-                                    Math.abs(1 - coController.getRightStickY()));
+                                    (2 - Math.abs(coController.getRightStickY())));
                         }));
         coControllerRightJoystickMoved.onFalse(
                 Commands.runOnce(
@@ -427,6 +434,8 @@ public class RobotContainer {
                                     && !superstructure.isBottomF());
 
     private final Trigger seesTarget = new Trigger(autoSteer::almostArrived);
+
+    private final Trigger bottomCubeIn = new Trigger(cubeWrist::isSensorTriggered);
 
     private final Trigger coControllerRightJoystickMoved =
             new Trigger(() -> Math.abs(coController.getRightStickY()) >= 0.2);

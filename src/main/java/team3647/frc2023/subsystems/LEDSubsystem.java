@@ -16,9 +16,11 @@ public class LEDSubsystem implements PeriodicSubsystem {
     private boolean currentCone = false;
     private boolean wantedCone = false;
     private boolean pieceIn = false;
+    private boolean pieceInBottom = false;
 
     private Animation cubeColor = LEDConstants.SOLID_PURPLE;
     private Animation coneColor = LEDConstants.SOLID_YELLOW;
+    private Animation bottomCubeInColor = LEDConstants.FLASH_PURPLE;
 
     public static enum LEDStates {
         TARGET("TARGET"),
@@ -69,6 +71,10 @@ public class LEDSubsystem implements PeriodicSubsystem {
         this.pieceIn = in;
     }
 
+    public void setBottomCubeIn(boolean in) {
+        this.pieceInBottom = in;
+    }
+
     public boolean getPieceIn() {
         return pieceIn;
     }
@@ -92,10 +98,14 @@ public class LEDSubsystem implements PeriodicSubsystem {
                 break;
             case IDLE:
                 if (pieceIn) {
-                    if (currentCone) {
-                        this.setAnimation(coneColor);
+                    if (pieceInBottom) {
+                        this.setAnimation(bottomCubeInColor);
                     } else {
-                        this.setAnimation(cubeColor);
+                        if (currentCone) {
+                            this.setAnimation(coneColor);
+                        } else {
+                            this.setAnimation(cubeColor);
+                        }
                     }
                 } else {
                     if (wantedCone) {
