@@ -85,7 +85,6 @@ public class CubeShooterCommands {
     private final Set<Subsystem> requirements;
     private final Set<Subsystem> requirementsWrist;
 
-
     public CubeShooterCommands(
             CubeShooterTop cubeShooterTop,
             CubeShooterBottom cubeShooterBottom,
@@ -95,6 +94,5 @@ public class CubeShooterCommands {
         this.cubeWrist = cubeWrist;
         this.requirements = Set.of(cubeShooterBottom, cubeShooterTop, cubeWrist);
         this.requirementsWrist = Set.of(cubeWrist);
-
     }
 }
