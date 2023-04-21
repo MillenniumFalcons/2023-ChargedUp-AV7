@@ -33,6 +33,7 @@ public class Superstructure {
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
     private double wristAdjust = 0.0;
+    private double extendAdjust = 0.0;
     private boolean isBottom = false;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
@@ -49,8 +50,8 @@ public class Superstructure {
                             ? SuperstructureState.doubleStationCone
                             : SuperstructureState.doubleStationCube;
         }
-        if (Math.abs(wristAdjust) > 0.01) {
-            wantedIntakeState = wantedIntakeState.addWrist(wristAdjust);
+        if (Math.abs(wristAdjust) > 0.01 || Math.abs(extendAdjust) > 10) {
+            wantedIntakeState = wantedIntakeState.addWristExtend(wristAdjust, extendAdjust);
         }
 
         SmartDashboard.putString(
@@ -407,6 +408,14 @@ public class Superstructure {
 
     public Command higherWristOffset() {
         return Commands.runOnce(() -> this.wristAdjust -= 2);
+    }
+
+    public Command moreExtendOffset() {
+        return Commands.runOnce(() -> this.extendAdjust += 100);
+    }
+
+    public Command lessExtendOffset() {
+        return Commands.runOnce(() -> this.extendAdjust -= 100);
     }
 
     public Command enableAutoSteer() {

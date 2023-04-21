@@ -72,12 +72,12 @@ public class RobotContainer {
 
         configureDefaultCommands();
         configureButtonBindings();
-        // configureSmartDashboardLogging();
+        configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.blueConeCubeCubeMidFlatSideMode;
+        runningMode = autoCommands.blueConeCubeBalanceFlatSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -146,6 +146,8 @@ public class RobotContainer {
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
+        mainController.dPadLeft.onTrue(superstructure.moreExtendOffset());
+        mainController.dPadRight.onTrue(superstructure.lessExtendOffset());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));

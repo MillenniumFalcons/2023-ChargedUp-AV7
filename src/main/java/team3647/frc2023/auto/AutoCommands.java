@@ -153,20 +153,22 @@ public class AutoCommands {
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(12),
                                 superstructure.goToStateParallel(
-                                        SuperstructureState.groundIntakeCube),
+                                        SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.8))
-                        .withTimeout(3),
+                        .withTimeout(2.8),
                 superstructure.stow().withTimeout(0.5),
+                Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 superstructure
-                        .scoreAndStowCube(0.2, -0.6, SuperstructureState.groundIntakeCone)
+                        .scoreAndStowCube(0.2, -0.4, SuperstructureState.groundIntakeCube)
                         .raceWith(endRightAfterExtenderRetracted()),
+                Commands.waitSeconds(1),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(12),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.groundIntakeCube),
                                 superstructure.rollersCommands.openloop(() -> 0.6))
-                        .withTimeout(4),
+                        .withTimeout(3),
                 superstructure.goToStateParallel(nextState));
     }
 
@@ -200,7 +202,7 @@ public class AutoCommands {
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.8))
-                        .withTimeout(4.5),
+                        .withTimeout(3.8),
                 superstructure.stow().withTimeout(0.5),
                 Commands.waitSeconds(1),
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversedLoong),
@@ -297,6 +299,7 @@ public class AutoCommands {
     }
 
     public Command coneCubeBalanceFlatSide(Alliance color) {
+        final Trigger closeToBalanced = new Trigger(() -> Math.abs(drive.getPitch()) < 10);
         Command drivetrainSequence =
                 Commands.sequence(
                         Commands.waitSeconds(2), // score cone
@@ -316,13 +319,13 @@ public class AutoCommands {
                         Commands.run(
                                         () ->
                                                 drive.drive(
-                                                        new Translation2d(-0.80, 0),
+                                                        new Translation2d(-0.85, 0),
                                                         0,
                                                         false,
                                                         true),
                                         drive)
-                                .until(() -> Math.abs(drive.getPitch()) < 10.5)
-                                .withTimeout(5),
+                                .until(closeToBalanced.debounce(0.05))
+                                .withTimeout(6),
 
                         // lock wheels so no slip
                         superstructure.drivetrainCommands.robotRelativeDrive(
@@ -337,7 +340,7 @@ public class AutoCommands {
                                 .getTotalTimeSeconds(),
                         Trajectories.Blue.ConeCubeBalanceFlatSide.kGoToBalance
                                 .getTotalTimeSeconds(),
-                        SuperstructureState.stowAll));
+                        SuperstructureState.lowCG));
     }
 
     public Command coneCubeCubeMidBalanceFlatSide(Alliance color) {

@@ -31,9 +31,9 @@ public class SuperstructureState {
         this(armAngle, length, WristConstants.kHoldPosition, name);
     }
 
-    public SuperstructureState addWrist(double degs) {
+    public SuperstructureState addWristExtend(double degs, double extend) {
         return new SuperstructureState(
-                this.armAngle, this.length, this.wristAngle + degs, this.name);
+                this.armAngle, this.length + extend, this.wristAngle + degs, this.name);
     }
 
     // ================================ practice bot values ==================================
@@ -122,7 +122,7 @@ public class SuperstructureState {
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
     public static final SuperstructureState doubleStationCone =
-            new SuperstructureState(120, 19000, 104 - 5, "double station");
+            new SuperstructureState(120, 19000, 108, "double station");
     public static final SuperstructureState doubleStationCube =
             new SuperstructureState(120, 16000, 111, "double station");
 
