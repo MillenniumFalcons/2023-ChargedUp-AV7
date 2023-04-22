@@ -167,24 +167,27 @@ public final class Trajectories {
         }
 
         public static final class ConeCubeBalanceFlatSide {
-            public static final Pose2d kFirstPathInitial = ConeCubeCubeMidBalanceFlatSide.kFirstPathInitial;
+            public static final Pose2d kFirstPathInitial =
+                    ConeCubeCubeMidBalanceFlatSide.kFirstPathInitial;
 
             // Pick up cube 1
-            private static final Pose2d kFirstPathFinal = ConeCubeCubeMidBalanceFlatSide.kFirstPathFinal;
+            private static final Pose2d kFirstPathFinal =
+                    ConeCubeCubeMidBalanceFlatSide.kFirstPathFinal;
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
             // kZero);
-            private static final Pose2d kSecondPathFinal = ConeCubeCubeMidBalanceFlatSide.kSecondPathFinal;
+            private static final Pose2d kSecondPathFinal =
+                    ConeCubeCubeMidBalanceFlatSide.kSecondPathFinal;
 
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
 
             // avoid charging station
-            private static final Pose2d kThirdPathWaypoint1 = ConeCubeCubeMidBalanceFlatSide.kThirdPathWaypoint1;
+            private static final Pose2d kThirdPathWaypoint1 =
+                    ConeCubeCubeMidBalanceFlatSide.kThirdPathWaypoint1;
             // pick up cube 2
             private static final Pose2d kThirdPathWaypoint2 =
-                    new Pose2d(
-                            6.82, 3.74 , Rotation2d.fromDegrees(-45.0));
+                    new Pose2d(6.82, 3.74, Rotation2d.fromDegrees(-45.0));
             // go on top of charging station
             private static final Pose2d kThirdPathFinal =
                     new Pose2d(2.99, 2.75, FieldConstants.kZero);

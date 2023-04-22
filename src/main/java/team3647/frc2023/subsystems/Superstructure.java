@@ -411,11 +411,19 @@ public class Superstructure {
     }
 
     public Command moreExtendOffset() {
-        return Commands.runOnce(() -> this.extendAdjust += 100);
+        return Commands.runOnce(
+                () -> {
+                    this.extendAdjust += 400;
+                    System.out.printf("extendadjust: %d\n", this.extendAdjust);
+                });
     }
 
     public Command lessExtendOffset() {
-        return Commands.runOnce(() -> this.extendAdjust -= 100);
+        return Commands.runOnce(
+                () -> {
+                    this.extendAdjust -= 400;
+                    System.out.printf("extendadjust: %d\n", this.extendAdjust);
+                });
     }
 
     public Command enableAutoSteer() {
