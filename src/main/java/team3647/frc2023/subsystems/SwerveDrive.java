@@ -1,7 +1,6 @@
 package team3647.frc2023.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoderStatusFrame;
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -84,7 +83,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         this.odometry =
                 new SwerveDriveOdometry(
                         this.kinematics,
-                        Rotation2d.fromDegrees(gyro.getYaw()),
+                        Rotation2d.fromDegrees(gyro.getYaw().getValue()),
                         getModulePositions());
     }
 
@@ -94,10 +93,10 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
-        periodicIO.roll = gyro.getRoll();
-        periodicIO.heading = gyro.getYaw();
-        periodicIO.pitch = gyro.getPitch() - this.pitchZero;
-        periodicIO.rawHeading = gyro.getYaw();
+        periodicIO.roll = gyro.getRoll().getValue();
+        periodicIO.heading = gyro.getYaw().getValue();
+        periodicIO.pitch = gyro.getPitch().getValue() - this.pitchZero;
+        periodicIO.rawHeading = gyro.getYaw().getValue();
         periodicIO.frontLeftState = frontLeft.getState();
         periodicIO.frontRightState = frontRight.getState();
         periodicIO.backLeftState = backLeft.getState();
@@ -172,16 +171,17 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     private void reduceCancoderStatusframes() {
-        this.backLeft.getCanCoderObject().setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
-        this.backRight
-                .getCanCoderObject()
-                .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
-        this.frontLeft
-                .getCanCoderObject()
-                .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
-        this.frontRight
-                .getCanCoderObject()
-                .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+        // this.backLeft.getCanCoderObject().setStatusFramePeriod(CANCoderStatusFrame.SensorData,
+        // 255);
+        // this.backRight
+        //         .getCanCoderObject()
+        //         .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+        // this.frontLeft
+        //         .getCanCoderObject()
+        //         .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
+        // this.frontRight
+        //         .getCanCoderObject()
+        //         .setStatusFramePeriod(CANCoderStatusFrame.SensorData, 255);
     }
 
     // Probably want to moving average filter pitch and roll.
