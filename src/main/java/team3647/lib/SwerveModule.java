@@ -30,6 +30,8 @@ public class SwerveModule {
     private final double turnVelocityConversion;
     private final double turnPositionConversion;
 
+    private final double nominalVoltage;
+
     private double lastAngle;
 
     public double percentOut = 0;
@@ -58,6 +60,7 @@ public class SwerveModule {
         this.drivePositionConversion = kDrivePositionConversion;
         this.turnVelocityConversion = kTurnVelocityConversion;
         this.turnPositionConversion = kTurnPositionConversion;
+        this.nominalVoltage = nominalVoltage;
         this.lastAngle = getState().angle.getDegrees();
         resetToAbsolute();
     }
@@ -151,7 +154,8 @@ public class SwerveModule {
             // MPS to falcon
             double velocity = desiredState.speedMetersPerSecond / driveVelocityConversion;
             velocityDutyCycle.Velocity = velocity;
-            velocityDutyCycle.FeedForward = ff.calculate(desiredState.speedMetersPerSecond);
+            velocityDutyCycle.FeedForward =
+                    ff.calculate(desiredState.speedMetersPerSecond) / nominalVoltage;
             driveMotor.setControl(velocityDutyCycle);
         }
 

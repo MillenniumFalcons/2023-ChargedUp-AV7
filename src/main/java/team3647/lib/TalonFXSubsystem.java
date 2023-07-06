@@ -18,11 +18,12 @@ import java.util.List;
 public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     private final TalonFX master;
-    private final List<Follower> followers = new ArrayList<>();
+    private final List<TalonFX> followers = new ArrayList<>();
     private final DutyCycleOut dutyCycle = new DutyCycleOut(0);
     private final PositionDutyCycle positionDutyCycle = new PositionDutyCycle(0);
     private final MotionMagicDutyCycle motionMagicDutyCycle = new MotionMagicDutyCycle(0);
     private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0);
+    private Follower masterOutput;
     private final double positionConversion;
     private final double velocityConversion;
     private final double nominalVoltage;
@@ -74,6 +75,10 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     @Override
     public void writePeriodicOutputs() {
         master.setControl(periodicIO.controlMode);
+        master.setControl(periodicIO.controlMode);
+        for (var follower : followers) {
+            follower.setControl(masterOutput);
+        }
     }
 
     @Override
@@ -95,13 +100,13 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      */
     protected void setPosition(double position, double feedforward) {
         periodicIO.controlMode = positionDutyCycle;
-        positionDutyCycle.FeedForward = feedforward;
+        positionDutyCycle.FeedForward = feedforward / nominalVoltage;
         positionDutyCycle.Position = position / positionConversion;
     }
 
     protected void setPositionNative(double position, double feedforward) {
         periodicIO.controlMode = positionDutyCycle;
-        positionDutyCycle.FeedForward = feedforward;
+        positionDutyCycle.FeedForward = feedforward / nominalVoltage;
         periodicIO.feedforward = feedforward;
         positionDutyCycle.Position = position;
     }
@@ -114,7 +119,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      */
     protected void setPositionMotionMagic(double position, double feedforward) {
         periodicIO.controlMode = motionMagicDutyCycle;
-        motionMagicDutyCycle.FeedForward = feedforward;
+        motionMagicDutyCycle.FeedForward = feedforward / nominalVoltage;
         motionMagicDutyCycle.Position = position / positionConversion;
     }
 
@@ -124,7 +129,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      */
     protected void setVelocity(double velocity, double feedforward) {
         periodicIO.controlMode = velocityDutyCycle;
-        velocityDutyCycle.FeedForward = feedforward;
+        velocityDutyCycle.FeedForward = feedforward / nominalVoltage;
         velocityDutyCycle.Velocity = velocity / velocityConversion;
     }
 
@@ -198,8 +203,8 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         return periodicIO.nativePosition;
     }
 
-    protected void addFollower(Follower follower) {
-
+    protected void addFollower(TalonFX follower, boolean opposeMaster) {
+        this.masterOutput = new Follower(this.master.getDeviceID(), opposeMaster);
         followers.add(follower);
     }
 

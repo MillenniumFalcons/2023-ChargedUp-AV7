@@ -82,6 +82,7 @@ public class RobotContainer {
         // need to change this to a conditional command so it doesn't start auto aiming
         // when doing
         // cubes from cube shooter
+        mainController.buttonY.whileTrue(Commands.run(() -> pivot.setAngle(70)));
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
@@ -191,7 +192,7 @@ public class RobotContainer {
 
     public double getPivotFFVoltage() {
         return PivotConstants.kG
-                * (extender.getNativeTicks() - ExtenderConstants.kMinimumPositionTicks)
+                * (extender.getNativePos() - ExtenderConstants.kMinimumPositionTicks)
                 / ExtenderConstants.kMaximumPositionTicks;
     }
 

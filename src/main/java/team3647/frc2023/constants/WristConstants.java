@@ -1,22 +1,19 @@
 package team3647.frc2023.constants;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.*;
 
 public final class WristConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.WristIds.kMasterId);
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
+    // public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
 
     private static final double kGearBoxRatio = 1.0 / 70;
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    public static final double kNativePosToDegrees =
-            kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
+    public static final double kNativePosToDegrees = kGearBoxRatio * 360.0;
 
-    public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
+    public static final double kNativeVelToDPS = kNativePosToDegrees;
 
     private static final double masterKP = 0.5;
     private static final double masterKI = 0;
@@ -44,27 +41,34 @@ public final class WristConstants {
     public static final double kCubeScoreAngle = 90;
 
     static {
-        kMaster.configFactoryDefault();
+        Slot0Configs kMasterSlot0 = new Slot0Configs();
+        VoltageConfigs kMasterVoltage = new VoltageConfigs();
+        CurrentLimitsConfigs kMasterCurrent = new CurrentLimitsConfigs();
+        MotionMagicConfigs kMasterMotionMagic = new MotionMagicConfigs();
+        MotorOutputConfigs kMasterMotorOutput = new MotorOutputConfigs();
+        SoftwareLimitSwitchConfigs kMasterSoftLimit = new SoftwareLimitSwitchConfigs();
+        TalonFXConfigurator kMasterConfigurator = kMaster.getConfigurator();
+        kMasterConfigurator.apply(kMasterConfig);
 
-        kMasterConfig.slot0.kP = masterKP;
-        kMasterConfig.slot0.kI = masterKI;
-        kMasterConfig.slot0.kD = masterKD;
-        kMasterConfig.slot0.allowableClosedloopError = 100;
-        kMasterConfig.voltageCompSaturation = nominalVoltage;
-        kMasterConfig.motionAcceleration = kMaxVelocityTicks;
-        kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
-        kMasterConfig.reverseSoftLimitEnable = true;
-        kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
-        kMasterConfig.forwardSoftLimitEnable = true;
-        kMasterConfig.forwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
+        kMasterSlot0.kP = masterKP;
+        kMasterSlot0.kI = masterKI;
+        kMasterSlot0.kD = masterKD;
+        kMasterCurrent.StatorCurrentLimitEnable = true;
+        kMasterCurrent.StatorCurrentLimit = kMaxCurrent;
+        kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks;
+        kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        kMasterSoftLimit.ForwardSoftLimitEnable = true;
+        kMasterSoftLimit.ForwardSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
+        kMasterSoftLimit.ReverseSoftLimitEnable = true;
+        kMasterSoftLimit.ReverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
 
-        kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
-        kMaster.setInverted(kMasterInvert);
-        kMaster.configGetStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 5));
-
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kMaster.enableVoltageCompensation(true);
+        kMasterConfigurator.apply(kMasterSlot0);
+        kMasterConfigurator.apply(kMasterVoltage);
+        kMasterConfigurator.apply(kMasterMotionMagic);
+        kMasterConfigurator.apply(kMasterMotorOutput);
+        kMasterConfigurator.apply(kMasterSoftLimit);
     }
 
     private WristConstants() {}

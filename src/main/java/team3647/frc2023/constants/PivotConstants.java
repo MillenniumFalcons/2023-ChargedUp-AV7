@@ -1,10 +1,9 @@
 package team3647.frc2023.constants;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.InterpolatingTreeMap;
@@ -14,8 +13,11 @@ public class PivotConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.PivotIds.kMasterId);
     public static final TalonFX kSlave = new TalonFX(GlobalConstants.PivotIds.kSlaveId);
 
-    public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
-    public static final InvertType kSlaveInvert = InvertType.FollowMaster;
+    public static final boolean opposeMaster = false;
+    // public static final Follower kSlave = new Follower(GlobalConstants.PivotIds.kMasterId,
+    // false);
+    public static final boolean kMasterInvert = true;
+    public static final boolean kSlaveInvert = kMasterInvert;
 
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
@@ -25,7 +27,7 @@ public class PivotConstants {
     public static final double kNativePosToDegrees =
             kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
 
-    public static final double kNativeVelToDPS = 10 * kNativePosToDegrees;
+    public static final double kNativeVelToDPS = kNativePosToDegrees;
 
     public static final double kMaxVelocityTicks = (400 / kNativeVelToDPS) * 1.8;
     public static final double kMaxAccelerationTicks = (200.0 / kNativeVelToDPS) * 1.8;
@@ -52,33 +54,37 @@ public class PivotConstants {
     public static final double kInitialAngle = 90.0;
 
     static {
-        kMaster.configFactoryDefault();
-        kSlave.configFactoryDefault();
+        Slot0Configs kMasterSlot0 = new Slot0Configs();
+        // VoltageConfigs kMasterVoltage = new VoltageConfigs();
+        CurrentLimitsConfigs kMasterCurrent = new CurrentLimitsConfigs();
+        MotionMagicConfigs kMasterMotionMagic = new MotionMagicConfigs();
+        MotorOutputConfigs kMasterMotorOutput = new MotorOutputConfigs();
+        SoftwareLimitSwitchConfigs kMasterSoftLimit = new SoftwareLimitSwitchConfigs();
+        TalonFXConfigurator kMasterConfigurator = kMaster.getConfigurator();
+        kMasterConfigurator.apply(kMasterConfig);
 
-        kMasterConfig.slot0.kP = masterKP;
-        kMasterConfig.slot0.kI = masterKI;
-        kMasterConfig.slot0.kD = masterKD;
-        kMasterConfig.slot0.allowableClosedloopError = 100;
-        kMasterConfig.voltageCompSaturation = nominalVoltage;
-        kMasterConfig.motionAcceleration = kMaxVelocityTicks;
-        kMasterConfig.motionCruiseVelocity = kMaxAccelerationTicks;
-        kMasterConfig.reverseSoftLimitEnable = true;
-        kMasterConfig.reverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
-        kMasterConfig.forwardSoftLimitEnable = true;
-        kMasterConfig.forwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
-        // kMasterConfig.peakOutputReverse = -0.8;
+        kMasterSlot0.kP = masterKP;
+        kMasterSlot0.kI = masterKI;
+        kMasterSlot0.kD = masterKD;
+        // kMasterVoltage.PeakForwardVoltage = nominalVoltage;
+        // kMasterVoltage.PeakReverseVoltage = nominalVoltage;
+        kMasterCurrent.StatorCurrentLimitEnable = true;
+        kMasterCurrent.StatorCurrentLimit = kMaxCurrent;
+        kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks;
+        kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks;
+        kMasterMotorOutput.PeakReverseDutyCycle = -0.5;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        kMasterSoftLimit.ForwardSoftLimitEnable = true;
+        kMasterSoftLimit.ForwardSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
+        kMasterSoftLimit.ReverseSoftLimitEnable = true;
+        kMasterSoftLimit.ReverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
 
-        kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
-        kSlave.follow(kMaster);
-        kMaster.setInverted(kMasterInvert);
-        kSlave.setInverted(kSlaveInvert);
-        kMaster.configGetStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 3));
-
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kSlave.setNeutralMode(NeutralMode.Brake);
-        kMaster.enableVoltageCompensation(true);
-        kSlave.enableVoltageCompensation(true);
+        kMasterConfigurator.apply(kMasterSlot0);
+        // kMasterConfigurator.apply(kMasterVoltage);
+        kMasterConfigurator.apply(kMasterMotionMagic);
+        kMasterConfigurator.apply(kMasterMotorOutput);
+        kMasterConfigurator.apply(kMasterSoftLimit);
 
         for (double[] pair : kVoltageGravity) {
             kLengthGravityVoltageMap.put(pair[0], pair[1]);

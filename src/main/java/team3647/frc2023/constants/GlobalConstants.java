@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  * constants are needed, to reduce verbosity.
  */
 public final class GlobalConstants {
-    public static final double kFalconTicksPerRotation = 2048;
+    public static final double kFalconTicksPerRotation = 1;
+    public static final double kFalcon5TicksPerRotation = 2048;
     public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
     public static final double kDt = 0.02;
     public static final int kTimeoutMS = 255;

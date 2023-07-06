@@ -1,10 +1,8 @@
 package team3647.frc2023.constants;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class RollersConstants {
@@ -12,7 +10,7 @@ public class RollersConstants {
     public static final DigitalInput kCubeSensor =
             new DigitalInput(GlobalConstants.RollersIds.kSensorId);
 
-    public static final TalonFXInvertType kMasterInvert = TalonFXInvertType.CounterClockwise;
+    // public static final TalonFXInvertType kMasterInvert = TalonFXInvertType.CounterClockwise;
 
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
@@ -21,14 +19,21 @@ public class RollersConstants {
     public static final double kMaxCurrent = 20.0;
 
     static {
-        kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        // VoltageConfigs kMasterVoltage = new VoltageConfigs();
+        CurrentLimitsConfigs kMasterCurrent = new CurrentLimitsConfigs();
+        MotorOutputConfigs kMasterMotorOutput = new MotorOutputConfigs();
+        TalonFXConfigurator kMasterConfigurator = kMaster.getConfigurator();
+        kMasterConfigurator.apply(kMasterConfig);
 
-        kMaster.setNeutralMode(NeutralMode.Brake);
-        kMaster.enableVoltageCompensation(true);
-        kMaster.configVoltageCompSaturation(kNominalVoltage, GlobalConstants.kTimeoutMS);
-        kMaster.configGetStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(true, kStallCurrent, kMaxCurrent, 5));
-        kMaster.setInverted(kMasterInvert);
+        // kMasterVoltage.PeakForwardVoltage = kNominalVoltage;
+        // kMasterVoltage.PeakReverseVoltage = kNominalVoltage;
+        kMasterCurrent.StatorCurrentLimitEnable = true;
+        kMasterCurrent.StatorCurrentLimit = kMaxCurrent;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kMasterMotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        // kMasterConfigurator.apply(kMasterVoltage);
+        kMasterConfigurator.apply(kMasterMotorOutput);
     }
 
     private RollersConstants() {}

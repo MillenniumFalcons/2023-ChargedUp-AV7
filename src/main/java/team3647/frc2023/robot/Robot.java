@@ -4,13 +4,12 @@
 
 package team3647.frc2023.robot;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import team3647.frc2023.subsystems.LEDSubsystem.LEDStates;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -71,8 +70,7 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
-        robotContainer.LEDS.setLEDState(LEDStates.IDLE);
-        robotContainer.wrist.setNeutralMode(NeutralMode.Coast);
+        robotContainer.wrist.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
@@ -85,7 +83,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         robotContainer.swerve.zeroPitch();
         autonomousCommand = robotContainer.getAutonomousCommand();
-        robotContainer.wrist.setNeutralMode(NeutralMode.Brake);
+        robotContainer.wrist.setNeutralMode(NeutralModeValue.Brake);
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
@@ -103,7 +101,7 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        robotContainer.wrist.setNeutralMode(NeutralMode.Brake);
+        robotContainer.wrist.setNeutralMode(NeutralModeValue.Brake);
 
         if (autonomousCommand != null) {
             autonomousCommand.cancel();

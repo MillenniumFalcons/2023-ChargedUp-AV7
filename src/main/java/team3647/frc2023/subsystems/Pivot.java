@@ -1,6 +1,5 @@
 package team3647.frc2023.subsystems;
 
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
@@ -14,7 +13,7 @@ public class Pivot extends TalonFXSubsystem {
 
     public Pivot(
             TalonFX master,
-            Follower follower,
+            TalonFX follower,
             double ticksToDegsPerSec,
             double ticksToDegs,
             double minDegree,
@@ -23,7 +22,7 @@ public class Pivot extends TalonFXSubsystem {
             DoubleSupplier getKGFromExtender,
             double kDt) {
         super(master, ticksToDegsPerSec, ticksToDegs, nominalVoltage, kDt);
-        super.addFollower(follower);
+        super.addFollower(follower, false);
         this.getKG = getKGFromExtender;
         this.minDegree = minDegree;
         this.maxDegree = maxDegree;

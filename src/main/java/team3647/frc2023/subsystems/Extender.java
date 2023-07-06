@@ -3,6 +3,7 @@ package team3647.frc2023.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import team3647.frc2023.constants.GlobalConstants;
 import team3647.lib.TalonFXSubsystem;
 
 public class Extender extends TalonFXSubsystem {
@@ -27,15 +28,26 @@ public class Extender extends TalonFXSubsystem {
 
     @Override
     public void setEncoder(double ticks) {
-        super.setEncoder(ticks);
+        super.setEncoder(ticks / GlobalConstants.kFalcon5TicksPerRotation);
     }
 
     public void setLengthMeters(double meters) {
-        super.setPositionMotionMagic(MathUtil.clamp(meters, minLengthTicks, maxLengthTicks), 0);
+        super.setPositionMotionMagic(
+                MathUtil.clamp(
+                        meters / GlobalConstants.kFalcon5TicksPerRotation,
+                        minLengthTicks,
+                        maxLengthTicks),
+                0);
     }
 
-    public double getNativeTicks() {
-        return super.getNativePos();
+    @Override
+    public double getNativePos() {
+        return super.getNativePos() * GlobalConstants.kFalcon5TicksPerRotation;
+    }
+
+    @Override
+    public double getPosition() {
+        return super.getPosition() * GlobalConstants.kFalcon5TicksPerRotation;
     }
 
     public boolean reachedPosition(double targetPosition, double threshold) {

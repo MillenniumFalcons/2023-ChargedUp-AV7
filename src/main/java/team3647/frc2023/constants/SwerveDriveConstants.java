@@ -1,16 +1,25 @@
 package team3647.frc2023.constants;
 
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenix.sensors.Pigeon2Configuration;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix6.StatusCode;
+// import com.ctre.phoenix.ErrorCode;
+// import com.ctre.phoenix.motorcontrol.NeutralMode;
+// import com.ctre.phoenix.motorcontrol.can.TalonFX;
+// import com.ctre.phoenix.motorcontrol.can.TalonFXConfigurator;
+// import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+// import com.ctre.phoenix.sensors.CANCoder;
+// import com.ctre.phoenix.sensors.CANCoderConfiguration;
+// import com.ctre.phoenix.sensors.Pigeon2;
+// import com.ctre.phoenix.sensors.Pigeon2Configuration;
+// import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+// import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,46 +30,48 @@ import team3647.lib.SwerveModule;
 public class SwerveDriveConstants {
     // default falcon rotates counter clockwise (CCW)
     // make sure gyro -CW, +CCW
-    public static final boolean canCoderInvert = false;
-    public static final boolean kDriveMotorInverted = false;
-    public static final boolean kTurnMotorInverted = true;
+    public static final SensorDirectionValue canCoderInvert =
+            SensorDirectionValue.CounterClockwise_Positive;
+    public static final InvertedValue kDriveMotorInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue kTurnMotorInverted = InvertedValue.Clockwise_Positive;
 
     // physical possible max speed
     public static final double kDrivePossibleMaxSpeedMPS = 5;
     public static final double kRotPossibleMaxSpeedRadPerSec = 10;
 
-    public static final NeutralMode kTurnNeutralMode = NeutralMode.Coast;
-    public static final NeutralMode kDriveNeutralMode = NeutralMode.Brake;
+    public static final NeutralModeValue kTurnNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue kDriveNeutralMode = NeutralModeValue.Brake;
 
     public static final TalonFX kFrontLeftDrive =
             new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "drive");
     public static final TalonFX kFrontLeftTurn =
             new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "drive");
-    public static final CANCoder kFrontLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "drive");
+    public static final CANcoder kFrontLeftAbsEncoder =
+            new CANcoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "drive");
 
     public static final TalonFX kFrontRightDrive =
             new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "drive");
     public static final TalonFX kFrontRightTurn =
             new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "drive");
-    public static final CANCoder kFrontRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "drive");
+    public static final CANcoder kFrontRightAbsEncoder =
+            new CANcoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "drive");
 
     public static final TalonFX kBackLeftDrive =
             new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "drive");
     public static final TalonFX kBackLeftTurn =
             new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "drive");
-    public static final CANCoder kBackLeftAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "drive");
+    public static final CANcoder kBackLeftAbsEncoder =
+            new CANcoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "drive");
 
     public static final TalonFX kBackRightDrive =
             new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "drive");
     public static final TalonFX kBackRightTurn =
             new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "drive");
-    public static final CANCoder kBackRightAbsEncoder =
-            new CANCoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "drive");
+    public static final CANcoder kBackRightAbsEncoder =
+            new CANcoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "drive");
 
-    public static final Pigeon2Configuration kGyroConfig = new Pigeon2Configuration();
+    public static final Pigeon2 kGyro =
+            new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "drive");
 
     // config swerve module reversed here, module class doens't reverse for you
 
@@ -96,21 +107,17 @@ public class SwerveDriveConstants {
     public static final double kWheelDiameterMeters = 0.097; // 97mm
 
     //     // divide for tick to deg
-    public static final double kTurnMotorNativeToDeg =
-            kTurnMotorGearRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
+    public static final double kTurnMotorNativeToDeg = kTurnMotorGearRatio * 360.0;
 
-    public static final double kTurnMotorNativeToDPS =
-            kTurnMotorNativeToDeg * 10.0; // RPS / Native/10ms
+    public static final double kTurnMotorNativeToDPS = kTurnMotorNativeToDeg; // RPS / Native/10ms
 
     public static final double kWheelRotationToMetersDrive =
             kWheelDiameterMeters * Math.PI * kDriveMotorGearRatio;
 
     // Multiply by 10 because velocity is in ticks/100ms
-    public static final double kFalconVelocityToMpS =
-            kWheelRotationToMetersDrive * 10.0 / GlobalConstants.kFalconTicksPerRotation;
+    public static final double kFalconVelocityToMpS = kWheelRotationToMetersDrive;
 
-    public static final double kFalconTicksToMeters =
-            kWheelRotationToMetersDrive / GlobalConstants.kFalconTicksPerRotation;
+    public static final double kFalconTicksToMeters = kWheelRotationToMetersDrive;
 
     public static final double kNominalVoltage = 10;
     public static final double kStallCurrent = 35;
@@ -129,32 +136,42 @@ public class SwerveDriveConstants {
     //     public static final double kAbsBackRightEncoderOffsetDeg = 246.88;
 
     // comp bot
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 35.595;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 182.724;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 348.222;
-    public static final double kAbsBackRightEncoderOffsetDeg = 247.851;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 214.7; // 215.77; //35.595;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 3.86; // 183.51; //182.724;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 169.90; // 347.34; //348.222;
+    public static final double kAbsBackRightEncoderOffsetDeg = 69.61; // 67.23; //247.851;
 
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
     public static final double kTeleopDriveMaxAngularAccelUnitsPerSec =
             kRotPossibleMaxSpeedRadPerSec / 3;
 
-    public static final TalonFXConfiguration kFrontLeftDriveConfig = new TalonFXConfiguration();
-    public static final TalonFXConfiguration kFrontLeftTurnConfig = new TalonFXConfiguration();
+    public static final TalonFXConfigurator kFrontLeftDriveConfig =
+            kFrontLeftDrive.getConfigurator();
+    public static final TalonFXConfigurator kFrontLeftTurnConfig = kFrontLeftTurn.getConfigurator();
 
-    public static final TalonFXConfiguration kFrontRightDriveConfig = new TalonFXConfiguration();
-    public static final TalonFXConfiguration kFrontRightTurnConfig = new TalonFXConfiguration();
+    public static final TalonFXConfigurator kFrontRightDriveConfig =
+            kFrontRightDrive.getConfigurator();
+    public static final TalonFXConfigurator kFrontRightTurnConfig =
+            kFrontRightTurn.getConfigurator();
 
-    public static final TalonFXConfiguration kBackLeftDriveConfig = new TalonFXConfiguration();
-    public static final TalonFXConfiguration kBackLeftTurnConfig = new TalonFXConfiguration();
+    public static final TalonFXConfigurator kBackLeftDriveConfig = kBackLeftDrive.getConfigurator();
+    public static final TalonFXConfigurator kBackLeftTurnConfig = kBackLeftTurn.getConfigurator();
 
-    public static final TalonFXConfiguration kBackRightDriveConfig = new TalonFXConfiguration();
-    public static final TalonFXConfiguration kBackRightTurnConfig = new TalonFXConfiguration();
+    public static final TalonFXConfigurator kBackRightDriveConfig =
+            kBackRightDrive.getConfigurator();
+    public static final TalonFXConfigurator kBackRightTurnConfig = kBackRightTurn.getConfigurator();
 
-    public static final CANCoderConfiguration kFrontLeftAbsConfig = new CANCoderConfiguration();
-    public static final CANCoderConfiguration kFrontRightAbsConfig = new CANCoderConfiguration();
-    public static final CANCoderConfiguration kBackLeftAbsConfig = new CANCoderConfiguration();
-    public static final CANCoderConfiguration kBackRightAbsConfig = new CANCoderConfiguration();
+    public static final CANcoderConfigurator kFrontLeftAbsConfig =
+            kFrontLeftAbsEncoder.getConfigurator();
+    public static final CANcoderConfigurator kFrontRightAbsConfig =
+            kFrontRightAbsEncoder.getConfigurator();
+    public static final CANcoderConfigurator kBackLeftAbsConfig =
+            kBackLeftAbsEncoder.getConfigurator();
+    public static final CANcoderConfigurator kBackRightAbsConfig =
+            kBackRightAbsEncoder.getConfigurator();
+
+    public static final Pigeon2Configurator kGyroConfig = kGyro.getConfigurator();
 
     // master FF for drive for all modules
     public static final double kS = (0.56744 / 12); // 0.56744; // Volts
@@ -234,32 +251,60 @@ public class SwerveDriveConstants {
                     kTurnMotorNativeToDeg,
                     kNominalVoltage);
 
-    public static final Pigeon2 kGyro =
-            new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "drive");
-
-    private static void setTurnMotorConfig(TalonFXConfiguration config) {
-        config.slot0.kP = kTurnP;
-        config.slot0.kI = kTurnI;
-        config.slot0.kD = kTurnD;
-        config.supplyCurrLimit.enable = true;
-        config.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
-        config.supplyCurrLimit.triggerThresholdTime = 5;
-        config.voltageCompSaturation = kNominalVoltage;
-        config.initializationStrategy = SensorInitializationStrategy.BootToZero;
+    private static void setTurnMotorConfig(
+            TalonFXConfigurator configurator,
+            Slot0Configs slot0,
+            CurrentLimitsConfigs supplyCurrLimit,
+            MotorOutputConfigs motorConfigs) {
+        slot0.kP = kTurnP;
+        slot0.kI = kTurnI;
+        slot0.kD = kTurnD;
+        supplyCurrLimit.SupplyCurrentLimitEnable = true;
+        supplyCurrLimit.SupplyCurrentThreshold = kMaxCurrent;
+        supplyCurrLimit.SupplyTimeThreshold = 5;
+        motorConfigs.NeutralMode = kTurnNeutralMode;
+        motorConfigs.Inverted = kTurnMotorInverted;
+        configurator.apply(slot0);
+        configurator.apply(supplyCurrLimit);
+        configurator.apply(motorConfigs);
+        // config.voltageCompSaturation = kNominalVoltage;
+        // config.initializationStrategy = SensorInitializationStrategy.BootToZero;
     }
 
-    private static void setDriveMotorConfig(TalonFXConfiguration config) {
-        config.slot0.kP = kDriveP;
-        config.slot0.kI = kDriveI;
-        config.slot0.kD = kDriveD;
-        config.supplyCurrLimit.enable = false;
-        config.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
-        config.supplyCurrLimit.triggerThresholdTime = 5;
-        config.initializationStrategy = SensorInitializationStrategy.BootToZero;
-        config.voltageCompSaturation = kNominalVoltage;
+    private static void setDriveMotorConfig(
+            TalonFXConfigurator configurator,
+            Slot0Configs slot0,
+            CurrentLimitsConfigs supplyCurrLimit,
+            MotorOutputConfigs motorConfigs) {
+        slot0.kP = kDriveP;
+        slot0.kI = kDriveI;
+        slot0.kD = kDriveD;
+        supplyCurrLimit.SupplyCurrentLimitEnable = false;
+        supplyCurrLimit.SupplyCurrentThreshold = kMaxCurrent;
+        supplyCurrLimit.SupplyTimeThreshold = 5;
+        motorConfigs.NeutralMode = kDriveNeutralMode;
+        motorConfigs.Inverted = kDriveMotorInverted;
+        configurator.apply(slot0);
+        configurator.apply(supplyCurrLimit);
+        configurator.apply(motorConfigs);
+        // config.initializationStrategy = SensorInitializationStrategy.BootToZero;
+        // config.voltageCompSaturation = kNominalVoltage;
     }
 
-    private static void printError(ErrorCode error) {
+    private static void setAbsConfig(
+            CANcoderConfigurator configurator, MagnetSensorConfigs magnetConfigs) {
+        magnetConfigs.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        magnetConfigs.SensorDirection = canCoderInvert;
+        configurator.apply(magnetConfigs);
+    }
+
+    private static void setGyroConfig(
+            Pigeon2Configurator configurator, MountPoseConfigs mountPoseConfigs) {
+        mountPoseConfigs.MountPoseYaw = 90;
+        configurator.apply(mountPoseConfigs);
+    }
+
+    private static void printError(StatusCode error) {
         if (error.value == 0) {
             return;
         }
@@ -268,103 +313,59 @@ public class SwerveDriveConstants {
     }
 
     static {
-        kGyroConfig.ZAxisGyroError = 0.3;
-        // remove later
-        kGyroConfig.MountPoseYaw = 90;
-        printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
+        // kGyroConfig.ZAxisGyroError = 0.3;
+        // // remove later
+        // kGyroConfig.MountPoseYaw = 90;
+        // printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
 
-        setTurnMotorConfig(kFrontLeftTurnConfig);
-        setTurnMotorConfig(kFrontRightTurnConfig);
-        setTurnMotorConfig(kBackLeftTurnConfig);
-        setTurnMotorConfig(kBackRightTurnConfig);
+        setGyroConfig(kGyroConfig, new com.ctre.phoenix6.configs.MountPoseConfigs());
 
-        setDriveMotorConfig(kFrontLeftDriveConfig);
-        setDriveMotorConfig(kFrontRightDriveConfig);
-        setDriveMotorConfig(kBackLeftDriveConfig);
-        setDriveMotorConfig(kBackRightDriveConfig);
+        setTurnMotorConfig(
+                kFrontLeftTurnConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
+        setTurnMotorConfig(
+                kFrontRightTurnConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
+        setTurnMotorConfig(
+                kBackLeftTurnConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
+        setTurnMotorConfig(
+                kBackRightTurnConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
 
-        kFrontLeftAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        kFrontLeftAbsConfig.sensorDirection = canCoderInvert;
-        kFrontLeftAbsConfig.initializationStrategy =
-                SensorInitializationStrategy.BootToAbsolutePosition;
-        kFrontLeftAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-        kFrontLeftAbsConfig.magnetOffsetDegrees = 0.0;
+        setDriveMotorConfig(
+                kFrontLeftDriveConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
+        setDriveMotorConfig(
+                kFrontRightDriveConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
+        setDriveMotorConfig(
+                kBackLeftDriveConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
+        setDriveMotorConfig(
+                kBackRightDriveConfig,
+                new Slot0Configs(),
+                new CurrentLimitsConfigs(),
+                new MotorOutputConfigs());
 
-        kFrontRightAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        kFrontRightAbsConfig.sensorDirection = canCoderInvert;
-        kFrontRightAbsConfig.initializationStrategy =
-                SensorInitializationStrategy.BootToAbsolutePosition;
-        kFrontRightAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-        kFrontRightAbsConfig.magnetOffsetDegrees = 0.0;
-
-        kBackLeftAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        kBackLeftAbsConfig.sensorDirection = canCoderInvert;
-        kBackLeftAbsConfig.initializationStrategy =
-                SensorInitializationStrategy.BootToAbsolutePosition;
-        kBackLeftAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-        kBackLeftAbsConfig.magnetOffsetDegrees = 0.0;
-        kBackLeftAbsConfig.sensorCoefficient = 0;
-
-        kBackRightAbsConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-        kBackRightAbsConfig.sensorDirection = canCoderInvert;
-        kBackRightAbsConfig.initializationStrategy =
-                SensorInitializationStrategy.BootToAbsolutePosition;
-        kBackRightAbsConfig.sensorTimeBase = SensorTimeBase.PerSecond;
-        kBackRightAbsConfig.magnetOffsetDegrees = 0.0;
-
-        printError(
-                kFrontLeftAbsEncoder.configAllSettings(
-                        kFrontLeftAbsConfig, GlobalConstants.kTimeoutMS));
-        printError(
-                kFrontRightAbsEncoder.configAllSettings(
-                        kFrontRightAbsConfig, GlobalConstants.kTimeoutMS));
-        printError(
-                kBackLeftAbsEncoder.configAllSettings(
-                        kBackLeftAbsConfig, GlobalConstants.kTimeoutMS));
-        printError(
-                kBackRightAbsEncoder.configAllSettings(
-                        kBackRightAbsConfig, GlobalConstants.kTimeoutMS));
-
-        printError(
-                kFrontLeftTurn.configAllSettings(kFrontLeftTurnConfig, GlobalConstants.kTimeoutMS));
-        kFrontLeftTurn.setNeutralMode(kTurnNeutralMode);
-        printError(
-                kFrontRightTurn.configAllSettings(
-                        kFrontRightTurnConfig, GlobalConstants.kTimeoutMS));
-        kFrontRightTurn.setNeutralMode(kTurnNeutralMode);
-        printError(
-                kBackLeftTurn.configAllSettings(kBackLeftTurnConfig, GlobalConstants.kTimeoutMS));
-        kBackLeftTurn.setNeutralMode(kTurnNeutralMode);
-        printError(
-                kBackRightTurn.configAllSettings(kBackRightTurnConfig, GlobalConstants.kTimeoutMS));
-        kBackRightTurn.setNeutralMode(kTurnNeutralMode);
-
-        printError(
-                kFrontLeftDrive.configAllSettings(
-                        kFrontLeftDriveConfig, GlobalConstants.kTimeoutMS));
-        kFrontLeftDrive.setNeutralMode(kDriveNeutralMode);
-        printError(
-                kFrontRightDrive.configAllSettings(
-                        kFrontRightDriveConfig, GlobalConstants.kTimeoutMS));
-        kFrontRightDrive.setNeutralMode(kDriveNeutralMode);
-        printError(
-                kBackLeftDrive.configAllSettings(kBackLeftDriveConfig, GlobalConstants.kTimeoutMS));
-        kBackLeftDrive.setNeutralMode(kDriveNeutralMode);
-        printError(
-                kBackRightDrive.configAllSettings(
-                        kBackRightDriveConfig, GlobalConstants.kTimeoutMS));
-        kBackRightDrive.setNeutralMode(kDriveNeutralMode);
-
-        // set invert, same for all b/c all motors facing same direction
-        kFrontLeftTurn.setInverted(kTurnMotorInverted);
-        kFrontRightTurn.setInverted(kTurnMotorInverted);
-        kBackLeftTurn.setInverted(kTurnMotorInverted);
-        kBackRightTurn.setInverted(kTurnMotorInverted);
-
-        kFrontLeftDrive.setInverted(kDriveMotorInverted);
-        kFrontRightDrive.setInverted(kDriveMotorInverted);
-        kBackLeftDrive.setInverted(kDriveMotorInverted);
-        kBackRightDrive.setInverted(kDriveMotorInverted);
+        setAbsConfig(kFrontLeftAbsConfig, new MagnetSensorConfigs());
+        setAbsConfig(kFrontRightAbsConfig, new MagnetSensorConfigs());
+        setAbsConfig(kBackLeftAbsConfig, new MagnetSensorConfigs());
+        setAbsConfig(kBackRightAbsConfig, new MagnetSensorConfigs());
     }
 
     private SwerveDriveConstants() {}
