@@ -1,14 +1,18 @@
 package team3647.lib;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.frc2023.constants.SwerveDriveConstants;
 
 public class SwerveModule {
@@ -17,7 +21,7 @@ public class SwerveModule {
 
     private final SimpleMotorFeedforward ff;
     // abs since motor encoder resets
-    public final CANCoder absEncoder;
+    public final CANcoder absEncoder;
     // offset reading of motor and abs pos after reset
     public final double absOffsetDeg;
 
@@ -30,11 +34,15 @@ public class SwerveModule {
 
     public double percentOut = 0;
 
+    private final DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
+    private final VelocityDutyCycle velocityDutyCycle = new VelocityDutyCycle(0);
+    private final PositionDutyCycle positionDutyCycle = new PositionDutyCycle(0);
+
     public SwerveModule(
             TalonFX driveMotor,
             TalonFX turnMotor,
             SimpleMotorFeedforward ff,
-            CANCoder absEncoder,
+            CANcoder absEncoder,
             double absOffsetDeg,
             double kDriveVelocityConversion,
             double kDrivePositionConversion,
@@ -55,23 +63,23 @@ public class SwerveModule {
     }
 
     public double getDrivePos() {
-        return driveMotor.getSelectedSensorPosition() * drivePositionConversion;
+        return driveMotor.getRotorPosition().getValue() * drivePositionConversion;
     }
 
     public double getTurnAngle() {
-        return turnMotor.getSelectedSensorPosition() * turnPositionConversion;
+        return turnMotor.getRotorPosition().getValue() * turnPositionConversion;
     }
 
     public double getDriveVelocity() {
-        return driveMotor.getSelectedSensorVelocity() * driveVelocityConversion;
+        return driveMotor.getRotorVelocity().getValue() * driveVelocityConversion;
     }
 
     public double getTurnVelocity() {
-        return turnMotor.getSelectedSensorVelocity() * turnVelocityConversion;
+        return turnMotor.getRotorVelocity().getValue() * turnVelocityConversion;
     }
 
     public Rotation2d getAbsEncoderPos() {
-        return Rotation2d.fromDegrees(absEncoder.getAbsolutePosition());
+        return Rotation2d.fromDegrees(absEncoder.getAbsolutePosition().getValue() * 360);
     }
 
     public SwerveModuleState getState() {
@@ -83,12 +91,13 @@ public class SwerveModule {
     }
 
     public double getVoltage() {
-        return driveMotor.getMotorOutputVoltage();
+        return driveMotor.getSupplyVoltage().getValue();
     }
 
     public void resetToAbsolute() {
-        double absolutePosition = (getCanCoder() - absOffsetDeg) / turnPositionConversion;
-        var error = turnMotor.setSelectedSensorPosition(absolutePosition, 0, 255);
+        double absolutePosition = (getCanCoder() - absOffsetDeg); // / turnPositionConversion;
+        SmartDashboard.putNumber("bruh", absolutePosition / 360);
+        var error = turnMotor.setRotorPosition(absolutePosition / 360);
 
         // double absoluteAngle = (getAbsEncoderPos().getDegrees() - absOffsetDeg);
         // double adjustedAngle = CTREModuleState.optimizeAngle(absoluteAngle, getTurnAngle());
@@ -96,20 +105,31 @@ public class SwerveModule {
     }
 
     public double getCanCoder() {
-        return absEncoder.getAbsolutePosition();
+        return absEncoder.getAbsolutePosition().getValue() * 360;
     }
 
-    public CANCoder getCanCoderObject() {
+    public CANcoder getCanCoderObject() {
         return this.absEncoder;
     }
 
     public void resetDriveEncoders() {
-        driveMotor.setSelectedSensorPosition(0);
+        driveMotor.setRotorPosition(0);
     }
 
-    public void setNeutralMode(NeutralMode turnNeutralMode, NeutralMode driveNeutralMode) {
-        turnMotor.setNeutralMode(turnNeutralMode);
-        driveMotor.setNeutralMode(driveNeutralMode);
+    public void setNeutralMode(
+            NeutralModeValue turnNeutralMode, NeutralModeValue driveNeutralMode) {
+        // turnMotor.setNeutralMode(turnNeutralMode);
+        // driveMotor.setNeutralMode(driveNeutralMode);
+        TalonFXConfigurator turnConfigurator = turnMotor.getConfigurator();
+        TalonFXConfiguration turnConfiguration = new TalonFXConfiguration();
+        turnConfigurator.refresh(turnConfiguration);
+        turnConfiguration.MotorOutput.NeutralMode = turnNeutralMode;
+        turnConfigurator.apply(turnConfiguration);
+        TalonFXConfigurator driveConfigurator = driveMotor.getConfigurator();
+        TalonFXConfiguration driveConfiguration = new TalonFXConfiguration();
+        driveConfigurator.refresh(driveConfiguration);
+        driveConfiguration.MotorOutput.NeutralMode = driveNeutralMode;
+        driveConfigurator.apply(driveConfiguration);
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
@@ -124,16 +144,15 @@ public class SwerveModule {
             double percentOutput =
                     desiredState.speedMetersPerSecond
                             / SwerveDriveConstants.kDrivePossibleMaxSpeedMPS;
-            driveMotor.set(ControlMode.PercentOutput, percentOutput);
+            dutyCycleOut.Output = percentOutput;
+            driveMotor.setControl(dutyCycleOut);
             this.percentOut = percentOutput;
         } else {
             // MPS to falcon
             double velocity = desiredState.speedMetersPerSecond / driveVelocityConversion;
-            driveMotor.set(
-                    ControlMode.Velocity,
-                    velocity,
-                    DemandType.ArbitraryFeedForward,
-                    ff.calculate(desiredState.speedMetersPerSecond));
+            velocityDutyCycle.Velocity = velocity;
+            velocityDutyCycle.FeedForward = ff.calculate(desiredState.speedMetersPerSecond);
+            driveMotor.setControl(velocityDutyCycle);
         }
 
         double angle =
@@ -142,13 +161,14 @@ public class SwerveModule {
                         ? lastAngle
                         : desiredState.angle.getDegrees();
         // Prevents Jittering.
-        turnMotor.set(ControlMode.Position, angle / turnPositionConversion);
+        positionDutyCycle.Position = angle / turnPositionConversion;
+        turnMotor.setControl(positionDutyCycle);
         lastAngle = angle;
     }
 
     public void stop() {
         // stop velocity, not set position to 0
-        driveMotor.set(ControlMode.PercentOutput, 0);
-        turnMotor.set(ControlMode.PercentOutput, 0);
+        driveMotor.setControl(new DutyCycleOut(0));
+        turnMotor.setControl(new DutyCycleOut(0));
     }
 }
