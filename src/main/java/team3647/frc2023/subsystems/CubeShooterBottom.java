@@ -1,6 +1,6 @@
 package team3647.frc2023.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 import team3647.lib.TalonFXSubsystem;
 
 public class CubeShooterBottom extends TalonFXSubsystem {
