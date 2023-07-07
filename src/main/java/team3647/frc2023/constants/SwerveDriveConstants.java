@@ -136,10 +136,10 @@ public class SwerveDriveConstants {
     //     public static final double kAbsBackRightEncoderOffsetDeg = 246.88;
 
     // comp bot
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 214.7; // 215.77; //35.595;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 3.86; // 183.51; //182.724;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 169.90; // 347.34; //348.222;
-    public static final double kAbsBackRightEncoderOffsetDeg = 69.61; // 67.23; //247.851;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 214.7 - 180; // 215.77; //35.595;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 3.86 + 180; // 183.51; //182.724;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 169.90 + 180; // 347.34; //348.222;
+    public static final double kAbsBackRightEncoderOffsetDeg = 69.61 + 180; // 67.23; //247.851;
 
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;
@@ -198,7 +198,7 @@ public class SwerveDriveConstants {
 
     public static final PIDController kAutoSteerXYPIDController = new PIDController(0.05, 0, 0);
     // 3*Pi = move at 10 rads per second if we are 180* away from target heading
-    public static final PIDController kAutoSteerHeadingController = new PIDController(0.04, 0, 0);
+    public static final PIDController kAutoSteerHeadingController = new PIDController(0.03, 0, 0);
     // PID constants for roll and yaw
 
     // is stored as reference?

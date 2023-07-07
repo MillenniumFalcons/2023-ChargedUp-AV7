@@ -56,7 +56,7 @@ public class ExtenderConstants {
 
     public static final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(kS, kV, kA);
 
-    private static final double kP = 0.1;
+    private static final double kP = 0.2;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
 

@@ -3,6 +3,7 @@ package team3647.frc2023.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.DoubleSupplier;
 import team3647.lib.TalonFXSubsystem;
 
@@ -39,6 +40,8 @@ public class Pivot extends TalonFXSubsystem {
         // ff should be positive when going towards small angle (towards back of robot)
         // because ff should always be towards the 90 deg
         var ffVolts = getKG.getAsDouble() * Math.cos(Units.degreesToRadians(angle));
+        SmartDashboard.putNumber("desired angle", MathUtil.clamp(angle, minDegree, maxDegree));
+        SmartDashboard.putNumber("pivot ff", ffVolts);
         super.setPositionMotionMagic(MathUtil.clamp(angle, minDegree, maxDegree), ffVolts);
     }
 

@@ -20,18 +20,19 @@ public class CubeWristConstants {
 
     private static final double kGearBoxRatio = 12 / 76.0 * 18 / 80.0 * 18 / 48.0;
 
-    public static final double kNativePosToDegrees = kGearBoxRatio * 360.0;
+    public static final double kNativePosToDegrees =
+            kGearBoxRatio / GlobalConstants.kFalconTicksPerRotation * 360.0;
 
     public static final double kNativeVelToDPS = kNativePosToDegrees;
 
-    public static final double kMaxVelocityTicks = (2000 / kNativeVelToDPS);
+    public static final double kMaxVelocityTicks = (2000.0 / kNativeVelToDPS);
     public static final double kMaxAccelerationTicks = (4000.0 / kNativeVelToDPS);
 
     public static final double kInitialDegree = 0.0;
     public static final double kMinDegree = 0.0;
     public static final double kMaxDegree = 100.0;
 
-    public static final double masterKP = 0.5;
+    public static final double masterKP = 1.0;
     public static final double masterKI = 0.0;
     public static final double masterKD = 0.0;
 
@@ -67,7 +68,7 @@ public class CubeWristConstants {
         kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
         kMasterMotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         kMasterSoftLimit.ForwardSoftLimitEnable = true;
-        kMasterSoftLimit.ForwardSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
+        kMasterSoftLimit.ForwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
         kMasterSoftLimit.ReverseSoftLimitEnable = true;
         kMasterSoftLimit.ReverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
 

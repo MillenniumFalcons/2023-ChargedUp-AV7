@@ -29,7 +29,7 @@ public class PivotConstants {
 
     public static final double kNativeVelToDPS = kNativePosToDegrees;
 
-    public static final double kMaxVelocityTicks = (400 / kNativeVelToDPS) * 1.8;
+    public static final double kMaxVelocityTicks = (400.0 / kNativeVelToDPS) * 1.8;
     public static final double kMaxAccelerationTicks = (200.0 / kNativeVelToDPS) * 1.8;
 
     public static final double kMinDegree = -30.0;
@@ -38,7 +38,7 @@ public class PivotConstants {
     // kG at max extension
     public static final double kG = 0.63;
 
-    private static final double masterKP = 0.15;
+    private static final double masterKP = 0.3;
     private static final double masterKI = 0;
     private static final double masterKD = 0;
 
@@ -76,7 +76,7 @@ public class PivotConstants {
         kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
         kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         kMasterSoftLimit.ForwardSoftLimitEnable = true;
-        kMasterSoftLimit.ForwardSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
+        kMasterSoftLimit.ForwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;
         kMasterSoftLimit.ReverseSoftLimitEnable = true;
         kMasterSoftLimit.ReverseSoftLimitThreshold = kMinDegree / kNativePosToDegrees;
 

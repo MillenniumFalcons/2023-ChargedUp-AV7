@@ -148,6 +148,7 @@ public class SwerveDrive implements PeriodicSubsystem {
         frontRight.resetToAbsolute();
         backLeft.resetToAbsolute();
         backRight.resetToAbsolute();
+        System.out.println("reset");
     }
 
     public double getTimestamp() {
