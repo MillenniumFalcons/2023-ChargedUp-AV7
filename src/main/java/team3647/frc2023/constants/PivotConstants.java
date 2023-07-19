@@ -73,7 +73,7 @@ public class PivotConstants {
         kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks;
         kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks;
         kMasterMotorOutput.PeakReverseDutyCycle = -0.5;
-        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Coast;
         kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         kMasterSoftLimit.ForwardSoftLimitEnable = true;
         kMasterSoftLimit.ForwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;

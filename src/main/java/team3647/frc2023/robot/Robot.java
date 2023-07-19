@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         robotContainer.swerve.zeroPitch();
         autonomousCommand = robotContainer.getAutonomousCommand();
-        robotContainer.wrist.setNeutralMode(NeutralModeValue.Brake);
+        robotContainer.wrist.setNeutralMode(NeutralModeValue.Coast);
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        robotContainer.wrist.setNeutralMode(NeutralModeValue.Brake);
+        robotContainer.wrist.setNeutralMode(NeutralModeValue.Coast);
 
         if (autonomousCommand != null) {
             autonomousCommand.cancel();

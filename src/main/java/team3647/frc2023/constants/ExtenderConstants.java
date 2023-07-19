@@ -91,7 +91,7 @@ public class ExtenderConstants {
         kMasterMotionMagic.MotionMagicCruiseVelocity = 500;
         kMasterMotorOutput.PeakReverseDutyCycle = -0.7;
         kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Coast;
         kMasterSoftLimit.ReverseSoftLimitEnable = true;
         kMasterSoftLimit.ReverseSoftLimitThreshold = kRevTicksSoftLimit;
 
