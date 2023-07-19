@@ -168,27 +168,27 @@ public class SuperstructureState {
     public static final SuperstructureState noLevel =
             new SuperstructureState(
                     PivotConstants.kInitialAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
+                    ExtenderConstants.kMinimumPositionTicks * 2048,
                     "no level");
 
     public static final SuperstructureState stowScore =
             new SuperstructureState(
                     doubleStationCone.armAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
+                    ExtenderConstants.kMinimumPositionTicks * 2048,
                     doubleStationCone.wristAngle,
                     "stow");
 
     public static final SuperstructureState stowIntake =
             new SuperstructureState(
                     doubleStationCone.armAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
+                    ExtenderConstants.kMinimumPositionTicks * 2048,
                     10,
                     "stow");
 
     public static final SuperstructureState stowAll =
             new SuperstructureState(
                     PivotConstants.kInitialAngle,
-                    ExtenderConstants.kMinimumPositionTicks,
+                    ExtenderConstants.kMinimumPositionTicks * 2048,
                     30,
                     "stow");
 

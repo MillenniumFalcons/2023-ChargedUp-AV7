@@ -82,7 +82,8 @@ public class RobotContainer {
         // need to change this to a conditional command so it doesn't start auto aiming
         // when doing
         // cubes from cube shooter
-        mainController.buttonY.whileTrue(superstructure.wristCommands.setAngle(120));
+        coControllerRightJoystickMoved.whileTrue(
+                superstructure.extenderCommands.openloop(() -> coController.getRightStickY()));
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
@@ -200,6 +201,7 @@ public class RobotContainer {
     }
 
     public void configureSmartDashboardLogging() {
+        printer.addDouble("co right x", coController::getRightStickY);
         printer.addPose("odo", swerve::getOdoPose);
         printer.addDouble("Extender amps", extender::getMasterCurrent);
         printer.addDouble("PIVOT", pivot::getAngle);

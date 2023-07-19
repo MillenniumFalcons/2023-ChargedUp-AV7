@@ -119,6 +119,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      */
     protected void setPositionMotionMagic(double position, double feedforward) {
         periodicIO.controlMode = motionMagicDutyCycle;
+        motionMagicDutyCycle.Slot = 0;
         motionMagicDutyCycle.FeedForward = feedforward / nominalVoltage;
         motionMagicDutyCycle.Position = position / positionConversion;
     }
