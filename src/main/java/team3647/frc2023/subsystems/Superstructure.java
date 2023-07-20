@@ -28,6 +28,7 @@ public class Superstructure {
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
     private boolean isAutoSteerEnabled = true;
+    private boolean isGround = true;
 
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStationCone;
     private GamePiece intakeGamePiece = GamePiece.Cone;
@@ -39,16 +40,19 @@ public class Superstructure {
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
 
     public void periodic(double timestamp) {
+        printer.addBoolean("ground cone", () -> isGround);
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
                             ? SuperstructureState.groundIntakeCone
                             : SuperstructureState.groundIntakeCube;
+            this.isGround = true;
         } else {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
                             ? SuperstructureState.doubleStationCone
                             : SuperstructureState.doubleStationCube;
+            this.isGround = false;
         }
         if (Math.abs(wristAdjust) > 0.01 || Math.abs(extendAdjust) > 10) {
             wantedIntakeState = wantedIntakeState.addWristExtend(wristAdjust, extendAdjust);
@@ -62,6 +66,10 @@ public class Superstructure {
         return scoreAndStow(0.5);
     }
 
+    public boolean ground() {
+        return isGround;
+    }
+
     public Command scoreStowNoDelay() {
         return scoreAndStow(0);
     }
@@ -73,19 +81,37 @@ public class Superstructure {
                                 getWantedLevel(), this.currentGamePiece));
     }
 
-    public Command intakeAutomatic() {
+    public Command intakeAutomatic(boolean ground) {
 
-        return Commands.deadline(
+        Command rollers = ground ? intakeGround() : intakeForGamePiece(() -> this.intakeGamePiece);
+
+            return Commands.deadline(
                         waitForCurrentSpikeDebounce(0.6),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
-                                intakeForGamePiece(() -> this.intakeGamePiece)))
+                                rollers))
                 .finallyDo(
                         interrupted -> {
                             this.currentGamePiece = this.intakeGamePiece;
                             this.isBottom = false;
                             stowFromIntake().schedule();
                         });
+
+        // return new InstantCommand();
+
+        // else {
+        //     return Commands.deadline(
+        //                 waitForCurrentSpikeDebounce(0.6),
+        //                 Commands.parallel(
+        //                         goToStateParallel(() -> this.wantedIntakeState),
+        //                         intakeForGamePiece(() -> this.intakeGamePiece)))
+        //         .finallyDo(
+        //                 interrupted -> {
+        //                     this.currentGamePiece = this.intakeGamePiece;
+        //                     this.isBottom = false;
+        //                     stowFromIntake().schedule();
+        //                 });
+        // }
     }
 
     public Command cubeShooterStow() {
@@ -115,6 +141,10 @@ public class Superstructure {
                     }
                 },
                 rollers);
+    }
+
+    public Command intakeGround() {
+        return Commands.run(() -> rollers.intakeConeScaled(drive::getAverageSpeed), rollers);
     }
 
     public Command holdForCurrentGamePiece() {

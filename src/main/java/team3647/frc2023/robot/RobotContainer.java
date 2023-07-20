@@ -114,7 +114,7 @@ public class RobotContainer {
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
 
-        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic(superstructure.ground()));
         mainController
                 .rightBumper
                 .and(() -> superstructure.getWantedStation() == StationType.Double)
@@ -204,6 +204,8 @@ public class RobotContainer {
         printer.addDouble("co right x", coController::getRightStickY);
         printer.addPose("odo", swerve::getOdoPose);
         printer.addDouble("Extender amps", extender::getMasterCurrent);
+        printer.addDouble("drive speed", swerve::getAverageSpeed);
+        printer.addDouble("rollers", rollers::getSpeed);
         printer.addDouble("PIVOT", pivot::getAngle);
         printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);

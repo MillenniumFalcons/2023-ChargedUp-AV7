@@ -1,5 +1,7 @@
 package team3647.frc2023.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
@@ -25,12 +27,17 @@ public class Rollers extends TalonFXSubsystem {
     }
 
     public void intakeCone() {
-        super.setOpenloop(-1);
+        super.setOpenloop(1);
+    }
+
+    public void intakeConeScaled(DoubleSupplier scale) {
+        super.setOpenloop(scale.getAsDouble());
     }
 
     public void intakeCube() {
         super.setOpenloop(0.5);
     }
+
 
     public void intakeGround() {
         super.setOpenloop(-0.5);
@@ -46,6 +53,10 @@ public class Rollers extends TalonFXSubsystem {
 
     public void stop() {
         super.setOpenloop(0);
+    }
+
+    public double getSpeed() {
+        return super.getVelocity();
     }
 
     private boolean getCubeSensorStatus() {
