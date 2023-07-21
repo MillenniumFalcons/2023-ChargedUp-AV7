@@ -211,7 +211,13 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public double getAverageSpeed() {
-        return Math.abs((frontLeft.getDriveVelocity() + frontRight.getDriveVelocity() + backLeft.getDriveVelocity() + backRight.getDriveVelocity()) / 4.0) / getMaxSpeedMpS();
+        return Math.abs(
+                        (frontLeft.getDriveVelocity()
+                                        + frontRight.getDriveVelocity()
+                                        + backLeft.getDriveVelocity()
+                                        + backRight.getDriveVelocity())
+                                / 4.0)
+                / getMaxSpeedMpS();
     }
 
     public SwerveModulePosition[] getModulePositions() {

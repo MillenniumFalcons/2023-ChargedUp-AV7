@@ -1,10 +1,9 @@
 package team3647.frc2023.subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.function.DoubleSupplier;
 import team3647.lib.TalonFXSubsystem;
 
 public class Rollers extends TalonFXSubsystem {
@@ -37,7 +36,6 @@ public class Rollers extends TalonFXSubsystem {
     public void intakeCube() {
         super.setOpenloop(0.5);
     }
-
 
     public void intakeGround() {
         super.setOpenloop(-0.5);

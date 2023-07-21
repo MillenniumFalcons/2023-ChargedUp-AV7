@@ -28,19 +28,18 @@ public class Superstructure {
     private Level wantedLevel = Level.Stay;
     private StationType wantedStation = StationType.Double;
     private boolean isAutoSteerEnabled = true;
-    private boolean isGround = true;
+    private boolean isGround = false;
 
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStationCone;
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
     private double wristAdjust = 0.0;
     private double extendAdjust = 0.0;
-    private boolean isBottom = false;
+    private boolean isBottom = true;
 
     private final Translation2d kMoveIntoField = new Translation2d(0.05, 0);
 
     public void periodic(double timestamp) {
-        printer.addBoolean("ground cone", () -> isGround);
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
@@ -81,15 +80,28 @@ public class Superstructure {
                                 getWantedLevel(), this.currentGamePiece));
     }
 
-    public Command intakeAutomatic(boolean ground) {
+    public Command rollers(BooleanSupplier ground) {
+        // return ground.getAsBoolean()
+        //         ? intakeGround()
+        //         : intakeForGamePiece(() -> this.intakeGamePiece);
+        if (ground.getAsBoolean()) {
+            return intakeGround();
+        } else {
+            return intakeForGamePiece(() -> this.intakeGamePiece);
+        }
+    }
 
-        Command rollers = ground ? intakeGround() : intakeForGamePiece(() -> this.intakeGamePiece);
+    public Command intakeAutomatic() {
+        printer.addBoolean("ground cone", () -> isGround);
 
-            return Commands.deadline(
+        Command rollers =
+                isGround ? intakeGround() : intakeForGamePiece(() -> this.intakeGamePiece);
+
+        return Commands.deadline(
                         waitForCurrentSpikeDebounce(0.6),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
-                                rollers))
+                                rollers(() -> this.isGround)))
                 .finallyDo(
                         interrupted -> {
                             this.currentGamePiece = this.intakeGamePiece;

@@ -55,16 +55,7 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(
-                swerve,
-                printer,
-                pivot,
-                extender,
-                rollers,
-                wrist,
-                cubeWrist,
-                cubeShooterBottom,
-                cubeShooterTop);
+        scheduler.registerSubsystem(swerve);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -114,7 +105,7 @@ public class RobotContainer {
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
 
-        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic(superstructure.ground()));
+        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
         mainController
                 .rightBumper
                 .and(() -> superstructure.getWantedStation() == StationType.Double)
