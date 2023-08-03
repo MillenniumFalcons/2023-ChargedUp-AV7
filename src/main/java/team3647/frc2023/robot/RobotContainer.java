@@ -55,7 +55,16 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdh.clearStickyFaults();
-        scheduler.registerSubsystem(swerve);
+        scheduler.registerSubsystem(
+                swerve,
+                printer,
+                pivot,
+                extender,
+                rollers,
+                wrist,
+                cubeWrist,
+                cubeShooterBottom,
+                cubeShooterTop);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -64,7 +73,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeBalanceBumpSideMode;
+        runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
