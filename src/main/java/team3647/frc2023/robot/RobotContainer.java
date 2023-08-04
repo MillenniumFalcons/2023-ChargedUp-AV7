@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -213,6 +214,7 @@ public class RobotContainer {
 
         printer.addBoolean("ground intake", superstructure::isBottomF);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
+        printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
 
         printer.addBoolean(
                 "Cube Ground",
