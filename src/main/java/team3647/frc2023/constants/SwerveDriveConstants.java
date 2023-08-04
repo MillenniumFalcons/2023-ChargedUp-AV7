@@ -43,35 +43,34 @@ public class SwerveDriveConstants {
     public static final NeutralModeValue kDriveNeutralMode = NeutralModeValue.Brake;
 
     public static final TalonFX kFrontLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftDriveId, "rio");
     public static final TalonFX kFrontLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontLeftTurnId, "rio");
     public static final CANcoder kFrontLeftAbsEncoder =
-            new CANcoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "drive");
+            new CANcoder(GlobalConstants.SwerveDriveIds.kFrontLeftAbsEncoderPort, "rio");
 
     public static final TalonFX kFrontRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightDriveId, "rio");
     public static final TalonFX kFrontRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kFrontRightTurnId, "rio");
     public static final CANcoder kFrontRightAbsEncoder =
-            new CANcoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "drive");
+            new CANcoder(GlobalConstants.SwerveDriveIds.kFrontRightAbsEncoderPort, "rio");
 
     public static final TalonFX kBackLeftDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftDriveId, "rio");
     public static final TalonFX kBackLeftTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackLeftTurnId, "rio");
     public static final CANcoder kBackLeftAbsEncoder =
-            new CANcoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "drive");
+            new CANcoder(GlobalConstants.SwerveDriveIds.kBackLeftAbsEncoderPort, "rio");
 
     public static final TalonFX kBackRightDrive =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightDriveId, "rio");
     public static final TalonFX kBackRightTurn =
-            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "drive");
+            new TalonFX(GlobalConstants.SwerveDriveIds.kBackRightTurnId, "rio");
     public static final CANcoder kBackRightAbsEncoder =
-            new CANcoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "drive");
+            new CANcoder(GlobalConstants.SwerveDriveIds.kBackRightAbsEncoderPort, "rio");
 
-    public static final Pigeon2 kGyro =
-            new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "drive");
+    public static final Pigeon2 kGyro = new Pigeon2(GlobalConstants.SwerveDriveIds.gyroPin, "rio");
 
     // config swerve module reversed here, module class doens't reverse for you
 
