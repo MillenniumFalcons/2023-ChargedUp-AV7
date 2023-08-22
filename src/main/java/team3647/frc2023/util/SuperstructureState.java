@@ -106,6 +106,8 @@ public class SuperstructureState {
     public static final SuperstructureState groundIntakeCone =
             new SuperstructureState(
                     193, ExtenderConstants.kMinimumPositionTicks, 25.5, "ground intake cone");
+    public static final SuperstructureState groundIntakeConeTipped =
+            new SuperstructureState(-14.11, 1151.5, 11.89, "ground intake cone tipped");
     public static final SuperstructureState groundIntakeConeAuto =
             new SuperstructureState(
                     187.5, ExtenderConstants.kMinimumPositionTicks, 25, "ground intake cone");

@@ -43,7 +43,7 @@ public class Superstructure {
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
-                            ? SuperstructureState.groundIntakeCone
+                            ? SuperstructureState.groundIntakeConeTipped
                             : SuperstructureState.groundIntakeCube;
             this.isGround = true;
         } else {
@@ -92,39 +92,49 @@ public class Superstructure {
     }
 
     public Command intakeAutomatic() {
-        printer.addBoolean("ground cone", () -> isGround);
-
-        Command rollers =
-                isGround ? intakeGround() : intakeForGamePiece(() -> this.intakeGamePiece);
+        // printer.addBoolean("ground cone", () -> isGround);
 
         return Commands.deadline(
                         waitForCurrentSpikeDebounce(0.6),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
-                                rollers(() -> this.isGround)))
+                                intakeForGamePiece(() -> this.intakeGamePiece)))
                 .finallyDo(
                         interrupted -> {
                             this.currentGamePiece = this.intakeGamePiece;
                             this.isBottom = false;
                             stowFromIntake().schedule();
                         });
-
-        // return new InstantCommand();
-
-        // else {
-        //     return Commands.deadline(
-        //                 waitForCurrentSpikeDebounce(0.6),
-        //                 Commands.parallel(
-        //                         goToStateParallel(() -> this.wantedIntakeState),
-        //                         intakeForGamePiece(() -> this.intakeGamePiece)))
-        //         .finallyDo(
-        //                 interrupted -> {
-        //                     this.currentGamePiece = this.intakeGamePiece;
-        //                     this.isBottom = false;
-        //                     stowFromIntake().schedule();
-        //                 });
-        // }
     }
+
+    public Command intakeGroundCone() {
+        return Commands.deadline(
+                        waitForCurrentSpikeDebounce(0.6),
+                        Commands.parallel(
+                                goToStateParallel(() -> this.wantedIntakeState), intakeGround()))
+                .finallyDo(
+                        interrupted -> {
+                            this.currentGamePiece = this.intakeGamePiece;
+                            this.isBottom = false;
+                            stowFromIntake().schedule();
+                        });
+    }
+
+    // return new InstantCommand();
+
+    // else {
+    //     return Commands.deadline(
+    //                 waitForCurrentSpikeDebounce(0.6),
+    //                 Commands.parallel(
+    //                         goToStateParallel(() -> this.wantedIntakeState),
+    //                         intakeForGamePiece(() -> this.intakeGamePiece)))
+    //         .finallyDo(
+    //                 interrupted -> {
+    //                     this.currentGamePiece = this.intakeGamePiece;
+    //                     this.isBottom = false;
+    //                     stowFromIntake().schedule();
+    //                 });
+    // }
 
     public Command cubeShooterStow() {
         return Commands.deadline(cubeShooterCommands.stow(), holdForCurrentGamePiece());

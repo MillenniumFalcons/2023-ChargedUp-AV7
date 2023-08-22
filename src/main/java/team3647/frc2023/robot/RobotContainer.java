@@ -115,7 +115,8 @@ public class RobotContainer {
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
 
-        mainController.rightBumper.whileTrue(superstructure.intakeAutomatic());
+        mainController.rightBumper.and(notGroundIntake).whileTrue(superstructure.intakeAutomatic());
+        mainController.rightBumper.and(groundIntake).whileTrue(superstructure.intakeGroundCone());
         mainController
                 .rightBumper
                 .and(() -> superstructure.getWantedStation() == StationType.Double)
@@ -212,7 +213,7 @@ public class RobotContainer {
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
 
-        printer.addBoolean("ground intake", superstructure::isBottomF);
+        printer.addBoolean("ground intake", groundIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
         printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
 
@@ -369,6 +370,12 @@ public class RobotContainer {
                     .or(
                             mainController.rightBumper.and(
                                     () -> superstructure.getWantedStation() == StationType.Double));
+
+    private final BooleanSupplier groundIntake =
+            () -> superstructure.getWantedStation() == StationType.Ground;
+
+    private final BooleanSupplier notGroundIntake =
+            () -> superstructure.getWantedStation() != StationType.Ground;
 
     private final Pose2d kEmptyPose = new Pose2d();
 
