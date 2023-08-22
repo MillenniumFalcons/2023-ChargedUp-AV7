@@ -1,6 +1,7 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.function.DoubleSupplier;
@@ -30,7 +31,7 @@ public class Rollers extends TalonFXSubsystem {
     }
 
     public void intakeConeScaled(DoubleSupplier scale) {
-        super.setOpenloop(scale.getAsDouble());
+        super.setOpenloop(MathUtil.clamp(scale.getAsDouble() * 5, 0, 1));
     }
 
     public void intakeCube() {
