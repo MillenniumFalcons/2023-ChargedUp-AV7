@@ -31,7 +31,11 @@ public class Rollers extends TalonFXSubsystem {
     }
 
     public void intakeConeScaled(DoubleSupplier scale) {
-        super.setOpenloop(MathUtil.clamp(scale.getAsDouble() * 5, 0, 1));
+        super.setOpenloop(-MathUtil.clamp(Math.abs(scale.getAsDouble() * 5), 0.5, 1));
+    }
+
+    public void intakeCubeScaled(DoubleSupplier scale) {
+        super.setOpenloop(MathUtil.clamp(Math.abs(scale.getAsDouble() * 5), 0.5, 1));
     }
 
     public void intakeCube() {

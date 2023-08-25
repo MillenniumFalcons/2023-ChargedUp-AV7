@@ -80,17 +80,6 @@ public class Superstructure {
                                 getWantedLevel(), this.currentGamePiece));
     }
 
-    public Command rollers(BooleanSupplier ground) {
-        // return ground.getAsBoolean()
-        //         ? intakeGround()
-        //         : intakeForGamePiece(() -> this.intakeGamePiece);
-        if (ground.getAsBoolean()) {
-            return intakeGround();
-        } else {
-            return intakeForGamePiece(() -> this.intakeGamePiece);
-        }
-    }
-
     public Command intakeAutomatic() {
         // printer.addBoolean("ground cone", () -> isGround);
 
@@ -111,7 +100,22 @@ public class Superstructure {
         return Commands.deadline(
                         waitForCurrentSpikeDebounce(0.6),
                         Commands.parallel(
-                                goToStateParallel(() -> this.wantedIntakeState), intakeGround()))
+                                goToStateParallel(() -> this.wantedIntakeState),
+                                rollersGroundCone()))
+                .finallyDo(
+                        interrupted -> {
+                            this.currentGamePiece = this.intakeGamePiece;
+                            this.isBottom = false;
+                            stowFromIntake().schedule();
+                        });
+    }
+
+    public Command intakeGroundCube() {
+        return Commands.deadline(
+                        waitForCurrentSpikeDebounce(0.6),
+                        Commands.parallel(
+                                goToStateParallel(() -> this.wantedIntakeState),
+                                rollersGroundCube()))
                 .finallyDo(
                         interrupted -> {
                             this.currentGamePiece = this.intakeGamePiece;
@@ -165,8 +169,12 @@ public class Superstructure {
                 rollers);
     }
 
-    public Command intakeGround() {
+    public Command rollersGroundCone() {
         return Commands.run(() -> rollers.intakeConeScaled(drive::getAverageSpeed), rollers);
+    }
+
+    public Command rollersGroundCube() {
+        return Commands.run(() -> rollers.intakeCubeScaled(drive::getAverageSpeed), rollers);
     }
 
     public Command holdForCurrentGamePiece() {

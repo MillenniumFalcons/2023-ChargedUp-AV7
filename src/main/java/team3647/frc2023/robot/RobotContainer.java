@@ -116,7 +116,14 @@ public class RobotContainer {
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
 
         mainController.rightBumper.and(notGroundIntake).whileTrue(superstructure.intakeAutomatic());
-        mainController.rightBumper.and(groundIntake).whileTrue(superstructure.intakeGroundCone());
+        mainController
+                .rightBumper
+                .and(groundConeIntake)
+                .whileTrue(superstructure.intakeGroundCone());
+        // mainController
+        //         .rightBumper
+        //         .and(groundCubeIntake)
+        //         .whileTrue(superstructure.intakeGroundCube());
         mainController
                 .rightBumper
                 .and(() -> superstructure.getWantedStation() == StationType.Double)
@@ -213,7 +220,7 @@ public class RobotContainer {
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
 
-        printer.addBoolean("ground intake", groundIntake::getAsBoolean);
+        printer.addBoolean("ground cone intake", groundConeIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
         printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
 
@@ -371,8 +378,15 @@ public class RobotContainer {
                             mainController.rightBumper.and(
                                     () -> superstructure.getWantedStation() == StationType.Double));
 
-    private final BooleanSupplier groundIntake =
-            () -> superstructure.getWantedStation() == StationType.Ground;
+    private final BooleanSupplier groundConeIntake =
+            () ->
+                    (superstructure.getWantedStation() == StationType.Ground
+                            && superstructure.getWantedIntakePiece() == GamePiece.Cone);
+
+    private final BooleanSupplier groundCubeIntake =
+            () ->
+                    (superstructure.getWantedStation() == StationType.Ground
+                            && superstructure.getWantedIntakePiece() == GamePiece.Cube);
 
     private final BooleanSupplier notGroundIntake =
             () -> superstructure.getWantedStation() != StationType.Ground;
