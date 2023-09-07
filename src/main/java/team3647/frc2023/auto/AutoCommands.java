@@ -301,7 +301,7 @@ public class AutoCommands {
                         .withTimeout(3),
                 superstructure.stow().withTimeout(1.5),
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
-                Commands.waitSeconds(0.4),
+                Commands.waitSeconds(0.2),
                 superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore));
     }
 

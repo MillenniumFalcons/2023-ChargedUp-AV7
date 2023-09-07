@@ -97,7 +97,7 @@ public final class Trajectories {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(5.6, 0.88, FieldConstants.kZero);
+                    new Pose2d(5.7, 0.98, FieldConstants.kZero);
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathFinal =
                     new Pose2d(1.90, 1.1, FieldConstants.kZero);
@@ -115,7 +115,7 @@ public final class Trajectories {
 
             public static final PathPlannerTrajectory kFirstTrajectory =
                     PathPlanner.generatePath(
-                            slowConstraints,
+                            defaultConstraints,
                             List.of(
                                     fromPose(kFirstPathInitial, FieldConstants.kZero),
                                     // fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
@@ -129,7 +129,7 @@ public final class Trajectories {
                                     fromPose(kSecondPathFinal, FieldConstants.kOneEighty)));
             public static final PathPlannerTrajectory kThirdTrajectory =
                     PathPlanner.generatePath(
-                            slowConstraints,
+                            defaultConstraints,
                             List.of(
                                     fromPose(kThirdPathInitial, FieldConstants.kZero),
                                     fromPose(kThirdPathWaypoint1, FieldConstants.kZero),
@@ -137,7 +137,7 @@ public final class Trajectories {
                                     fromPose(kThirdPathFinal, Rotation2d.fromDegrees(45))));
             public static final PathPlannerTrajectory kFourthTrajectory =
                     PathPlanner.generatePath(
-                            slowConstraints,
+                            defaultConstraints,
                             List.of(
                                     fromPose(kFourthPathInitial, Rotation2d.fromDegrees(225)),
                                     //     fromPose(kFourthPathWaypoint1,
