@@ -83,8 +83,8 @@ public class RobotContainer {
         // need to change this to a conditional command so it doesn't start auto aiming
         // when doing
         // cubes from cube shooter
-        coControllerRightJoystickMoved.whileTrue(
-                superstructure.extenderCommands.openloop(() -> coController.getRightStickY()));
+        // coControllerRightJoystickMoved.whileTrue(
+        //         superstructure.extenderCommands.openloop(() -> coController.getRightStickY()));
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
@@ -219,6 +219,7 @@ public class RobotContainer {
         printer.addDouble("Wrist", wrist::getAngle);
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
+        printer.addDouble("cube wrist", cubeWrist::getAngle);
 
         printer.addBoolean("ground cone intake", groundConeIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);

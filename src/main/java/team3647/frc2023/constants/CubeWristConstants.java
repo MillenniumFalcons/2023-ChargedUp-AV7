@@ -62,10 +62,10 @@ public class CubeWristConstants {
         // kMasterVoltage.PeakReverseVoltage = nominalVoltage;
         kMasterCurrent.StatorCurrentLimitEnable = true;
         kMasterCurrent.StatorCurrentLimit = kMaxCurrent;
-        kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks;
-        kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks;
+        kMasterMotionMagic.MotionMagicAcceleration = kMaxAccelerationTicks;
+        kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxVelocityTicks;
         kMasterMotorOutput.PeakReverseDutyCycle = -0.5;
-        kMasterMotorOutput.NeutralMode = NeutralModeValue.Coast;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
         kMasterMotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         kMasterSoftLimit.ForwardSoftLimitEnable = true;
         kMasterSoftLimit.ForwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;

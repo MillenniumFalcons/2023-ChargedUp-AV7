@@ -57,7 +57,7 @@ public final class WristConstants {
         kMasterCurrent.StatorCurrentLimit = kMaxCurrent;
         kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks;
         kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks;
-        kMasterMotorOutput.NeutralMode = NeutralModeValue.Coast;
+        kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
         kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         kMasterSoftLimit.ForwardSoftLimitEnable = true;
         kMasterSoftLimit.ForwardSoftLimitThreshold = kMaxDegree / kNativePosToDegrees;

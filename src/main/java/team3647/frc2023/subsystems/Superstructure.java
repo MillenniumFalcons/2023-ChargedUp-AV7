@@ -370,7 +370,7 @@ public class Superstructure {
                                 Level.Three,
                                 cubeShooterCommands.scoreHigh()),
                         () -> this.wantedLevel)
-                .withTimeout(0.6)
+                .withTimeout(1)
                 .andThen(cubeShooterCommands.stow());
     }
 
