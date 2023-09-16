@@ -477,7 +477,7 @@ public class Superstructure {
         return Commands.runOnce(
                 () -> {
                     this.extendAdjust += 400;
-                    System.out.printf("extendadjust: %d\n", this.extendAdjust);
+                    // System.out.printf("extendadjust: %d\n", this.extendAdjust);
                 });
     }
 
@@ -485,7 +485,7 @@ public class Superstructure {
         return Commands.runOnce(
                 () -> {
                     this.extendAdjust -= 400;
-                    System.out.printf("extendadjust: %d\n", this.extendAdjust);
+                    // System.out.printf("extendadjust: %d\n", this.extendAdjust);
                 });
     }
 

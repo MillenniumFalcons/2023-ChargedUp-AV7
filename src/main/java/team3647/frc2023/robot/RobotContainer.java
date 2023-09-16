@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
@@ -74,7 +75,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
+        runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -85,6 +86,7 @@ public class RobotContainer {
         // cubes from cube shooter
         // coControllerRightJoystickMoved.whileTrue(
         //         superstructure.extenderCommands.openloop(() -> coController.getRightStickY()));
+        mainController.buttonY.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
