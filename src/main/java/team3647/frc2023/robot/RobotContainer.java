@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import team3647.frc2023.auto.AutoCommands;
@@ -86,7 +85,7 @@ public class RobotContainer {
         // cubes from cube shooter
         // coControllerRightJoystickMoved.whileTrue(
         //         superstructure.extenderCommands.openloop(() -> coController.getRightStickY()));
-        mainController.buttonY.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
+        // mainController.buttonY.onTrue(new InstantCommand(() -> swerve.zeroGyro()));
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
@@ -180,7 +179,9 @@ public class RobotContainer {
                         mainController.leftTrigger,
                         // enable autosteer if going to actual station (bumper), or scoring
                         // (trigger)
-                        goodForAutosteer,
+                        () -> false, // goodForAutosteer,
+                        goodForLockScore,
+                        goodForLockIntake,
                         () -> true,
                         autoSteer::findVelocities));
 
@@ -222,6 +223,7 @@ public class RobotContainer {
         printer.addDouble("extender", extender::getNativePos);
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
         printer.addDouble("cube wrist", cubeWrist::getAngle);
+        printer.addDouble("heading", swerve::getHeading);
 
         printer.addBoolean("ground cone intake", groundConeIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
@@ -380,6 +382,19 @@ public class RobotContainer {
                     .or(
                             mainController.rightBumper.and(
                                     () -> superstructure.getWantedStation() == StationType.Double));
+    private final BooleanSupplier goodForLockScore =
+            mainController
+                    .buttonY
+                    .and(mainController.rightTrigger)
+                    .and(() -> !superstructure.isBottomF())
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                    .and(() -> superstructure.getWantedLevel() != Level.Ground);
+    ;
+    private final BooleanSupplier goodForLockIntake =
+            mainController
+                    .buttonY
+                    .and(mainController.rightBumper)
+                    .and(() -> superstructure.getWantedStation() == StationType.Double);
 
     private final BooleanSupplier groundConeIntake =
             () ->

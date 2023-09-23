@@ -299,9 +299,13 @@ public class SwerveDriveConstants {
     }
 
     private static void setGyroConfig(
-            Pigeon2Configurator configurator, MountPoseConfigs mountPoseConfigs) {
+            Pigeon2Configurator configurator,
+            MountPoseConfigs mountPoseConfigs,
+            GyroTrimConfigs gyroTrimConfigs) {
         mountPoseConfigs.MountPoseYaw = 90;
+        gyroTrimConfigs.GyroScalarZ = 1.7;
         configurator.apply(mountPoseConfigs);
+        configurator.apply(gyroTrimConfigs);
     }
 
     private static void printError(StatusCode error) {
@@ -318,7 +322,10 @@ public class SwerveDriveConstants {
         // kGyroConfig.MountPoseYaw = 90;
         // printError(kGyro.configAllSettings(kGyroConfig, GlobalConstants.kTimeoutMS));
 
-        setGyroConfig(kGyroConfig, new com.ctre.phoenix6.configs.MountPoseConfigs());
+        setGyroConfig(
+                kGyroConfig,
+                new com.ctre.phoenix6.configs.MountPoseConfigs(),
+                new GyroTrimConfigs());
 
         setTurnMotorConfig(
                 kFrontLeftTurnConfig,

@@ -14,6 +14,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.LimelightConstant;
+import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.lib.vision.LimelightHelpers;
@@ -46,10 +47,14 @@ public class DrivetrainCommands {
             DoubleSupplier turnSpeedFunction,
             BooleanSupplier slowTriggerFunction,
             BooleanSupplier enableAutoSteer,
+            BooleanSupplier enableLockScore,
+            BooleanSupplier enableLockIntake,
             BooleanSupplier getIsFieldOriented,
             Supplier<Twist2d> autoSteerVelocitiesSupplier) {
         return Commands.run(
                 () -> {
+                    boolean lockScore = enableLockScore.getAsBoolean();
+                    boolean lockIntake = enableLockIntake.getAsBoolean();
                     double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.5 : 1;
                     boolean autoSteer = enableAutoSteer.getAsBoolean();
                     boolean fieldOriented = getIsFieldOriented.getAsBoolean();
@@ -63,7 +68,26 @@ public class DrivetrainCommands {
 
                     var translation = new Translation2d(motionXComponent, motionYComponent);
 
-                    if (autoSteer && fieldOriented) {
+                    if (lockScore && fieldOriented && !autoSteer) {
+                        double error = swerve.getHeading();
+                        motionTurnComponent =
+                                Math.abs(error) < 1
+                                        ? 0.1 * motionTurnComponent
+                                        : SwerveDriveConstants.kAutoSteerHeadingController
+                                                        .calculate(error)
+                                                + 0.1 * motionTurnComponent;
+                    } else if (lockIntake && fieldOriented && !autoSteer) {
+                        double error = swerve.getHeading();
+                        motionTurnComponent =
+                                Math.abs(error - 180) < 1
+                                        ? 0.1 * motionTurnComponent
+                                        : SwerveDriveConstants.kAutoSteerHeadingController
+                                                        .calculate(error)
+                                                + 0.1 * motionTurnComponent;
+                    }
+
+                    if (autoSteer && fieldOriented && !lockScore) {
+
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
                         // SmartDashboard.putNumber("autoSteerVelocities.dy",
                         // autoSteerVelocities.dy);
