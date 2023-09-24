@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -45,6 +46,7 @@ public class DrivetrainCommands {
             DoubleSupplier xSpeedFunction, // X axis on joystick is Left/Right
             DoubleSupplier ySpeedFunction, // Y axis on Joystick is Front/Back
             DoubleSupplier turnSpeedFunction,
+            DoubleSupplier txSupplier,
             BooleanSupplier slowTriggerFunction,
             BooleanSupplier enableAutoSteer,
             BooleanSupplier enableLockScore,
@@ -68,18 +70,31 @@ public class DrivetrainCommands {
 
                     var translation = new Translation2d(motionXComponent, motionYComponent);
 
-                    if (lockScore && fieldOriented && !autoSteer) {
+                    if (lockScore && fieldOriented && !autoSteer && !lockIntake) {
                         double error = swerve.getHeading();
+                        // SmartDashboard.putNumber("error", error);
+                        // SmartDashboard.putNumber(
+                        //         "error calculaute",
+                        //
+                        // SwerveDriveConstants.kAutoSteerHeadingController.calculate(error));
+                        SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
                         motionTurnComponent =
-                                Math.abs(error) < 1
+                                Math.abs(error - 180) < 1
                                         ? 0.1 * motionTurnComponent
                                         : SwerveDriveConstants.kAutoSteerHeadingController
                                                         .calculate(error)
                                                 + 0.1 * motionTurnComponent;
-                    } else if (lockIntake && fieldOriented && !autoSteer) {
+                        motionYComponent =
+                                Math.abs(error - 180) < 1
+                                        ? motionYComponent * 0.1
+                                                + SwerveDriveConstants.kAutoSteerXYPIDController
+                                                        .calculate(txSupplier.getAsDouble())
+                                        : motionYComponent;
+                        // translation = new Translation2d(motionXComponent, motionYComponent);
+                    } else if (lockIntake && fieldOriented && !autoSteer && !lockScore) {
                         double error = swerve.getHeading();
                         motionTurnComponent =
-                                Math.abs(error - 180) < 1
+                                Math.abs(error) < 1
                                         ? 0.1 * motionTurnComponent
                                         : SwerveDriveConstants.kAutoSteerHeadingController
                                                         .calculate(error)

@@ -103,10 +103,8 @@ public final class Trajectories {
                     new Pose2d(1.90, 1.1, FieldConstants.kZero);
             private static final Pose2d kThirdPathInitial = kSecondPathFinal;
             private static final Pose2d kThirdPathWaypoint1 =
-                    new Pose2d(1.20, 1.4, FieldConstants.kZero);
+                    new Pose2d(4.7, 1.1, Rotation2d.fromDegrees(30));
             private static final Pose2d kThirdPathWaypoint2 =
-                    new Pose2d(4.3, 1.1, Rotation2d.fromDegrees(30));
-            private static final Pose2d kThirdPathWaypoint3 =
                     new Pose2d(6.0, 1.15, Rotation2d.fromDegrees(45));
             private static final Pose2d kThirdPathFinal =
                     new Pose2d(6.25, 1.37, Rotation2d.fromDegrees(45));
@@ -133,10 +131,9 @@ public final class Trajectories {
                     PathPlanner.generatePath(
                             defaultConstraints,
                             List.of(
-                                    fromPose(kThirdPathInitial, FieldConstants.kZero),
+                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(-35)),
                                     fromPose(kThirdPathWaypoint1, FieldConstants.kZero),
-                                    fromPose(kThirdPathWaypoint2, FieldConstants.kZero),
-                                    fromPose(kThirdPathWaypoint3, Rotation2d.fromDegrees(20)),
+                                    fromPose(kThirdPathWaypoint2, Rotation2d.fromDegrees(20)),
                                     fromPose(kThirdPathFinal, Rotation2d.fromDegrees(45))));
             public static final PathPlannerTrajectory kFourthTrajectory =
                     PathPlanner.generatePath(

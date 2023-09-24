@@ -440,7 +440,7 @@ public class Superstructure {
                         goToStateParallel(
                                 SuperstructureState.stowScore.addWristExtend(
                                         45 - SuperstructureState.stowScore.wristAngle, 0)))
-                .until(() -> pivot.angleReached(SuperstructureState.stowScore.armAngle, 5))
+                .until(() -> pivot.angleReached(SuperstructureState.stowScore.armAngle, 1))
                 .andThen(goToStateParallel(SuperstructureState.stowScore));
     }
 

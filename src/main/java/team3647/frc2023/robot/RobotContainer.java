@@ -176,6 +176,7 @@ public class RobotContainer {
                         mainController::getLeftStickX,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
+                        () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost),
                         mainController.leftTrigger,
                         // enable autosteer if going to actual station (bumper), or scoring
                         // (trigger)
@@ -391,10 +392,8 @@ public class RobotContainer {
                     .and(() -> superstructure.getWantedLevel() != Level.Ground);
     ;
     private final BooleanSupplier goodForLockIntake =
-            mainController
-                    .buttonY
-                    .and(mainController.rightBumper)
-                    .and(() -> superstructure.getWantedStation() == StationType.Double);
+            mainController.rightBumper.and(
+                    () -> superstructure.getWantedStation() == StationType.Double);
 
     private final BooleanSupplier groundConeIntake =
             () ->
