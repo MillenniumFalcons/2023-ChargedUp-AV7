@@ -87,8 +87,8 @@ public class ExtenderConstants {
         kMasterSlot0.kD = kD;
         // kMasterVoltage.PeakForwardVoltage = nominalVoltage;
         // kMasterVoltage.PeakReverseVoltage = nominalVoltage;
-        kMasterMotionMagic.MotionMagicAcceleration = 500;
-        kMasterMotionMagic.MotionMagicCruiseVelocity = 500;
+        kMasterMotionMagic.MotionMagicAcceleration = 500 * 1.5;
+        kMasterMotionMagic.MotionMagicCruiseVelocity = 500 * 1.5;
         kMasterMotorOutput.PeakReverseDutyCycle = -0.7;
         kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         kMasterMotorOutput.NeutralMode = NeutralModeValue.Coast;

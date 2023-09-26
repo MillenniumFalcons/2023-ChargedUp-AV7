@@ -70,14 +70,19 @@ public class DrivetrainCommands {
 
                     var translation = new Translation2d(motionXComponent, motionYComponent);
 
+                    SmartDashboard.putNumber(
+                            "calculate tx er ror",
+                            SwerveDriveConstants.kAutoSteerHeadingController.calculate(
+                                    txSupplier.getAsDouble()));
+
                     if (lockScore && fieldOriented && !autoSteer && !lockIntake) {
                         double error = swerve.getHeading();
+                        SmartDashboard.putNumber("done rotating", (error % 360) - 180);
                         // SmartDashboard.putNumber("error", error);
                         // SmartDashboard.putNumber(
                         //         "error calculaute",
                         //
                         // SwerveDriveConstants.kAutoSteerHeadingController.calculate(error));
-                        SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
                         motionTurnComponent =
                                 Math.abs(error - 180) < 1
                                         ? 0.1 * motionTurnComponent
@@ -85,12 +90,14 @@ public class DrivetrainCommands {
                                                         .calculate(error)
                                                 + 0.1 * motionTurnComponent;
                         motionYComponent =
-                                Math.abs(error - 180) < 1
+                                Math.abs((error % 360) - 180) < 1
+                                                || Math.abs((error % 360) + 180) < 1
                                         ? motionYComponent * 0.1
                                                 + SwerveDriveConstants.kAutoSteerXYPIDController
                                                         .calculate(txSupplier.getAsDouble())
                                         : motionYComponent;
-                        // translation = new Translation2d(motionXComponent, motionYComponent);
+                        SmartDashboard.putNumber("motion y", motionYComponent);
+                        translation = new Translation2d(motionXComponent, motionYComponent);
                     } else if (lockIntake && fieldOriented && !autoSteer && !lockScore) {
                         double error = swerve.getHeading();
                         motionTurnComponent =
