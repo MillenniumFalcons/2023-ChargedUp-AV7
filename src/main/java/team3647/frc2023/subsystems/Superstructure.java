@@ -433,15 +433,19 @@ public class Superstructure {
         return goToStateParallel(SuperstructureState.stowIntake);
     }
 
+    public Command raiseWristScore() {
+        return Commands.run((() -> wrist.setAngle(45)), wrist);
+    }
+
     public Command stowScore() {
-        return Commands.run(() -> wrist.setAngle(45))
-                .until(() -> wrist.angleReached(45, 5))
-                .andThen(
-                        goToStateParallel(
+        return Commands.sequence(
+                raiseWristScore().until(() -> wrist.angleReached(45, 5)),
+                goToStateParallel(
                                 SuperstructureState.stowScore.addWristExtend(
-                                        45 - SuperstructureState.stowScore.wristAngle, 0)))
-                .until(() -> pivot.angleReached(SuperstructureState.stowScore.armAngle, 1))
-                .andThen(goToStateParallel(SuperstructureState.stowScore));
+                                        45 - SuperstructureState.stowScore.wristAngle, 0))
+                        .until(() -> pivot.angleReached(SuperstructureState.stowScore.armAngle, 1)),
+                Commands.waitSeconds(0.5),
+                goToStateParallel(SuperstructureState.stowScore));
     }
 
     public Command stowAll() {

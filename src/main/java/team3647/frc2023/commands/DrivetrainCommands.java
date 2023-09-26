@@ -52,6 +52,7 @@ public class DrivetrainCommands {
             BooleanSupplier enableLockScore,
             BooleanSupplier enableLockIntake,
             BooleanSupplier getIsFieldOriented,
+            PIDController XYcontroller,
             Supplier<Twist2d> autoSteerVelocitiesSupplier) {
         return Commands.run(
                 () -> {
@@ -61,6 +62,7 @@ public class DrivetrainCommands {
                     boolean autoSteer = enableAutoSteer.getAsBoolean();
                     boolean fieldOriented = getIsFieldOriented.getAsBoolean();
                     boolean openloop = true;
+                    XYcontroller.setTolerance(1);
                     var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
                     // right stick X, (negative so that left positive)
                     var motionYComponent = -xSpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
@@ -72,8 +74,8 @@ public class DrivetrainCommands {
 
                     SmartDashboard.putNumber(
                             "calculate tx er ror",
-                            SwerveDriveConstants.kAutoSteerHeadingController.calculate(
-                                    txSupplier.getAsDouble()));
+                            XYcontroller.calculate(txSupplier.getAsDouble()));
+                    SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
 
                     if (lockScore && fieldOriented && !autoSteer && !lockIntake) {
                         double error = swerve.getHeading();
@@ -90,13 +92,12 @@ public class DrivetrainCommands {
                                                         .calculate(error)
                                                 + 0.1 * motionTurnComponent;
                         motionYComponent =
-                                Math.abs((error % 360) - 180) < 1
-                                                || Math.abs((error % 360) + 180) < 1
+                                (Math.abs((error % 360) - 180) < 30
+                                                        || Math.abs((error % 360) + 180) < 30)
+                                                && Math.abs(txSupplier.getAsDouble()) > 1
                                         ? motionYComponent * 0.1
-                                                + SwerveDriveConstants.kAutoSteerXYPIDController
-                                                        .calculate(txSupplier.getAsDouble())
+                                                + XYcontroller.calculate(txSupplier.getAsDouble())
                                         : motionYComponent;
-                        SmartDashboard.putNumber("motion y", motionYComponent);
                         translation = new Translation2d(motionXComponent, motionYComponent);
                     } else if (lockIntake && fieldOriented && !autoSteer && !lockScore) {
                         double error = swerve.getHeading();

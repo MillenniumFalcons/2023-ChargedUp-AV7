@@ -74,7 +74,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
+        runningMode = autoCommands.redConeCubeCubeMidFlatSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -184,6 +184,7 @@ public class RobotContainer {
                         goodForLockScore,
                         goodForLockIntake,
                         () -> true,
+                        SwerveDriveConstants.kAutoSteerXYPIDController,
                         autoSteer::findVelocities));
 
         // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
