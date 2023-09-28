@@ -17,6 +17,7 @@ import team3647.frc2023.constants.CubeShooterConstants;
 import team3647.frc2023.constants.CubeWristConstants;
 import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.constants.GlobalConstants;
+import team3647.frc2023.constants.LEDConstants;
 import team3647.frc2023.constants.LimelightConstant;
 import team3647.frc2023.constants.PivotConstants;
 import team3647.frc2023.constants.RollersConstants;
@@ -28,6 +29,8 @@ import team3647.frc2023.subsystems.CubeShooterBottom;
 import team3647.frc2023.subsystems.CubeShooterTop;
 import team3647.frc2023.subsystems.CubeWrist;
 import team3647.frc2023.subsystems.Extender;
+import team3647.frc2023.subsystems.LEDSubsystem;
+import team3647.frc2023.subsystems.LEDSubsystem.LEDStates;
 import team3647.frc2023.subsystems.Pivot;
 import team3647.frc2023.subsystems.Rollers;
 import team3647.frc2023.subsystems.Superstructure;
@@ -65,7 +68,8 @@ public class RobotContainer {
                 wrist,
                 cubeWrist,
                 cubeShooterBottom,
-                cubeShooterTop);
+                cubeShooterTop,
+                LEDS);
 
         configureDefaultCommands();
         configureButtonBindings();
@@ -96,6 +100,9 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
                                                 LimelightConstant.kLimelightCenterHost)));
+        // LED
+        mainController.rightTrigger.onTrue(
+                Commands.runOnce(() -> LEDS.setLEDState(LEDStates.TARGET)));
 
         mainController
                 .rightTrigger
@@ -108,6 +115,13 @@ public class RobotContainer {
                                                 LimelightConstant.kLimelightCenterHost)))
                 .onFalse(superstructure.scoreAndStowLonger(0.4).unless(mainController.buttonB))
                 .onFalse(Commands.runOnce(autoSteer::stop));
+        // LED
+        mainController.rightTrigger.onFalse(
+                Commands.runOnce(
+                        () -> {
+                            LEDS.setPieceIn(false);
+                            LEDS.setLEDState(LEDStates.IDLE);
+                        }));
 
         mainController
                 .rightTrigger
@@ -129,6 +143,8 @@ public class RobotContainer {
                 .rightBumper
                 .and(() -> superstructure.getWantedStation() == StationType.Double)
                 .onTrue(Commands.runOnce(() -> autoSteer.justHeading(0)));
+        // LED
+        mainController.rightBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
         mainController
                 .leftBumper
                 .whileTrue(superstructure.cubeShooterIntake())
@@ -136,6 +152,8 @@ public class RobotContainer {
         mainController.leftBumper.onFalse(superstructure.cubeShooterCommands.stow());
 
         mainController.buttonX.whileTrue(superstructure.untipReverse());
+        // LED
+        mainController.leftBumper.onFalse(Commands.runOnce(() -> LEDS.setPieceIn(true)));
 
         mainController.dPadUp.onTrue(superstructure.higherWristOffset());
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
@@ -168,6 +186,40 @@ public class RobotContainer {
 
         coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
+        // LED Triggers
+        currentCone.onTrue(Commands.runOnce(() -> LEDS.setPiece(true)));
+        currentCube.onTrue(Commands.runOnce(() -> LEDS.setPiece(false)));
+
+        wantedCone.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(true)));
+        wantedCube.onTrue(Commands.runOnce(() -> LEDS.setWantedPiece(false)));
+
+        bottomCubeIn.onTrue(
+                Commands.sequence(
+                        Commands.runOnce(() -> LEDS.setBottomCubeIn(true)),
+                        Commands.waitSeconds(2),
+                        Commands.runOnce(() -> LEDS.setBottomCubeIn(false))));
+
+        bottomCubeIn.onFalse(Commands.runOnce(() -> LEDS.setBottomCubeIn(false)));
+
+        seesTarget.onTrue(Commands.runOnce(() -> LEDS.setTarget(true)));
+        seesTarget.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
+
+        coControllerRightJoystickMoved.onTrue(
+                Commands.runOnce(
+                        () -> {
+                            LEDS.setLEDState(LEDStates.RAINBOW);
+                        }));
+        coControllerRightJoystickMoved.whileTrue(
+                Commands.runOnce(
+                        () -> {
+                            LEDConstants.RAINBOWCONTROLLER.setSpeed(
+                                    (2 - Math.abs(coController.getRightStickY())));
+                        }));
+        coControllerRightJoystickMoved.onFalse(
+                Commands.runOnce(
+                        () -> {
+                            LEDS.setLEDState(LEDStates.IDLE);
+                        }));
     }
 
     private void configureDefaultCommands() {
@@ -198,6 +250,12 @@ public class RobotContainer {
 
     public void teleopInit() {
         rollers.setDefaultCommand(superstructure.holdForCurrentGamePiece());
+        if (superstructure.getWantedIntakePiece() == GamePiece.Cone) {
+            LEDS.setPiece(true);
+        } else if (superstructure.getWantedIntakePiece() == GamePiece.Cube) {
+            LEDS.setPiece(false);
+        }
+        LEDS.setLEDState(LEDStates.IDLE);
     }
 
     void configTestCommands() {
@@ -227,6 +285,8 @@ public class RobotContainer {
         printer.addBoolean("autosteer", goodForAutosteer::getAsBoolean);
         printer.addDouble("cube wrist", cubeWrist::getAngle);
         printer.addDouble("heading", swerve::getHeading);
+        printer.addString("LED State", LEDS::getLEDState);
+        printer.addBoolean("pieceIn", LEDS::getPieceIn);
 
         printer.addBoolean("ground cone intake", groundConeIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
@@ -328,6 +388,7 @@ public class RobotContainer {
                     1,
                     CubeShooterConstants.kNominalVoltage,
                     GlobalConstants.kDt);
+    public final LEDSubsystem LEDS = new LEDSubsystem();
 
     final FlightDeck flightDeck =
             new FlightDeck(
