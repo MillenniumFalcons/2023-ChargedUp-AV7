@@ -183,6 +183,7 @@ public class RobotContainer {
                         () -> false, // goodForAutosteer,
                         goodForLockScore,
                         goodForLockIntake,
+                        () -> false,
                         () -> true,
                         SwerveDriveConstants.kAutoSteerXYPIDController,
                         autoSteer::findVelocities));

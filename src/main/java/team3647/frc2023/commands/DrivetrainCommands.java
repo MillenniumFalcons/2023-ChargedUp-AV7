@@ -51,6 +51,7 @@ public class DrivetrainCommands {
             BooleanSupplier enableAutoSteer,
             BooleanSupplier enableLockScore,
             BooleanSupplier enableLockIntake,
+            BooleanSupplier enableBalanceAssist,
             BooleanSupplier getIsFieldOriented,
             PIDController XYcontroller,
             Supplier<Twist2d> autoSteerVelocitiesSupplier) {
@@ -58,6 +59,7 @@ public class DrivetrainCommands {
                 () -> {
                     boolean lockScore = enableLockScore.getAsBoolean();
                     boolean lockIntake = enableLockIntake.getAsBoolean();
+                    boolean balanceAssist = enableBalanceAssist.getAsBoolean();
                     double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.5 : 1;
                     boolean autoSteer = enableAutoSteer.getAsBoolean();
                     boolean fieldOriented = getIsFieldOriented.getAsBoolean();
@@ -77,7 +79,7 @@ public class DrivetrainCommands {
                             XYcontroller.calculate(txSupplier.getAsDouble()));
                     SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
 
-                    if (lockScore && fieldOriented && !autoSteer && !lockIntake) {
+                    if (lockScore && fieldOriented && !autoSteer && !lockIntake && !balanceAssist) {
                         double error = swerve.getHeading();
                         SmartDashboard.putNumber("done rotating", (error % 360) - 180);
                         // SmartDashboard.putNumber("error", error);
@@ -99,7 +101,11 @@ public class DrivetrainCommands {
                                                 + XYcontroller.calculate(txSupplier.getAsDouble())
                                         : motionYComponent;
                         translation = new Translation2d(motionXComponent, motionYComponent);
-                    } else if (lockIntake && fieldOriented && !autoSteer && !lockScore) {
+                    } else if (lockIntake
+                            && fieldOriented
+                            && !autoSteer
+                            && !lockScore
+                            && !balanceAssist) {
                         double error = swerve.getHeading();
                         motionTurnComponent =
                                 Math.abs(error) < 1
@@ -107,9 +113,19 @@ public class DrivetrainCommands {
                                         : SwerveDriveConstants.kAutoSteerHeadingController
                                                         .calculate(error)
                                                 + 0.1 * motionTurnComponent;
+                    } else if (balanceAssist
+                            && !autoSteer
+                            && fieldOriented
+                            && !lockScore
+                            && !lockIntake) {
+                        motionYComponent = 0.1 * motionYComponent;
+                        motionXComponent =
+                                XYcontroller.calculate(swerve.getPitch() * 0.01, 0)
+                                        + 0.2 * motionXComponent;
+                        translation = new Translation2d(motionXComponent, motionYComponent);
                     }
 
-                    if (autoSteer && fieldOriented && !lockScore) {
+                    if (autoSteer && fieldOriented && !lockScore && !balanceAssist && !lockIntake) {
 
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
                         // SmartDashboard.putNumber("autoSteerVelocities.dy",
