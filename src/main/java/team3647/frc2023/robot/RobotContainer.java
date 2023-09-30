@@ -78,7 +78,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
+        runningMode = autoCommands.blueConeCubeCubeMidFlatSideMode;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -238,7 +238,8 @@ public class RobotContainer {
                         () -> false,
                         () -> true,
                         SwerveDriveConstants.kAutoSteerXYPIDController,
-                        autoSteer::findVelocities));
+                        autoSteer::findVelocities,
+                        superstructure::getGamePiece));
 
         // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
@@ -451,7 +452,7 @@ public class RobotContainer {
                     .buttonY
                     .and(mainController.rightTrigger)
                     .and(() -> !superstructure.isBottomF())
-                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                    //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
                     .and(() -> superstructure.getWantedLevel() != Level.Ground);
     ;
     private final BooleanSupplier goodForLockIntake =

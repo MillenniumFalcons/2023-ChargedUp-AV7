@@ -54,9 +54,11 @@ public class DrivetrainCommands {
             BooleanSupplier enableBalanceAssist,
             BooleanSupplier getIsFieldOriented,
             PIDController XYcontroller,
-            Supplier<Twist2d> autoSteerVelocitiesSupplier) {
+            Supplier<Twist2d> autoSteerVelocitiesSupplier,
+            Supplier<GamePiece> gamePieceSupplier) {
         return Commands.run(
                 () -> {
+                    GamePiece piece = gamePieceSupplier.get();
                     boolean lockScore = enableLockScore.getAsBoolean();
                     boolean lockIntake = enableLockIntake.getAsBoolean();
                     boolean balanceAssist = enableBalanceAssist.getAsBoolean();
@@ -93,13 +95,16 @@ public class DrivetrainCommands {
                                         : SwerveDriveConstants.kAutoSteerHeadingController
                                                         .calculate(error)
                                                 + 0.1 * motionTurnComponent;
-                        motionYComponent =
-                                (Math.abs((error % 360) - 180) < 30
-                                                        || Math.abs((error % 360) + 180) < 30)
-                                                && Math.abs(txSupplier.getAsDouble()) > 1
-                                        ? motionYComponent * 0.1
-                                                + XYcontroller.calculate(txSupplier.getAsDouble())
-                                        : motionYComponent;
+                        if (piece == GamePiece.Cone) {
+                            motionYComponent =
+                                    (Math.abs((error % 360) - 180) < 30
+                                                            || Math.abs((error % 360) + 180) < 30)
+                                                    && Math.abs(txSupplier.getAsDouble()) > 1
+                                            ? motionYComponent * 0.1
+                                                    + XYcontroller.calculate(
+                                                            txSupplier.getAsDouble())
+                                            : motionYComponent;
+                        }
                         translation = new Translation2d(motionXComponent, motionYComponent);
                     } else if (lockIntake
                             && fieldOriented
