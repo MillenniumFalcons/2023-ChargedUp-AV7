@@ -289,7 +289,7 @@ public final class Trajectories {
                     new Pose2d(5.9, 4.53, Rotation2d.fromDegrees(-45.0));
             // pick up cube 2
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(6.3, 4, Rotation2d.fromDegrees(-45.0));
+                    new Pose2d(6.6, 4, Rotation2d.fromDegrees(-45.0));
 
             private static final Pose2d kFourthPathInitial = kThirdPathFinal;
             private static final Pose2d kFourthPathWaypoint1 =
