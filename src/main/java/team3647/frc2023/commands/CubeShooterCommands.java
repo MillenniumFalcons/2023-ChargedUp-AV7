@@ -34,7 +34,7 @@ public class CubeShooterCommands {
     }
 
     public Command intake() {
-        return cubeShooterRun(91, -0.8, -0.8);
+        return cubeShooterRun(91, -0.6, -0.6);
     }
 
     public Command scoreHybrid() {

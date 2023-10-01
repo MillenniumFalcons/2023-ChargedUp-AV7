@@ -29,6 +29,7 @@ public class AutoCommands {
     public final AutonomousMode blueConeCubeBalanceBumpSideMode;
     public final AutonomousMode blueConeScoreExitBalance;
     public final AutonomousMode blueJustScore;
+    public final AutonomousMode blueJustDrive;
 
     public final AutonomousMode redConeCubeCubeBumpSideNoBump;
     public final AutonomousMode redConeCubeCubeFlatSideMode;
@@ -37,6 +38,7 @@ public class AutoCommands {
     public final AutonomousMode redConeCubeBalanceBumpSideMode;
     public final AutonomousMode redConeScoreExitBalance;
     public final AutonomousMode redJustScore;
+    public final AutonomousMode redJustDrive;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -75,6 +77,9 @@ public class AutoCommands {
                 new AutonomousMode(
                         coneCubeCubeMidBalanceFlatSide(Alliance.Blue),
                         Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kFirstPathInitial);
+        blueJustDrive =
+                new AutonomousMode(
+                        justDrive(Alliance.Blue), Trajectories.Blue.justDrive.kFirstPathInitial);
 
         // red side modes
         redConeCubeCubeBumpSideNoBump =
@@ -108,6 +113,10 @@ public class AutoCommands {
                         flipForPP(
                                 Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide
                                         .kFirstPathInitial));
+        redJustDrive =
+                new AutonomousMode(
+                        justDrive(Alliance.Red),
+                        flipForPP(Trajectories.Blue.justDrive.kFirstPathInitial));
     }
 
     public static Pose2d getJustScore(Pose2d pose) {
@@ -307,6 +316,14 @@ public class AutoCommands {
 
     public Command drive() {
         return followTrajectory(Trajectories.Blue.Test.kTrajectory);
+    }
+
+    public Command justDrive(Alliance color) {
+        Command drivetrainSequence =
+                followTrajectory(
+                        PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                Trajectories.Blue.justDrive.kFirstTrajectory, color));
+        return drivetrainSequence;
     }
 
     public Command coneCubeCubeBumpSideNoBump(Alliance color) {

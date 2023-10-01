@@ -93,6 +93,19 @@ public final class Trajectories {
                                     fromPose(kFourthPathFinal, Rotation2d.fromDegrees(-60))));
         }
 
+        public static final class justDrive {
+            public static final Pose2d kFirstPathInitial =
+                    new Pose2d(1.80, 0.5, FieldConstants.kZero);
+            public static final Pose2d kFirstPathFinal = new Pose2d(5.5, 0.5, FieldConstants.kZero);
+            public static final PathPlannerTrajectory kFirstTrajectory =
+                    PathPlanner.generatePath(
+                            fastConstraints,
+                            List.of(
+                                    fromPose(kFirstPathInitial, FieldConstants.kZero),
+                                    // fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
+                                    fromPose(kFirstPathFinal, FieldConstants.kZero)));
+        }
+
         public static final class coneCubeCubeBumpSideNoBump {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
@@ -309,13 +322,13 @@ public final class Trajectories {
                             fastConstraints,
                             List.of(
                                     fromPose(kSecondPathInitial, FieldConstants.kOneEighty),
-                                    fromPose(kSecondPathFinal, Rotation2d.fromDegrees(-160))));
+                                    fromPose(kSecondPathFinal, Rotation2d.fromDegrees(-150))));
 
             public static final PathPlannerTrajectory kThirdTrajectory =
                     PathPlanner.generatePath(
                             defaultConstraints,
                             List.of(
-                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(20)),
+                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(30)),
                                     fromPose(kThirdPathWaypoint1, Rotation2d.fromDegrees(-45.00)),
                                     fromPose(kThirdPathFinal, Rotation2d.fromDegrees(-45.00))));
 
@@ -325,7 +338,7 @@ public final class Trajectories {
                             List.of(
                                     fromPose(kFourthPathInitial, Rotation2d.fromDegrees(135)),
                                     fromPose(kFourthPathWaypoint1, Rotation2d.fromDegrees(150)),
-                                    fromPose(kFourthPathFinal, Rotation2d.fromDegrees(-160))));
+                                    fromPose(kFourthPathFinal, Rotation2d.fromDegrees(-150))));
         }
 
         public static final class ConeExitBalance {

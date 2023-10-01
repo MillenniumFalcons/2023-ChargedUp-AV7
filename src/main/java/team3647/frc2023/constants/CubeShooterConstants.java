@@ -44,10 +44,10 @@ public class CubeShooterConstants {
         kTopMotor.Inverted = InvertedValue.Clockwise_Positive;
         kBottomMotor.Inverted = InvertedValue.Clockwise_Positive;
 
-        kTopCurrent.StatorCurrentLimitEnable = true;
-        kBottomCurrent.StatorCurrentLimitEnable = true;
-        kTopCurrent.StatorCurrentLimit = kMaxCurrent;
-        kBottomCurrent.StatorCurrentLimit = kMaxCurrent;
+        kTopCurrent.StatorCurrentLimitEnable = false;
+        kBottomCurrent.StatorCurrentLimitEnable = false;
+        // kTopCurrent.StatorCurrentLimit = kMaxCurrent;
+        // kBottomCurrent.StatorCurrentLimit = kMaxCurrent;
 
         kTopRollerConfigurator.apply(kTopMotor);
         kTopRollerConfigurator.apply(kTopCurrent);
