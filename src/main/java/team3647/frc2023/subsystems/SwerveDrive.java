@@ -1,6 +1,7 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -10,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.PeriodicSubsystem;
@@ -24,6 +26,8 @@ public class SwerveDrive implements PeriodicSubsystem {
     private final SwerveDriveKinematics kinematics;
 
     private final Pigeon2 gyro;
+
+    private final PIDController kHeadingController = new PIDController(0.5, 0, 0);
 
     private final double maxSpeedMpS;
     private final double maxRotRadPerSec;
@@ -255,13 +259,14 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     public void drive(
             Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        double actualRotation = Units.degreesToRadians(gyro.getRate());
         SwerveModuleState[] swerveModuleStates = null;
         ChassisSpeeds speeds =
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                 translation.getX(),
                                 translation.getY(),
-                                rotation,
+                                rotation + kHeadingController.calculate(rotation - actualRotation),
                                 Rotation2d.fromDegrees(getRawHeading()))
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
