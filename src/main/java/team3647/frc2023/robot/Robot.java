@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        robotContainer.wrist.setNeutralMode(NeutralModeValue.Coast);
+        robotContainer.wrist.setNeutralMode(NeutralModeValue.Brake);
 
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
