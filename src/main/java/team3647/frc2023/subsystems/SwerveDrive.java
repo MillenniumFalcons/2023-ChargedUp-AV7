@@ -27,7 +27,7 @@ public class SwerveDrive implements PeriodicSubsystem {
 
     private final Pigeon2 gyro;
 
-    private final PIDController kHeadingController = new PIDController(0.5, 0, 0);
+    private final PIDController kHeadingController = new PIDController(1, 0, 0);
 
     private final double maxSpeedMpS;
     private final double maxRotRadPerSec;
@@ -260,13 +260,17 @@ public class SwerveDrive implements PeriodicSubsystem {
     public void drive(
             Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         double actualRotation = Units.degreesToRadians(gyro.getRate());
+        double correction =
+                Math.abs(rotation - actualRotation) > 0.2
+                        ? rotation
+                        : kHeadingController.calculate(rotation - actualRotation);
         SwerveModuleState[] swerveModuleStates = null;
         ChassisSpeeds speeds =
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                 translation.getX(),
                                 translation.getY(),
-                                rotation + kHeadingController.calculate(rotation - actualRotation),
+                                rotation + correction,
                                 Rotation2d.fromDegrees(getRawHeading()))
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
