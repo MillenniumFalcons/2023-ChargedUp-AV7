@@ -457,7 +457,9 @@ public class RobotContainer {
     ;
     private final BooleanSupplier goodForLockIntake =
             mainController.rightBumper.and(
-                    () -> superstructure.getWantedStation() == StationType.Double);
+                    () ->
+                            (superstructure.getWantedStation() == StationType.Double
+                                    || superstructure.getWantedIntakePiece() == GamePiece.Cone));
 
     private final BooleanSupplier groundConeIntake =
             () ->

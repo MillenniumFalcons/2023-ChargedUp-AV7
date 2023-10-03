@@ -125,6 +125,8 @@ public class SuperstructureState {
 
     public static final SuperstructureState doubleStationCone =
             new SuperstructureState(120, 18000, 103, "double station");
+    public static final SuperstructureState doubleStationConeLying =
+            new SuperstructureState(139, 3000, 52, "double station lying");
     public static final SuperstructureState doubleStationCube =
             new SuperstructureState(120, 16000, 117, "double station");
 
@@ -215,5 +217,5 @@ public class SuperstructureState {
     public static final Map<StationType, SuperstructureState> kIntakePositionsMap =
             Map.of(
                     StationType.Double, doubleStationCone,
-                    StationType.Ground, groundIntakeCone);
+                    StationType.Ground, doubleStationConeLying);
 }

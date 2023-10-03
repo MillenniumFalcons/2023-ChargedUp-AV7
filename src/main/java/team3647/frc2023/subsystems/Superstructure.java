@@ -43,7 +43,7 @@ public class Superstructure {
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
-                            ? SuperstructureState.groundIntakeConeTipped
+                            ? SuperstructureState.doubleStationConeLying
                             : SuperstructureState.groundIntakeCube;
             this.isGround = true;
         } else {

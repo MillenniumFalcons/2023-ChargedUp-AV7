@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -76,14 +75,14 @@ public class DrivetrainCommands {
 
                     var translation = new Translation2d(motionXComponent, motionYComponent);
 
-                    SmartDashboard.putNumber(
-                            "calculate tx er ror",
-                            XYcontroller.calculate(txSupplier.getAsDouble()));
-                    SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
+                    //     SmartDashboard.putNumber(
+                    //             "calculate tx er ror",
+                    //             XYcontroller.calculate(txSupplier.getAsDouble()));
+                    //     SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
 
                     if (lockScore && fieldOriented && !autoSteer && !lockIntake && !balanceAssist) {
                         double error = swerve.getHeading();
-                        SmartDashboard.putNumber("done rotating", (error % 360) - 180);
+                        // SmartDashboard.putNumber("done rotating", (error % 360) - 180);
                         // SmartDashboard.putNumber("error", error);
                         // SmartDashboard.putNumber(
                         //         "error calculaute",

@@ -10,7 +10,7 @@ public class CubeWrist extends TalonFXSubsystem {
     private double maxDegree;
     private double kG;
     private TimeOfFlight tof;
-    private final double triggerDistance = 600;
+    private final double triggerDistance = 450;
 
     private double sensorDistance = 1000;
 
