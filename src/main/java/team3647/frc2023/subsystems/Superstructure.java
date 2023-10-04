@@ -185,7 +185,7 @@ public class Superstructure {
         return Commands.run(
                 () -> {
                     if (piece.get() == GamePiece.Cone) {
-                        rollers.setOpenloop(-0.1);
+                        rollers.setOpenloop(-0.05);
                     } else {
                         rollers.setOpenloop(0.03);
                     }
