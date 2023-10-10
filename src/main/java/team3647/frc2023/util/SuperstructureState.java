@@ -119,6 +119,8 @@ public class SuperstructureState {
     public static final SuperstructureState groundIntakeCube =
             new SuperstructureState(
                     199, ExtenderConstants.kMinimumPositionTicks, 12, "ground intake cube");
+    public static final SuperstructureState pushDownStation =
+            new SuperstructureState(190, ExtenderConstants.kMinimumPositionTicks, 12, "push down");
 
     public static final SuperstructureState groundIntakeCubeLong =
             new SuperstructureState(184, 57500, 43, "ground intake long");

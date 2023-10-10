@@ -204,6 +204,9 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         return periodicIO.nativePosition;
     }
 
+    // this is bad. this will work with one follower but will not work if there are multiple
+    // followers that do not all have the same direction and output
+
     protected void addFollower(TalonFX follower, boolean opposeMaster) {
         this.masterOutput = new Follower(this.master.getDeviceID(), opposeMaster);
         followers.add(follower);

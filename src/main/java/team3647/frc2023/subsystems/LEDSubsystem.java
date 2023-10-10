@@ -6,6 +6,9 @@ package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import java.util.function.BooleanSupplier;
 import team3647.frc2023.constants.LEDConstants;
 import team3647.lib.PeriodicSubsystem;
 
@@ -13,7 +16,11 @@ public class LEDSubsystem implements PeriodicSubsystem {
     /** Creates a new LEDSubsystem. */
     private boolean target = false;
 
-    private boolean currentCone = false;
+    private Piece currentPiece = Piece.none;
+    private Piece storedPiece = Piece.none;
+
+    private Piece wantedPiece = Piece.cone;
+    private VisionState visionState = VisionState.none;
     private boolean wantedCone = false;
     private boolean pieceIn = false;
     private boolean pieceInBottom = false;
@@ -38,6 +45,19 @@ public class LEDSubsystem implements PeriodicSubsystem {
         }
     }
 
+    public enum Piece {
+        none,
+        cone,
+        cube,
+        groundcube
+    }
+
+    public enum VisionState {
+        none,
+        sees,
+        aligned
+    }
+
     private LEDStates currentState;
     private LEDStates wantedState = LEDStates.IDLE;
 
@@ -59,12 +79,32 @@ public class LEDSubsystem implements PeriodicSubsystem {
         this.target = bool;
     }
 
-    public void setPiece(boolean cone) {
-        this.currentCone = cone;
+    public Command setPiece(Piece piece) {
+        return Commands.sequence(setPieceInTrue(), runOnce(() -> this.currentPiece = piece));
     }
 
-    public void setWantedPiece(boolean cone) {
-        this.wantedCone = cone;
+    public Command setPieceInTrue() {
+        return Commands.runOnce(() -> setPieceIn(true));
+    }
+
+    public Command storePiece() {
+        return Commands.run(() -> this.storedPiece = this.wantedPiece);
+    }
+
+    public Command setWantedPiece(Piece piece) {
+        return Commands.runOnce(() -> this.wantedPiece = piece);
+    }
+
+    public String getStoredPiece() {
+        return storedPiece.toString();
+    }
+
+    public Command unStore() {
+        return Commands.runOnce(() -> setWantedPiece(this.storedPiece));
+    }
+
+    public Command cubeOrCone(BooleanSupplier cone) {
+        return setWantedPiece(cone.getAsBoolean() ? Piece.cone : Piece.cube);
     }
 
     public void setPieceIn(boolean in) {
@@ -75,8 +115,20 @@ public class LEDSubsystem implements PeriodicSubsystem {
         this.pieceInBottom = in;
     }
 
+    public void setVisionState(VisionState state) {
+        this.visionState = state;
+    }
+
     public boolean getPieceIn() {
         return pieceIn;
+    }
+
+    public String getWantedPiece() {
+        return this.wantedPiece.toString();
+    }
+
+    public String getCurrentPiece() {
+        return this.currentPiece.toString();
     }
 
     public String getLEDState() {
@@ -87,33 +139,72 @@ public class LEDSubsystem implements PeriodicSubsystem {
     public void periodic() {
         switch (wantedState) {
             case TARGET:
-                if (target) {
-                    this.setAnimation(LEDConstants.BREATHE_GREEN);
-                } else {
-                    this.setAnimation(LEDConstants.BREATHE_RED);
-                }
+                if (currentPiece == Piece.cone) {
+                    switch (this.visionState) {
+                        case none:
+                            this.setAnimation(LEDConstants.SOLID_RED);
+                            break;
+                        case sees:
+                            this.setAnimation(LEDConstants.BREATHE_GREEN);
+                            break;
+                        case aligned:
+                            this.setAnimation(LEDConstants.SOLID_BLUE);
+                            break;
+                    }
+                } // if leds turn off when scoring cube put else statement here
                 break;
             case RAINBOW:
                 this.setAnimation(LEDConstants.RAINBOWCONTROLLER);
                 break;
             case IDLE:
                 if (pieceIn) {
-                    if (pieceInBottom) {
-                        this.setAnimation(bottomCubeInColor);
-                    } else {
-                        if (currentCone) {
-                            this.setAnimation(coneColor);
-                        } else {
-                            this.setAnimation(cubeColor);
-                        }
+                    switch (this.currentPiece) {
+                        case none:
+                            this.setAnimation(LEDConstants.SOLID_RED);
+                            break;
+                        case cone:
+                            this.setAnimation(LEDConstants.FLASH_YELLOW);
+                            break;
+                        case cube:
+                            this.setAnimation(LEDConstants.FLASH_PURPLE);
+                            break;
+                        case groundcube:
+                            this.setAnimation(LEDConstants.FLASH_BROWN);
+                            break;
                     }
                 } else {
-                    if (wantedCone) {
-                        this.setAnimation(coneColor);
-                    } else {
-                        this.setAnimation(cubeColor);
+                    switch (this.wantedPiece) {
+                        case none:
+                            this.setAnimation(LEDConstants.SOLID_RED);
+                            break;
+                        case cone:
+                            this.setAnimation(LEDConstants.SOLID_YELLOW);
+                            break;
+                        case cube:
+                            this.setAnimation(LEDConstants.SOLID_PURPLE);
+                            break;
+                        case groundcube:
+                            this.setAnimation(LEDConstants.SOLID_BROWN);
+                            break;
                     }
                 }
+                // if (pieceIn) {
+                //     if (pieceInBottom) {
+                //         this.setAnimation(bottomCubeInColor);
+                //     } else {
+                //         if (currentCone) {
+                //             this.setAnimation(coneColor);
+                //         } else {
+                //             this.setAnimation(cubeColor);
+                //         }
+                //     }
+                // } else {
+                //     if (wantedCone) {
+                //         this.setAnimation(coneColor);
+                //     } else {
+                //         this.setAnimation(cubeColor);
+                //     }
+                // }
                 break;
         }
     }

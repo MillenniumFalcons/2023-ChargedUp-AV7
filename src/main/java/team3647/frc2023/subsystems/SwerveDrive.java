@@ -1,7 +1,6 @@
 package team3647.frc2023.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -259,18 +258,21 @@ public class SwerveDrive implements PeriodicSubsystem {
     }
 
     public void drive(
-            Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+            Translation2d translation,
+            double rotation,
+            boolean fieldRelative,
+            boolean isOpenLoop,
+            boolean correct) {
         double actualRotation = Units.degreesToRadians(gyro.getRate());
+        boolean corrects = correct;
         double correction =
-                (Math.abs(rotation - actualRotation) < 0.05 && Math.abs(rotation) > 0.05)
-                                || Math.abs(rotation) < 0.05 // deviation
-                        // 20 percent error bounded at 0.2
+                ((Math.abs(rotation - actualRotation) < 0.05 && Math.abs(rotation) > 0.05)
+                                        || Math.abs(rotation) < 0.05)
+                                && Math.abs(getPitch()) < 3
+                                && corrects
                         ? kHeadingController.calculate(rotation - actualRotation)
                         : 0;
-        SmartDashboard.putNumber("correction", correction);
-        SmartDashboard.putNumber("rotation", rotation);
-        SmartDashboard.putNumber("deviation", Math.abs(rotation - actualRotation));
-        SmartDashboard.putNumber("threshold", MathUtil.clamp(0.8 * Math.abs(rotation), 0, 1));
+
         SwerveModuleState[] swerveModuleStates = null;
         ChassisSpeeds speeds =
                 fieldRelative

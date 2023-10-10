@@ -34,7 +34,7 @@ public class DrivetrainCommands {
 
                         // SmartDashboard.putNumber("PITCH PID", pitchPID);
                         // SmartDashboard.putNumber("ROLL PID", rollPID);
-                        swerve.drive(new Translation2d(rollPID, pitchPID), 0, false, false);
+                        // swerve.drive(new Translation2d(rollPID, pitchPID), 0, false, false);
                     }
                 },
                 swerve::stopModules,
@@ -65,6 +65,7 @@ public class DrivetrainCommands {
                     boolean autoSteer = enableAutoSteer.getAsBoolean();
                     boolean fieldOriented = getIsFieldOriented.getAsBoolean();
                     boolean openloop = true;
+                    boolean correct = true;
                     XYcontroller.setTolerance(1);
                     var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
                     // right stick X, (negative so that left positive)
@@ -82,6 +83,7 @@ public class DrivetrainCommands {
 
                     if (lockScore && fieldOriented && !autoSteer && !lockIntake && !balanceAssist) {
                         double error = swerve.getHeading();
+                        correct = false;
                         // SmartDashboard.putNumber("done rotating", (error % 360) - 180);
                         // SmartDashboard.putNumber("error", error);
                         // SmartDashboard.putNumber(
@@ -89,10 +91,11 @@ public class DrivetrainCommands {
                         //
                         // SwerveDriveConstants.kAutoSteerHeadingController.calculate(error));
                         motionTurnComponent =
-                                Math.abs(error - 180) < 1
+                                (Math.abs((error % 360) - 180) < 1
+                                                || Math.abs((error % 360) + 180) < 1)
                                         ? 0.1 * motionTurnComponent
                                         : SwerveDriveConstants.kAutoSteerHeadingController
-                                                        .calculate(error)
+                                                        .calculate(error - 180)
                                                 + 0.1 * motionTurnComponent;
                         if (piece == GamePiece.Cone) {
                             motionYComponent =
@@ -110,7 +113,14 @@ public class DrivetrainCommands {
                             && !autoSteer
                             && !lockScore
                             && !balanceAssist) {
+                        correct = false;
                         double error = swerve.getHeading();
+                        // SmartDashboard.putBoolean("error less 1", Math.abs(error) < 1);
+                        // SmartDashboard.putNumber("erroe", error);
+                        // SmartDashboard.putNumber(
+                        //         "error correction",
+                        //
+                        // SwerveDriveConstants.kAutoSteerHeadingController.calculate(error));
                         motionTurnComponent =
                                 Math.abs(error) < 1
                                         ? 0.1 * motionTurnComponent
@@ -122,6 +132,7 @@ public class DrivetrainCommands {
                             && fieldOriented
                             && !lockScore
                             && !lockIntake) {
+                        correct = false;
                         motionYComponent = 0.1 * motionYComponent;
                         motionXComponent =
                                 XYcontroller.calculate(swerve.getPitch() * 0.01, 0)
@@ -130,6 +141,7 @@ public class DrivetrainCommands {
                     }
 
                     if (autoSteer && fieldOriented && !lockScore && !balanceAssist && !lockIntake) {
+                        correct = false;
 
                         var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
                         // SmartDashboard.putNumber("autoSteerVelocities.dy",
@@ -154,7 +166,7 @@ public class DrivetrainCommands {
                     // SmartDashboard.putNumber("wanted Y", translation.getY());
                     // SmartDashboard.putNumber("wanted X", translation.getX());
                     var rotation = motionTurnComponent;
-                    swerve.drive(translation, rotation, fieldOriented, openloop);
+                    swerve.drive(translation, rotation, fieldOriented, openloop, correct);
                 },
                 swerve);
     }
@@ -208,6 +220,7 @@ public class DrivetrainCommands {
                                             xSpeed.getAsDouble() * maxSpeed, strafeDemand),
                                     turnDemand,
                                     true,
+                                    false,
                                     false);
                         },
                         swerve);
@@ -221,7 +234,7 @@ public class DrivetrainCommands {
     }
 
     public Command robotRelativeDrive(Translation2d t, Rotation2d rotation, double seconds) {
-        return Commands.run(() -> swerve.drive(t, rotation.getDegrees(), false, true), swerve)
+        return Commands.run(() -> swerve.drive(t, rotation.getDegrees(), false, true, true), swerve)
                 .finallyDo(interupted -> swerve.end())
                 .withTimeout(seconds);
     }

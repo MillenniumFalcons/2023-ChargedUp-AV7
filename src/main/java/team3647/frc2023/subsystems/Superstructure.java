@@ -536,6 +536,10 @@ public class Superstructure {
         return this.intakeGamePiece;
     }
 
+    public String getWantedIntakePieceString() {
+        return this.intakeGamePiece.toString();
+    }
+
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
     }
