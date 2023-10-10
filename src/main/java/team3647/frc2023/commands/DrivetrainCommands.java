@@ -99,8 +99,8 @@ public class DrivetrainCommands {
                                                 + 0.1 * motionTurnComponent;
                         if (piece == GamePiece.Cone) {
                             motionYComponent =
-                                    (Math.abs((error % 360) - 180) < 30
-                                                            || Math.abs((error % 360) + 180) < 30)
+                                    (Math.abs((error % 360) - 180) < 15
+                                                            || Math.abs((error % 360) + 180) < 15)
                                                     && Math.abs(txSupplier.getAsDouble()) > 1
                                             ? motionYComponent * 0.1
                                                     + XYcontroller.calculate(

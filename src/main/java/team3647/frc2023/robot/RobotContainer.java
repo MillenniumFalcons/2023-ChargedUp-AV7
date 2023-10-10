@@ -529,12 +529,12 @@ public class RobotContainer {
             new Trigger(
                     () ->
                             (superstructure.getWantedIntakePiece() == GamePiece.Cone
-                                    && rollers.getMasterCurrent() > 25));
+                                    && rollers.getMasterCurrent() > 30));
     private final Trigger currentCube =
             new Trigger(
                     () ->
                             (superstructure.getWantedIntakePiece() == GamePiece.Cube
-                                    && rollers.getMasterCurrent() > 25));
+                                    && rollers.getMasterCurrent() > 30));
 
     private final Trigger currentGroundCube =
             new Trigger(() -> (cubeShooterTop.getMasterCurrent() > 11.5));
@@ -553,13 +553,13 @@ public class RobotContainer {
                             (Math.abs(
                                                     -LimelightHelpers.getTX(
                                                             LimelightConstant.kLimelightCenterHost))
-                                            < 1)
+                                            < 2)
                                     && (Math.abs(
                                                     -LimelightHelpers.getTX(
                                                             LimelightConstant.kLimelightCenterHost))
                                             != 0)
-                                    && (Math.abs((swerve.getHeading() % 360) - 180) < 30
-                                            || Math.abs((swerve.getHeading() % 360) + 180) < 30));
+                                    && (Math.abs((swerve.getHeading() % 360) - 180) < 5
+                                            || Math.abs((swerve.getHeading() % 360) + 180) < 5));
 
     private final Trigger seesTarget =
             new Trigger(
