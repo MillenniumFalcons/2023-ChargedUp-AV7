@@ -529,12 +529,12 @@ public class RobotContainer {
             new Trigger(
                     () ->
                             (superstructure.getWantedIntakePiece() == GamePiece.Cone
-                                    && rollers.getMasterCurrent() > 30));
+                                    && rollers.getMasterCurrent() > 50));
     private final Trigger currentCube =
             new Trigger(
                     () ->
                             (superstructure.getWantedIntakePiece() == GamePiece.Cube
-                                    && rollers.getMasterCurrent() > 30));
+                                    && rollers.getMasterCurrent() > 50));
 
     private final Trigger currentGroundCube =
             new Trigger(() -> (cubeShooterTop.getMasterCurrent() > 11.5));

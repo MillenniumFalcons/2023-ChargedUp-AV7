@@ -56,7 +56,7 @@ public class AutoCommands {
         blueConeCubeCubeBumpSideNoBump =
                 new AutonomousMode(
                         coneCubeCubeBumpSideNoBump(Alliance.Blue),
-                        flipForPP(Trajectories.Blue.coneCubeCubeBumpSideNoBump.kFirstPathInitial));
+                        Trajectories.Blue.coneCubeCubeBumpSideNoBump.kFirstPathInitial);
         blueConeCubeCubeFlatSideMode =
                 new AutonomousMode(
                         coneCubeCubeFlatSide(Alliance.Blue),
