@@ -40,7 +40,10 @@ import team3647.frc2023.subsystems.Superstructure;
 import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.Wrist;
+import team3647.frc2023.util.AutoDrive;
+import team3647.frc2023.util.AutoDrive.DriveMode;
 import team3647.frc2023.util.AutoSteer;
+import team3647.frc2023.util.LimelightTriggers;
 import team3647.frc2023.util.SuperstructureState;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
@@ -96,7 +99,7 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
-                .and(isAligned)
+                .and(limelightTriggers.isAligned)
                 .whileTrue(superstructure.armAutomatic())
                 // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(
@@ -107,7 +110,7 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
-                .and(() -> !isAligned.getAsBoolean())
+                .and(() -> !limelightTriggers.isAligned.getAsBoolean())
                 .whileTrue(superstructure.armAutomaticNoExtend())
                 // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(
@@ -126,7 +129,7 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
-                .and(isAligned)
+                .and(limelightTriggers.isAligned)
                 .and(mainController.leftBumper.negate())
                 .onFalse(
                         Commands.runOnce(
@@ -213,12 +216,17 @@ public class RobotContainer {
         coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
         // LED Triggers
-        currentCone.onTrue(LEDS.setPiece(Piece.cone));
-        currentCube.onTrue(LEDS.setPiece(Piece.cube));
-        currentGroundCube.onTrue(LEDS.setPiece(Piece.groundcube));
+        limelightTriggers.currentCone.onTrue(LEDS.setPiece(Piece.cone));
+        limelightTriggers.currentCube.onTrue(LEDS.setPiece(Piece.cube));
+        limelightTriggers.currentGroundCube.onTrue(LEDS.setPiece(Piece.groundcube));
 
-        wantedCone.onTrue(LEDS.setWantedPiece(Piece.cone));
-        wantedCube.onTrue(LEDS.setWantedPiece(Piece.cube));
+        limelightTriggers.wantedCone.onTrue(LEDS.setWantedPiece(Piece.cone));
+        limelightTriggers.wantedCube.onTrue(LEDS.setWantedPiece(Piece.cube));
+
+        autoDrive.goodForLockIntake.onTrue(autoDrive.changeMode(DriveMode.Intake));
+        autoDrive.goodForLockIntake.onFalse(autoDrive.changeMode(DriveMode.Manual));
+        autoDrive.goodForLockScore.onTrue(autoDrive.changeMode(DriveMode.Score));
+        autoDrive.goodForLockScore.onFalse(autoDrive.changeMode(DriveMode.Manual));
         // wantedGroundCube.onTrue(
         //         Commands.sequence(LEDS.storePiece(), LEDS.setWantedPiece(Piece.groundcube)));
         // wantedGroundCube.onFalse(LEDS.unStore());
@@ -231,7 +239,8 @@ public class RobotContainer {
 
         // bottomCubeIn.onFalse(Commands.runOnce(() -> LEDS.setBottomCubeIn(false)));
 
-        seesTarget
+        limelightTriggers
+                .seesTarget
                 .onTrue(Commands.runOnce(() -> LEDS.setVisionState(VisionState.sees)))
                 .whileTrue(
                         Commands.run(
@@ -245,26 +254,28 @@ public class RobotContainer {
                                                                         / 10,
                                                         0.5,
                                                         1))));
-        isAligned.onTrue(Commands.runOnce(() -> LEDS.setVisionState(VisionState.aligned)));
-        blind.onTrue(Commands.runOnce(() -> LEDS.setVisionState(VisionState.none)));
+        limelightTriggers.isAligned.onTrue(
+                Commands.runOnce(() -> LEDS.setVisionState(VisionState.aligned)));
+        limelightTriggers.blind.onTrue(
+                Commands.runOnce(() -> LEDS.setVisionState(VisionState.none)));
 
         // seesTarget.onFalse(Commands.runOnce(() -> LEDS.setTarget(false)));
 
         // isAligned.onTrue(Commands.runOnce(() -> LEDS.setLEDState(null)));
         // isAligned.onFalse(Commands.runOnce(() -> LEDS.setLEDState(null)));
 
-        coControllerRightJoystickMoved.onTrue(
+        limelightTriggers.coControllerRightJoystickMoved.onTrue(
                 Commands.runOnce(
                         () -> {
                             LEDS.setLEDState(LEDStates.RAINBOW);
                         }));
-        coControllerRightJoystickMoved.whileTrue(
+        limelightTriggers.coControllerRightJoystickMoved.whileTrue(
                 Commands.runOnce(
                         () -> {
                             LEDConstants.RAINBOWCONTROLLER.setSpeed(
                                     (2 - Math.abs(coController.getRightStickY())));
                         }));
-        coControllerRightJoystickMoved.onFalse(
+        limelightTriggers.coControllerRightJoystickMoved.onFalse(
                 Commands.runOnce(
                         () -> {
                             LEDS.setLEDState(LEDStates.IDLE);
@@ -274,21 +285,7 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
                 superstructure.drivetrainCommands.driveVisionTeleop(
-                        mainController::getLeftStickX,
-                        mainController::getLeftStickY,
-                        mainController::getRightStickX,
-                        () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost),
-                        mainController.leftTrigger,
-                        // enable autosteer if going to actual station (bumper), or scoring
-                        // (trigger)
-                        () -> false, // goodForAutosteer,
-                        goodForLockScore,
-                        goodForLockIntake,
-                        () -> false,
-                        () -> true,
-                        SwerveDriveConstants.kAutoSteerXYPIDController,
-                        autoSteer::findVelocities,
-                        superstructure::getGamePiece));
+                        autoDrive::getVelocities, autoDrive::getIsManual));
 
         // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
@@ -344,7 +341,7 @@ public class RobotContainer {
         printer.addBoolean("ground cone intake", groundConeIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
         printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
-        printer.addBoolean("cube", () -> wantedCube.getAsBoolean());
+        printer.addBoolean("cube", () -> limelightTriggers.wantedCube.getAsBoolean());
         printer.addDouble(
                 "tx", () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost));
         printer.addBoolean(
@@ -488,6 +485,19 @@ public class RobotContainer {
                     compressor,
                     mainController::anyStickMovedFast);
 
+    public final LimelightTriggers limelightTriggers =
+            new LimelightTriggers(
+                    superstructure, rollers, cubeShooterTop, mainController, coController, swerve);
+    public final AutoDrive autoDrive =
+            new AutoDrive(
+                    mainController,
+                    superstructure,
+                    SwerveDriveConstants.kAutoSteerXYPIDController,
+                    superstructure::getGamePiece,
+                    swerve,
+                    mainController.leftTrigger,
+                    () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost));
+
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
     final GroupPrinter printer = GroupPrinter.getInstance();
     private final AutoCommands autoCommands =
@@ -508,19 +518,6 @@ public class RobotContainer {
                     .or(
                             mainController.rightBumper.and(
                                     () -> superstructure.getWantedStation() == StationType.Double));
-    private final BooleanSupplier goodForLockScore =
-            mainController
-                    .buttonY
-                    .and(mainController.rightTrigger)
-                    .and(() -> !superstructure.isBottomF())
-            //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
-            //     .and(() -> superstructure.getWantedLevel() != Level.Ground);
-            ;
-    private final BooleanSupplier goodForLockIntake =
-            mainController.rightBumper.and(
-                    () ->
-                            (superstructure.getWantedStation() == StationType.Double
-                                    || superstructure.getWantedIntakePiece() == GamePiece.Cone));
 
     private final BooleanSupplier groundConeIntake =
             () ->
@@ -536,57 +533,4 @@ public class RobotContainer {
             () -> superstructure.getWantedStation() != StationType.Ground;
 
     private final Pose2d kEmptyPose = new Pose2d();
-
-    // LED Triggers
-
-    private final Trigger currentCone =
-            new Trigger(
-                    () ->
-                            (superstructure.getWantedIntakePiece() == GamePiece.Cone
-                                    && rollers.getMasterCurrent() > 50));
-    private final Trigger currentCube =
-            new Trigger(
-                    () ->
-                            (superstructure.getWantedIntakePiece() == GamePiece.Cube
-                                    && rollers.getMasterCurrent() > 50));
-
-    private final Trigger currentGroundCube =
-            new Trigger(() -> (cubeShooterTop.getMasterCurrent() > 11.5));
-    private final Trigger wantedCone =
-            new Trigger(
-                    () -> superstructure.getWantedIntakePiece() == PositionFinder.GamePiece.Cone);
-    private final Trigger wantedCube =
-            new Trigger(
-                    () -> superstructure.getWantedIntakePiece() == PositionFinder.GamePiece.Cube);
-
-    private final Trigger wantedGroundCube = mainController.leftBumper;
-
-    private final Trigger isAligned =
-            new Trigger(
-                    () ->
-                            (Math.abs(
-                                                    -LimelightHelpers.getTX(
-                                                            LimelightConstant.kLimelightCenterHost))
-                                            < 2)
-                                    && (Math.abs(
-                                                    -LimelightHelpers.getTX(
-                                                            LimelightConstant.kLimelightCenterHost))
-                                            != 0)
-                                    && (Math.abs((swerve.getHeading() % 360) - 180) < 5
-                                            || Math.abs((swerve.getHeading() % 360) + 180) < 5));
-
-    private final Trigger seesTarget =
-            new Trigger(
-                    () ->
-                            (LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost) != 0
-                                    && !isAligned.getAsBoolean()));
-
-    private final Trigger blind =
-            new Trigger(() -> !(isAligned.getAsBoolean() || seesTarget.getAsBoolean()));
-
-    //     private final BooleanSupplier bottomCubeIn = () -> cubeShooterTop.getMasterCurrent() >
-    // 11.5;
-
-    private final Trigger coControllerRightJoystickMoved =
-            new Trigger(() -> Math.abs(coController.getRightStickY()) >= 0.2);
 }

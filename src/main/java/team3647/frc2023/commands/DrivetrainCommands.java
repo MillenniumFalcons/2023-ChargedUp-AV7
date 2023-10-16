@@ -14,7 +14,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import team3647.frc2023.constants.FieldConstants;
 import team3647.frc2023.constants.LimelightConstant;
-import team3647.frc2023.constants.SwerveDriveConstants;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.lib.vision.LimelightHelpers;
@@ -41,129 +40,15 @@ public class DrivetrainCommands {
                 swerve);
     }
 
-    public Command driveVisionTeleop(
-            DoubleSupplier xSpeedFunction, // X axis on joystick is Left/Right
-            DoubleSupplier ySpeedFunction, // Y axis on Joystick is Front/Back
-            DoubleSupplier turnSpeedFunction,
-            DoubleSupplier txSupplier,
-            BooleanSupplier slowTriggerFunction,
-            BooleanSupplier enableAutoSteer,
-            BooleanSupplier enableLockScore,
-            BooleanSupplier enableLockIntake,
-            BooleanSupplier enableBalanceAssist,
-            BooleanSupplier getIsFieldOriented,
-            PIDController XYcontroller,
-            Supplier<Twist2d> autoSteerVelocitiesSupplier,
-            Supplier<GamePiece> gamePieceSupplier) {
+    public Command driveVisionTeleop(Supplier<Twist2d> supplier, BooleanSupplier shouldCorrect) {
         return Commands.run(
                 () -> {
-                    GamePiece piece = gamePieceSupplier.get();
-                    boolean lockScore = enableLockScore.getAsBoolean();
-                    boolean lockIntake = enableLockIntake.getAsBoolean();
-                    boolean balanceAssist = enableBalanceAssist.getAsBoolean();
-                    double triggerSlow = slowTriggerFunction.getAsBoolean() ? 0.5 : 1;
-                    boolean autoSteer = enableAutoSteer.getAsBoolean();
-                    boolean fieldOriented = getIsFieldOriented.getAsBoolean();
-                    boolean openloop = true;
-                    boolean correct = true;
-                    XYcontroller.setTolerance(1);
-                    var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
-                    // right stick X, (negative so that left positive)
-                    var motionYComponent = -xSpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
-
-                    var motionTurnComponent =
-                            -turnSpeedFunction.getAsDouble() * maxRotationRadpS * triggerSlow;
-
-                    var translation = new Translation2d(motionXComponent, motionYComponent);
-
-                    //     SmartDashboard.putNumber(
-                    //             "calculate tx er ror",
-                    //             XYcontroller.calculate(txSupplier.getAsDouble()));
-                    //     SmartDashboard.putNumber("tx", txSupplier.getAsDouble());
-
-                    if (lockScore && fieldOriented && !autoSteer && !lockIntake && !balanceAssist) {
-                        double error = swerve.getHeading();
-                        correct = false;
-                        // SmartDashboard.putNumber("done rotating", (error % 360) - 180);
-                        // SmartDashboard.putNumber("error", error);
-                        // SmartDashboard.putNumber(
-                        //         "error calculaute",
-                        //
-                        // SwerveDriveConstants.kAutoSteerHeadingController.calculate(error));
-                        motionTurnComponent =
-                                (Math.abs((error % 360) - 180) < 1
-                                                || Math.abs((error % 360) + 180) < 1)
-                                        ? 0.1 * motionTurnComponent
-                                        : SwerveDriveConstants.kAutoSteerHeadingController
-                                                .calculate(error - 180);
-                        if (piece == GamePiece.Cone) {
-                            motionYComponent =
-                                    (Math.abs((error % 360) - 180) < 15
-                                                            || Math.abs((error % 360) + 180) < 15)
-                                                    && Math.abs(txSupplier.getAsDouble()) > 1
-                                            ? XYcontroller.calculate(txSupplier.getAsDouble())
-                                            : motionYComponent;
-                        }
-                        translation = new Translation2d(motionXComponent, motionYComponent);
-                    } else if (lockIntake
-                            && fieldOriented
-                            && !autoSteer
-                            && !lockScore
-                            && !balanceAssist) {
-                        correct = false;
-                        double error = swerve.getHeading();
-                        // SmartDashboard.putBoolean("error less 1", Math.abs(error) < 1);
-                        // SmartDashboard.putNumber("erroe", error);
-                        // SmartDashboard.putNumber(
-                        //         "error correction",
-                        //
-                        // SwerveDriveConstants.kAutoSteerHeadingController.calculate(error));
-                        motionTurnComponent =
-                                Math.abs(error) < 1
-                                        ? 0.1 * motionTurnComponent
-                                        : SwerveDriveConstants.kAutoSteerHeadingController
-                                                        .calculate(error)
-                                                + 0.1 * motionTurnComponent;
-                    } else if (balanceAssist
-                            && !autoSteer
-                            && fieldOriented
-                            && !lockScore
-                            && !lockIntake) {
-                        correct = false;
-                        motionYComponent = 0.1 * motionYComponent;
-                        motionXComponent =
-                                XYcontroller.calculate(swerve.getPitch() * 0.01, 0)
-                                        + 0.2 * motionXComponent;
-                        translation = new Translation2d(motionXComponent, motionYComponent);
-                    }
-
-                    if (autoSteer && fieldOriented && !lockScore && !balanceAssist && !lockIntake) {
-                        correct = false;
-
-                        var autoSteerVelocities = autoSteerVelocitiesSupplier.get();
-                        // SmartDashboard.putNumber("autoSteerVelocities.dy",
-                        // autoSteerVelocities.dy);
-                        // completely take over rotation for heading lock unless driver wants to
-                        // change setpoint
-                        motionTurnComponent =
-                                Math.abs(motionTurnComponent) < .1
-                                        ? autoSteerVelocities.dtheta
-                                                + Math.signum(autoSteerVelocities.dtheta) * 0.1
-                                        : motionTurnComponent;
-
-                        var driverY = Math.abs(motionYComponent) > 0.3 ? motionYComponent : 0.0;
-                        motionYComponent = driverY * 1.4 + autoSteerVelocities.dy;
-                        // SmartDashboard.putNumber("autoSteerVelocities.dx after",
-                        // motionXComponent);
-                        // SmartDashboard.putNumber("autoSteerVelocities.dy after",
-                        // motionYComponent);
-                        translation = new Translation2d(motionXComponent, motionYComponent);
-                        openloop = false;
-                    }
-                    // SmartDashboard.putNumber("wanted Y", translation.getY());
-                    // SmartDashboard.putNumber("wanted X", translation.getX());
-                    var rotation = motionTurnComponent;
-                    swerve.drive(translation, rotation, fieldOriented, openloop, correct);
+                    double xVelocity = supplier.get().dx;
+                    double yVelocity = supplier.get().dy;
+                    double rotation = supplier.get().dtheta;
+                    boolean correct = shouldCorrect.getAsBoolean();
+                    Translation2d translation = new Translation2d(xVelocity, yVelocity);
+                    swerve.drive(translation, rotation, true, true, correct);
                 },
                 swerve);
     }

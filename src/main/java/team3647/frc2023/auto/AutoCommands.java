@@ -562,8 +562,8 @@ public class AutoCommands {
                         driveForward().until(() -> (drive.getPitch() < -1)),
                         driveForward().withTimeout(1.5),
                         driveBackward().until(() -> (drive.getPitch() > 1)),
-                        driveBackward(() -> 0.5).withTimeout(1.5),
-                        driveForward(() -> -0.5).until(() -> (drive.getPitch() > 9)),
+                        driveBackward().withTimeout(1.5),
+                        driveForward().until(() -> (drive.getPitch() > 9)),
                         driveForward().until(() -> (drive.getPitch() < 9)),
                         // rotateAndBalance(SwerveDriveConstants.kAutoSteerHeadingController),
                         lock());
