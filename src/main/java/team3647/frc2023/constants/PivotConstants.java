@@ -70,8 +70,8 @@ public class PivotConstants {
         // kMasterVoltage.PeakReverseVoltage = nominalVoltage;
         kMasterCurrent.StatorCurrentLimitEnable = true;
         kMasterCurrent.StatorCurrentLimit = kMaxCurrent;
-        kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks * 1.2;
-        kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks * 1.2;
+        kMasterMotionMagic.MotionMagicAcceleration = kMaxVelocityTicks * 1.8;
+        kMasterMotionMagic.MotionMagicCruiseVelocity = kMaxAccelerationTicks * 1.8;
         kMasterMotorOutput.PeakReverseDutyCycle = -0.5;
         kMasterMotorOutput.NeutralMode = NeutralModeValue.Brake;
         kMasterMotorOutput.Inverted = InvertedValue.Clockwise_Positive;

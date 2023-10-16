@@ -336,6 +336,37 @@ public class AutoCommands {
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(2),
+                superstructure.stow().withTimeout(1),
+                // Commands.waitSeconds(0.2),
+                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                // Commands.waitSeconds(0.5),
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
+                // Commands.waitSeconds(0.5),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(7),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(3),
+                superstructure.stow().withTimeout(1),
+                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
+                // Commands.waitSeconds(0.2),
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore));
+    }
+
+    private Command getSupestructureSequenceConeCubeCubeFlat() {
+        return Commands.sequence(
+                justScore(
+                                SuperstructureState.coneThreeReversed,
+                                SuperstructureState.stowAfterConeThreeReversed)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                Commands.waitSeconds(0.2),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(7),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.25))
                         .withTimeout(2),
                 superstructure.stow().withTimeout(1),
@@ -349,7 +380,7 @@ public class AutoCommands {
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.25))
-                        .withTimeout(3),
+                        .withTimeout(2),
                 superstructure.stow().withTimeout(1),
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
                 // Commands.waitSeconds(0.2),

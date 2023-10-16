@@ -8,7 +8,7 @@ public final class WristConstants {
     public static final TalonFX kMaster = new TalonFX(GlobalConstants.WristIds.kMasterId);
     // public static final InvertType kMasterInvert = InvertType.InvertMotorOutput;
 
-    private static final double kGearBoxRatio = 1.0 / 70;
+    private static final double kGearBoxRatio = 1.0 / 200;
     private static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
     public static final double kNativePosToDegrees = kGearBoxRatio * 360.0;
