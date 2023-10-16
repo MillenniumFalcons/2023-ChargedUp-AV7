@@ -95,16 +95,13 @@ public class DrivetrainCommands {
                                                 || Math.abs((error % 360) + 180) < 1)
                                         ? 0.1 * motionTurnComponent
                                         : SwerveDriveConstants.kAutoSteerHeadingController
-                                                        .calculate(error - 180)
-                                                + 0.1 * motionTurnComponent;
+                                                .calculate(error - 180);
                         if (piece == GamePiece.Cone) {
                             motionYComponent =
                                     (Math.abs((error % 360) - 180) < 15
                                                             || Math.abs((error % 360) + 180) < 15)
                                                     && Math.abs(txSupplier.getAsDouble()) > 1
-                                            ? motionYComponent * 0.1
-                                                    + XYcontroller.calculate(
-                                                            txSupplier.getAsDouble())
+                                            ? XYcontroller.calculate(txSupplier.getAsDouble())
                                             : motionYComponent;
                         }
                         translation = new Translation2d(motionXComponent, motionYComponent);

@@ -80,6 +80,17 @@ public class Superstructure {
                                 getWantedLevel(), this.currentGamePiece));
     }
 
+    public Command armAutomaticNoExtend() {
+        return Commands.run(
+                () -> {
+                    SuperstructureState baseState =
+                            finder.getSuperstructureStateByPiece(
+                                    getWantedLevel(), this.currentGamePiece);
+                    SuperstructureState noExtendState = baseState.noExtend();
+                    goToStateParallel(noExtendState);
+                });
+    }
+
     public Command intakeAutomatic() {
         // printer.addBoolean("ground cone", () -> isGround);
 

@@ -96,6 +96,7 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
+                .and(isAligned)
                 .whileTrue(superstructure.armAutomatic())
                 // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(
@@ -103,6 +104,18 @@ public class RobotContainer {
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
                                                 LimelightConstant.kLimelightCenterHost)));
+        mainController
+                .rightTrigger
+                .and(() -> !superstructure.isBottomF())
+                .and(() -> !isAligned.getAsBoolean())
+                .whileTrue(superstructure.armAutomaticNoExtend())
+                // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        LimelightHelpers.setLEDMode_ForceOn(
+                                                LimelightConstant.kLimelightCenterHost)));
+
         // LED
         mainController.rightTrigger.onTrue(
                 Commands.runOnce(
@@ -113,6 +126,7 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
+                .and(isAligned)
                 .and(mainController.leftBumper.negate())
                 .onFalse(
                         Commands.runOnce(
