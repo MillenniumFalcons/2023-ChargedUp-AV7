@@ -15,7 +15,6 @@ public class LimelightTriggers {
     private Superstructure superstructure;
     private Rollers rollers;
     private CubeShooterTop cubeShooterTop;
-    private Joysticks mainController;
     private Joysticks coController;
     private SwerveDrive swerve;
 
@@ -23,13 +22,11 @@ public class LimelightTriggers {
             Superstructure superstructure,
             Rollers rollers,
             CubeShooterTop cubeShooterTop,
-            Joysticks mainController,
             Joysticks coController,
             SwerveDrive swerve) {
         this.superstructure = superstructure;
         this.rollers = rollers;
         this.cubeShooterTop = cubeShooterTop;
-        this.mainController = mainController;
         this.coController = coController;
         this.swerve = swerve;
     }
@@ -53,8 +50,6 @@ public class LimelightTriggers {
     public final Trigger wantedCube =
             new Trigger(
                     () -> superstructure.getWantedIntakePiece() == PositionFinder.GamePiece.Cube);
-
-    public final Trigger wantedGroundCube = mainController.leftBumper;
 
     public final Trigger isAligned =
             new Trigger(

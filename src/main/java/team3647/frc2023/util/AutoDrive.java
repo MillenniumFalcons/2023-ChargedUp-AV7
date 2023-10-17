@@ -43,28 +43,36 @@ public class AutoDrive {
     }
 
     public Command lockY() {
-        return Commands.run(() -> this.lockY = true);
+        return Commands.runOnce(() -> this.lockY = true);
     }
 
     public Command unlockY() {
-        return Commands.run(() -> this.lockY = false);
+        return Commands.runOnce(() -> this.lockY = false);
     }
 
     public Command lockRot(double setpoint) {
-        return Commands.run(
-                () -> {
-                    this.lockRotation = true;
-                    turnSetpoint =
-                            (Math.abs((swerve.getHeading() % 360) - setpoint) < 1
-                                            || Math.abs((swerve.getHeading() % 360) + setpoint) < 1)
-                                    ? 0
-                                    : SwerveDriveConstants.kAutoSteerHeadingController.calculate(
-                                            swerve.getHeading() - setpoint);
-                });
+        return Commands.sequence(
+                Commands.runOnce(() -> this.lockRotation = true),
+                Commands.run(
+                                () -> {
+                                    turnSetpoint =
+                                            (Math.abs((swerve.getHeading() % 360) - setpoint) < 1
+                                                            || Math.abs(
+                                                                            (swerve.getHeading()
+                                                                                            % 360)
+                                                                                    + setpoint)
+                                                                    < 1)
+                                                    ? 0
+                                                    : SwerveDriveConstants
+                                                            .kAutoSteerHeadingController
+                                                            .calculate(
+                                                                    swerve.getHeading() - setpoint);
+                                })
+                        .until(() -> this.lockRotation == false));
     }
 
     public Command unlockRot() {
-        return Commands.run(() -> this.lockRotation = false);
+        return Commands.runOnce(() -> this.lockRotation = false);
     }
 
     public Command enable() {
@@ -76,7 +84,9 @@ public class AutoDrive {
     }
 
     public double getYVelocity() {
-        return lockY && enabled ? xyController.calculate(txSupplier.getAsDouble()) : 0;
+        return lockY && enabled && Math.abs(txSupplier.getAsDouble()) > 1
+                ? xyController.calculate(txSupplier.getAsDouble())
+                : 0;
     }
 
     public double getRotation() {

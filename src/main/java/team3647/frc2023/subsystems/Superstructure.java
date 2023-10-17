@@ -81,15 +81,14 @@ public class Superstructure {
     }
 
     public Command armAutomaticNoExtend() {
-        return Commands.run(
-                () -> {
-                    SuperstructureState baseState =
-                            finder.getSuperstructureStateByPiece(
-                                    getWantedLevel(), this.currentGamePiece);
-                    SuperstructureState noExtendState = baseState.noExtend();
-                    goToStateParallel(noExtendState);
-                });
+        return goToStateParallel(
+                () ->
+                        finder.getSuperstructureStateByPiece(
+                                        getWantedLevel(), this.currentGamePiece)
+                                .noExtend());
+        // SmartDashboard.putNumber(getWantedIntakePieceString(), extendAdjust)
     }
+    ;
 
     public Command intakeAutomatic() {
         // printer.addBoolean("ground cone", () -> isGround);

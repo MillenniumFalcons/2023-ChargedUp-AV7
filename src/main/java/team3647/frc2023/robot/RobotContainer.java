@@ -98,25 +98,28 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
-                .and(limelightTriggers.isAligned)
-                .whileTrue(superstructure.armAutomatic())
+                .whileTrue(
+                        superstructure
+                                .armAutomaticNoExtend()
+                                .until(limelightTriggers.isAligned)
+                                .andThen(superstructure.armAutomatic()))
                 // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(
                         Commands.runOnce(
                                 () ->
                                         LimelightHelpers.setLEDMode_ForceOn(
                                                 LimelightConstant.kLimelightCenterHost)));
-        mainController
-                .rightTrigger
-                .and(() -> !superstructure.isBottomF())
-                .and(() -> !limelightTriggers.isAligned.getAsBoolean())
-                .whileTrue(superstructure.armAutomaticNoExtend())
-                // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
-                .onTrue(
-                        Commands.runOnce(
-                                () ->
-                                        LimelightHelpers.setLEDMode_ForceOn(
-                                                LimelightConstant.kLimelightCenterHost)));
+        // mainController
+        //         .rightTrigger
+        //         .and(() -> !superstructure.isBottomF())
+        //         .and(() -> !shouldExtendScore.getAsBoolean())
+        //         .whileTrue(superstructure.armAutomaticNoExtend())
+        //         // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
+        //         .onTrue(
+        //                 Commands.runOnce(
+        //                         () ->
+        //                                 LimelightHelpers.setLEDMode_ForceOn(
+        //                                         LimelightConstant.kLimelightCenterHost)));
 
         // LED
         mainController.rightTrigger.onTrue(
@@ -128,7 +131,7 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
-                .and(limelightTriggers.isAligned)
+                // .and(shouldExtendScore)
                 .and(mainController.leftBumper.negate())
                 .onFalse(
                         Commands.runOnce(
@@ -216,7 +219,7 @@ public class RobotContainer {
         // coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
         goodForLockIntake.onTrue(autoDrive.lockRot(0));
-        goodForLockIntake.onFalse(autoDrive.unlockRot());
+        goodForLockIntake.onFalse(autoDrive.unlockRot().withTimeout(0.1));
         goodForLockScore.onTrue(autoDrive.lockRot(180));
         goodForLockScore.and(() -> autoDrive.isAlmostDone()).onTrue(autoDrive.lockY());
         goodForLockScore.onFalse(autoDrive.unlockRot()).onFalse(autoDrive.unlockY());
@@ -335,7 +338,7 @@ public class RobotContainer {
     public void configureSmartDashboardLogging() {
         printer.addDouble("co right x", coController::getRightStickY);
         printer.addPose("odo", swerve::getOdoPose);
-        printer.addDouble("Extender amps", extender::getMasterCurrent);
+        // printer.addDouble("Extender amps", extender::getMasterCurrent);
         // printer.addDouble("drive speed", swerve::getAverageSpeed);
         printer.addDouble("rollers", rollers::getSpeed);
         printer.addDouble("PIVOT", pivot::getAngle);
@@ -352,21 +355,26 @@ public class RobotContainer {
         printer.addBoolean("ground cone intake", groundConeIntake::getAsBoolean);
         printer.addBoolean("tof Dist", cubeWrist::isSensorTriggered);
         printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
-        printer.addBoolean("cube", () -> limelightTriggers.wantedCube.getAsBoolean());
-        printer.addDouble(
-                "tx", () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost));
-        printer.addBoolean(
-                "aligned",
-                () ->
-                        (Math.abs(-LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost))
-                                        < 1)
-                                && (Math.abs(
-                                                -LimelightHelpers.getTX(
-                                                        LimelightConstant.kLimelightCenterHost))
-                                        > 0)
-                                && (Math.abs((swerve.getHeading() % 360) - 180) < 30
-                                        || Math.abs((swerve.getHeading() % 360) + 180) < 30));
-        printer.addString("stored", LEDS::getStoredPiece);
+        printer.addBoolean("llock y", autoDrive::getLockY);
+        printer.addBoolean("lock rot", autoDrive::getLockRot);
+        printer.addBoolean("intkae", () -> goodForLockIntake.getAsBoolean());
+        printer.addBoolean("score", () -> goodForLockScore.getAsBoolean());
+        // printer.addBoolean("cube", () -> limelightTriggers.wantedCube.getAsBoolean());
+        // printer.addDouble(
+        //         "tx", () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost));
+        // printer.addBoolean(
+        //         "aligned",
+        //         () ->
+        //
+        // (Math.abs(-LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost))
+        //                                 < 1)
+        //                         && (Math.abs(
+        //                                         -LimelightHelpers.getTX(
+        //                                                 LimelightConstant.kLimelightCenterHost))
+        //                                 > 0)
+        //                         && (Math.abs((swerve.getHeading() % 360) - 180) < 30
+        //                                 || Math.abs((swerve.getHeading() % 360) + 180) < 30));
+        // printer.addString("stored", LEDS::getStoredPiece);
     }
 
     // counted relative to what driver sees
@@ -497,8 +505,7 @@ public class RobotContainer {
                     mainController::anyStickMovedFast);
 
     public final LimelightTriggers limelightTriggers =
-            new LimelightTriggers(
-                    superstructure, rollers, cubeShooterTop, mainController, coController, swerve);
+            new LimelightTriggers(superstructure, rollers, cubeShooterTop, coController, swerve);
     public final AutoDrive autoDrive =
             new AutoDrive(
                     SwerveDriveConstants.kAutoSteerXYPIDController,
@@ -516,6 +523,11 @@ public class RobotContainer {
             autoCommands.justScore(SuperstructureState.cubeThreeReversed);
 
     private final Trigger globalEnableAutosteer = new Trigger(superstructure::autoSteerEnabled);
+
+    private final Trigger shouldExtendScore =
+            new Trigger(limelightTriggers.isAligned)
+                    .or(() -> superstructure.getCurrentIntakePiece() == GamePiece.Cube);
+
     private final BooleanSupplier goodForAutosteer =
             globalEnableAutosteer
                     .and(mainController.rightTrigger)
