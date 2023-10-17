@@ -98,11 +98,23 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
+                .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
                 .whileTrue(
                         superstructure
                                 .armAutomaticNoExtend()
                                 .until(limelightTriggers.isAligned)
                                 .andThen(superstructure.armAutomatic()))
+                // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
+                .onTrue(
+                        Commands.runOnce(
+                                () ->
+                                        LimelightHelpers.setLEDMode_ForceOn(
+                                                LimelightConstant.kLimelightCenterHost)));
+        mainController
+                .rightTrigger
+                .and(() -> !superstructure.isBottomF())
+                .and(() -> superstructure.getGamePiece() == GamePiece.Cube)
+                .whileTrue(superstructure.armAutomatic())
                 // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(
                         Commands.runOnce(
@@ -542,6 +554,7 @@ public class RobotContainer {
             mainController
                     .buttonY
                     .and(mainController.rightTrigger)
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
                     .and(() -> !superstructure.isBottomF());
     //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
     //     .and(() -> superstructure.getWantedLevel() != Level.Ground);
