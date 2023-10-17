@@ -40,15 +40,33 @@ public class DrivetrainCommands {
                 swerve);
     }
 
-    public Command driveVisionTeleop(Supplier<Twist2d> supplier, BooleanSupplier shouldCorrect) {
+    public Command driveVisionTeleop(
+            DoubleSupplier xSpeedFunction,
+            DoubleSupplier ySpeedFunction,
+            DoubleSupplier turnSpeedFunction,
+            Supplier<Twist2d> supplier,
+            BooleanSupplier shouldLockY,
+            BooleanSupplier shouldLockRotation,
+            BooleanSupplier triggerSlowMode,
+            BooleanSupplier shouldCorrect) {
         return Commands.run(
                 () -> {
-                    double xVelocity = supplier.get().dx;
-                    double yVelocity = supplier.get().dy;
-                    double rotation = supplier.get().dtheta;
+                    double triggerSlow = triggerSlowMode.getAsBoolean() ? 0.5 : 1;
+                    boolean lockY = shouldLockY.getAsBoolean();
+                    boolean lockRotation = shouldLockRotation.getAsBoolean();
+                    var motionXComponent = ySpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
+                    // right stick X, (negative so that left positive)
+                    var motionYComponent = -xSpeedFunction.getAsDouble() * maxSpeed * triggerSlow;
+
+                    var motionTurnComponent =
+                            -turnSpeedFunction.getAsDouble() * maxRotationRadpS * triggerSlow;
+                    motionYComponent = lockY ? supplier.get().dy : motionYComponent;
+                    motionTurnComponent =
+                            lockRotation ? supplier.get().dtheta : motionTurnComponent;
                     boolean correct = shouldCorrect.getAsBoolean();
-                    Translation2d translation = new Translation2d(xVelocity, yVelocity);
-                    swerve.drive(translation, rotation, true, true, correct);
+                    Translation2d translation =
+                            new Translation2d(motionXComponent, motionYComponent);
+                    swerve.drive(translation, motionTurnComponent, true, true, correct);
                 },
                 swerve);
     }

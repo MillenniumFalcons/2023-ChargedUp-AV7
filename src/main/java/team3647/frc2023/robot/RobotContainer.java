@@ -41,7 +41,6 @@ import team3647.frc2023.subsystems.Superstructure.StationType;
 import team3647.frc2023.subsystems.SwerveDrive;
 import team3647.frc2023.subsystems.Wrist;
 import team3647.frc2023.util.AutoDrive;
-import team3647.frc2023.util.AutoDrive.DriveMode;
 import team3647.frc2023.util.AutoSteer;
 import team3647.frc2023.util.LimelightTriggers;
 import team3647.frc2023.util.SuperstructureState;
@@ -215,6 +214,15 @@ public class RobotContainer {
 
         coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
         coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
+
+        goodForLockIntake.onTrue(autoDrive.lockRot(0));
+        goodForLockIntake.onFalse(autoDrive.unlockRot());
+        goodForLockScore.onTrue(autoDrive.lockRot(180)).onTrue(autoDrive.lockY());
+        goodForLockScore.onFalse(autoDrive.unlockRot()).onFalse(autoDrive.unlockY());
+
+        mainController.leftMidButton.onTrue(autoDrive.disable());
+        mainController.rightMidButton.onTrue(autoDrive.enable());
+
         // LED Triggers
         limelightTriggers.currentCone.onTrue(LEDS.setPiece(Piece.cone));
         limelightTriggers.currentCube.onTrue(LEDS.setPiece(Piece.cube));
@@ -222,11 +230,6 @@ public class RobotContainer {
 
         limelightTriggers.wantedCone.onTrue(LEDS.setWantedPiece(Piece.cone));
         limelightTriggers.wantedCube.onTrue(LEDS.setWantedPiece(Piece.cube));
-
-        autoDrive.goodForLockIntake.onTrue(autoDrive.changeMode(DriveMode.Intake));
-        autoDrive.goodForLockIntake.onFalse(autoDrive.changeMode(DriveMode.Manual));
-        autoDrive.goodForLockScore.onTrue(autoDrive.changeMode(DriveMode.Score));
-        autoDrive.goodForLockScore.onFalse(autoDrive.changeMode(DriveMode.Manual));
         // wantedGroundCube.onTrue(
         //         Commands.sequence(LEDS.storePiece(), LEDS.setWantedPiece(Piece.groundcube)));
         // wantedGroundCube.onFalse(LEDS.unStore());
@@ -285,7 +288,14 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         swerve.setDefaultCommand(
                 superstructure.drivetrainCommands.driveVisionTeleop(
-                        autoDrive::getVelocities, autoDrive::getIsManual));
+                        mainController::getLeftStickX,
+                        mainController::getLeftStickY,
+                        mainController::getRightStickX,
+                        autoDrive::getVelocities,
+                        autoDrive::getLockY,
+                        autoDrive::getLockRot,
+                        mainController.leftTrigger,
+                        autoDrive::isAllDisabled));
 
         // wrist.setDefaultCommand(superstructure.wristCommands.holdPositionAtCall());
         pivot.setDefaultCommand(superstructure.pivotCommands.holdPositionAtCall());
@@ -490,12 +500,8 @@ public class RobotContainer {
                     superstructure, rollers, cubeShooterTop, mainController, coController, swerve);
     public final AutoDrive autoDrive =
             new AutoDrive(
-                    mainController,
-                    superstructure,
                     SwerveDriveConstants.kAutoSteerXYPIDController,
-                    superstructure::getGamePiece,
                     swerve,
-                    mainController.leftTrigger,
                     () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost));
 
     private final CommandScheduler scheduler = CommandScheduler.getInstance();
@@ -518,6 +524,20 @@ public class RobotContainer {
                     .or(
                             mainController.rightBumper.and(
                                     () -> superstructure.getWantedStation() == StationType.Double));
+
+    public final Trigger goodForLockScore =
+            mainController
+                    .buttonY
+                    .and(mainController.rightTrigger)
+                    .and(() -> !superstructure.isBottomF())
+            //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+            //     .and(() -> superstructure.getWantedLevel() != Level.Ground);
+            ;
+    public final Trigger goodForLockIntake =
+            mainController.rightBumper.and(
+                    () ->
+                            (superstructure.getWantedStation() == StationType.Double
+                                    || superstructure.getWantedIntakePiece() == GamePiece.Cone));
 
     private final BooleanSupplier groundConeIntake =
             () ->
