@@ -24,6 +24,12 @@ public class AutoDrive {
         xyController.setTolerance(1);
     }
 
+    public boolean isAlmostDone() {
+        return (Math.abs((swerve.getHeading() % 360) - 180) < 15
+                        || Math.abs((swerve.getHeading() % 360) + 180) < 15)
+                && Math.abs(txSupplier.getAsDouble()) > 1;
+    }
+
     public boolean getLockY() {
         return lockY;
     }

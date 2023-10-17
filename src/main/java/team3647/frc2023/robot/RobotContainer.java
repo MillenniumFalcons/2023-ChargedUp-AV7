@@ -212,12 +212,13 @@ public class RobotContainer {
                 .or(coController.rightTrigger)
                 .onTrue(superstructure.setWantedIntakeGamePieceCommand(GamePiece.Cube));
 
-        coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
-        coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
+        // coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
+        // coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
         goodForLockIntake.onTrue(autoDrive.lockRot(0));
         goodForLockIntake.onFalse(autoDrive.unlockRot());
-        goodForLockScore.onTrue(autoDrive.lockRot(180)).onTrue(autoDrive.lockY());
+        goodForLockScore.onTrue(autoDrive.lockRot(180));
+        goodForLockScore.and(() -> autoDrive.isAlmostDone()).onTrue(autoDrive.lockY());
         goodForLockScore.onFalse(autoDrive.unlockRot()).onFalse(autoDrive.unlockY());
 
         mainController.leftMidButton.onTrue(autoDrive.disable());
@@ -529,10 +530,10 @@ public class RobotContainer {
             mainController
                     .buttonY
                     .and(mainController.rightTrigger)
-                    .and(() -> !superstructure.isBottomF())
-            //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
-            //     .and(() -> superstructure.getWantedLevel() != Level.Ground);
-            ;
+                    .and(() -> !superstructure.isBottomF());
+    //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+    //     .and(() -> superstructure.getWantedLevel() != Level.Ground);
+
     public final Trigger goodForLockIntake =
             mainController.rightBumper.and(
                     () ->
