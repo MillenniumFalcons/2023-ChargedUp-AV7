@@ -99,6 +99,7 @@ public class RobotContainer {
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
                 .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                .and(() -> autoDrive.isEnabled())
                 .whileTrue(
                         superstructure
                                 .armAutomaticNoExtend()
@@ -113,7 +114,10 @@ public class RobotContainer {
         mainController
                 .rightTrigger
                 .and(() -> !superstructure.isBottomF())
-                .and(() -> superstructure.getGamePiece() == GamePiece.Cube)
+                .and(
+                        () ->
+                                superstructure.getGamePiece() == GamePiece.Cube
+                                        || !autoDrive.isEnabled())
                 .whileTrue(superstructure.armAutomatic())
                 // .onTrue(Commands.runOnce(autoSteer::initializeSteering))
                 .onTrue(

@@ -31,11 +31,11 @@ public class AutoDrive {
     }
 
     public boolean getLockY() {
-        return lockY;
+        return lockY && enabled;
     }
 
     public boolean getLockRot() {
-        return lockRotation;
+        return lockRotation && enabled;
     }
 
     public boolean isAllDisabled() {
@@ -76,11 +76,15 @@ public class AutoDrive {
     }
 
     public Command enable() {
-        return Commands.run(() -> this.enabled = true);
+        return Commands.runOnce(() -> this.enabled = true);
     }
 
     public Command disable() {
-        return Commands.run(() -> this.enabled = false);
+        return Commands.runOnce(() -> this.enabled = false);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public double getYVelocity() {
