@@ -125,7 +125,7 @@ public class SuperstructureState {
             new SuperstructureState(
                     199, ExtenderConstants.kMinimumPositionTicks, 12, "ground intake cube");
     public static final SuperstructureState pushDownStation =
-            new SuperstructureState(190, ExtenderConstants.kMinimumPositionTicks, 12, "push down");
+            new SuperstructureState(193, ExtenderConstants.kMinimumPositionTicks, 12, "push down");
 
     public static final SuperstructureState groundIntakeCubeLong =
             new SuperstructureState(184, 57500, 43, "ground intake long");
@@ -172,7 +172,7 @@ public class SuperstructureState {
             new SuperstructureState(25, 30000, "cube yeeter");
 
     public static final SuperstructureState untipReverse =
-            new SuperstructureState(-10, 0, -40, "untip");
+            new SuperstructureState(-5, 0, 30, "untip");
 
     public static final SuperstructureState lowCG = new SuperstructureState(160, 0, 104, "low cg");
 

@@ -31,8 +31,11 @@ public class AutoCommands {
     public final AutonomousMode blueConeCubeBalanceBumpSideMode;
     public final AutonomousMode blueConeScoreExitBalance;
     public final AutonomousMode blueConeCubeBalance;
+    public final AutonomousMode blueConeBalance;
     public final AutonomousMode blueJustScore;
     public final AutonomousMode blueJustDrive;
+    public final AutonomousMode blueConeCubeCubeLowBalanceBumpSide;
+    public final AutonomousMode blueConeTaxiBalance;
 
     public final AutonomousMode redConeCubeCubeBumpSideNoBump;
     public final AutonomousMode redConeCubeCubeFlatSideMode;
@@ -41,8 +44,11 @@ public class AutoCommands {
     public final AutonomousMode redConeCubeBalanceBumpSideMode;
     public final AutonomousMode redConeScoreExitBalance;
     public final AutonomousMode redConeCubeBalance;
+    public final AutonomousMode redConeBalance;
     public final AutonomousMode redJustScore;
     public final AutonomousMode redJustDrive;
+    public final AutonomousMode redConeCubeCubeLowBalanceBumpSide;
+    public final AutonomousMode redConeTaxiBalance;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -76,6 +82,9 @@ public class AutoCommands {
         blueConeCubeBalance =
                 new AutonomousMode(
                         coneCubeBalance(), Trajectories.Blue.coneCubeBalance.kFirstPathInitial);
+        blueConeBalance =
+                new AutonomousMode(
+                        coneBalance(), Trajectories.Blue.coneCubeBalance.kFirstPathInitial);
         blueJustScore =
                 new AutonomousMode(
                         justScore(SuperstructureState.coneThreeReversed),
@@ -87,6 +96,14 @@ public class AutoCommands {
         blueJustDrive =
                 new AutonomousMode(
                         justDrive(Alliance.Blue), Trajectories.Blue.justDrive.kFirstPathInitial);
+        blueConeCubeCubeLowBalanceBumpSide =
+                new AutonomousMode(
+                        coneCubeCubeLowBalanceBumpSideNoBump(Alliance.Blue),
+                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump.kFirstPathInitial);
+        blueConeTaxiBalance =
+                new AutonomousMode(
+                        coneTaxiBalance(),
+                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump.kFirstPathInitial);
 
         // red side modes
         redConeCubeCubeBumpSideNoBump =
@@ -114,6 +131,10 @@ public class AutoCommands {
                 new AutonomousMode(
                         coneCubeBalance(),
                         flipForPP(Trajectories.Blue.coneCubeBalance.kFirstPathInitial));
+        redConeBalance =
+                new AutonomousMode(
+                        coneBalance(),
+                        flipForPP(Trajectories.Blue.coneCubeBalance.kFirstPathInitial));
         redJustScore =
                 new AutonomousMode(
                         justScore(SuperstructureState.coneThreeReversed),
@@ -128,6 +149,16 @@ public class AutoCommands {
                 new AutonomousMode(
                         justDrive(Alliance.Red),
                         flipForPP(Trajectories.Blue.justDrive.kFirstPathInitial));
+        redConeCubeCubeLowBalanceBumpSide =
+                new AutonomousMode(
+                        coneCubeCubeLowBalanceBumpSideNoBump(Alliance.Blue),
+                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump.kFirstPathInitial);
+        redConeTaxiBalance =
+                new AutonomousMode(
+                        coneTaxiBalance(),
+                        flipForPP(
+                                Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                        .kFirstPathInitial));
     }
 
     public static Pose2d getJustScore(Pose2d pose) {
@@ -294,34 +325,68 @@ public class AutoCommands {
                 superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore));
     }
 
+    private Command getSuperstrcutreSequenceConeBalance() {
+        return Commands.sequence(
+                justScore(
+                                SuperstructureState.coneThreeReversed,
+                                SuperstructureState.stowAfterConeThreeReversed)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                superstructure
+                        .goToStateParallel(SuperstructureState.pushDownStation)
+                        .withTimeout(2),
+                Commands.waitSeconds(1),
+                superstructure.stow());
+    }
+
+    private Command getSupeStructureSequenceConeTaxiBalance() {
+        return Commands.sequence(
+                justScore(
+                                SuperstructureState.coneThreeReversed,
+                                SuperstructureState.stowAfterConeThreeReversed)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                // Commands.waitSeconds(0.5),
+                superstructure
+                        .goToStateParallel(SuperstructureState.pushDownStation)
+                        .withTimeout(2),
+                Commands.waitSeconds(1),
+                superstructure.stowScore().withTimeout(1),
+                Commands.waitSeconds(2),
+                superstructure.goToStateParallel(SuperstructureState.untipReverse).withTimeout(2),
+                Commands.waitSeconds(0.5),
+                superstructure.stowScore());
+    }
+
     private Command getSupestructureSeqeunceConeCubeBalance() {
         return Commands.sequence(
                 justScore(
                                 SuperstructureState.coneThreeReversed,
                                 SuperstructureState.stowAfterConeThreeReversed)
                         .raceWith(endRightAfterExtenderRetracted()),
-                Commands.waitSeconds(0.5),
+                // Commands.waitSeconds(0.5),
                 superstructure
-                        .goToStateParallel(SuperstructureState.groundIntakeCube)
+                        .goToStateParallel(SuperstructureState.pushDownStation)
                         .withTimeout(2),
-                superstructure.stow().withTimeout(1),
+                Commands.waitSeconds(1),
+                superstructure.stowScore().withTimeout(1),
+                Commands.waitSeconds(1.5),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.45))
-                        .withTimeout(2),
-                superstructure.stow().withTimeout(1),
-                superstructure
-                        .goToStateParallel(SuperstructureState.groundIntakeConeTipped)
-                        .withTimeout(2),
-                superstructure.stow().withTimeout(1),
-                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                        .withTimeout(1.3),
+                // superstructure.stow().withTimeout(1),
+                superstructure.goToStateParallel(SuperstructureState.untipReverse).withTimeout(2),
+                Commands.waitSeconds(1.2),
+                // superstructure.stowScore().withTimeout(1),
+                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
+                // Commands.waitSeconds(1),
                 // Commands.waitSeconds(0.5),
                 superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
                 superstructure
-                        .goToStateParallel(SuperstructureState.groundIntakeCube)
+                        .goToStateParallel(SuperstructureState.pushDownStation)
                         .withTimeout(2),
+                Commands.waitSeconds(1),
                 superstructure.stow().withTimeout(1));
     }
 
@@ -362,14 +427,14 @@ public class AutoCommands {
                                 SuperstructureState.coneThreeReversed,
                                 SuperstructureState.stowAfterConeThreeReversed)
                         .raceWith(endRightAfterExtenderRetracted()),
-                Commands.waitSeconds(0.2),
+                // Commands.waitSeconds(0.2),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
-                                superstructure.rollersCommands.openloop(() -> 0.25))
-                        .withTimeout(2),
-                superstructure.stow().withTimeout(1),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(1.5),
+                superstructure.stow().withTimeout(0.5),
                 // Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
                 // Commands.waitSeconds(0.5),
@@ -379,7 +444,7 @@ public class AutoCommands {
                                 superstructure.waitForCurrentSpike(7),
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
-                                superstructure.rollersCommands.openloop(() -> 0.25))
+                                superstructure.rollersCommands.openloop(() -> 0.45))
                         .withTimeout(2),
                 superstructure.stow().withTimeout(1),
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
@@ -428,6 +493,42 @@ public class AutoCommands {
                                         Trajectories.Blue.coneCubeCubeBumpSideNoBump
                                                 .kFourthTrajectory,
                                         color)));
+        // ,
+        return Commands.parallel(
+                drivetrainSequence, getSupestructureSequenceConeCubeCubeBumpNoBump());
+    }
+
+    public Command coneCubeCubeLowBalanceBumpSideNoBump(Alliance color) {
+        Command drivetrainSequence =
+                Commands.sequence(
+                        Commands.waitSeconds(1.8), // score cone
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                                .kFirstTrajectory,
+                                        color)),
+                        // rollers don't need waiting
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                                .kSecondTrajectory,
+                                        color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                                .kThirdTrajectory,
+                                        color)),
+                        // followTrajectory(
+                        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
+                        //                 Trajectories.Blue.ConeCubeBalanceBumpSide.kIntakeCube,
+                        //                 color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                                .kFourthTrajectory,
+                                        color)),
+                        driveForward().until(() -> (drive.getPitch() > 9)),
+                        driveForward().until(() -> (drive.getPitch() < 9)));
         // ,
         return Commands.parallel(
                 drivetrainSequence, getSupestructureSequenceConeCubeCubeBumpNoBump());
@@ -513,20 +614,28 @@ public class AutoCommands {
         return Commands.run(
                 () ->
                         drive.drive(
-                                new Translation2d(2, 0), rotation.getAsDouble(), true, true, false),
+                                new Translation2d(1.2, 0),
+                                rotation.getAsDouble(),
+                                true,
+                                true,
+                                false),
                 drive);
     }
 
     public Command driveForward() {
+        return driveForward(() -> 0);
+    }
+
+    public Command driveForwardSlwoly() {
         return Commands.run(
-                () -> drive.drive(new Translation2d(2, 0), 0, true, true, false), drive);
+                () -> drive.drive(new Translation2d(0.8, 0), 0, true, true, false), drive);
     }
 
     public Command driveBackward(DoubleSupplier rotation) {
         return Commands.run(
                 () ->
                         drive.drive(
-                                new Translation2d(-1, 0),
+                                new Translation2d(-1.2, 0),
                                 rotation.getAsDouble(),
                                 true,
                                 true,
@@ -535,8 +644,17 @@ public class AutoCommands {
     }
 
     public Command driveBackward() {
+        return driveBackward(() -> 0);
+    }
+
+    public Command driveBackwardSlowly() {
         return Commands.run(
-                () -> drive.drive(new Translation2d(-1, 0), 0, true, true, false), drive);
+                () -> drive.drive(new Translation2d(-0.8, 0), 0, true, true, false), drive);
+    }
+
+    public Command driveNowhere() {
+        return Commands.run(
+                () -> drive.drive(new Translation2d(0, 0), 0, true, true, false), drive);
     }
 
     public Command lock() {
@@ -548,10 +666,10 @@ public class AutoCommands {
                 .withTimeout(0.1);
     }
 
-    public Command coneCubeBalance() {
+    public Command coneBalance() {
         Command drivetrainSequence =
                 Commands.sequence(
-                        Commands.waitSeconds(1.6),
+                        Commands.waitSeconds(2.5),
                         // followTrajectory(
                         //
                         // PathPlannerTrajectory.transformTrajectoryForAlliance(
@@ -559,15 +677,47 @@ public class AutoCommands {
                         // Trajectories.Blue.coneCubeBalance.kFirstTrajectory,
                         //                         color))
                         //         .until(() -> (drive.getPitch() < -0.1)),
-                        driveForward().until(() -> (drive.getPitch() < -1)),
-                        driveForward().withTimeout(1.5),
-                        driveBackward().until(() -> (drive.getPitch() > 1)),
-                        driveBackward().withTimeout(1.5),
-                        driveForward().until(() -> (drive.getPitch() > 9)),
-                        driveForward().until(() -> (drive.getPitch() < 9)),
+                        driveForward().until(() -> (drive.getPitch() < -13)),
+                        driveForward().until(() -> (drive.getPitch() > -13)),
+                        // rotateAndBalance(SwerveDriveConstants.kAutoSteerHeadingController),
+                        lock());
+        return Commands.parallel(drivetrainSequence, getSuperstrcutreSequenceConeBalance());
+    }
+
+    public Command coneCubeBalance() {
+        Command drivetrainSequence =
+                Commands.sequence(
+                        Commands.waitSeconds(3),
+                        // followTrajectory(
+                        //
+                        // PathPlannerTrajectory.transformTrajectoryForAlliance(
+                        //
+                        // Trajectories.Blue.coneCubeBalance.kFirstTrajectory,
+                        //                         color))
+                        //         .until(() -> (drive.getPitch() < -0.1)),
+                        driveForward().until(() -> (drive.getPitch() > 5)),
+                        driveForward().withTimeout(1.2),
+                        driveNowhere().withTimeout(1.5),
+                        driveBackward().until(() -> (drive.getPitch() < -5)),
+                        driveBackward().withTimeout(1.25),
+                        driveNowhere().withTimeout(1.2),
+                        driveForwardSlwoly().until(() -> (drive.getPitch() < -13)),
+                        driveForwardSlwoly().until(() -> (drive.getPitch() > -13)),
                         // rotateAndBalance(SwerveDriveConstants.kAutoSteerHeadingController),
                         lock());
         return Commands.parallel(drivetrainSequence, getSupestructureSeqeunceConeCubeBalance());
+    }
+
+    public Command coneTaxiBalance() {
+        Command drivetrainSeqeuence =
+                Commands.sequence(
+                        Commands.waitSeconds(3),
+                        driveForward().until(() -> (drive.getPitch() > 5)),
+                        driveForward().withTimeout(1.2),
+                        driveBackwardSlowly().until(() -> (drive.getPitch() > 13)),
+                        driveBackwardSlowly().until(() -> (drive.getPitch() < 13)),
+                        lock().withTimeout(0.1));
+        return Commands.parallel(drivetrainSeqeuence, getSupeStructureSequenceConeTaxiBalance());
     }
 
     public Command rotateAndBalance(PIDController controller) {
@@ -628,7 +778,7 @@ public class AutoCommands {
                                         color)));
 
         return Commands.parallel(
-                drivetrainSequence, getSupestructureSequenceConeCubeCubeBumpNoBump()
+                drivetrainSequence, getSupestructureSequenceConeCubeCubeFlat()
                 // getSupestructureSequenceConeCubeCubeMidFlat(
                 //         Trajectories.Blue.ConeCubeCubeMidBalanceFlatSide.kFirstTrajectory
                 //                 .getTotalTimeSeconds(),

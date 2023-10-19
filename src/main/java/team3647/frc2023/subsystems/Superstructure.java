@@ -350,7 +350,7 @@ public class Superstructure {
         return Commands.run(
                 () -> {
                     if (cubeWrist.isSensorTriggered()) {
-                        cubeShooterBottom.setOpenloop(-0.16);
+                        cubeShooterBottom.setOpenloop(0.16);
                     } else {
                         cubeShooterBottom.setOpenloop(0.0);
                     }
@@ -362,7 +362,7 @@ public class Superstructure {
         return Commands.run(
                 () -> {
                     if (cubeWrist.isSensorTriggered()) {
-                        cubeShooterTop.setOpenloop(-0.16);
+                        cubeShooterTop.setOpenloop(0.16);
                     } else {
                         cubeShooterTop.setOpenloop(0.0);
                     }

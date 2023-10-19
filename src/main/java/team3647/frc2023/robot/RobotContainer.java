@@ -83,7 +83,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
+        runningMode = autoCommands.redConeTaxiBalance;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -373,8 +373,9 @@ public class RobotContainer {
         printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
         printer.addBoolean("llock y", autoDrive::getLockY);
         printer.addBoolean("lock rot", autoDrive::getLockRot);
-        printer.addBoolean("intkae", () -> goodForLockIntake.getAsBoolean());
-        printer.addBoolean("score", () -> goodForLockScore.getAsBoolean());
+        printer.addDouble("ptich", swerve::getPitch);
+        // printer.addBoolean("intkae", () -> goodForLockIntake.getAsBoolean());
+        // printer.addBoolean("score", () -> goodForLockScore.getAsBoolean());
         // printer.addBoolean("cube", () -> limelightTriggers.wantedCube.getAsBoolean());
         // printer.addDouble(
         //         "tx", () -> -LimelightHelpers.getTX(LimelightConstant.kLimelightCenterHost));
