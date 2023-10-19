@@ -83,7 +83,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeTaxiBalance;
+        runningMode = autoCommands.redConeCubeCubeHoldBalance;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -239,6 +239,8 @@ public class RobotContainer {
         goodForLockScore.onTrue(autoDrive.lockRot(180));
         goodForLockScore.and(() -> autoDrive.isAlmostDone()).onTrue(autoDrive.lockY());
         goodForLockScore.onFalse(autoDrive.unlockRot()).onFalse(autoDrive.unlockY());
+        goodForLockCube.onTrue(autoDrive.lockRot(180));
+        goodForLockCube.onFalse(autoDrive.unlockRot());
 
         mainController.leftMidButton.onTrue(autoDrive.disable());
         mainController.rightMidButton.onTrue(autoDrive.enable());
@@ -557,9 +559,14 @@ public class RobotContainer {
 
     public final Trigger goodForLockScore =
             mainController
-                    .buttonY
-                    .and(mainController.rightTrigger)
+                    .rightTrigger
                     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
+                    .and(() -> !superstructure.isBottomF());
+
+    public final Trigger goodForLockCube =
+            mainController
+                    .rightTrigger
+                    .and(() -> superstructure.getGamePiece() == GamePiece.Cube)
                     .and(() -> !superstructure.isBottomF());
     //     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
     //     .and(() -> superstructure.getWantedLevel() != Level.Ground);

@@ -36,6 +36,7 @@ public class AutoCommands {
     public final AutonomousMode blueJustDrive;
     public final AutonomousMode blueConeCubeCubeLowBalanceBumpSide;
     public final AutonomousMode blueConeTaxiBalance;
+    public final AutonomousMode blueConeCubeCubeHoldBalance;
 
     public final AutonomousMode redConeCubeCubeBumpSideNoBump;
     public final AutonomousMode redConeCubeCubeFlatSideMode;
@@ -49,6 +50,7 @@ public class AutoCommands {
     public final AutonomousMode redJustDrive;
     public final AutonomousMode redConeCubeCubeLowBalanceBumpSide;
     public final AutonomousMode redConeTaxiBalance;
+    public final AutonomousMode redConeCubeCubeHoldBalance;
 
     public AutoCommands(
             SwerveDrive drive,
@@ -104,6 +106,10 @@ public class AutoCommands {
                 new AutonomousMode(
                         coneTaxiBalance(),
                         Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump.kFirstPathInitial);
+        blueConeCubeCubeHoldBalance =
+                new AutonomousMode(
+                        coneCubeCubeHoldBalanceBumpSideNoBump(Alliance.Blue),
+                        Trajectories.Blue.coneCubeCubeHoldBalanceBumpSideNoBump.kFirstPathInitial);
 
         // red side modes
         redConeCubeCubeBumpSideNoBump =
@@ -151,13 +157,21 @@ public class AutoCommands {
                         flipForPP(Trajectories.Blue.justDrive.kFirstPathInitial));
         redConeCubeCubeLowBalanceBumpSide =
                 new AutonomousMode(
-                        coneCubeCubeLowBalanceBumpSideNoBump(Alliance.Blue),
-                        Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump.kFirstPathInitial);
+                        coneCubeCubeLowBalanceBumpSideNoBump(Alliance.Red),
+                        flipForPP(
+                                Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                        .kFirstPathInitial));
         redConeTaxiBalance =
                 new AutonomousMode(
                         coneTaxiBalance(),
                         flipForPP(
                                 Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
+                                        .kFirstPathInitial));
+        redConeCubeCubeHoldBalance =
+                new AutonomousMode(
+                        coneCubeCubeHoldBalanceBumpSideNoBump(Alliance.Red),
+                        flipForPP(
+                                Trajectories.Blue.coneCubeCubeHoldBalanceBumpSideNoBump
                                         .kFirstPathInitial));
     }
 
@@ -421,6 +435,70 @@ public class AutoCommands {
                 superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore));
     }
 
+    private Command getSupestructureSequenceConeCubeCubeBumpNoBumpBalance() {
+        return Commands.sequence(
+                justScore(
+                                SuperstructureState.coneThreeReversed,
+                                SuperstructureState.stowAfterConeThreeReversed)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                Commands.waitSeconds(0.2),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(7),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(2),
+                superstructure.stow().withTimeout(1),
+                // Commands.waitSeconds(0.2),
+                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                // Commands.waitSeconds(0.5),
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
+                // Commands.waitSeconds(0.5),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(7),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(1.5),
+                // superstructure.stow().withTimeout(1),
+                superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
+                // Commands.waitSeconds(0.2),
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
+                superstructure.goToStateParallel(SuperstructureState.pushDownStation),
+                Commands.waitSeconds(1),
+                superstructure.stowScore());
+    }
+
+    private Command getSupestructureSequenceConeCubeCubeHoldBumpNoBumpBalance() {
+        return Commands.sequence(
+                justScore(
+                                SuperstructureState.coneThreeReversed,
+                                SuperstructureState.stowAfterConeThreeReversed)
+                        .raceWith(endRightAfterExtenderRetracted()),
+                Commands.waitSeconds(0.2),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(7),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(2),
+                superstructure.stow().withTimeout(1),
+                // Commands.waitSeconds(0.2),
+                superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
+                // Commands.waitSeconds(0.5),
+                superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
+                // Commands.waitSeconds(0.5),
+                Commands.deadline(
+                                superstructure.waitForCurrentSpike(7),
+                                superstructure.goToStateParallel(
+                                        SuperstructureState.longTongueCube),
+                                superstructure.rollersCommands.openloop(() -> 0.45))
+                        .withTimeout(1.5),
+                superstructure.goToStateParallel(SuperstructureState.untipReverse),
+                Commands.waitSeconds(1),
+                superstructure.goToStateParallel(SuperstructureState.backStow));
+    }
+
     private Command getSupestructureSequenceConeCubeCubeFlat() {
         return Commands.sequence(
                 justScore(
@@ -527,11 +605,50 @@ public class AutoCommands {
                                         Trajectories.Blue.coneCubeCubeBalanceBumpSideNoBump
                                                 .kFourthTrajectory,
                                         color)),
-                        driveForward().until(() -> (drive.getPitch() > 9)),
-                        driveForward().until(() -> (drive.getPitch() < 9)));
+                        driveForwardSlwoly().until(() -> (drive.getPitch() < -13)),
+                        driveForwardSlwoly().until(() -> (drive.getPitch() > -13)),
+                        lock());
         // ,
         return Commands.parallel(
-                drivetrainSequence, getSupestructureSequenceConeCubeCubeBumpNoBump());
+                drivetrainSequence, getSupestructureSequenceConeCubeCubeBumpNoBumpBalance());
+    }
+
+    public Command coneCubeCubeHoldBalanceBumpSideNoBump(Alliance color) {
+        Command drivetrainSequence =
+                Commands.sequence(
+                        Commands.waitSeconds(1.8), // score cone
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeHoldBalanceBumpSideNoBump
+                                                .kFirstTrajectory,
+                                        color)),
+                        // rollers don't need waiting
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeHoldBalanceBumpSideNoBump
+                                                .kSecondTrajectory,
+                                        color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeHoldBalanceBumpSideNoBump
+                                                .kThirdTrajectory,
+                                        color)),
+                        Commands.waitSeconds(0.8),
+                        // followTrajectory(
+                        //         PathPlannerTrajectory.transformTrajectoryForAlliance(
+                        //                 Trajectories.Blue.ConeCubeBalanceBumpSide.kIntakeCube,
+                        //                 color)),
+                        followTrajectory(
+                                PathPlannerTrajectory.transformTrajectoryForAlliance(
+                                        Trajectories.Blue.coneCubeCubeHoldBalanceBumpSideNoBump
+                                                .kFourthTrajectory,
+                                        color)),
+                        driveBackwardSlowly().until(() -> (drive.getPitch() > 13)),
+                        driveBackwardSlowly().until(() -> (drive.getPitch() < 13)),
+                        lock());
+        // ,
+        return Commands.parallel(
+                drivetrainSequence, getSupestructureSequenceConeCubeCubeHoldBumpNoBumpBalance());
     }
 
     public Command coneCubeBalanceBumpSide(Alliance color) {
