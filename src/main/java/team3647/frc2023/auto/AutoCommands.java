@@ -24,35 +24,37 @@ public class AutoCommands {
 
     public final AutonomousMode Test;
 
-    public final AutonomousMode blueConeCubeCubeBumpSideNoBump;
-    public final AutonomousMode blueConeCubeCubeFlatSideMode;
-    public final AutonomousMode blueConeCubeCubeMidFlatSideMode;
-    public final AutonomousMode blueConeCubeBalanceFlatSideMode;
-    public final AutonomousMode blueConeCubeBalanceBumpSideMode;
-    public final AutonomousMode blueConeScoreExitBalance;
-    public final AutonomousMode blueConeCubeBalance;
-    public final AutonomousMode blueConeBalance;
-    public final AutonomousMode blueJustScore;
-    public final AutonomousMode blueJustDrive;
-    public final AutonomousMode blueConeCubeCubeLowBalanceBumpSide;
-    public final AutonomousMode blueConeTaxiBalance;
-    public final AutonomousMode blueConeCubeCubeHoldBalance;
-    public final AutonomousMode blueConeCube2PieceBalance;
+    public final AutonomousMode blueConeCubeCubeBumpSideNoBump; // 3 piece bump side
+    public final AutonomousMode blueConeCubeCubeFlatSideMode; // dont use
+    public final AutonomousMode blueConeCubeCubeMidFlatSideMode; // 3 piece flat side
+    public final AutonomousMode blueConeCubeBalanceFlatSideMode; // dont use
+    public final AutonomousMode blueConeCubeBalanceBumpSideMode; // dont use
+    public final AutonomousMode blueConeScoreExitBalance; // dont use
+    public final AutonomousMode blueConeCubeBalance; // 2 piece and balance mid
+    public final AutonomousMode blueConeBalance; // balance straight from cone
+    public final AutonomousMode blueJustScore; // just score high cone
+    public final AutonomousMode blueJustDrive; // just drive forward
+    public final AutonomousMode
+            blueConeCubeCubeLowBalanceBumpSide; // 3 piece and balance bump side wip
+    public final AutonomousMode blueConeTaxiBalance; // over and back balance mid
+    public final AutonomousMode blueConeCubeCubeHoldBalance; // 2.5 piece and balance bump side wip
+    public final AutonomousMode blueConeCube2PieceBalance; // 2 piece and balance bump side
 
-    public final AutonomousMode redConeCubeCubeBumpSideNoBump;
-    public final AutonomousMode redConeCubeCubeFlatSideMode;
-    public final AutonomousMode redConeCubeCubeMidFlatSideMode;
-    public final AutonomousMode redConeCubeBalanceFlatSideMode;
-    public final AutonomousMode redConeCubeBalanceBumpSideMode;
-    public final AutonomousMode redConeScoreExitBalance;
-    public final AutonomousMode redConeCubeBalance;
-    public final AutonomousMode redConeBalance;
-    public final AutonomousMode redJustScore;
-    public final AutonomousMode redJustDrive;
-    public final AutonomousMode redConeCubeCubeLowBalanceBumpSide;
-    public final AutonomousMode redConeTaxiBalance;
-    public final AutonomousMode redConeCubeCubeHoldBalance;
-    public final AutonomousMode redConeCube2PieceBalance;
+    public final AutonomousMode redConeCubeCubeBumpSideNoBump; // 3 piece bump side
+    public final AutonomousMode redConeCubeCubeFlatSideMode; // dont use
+    public final AutonomousMode redConeCubeCubeMidFlatSideMode; // 3 piece flat side
+    public final AutonomousMode redConeCubeBalanceFlatSideMode; // dont use
+    public final AutonomousMode redConeCubeBalanceBumpSideMode; // dont use
+    public final AutonomousMode redConeScoreExitBalance; // dont use
+    public final AutonomousMode redConeCubeBalance; // 2 piece and balance mid
+    public final AutonomousMode redConeBalance; // balance straight from cone
+    public final AutonomousMode redJustScore; // just score high cone
+    public final AutonomousMode redJustDrive; // just drive forward
+    public final AutonomousMode
+            redConeCubeCubeLowBalanceBumpSide; // 3 piece and balance bump side wip
+    public final AutonomousMode redConeTaxiBalance; // over and back balance mid
+    public final AutonomousMode redConeCubeCubeHoldBalance; // 2.5 piece and balance bump side wip
+    public final AutonomousMode redConeCube2PieceBalance; // 2 piece and balance bump side
 
     public AutoCommands(
             SwerveDrive drive,
