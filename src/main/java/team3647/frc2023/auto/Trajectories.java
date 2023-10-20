@@ -231,6 +231,40 @@ public final class Trajectories {
                                     fromPose(kFourthPathFinal, Rotation2d.fromDegrees(45))));
         }
 
+        public static final class coneCube2PieceBalanceBumpSideNoBUmp {
+            public static final Pose2d kFirstPathInitial =
+                    new Pose2d(1.80, 0.5, FieldConstants.kZero);
+            private static final Pose2d kFirstPathFinal =
+                    new Pose2d(5.7, 0.98, FieldConstants.kZero);
+            private static final Pose2d kSecondPathInitial = kFirstPathFinal;
+            private static final Pose2d kSecondPathFinal =
+                    new Pose2d(1.90, 1.1, FieldConstants.kZero);
+            private static final Pose2d kThirdPathInitial = kSecondPathFinal;
+            private static final Pose2d kThirdPathFinal =
+                    new Pose2d(2.63, 2.14, FieldConstants.kZero);
+
+            public static final PathPlannerTrajectory kFirstTrajectory =
+                    PathPlanner.generatePath(
+                            fastConstraints,
+                            List.of(
+                                    fromPose(kFirstPathInitial, FieldConstants.kZero),
+                                    // fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
+                                    fromPose(kFirstPathFinal, FieldConstants.kZero)));
+            public static final PathPlannerTrajectory kSecondTrajectory =
+                    PathPlanner.generatePath(
+                            fastConstraints,
+                            List.of(
+                                    fromPose(kSecondPathInitial, FieldConstants.kOneEighty),
+                                    // fromPose(kFirstPathWaypoint1, FieldConstants.kZero),
+                                    fromPose(kSecondPathFinal, FieldConstants.kOneEighty)));
+            public static final PathPlannerTrajectory kThirdTrajectory =
+                    PathPlanner.generatePath(
+                            defaultConstraints,
+                            List.of(
+                                    fromPose(kThirdPathInitial, Rotation2d.fromDegrees(90)),
+                                    fromPose(kThirdPathFinal, FieldConstants.kZero)));
+        }
+
         public static final class coneCubeCubeHoldBalanceBumpSideNoBump {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
