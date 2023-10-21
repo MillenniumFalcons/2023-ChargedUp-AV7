@@ -42,11 +42,11 @@ public class CubeShooterCommands {
     }
 
     public Command scoreMid() {
-        return cubeShooterRun(5, 1, 1);
+        return cubeShooterRun(5, 0.6, 0.6);
     }
 
     public Command scoreHigh() {
-        return cubeShooterRun(2, 0.8, 1);
+        return cubeShooterRun(1, 0.8, 1);
     }
 
     public Command yeetAcrossCS() {
