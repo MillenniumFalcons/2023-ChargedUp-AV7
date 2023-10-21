@@ -83,7 +83,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeCube2PieceBalance;
+        runningMode = autoCommands.redConeTaxiBalance;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -242,8 +242,8 @@ public class RobotContainer {
         goodForLockCube.onTrue(autoDrive.lockRot(180));
         goodForLockCube.onFalse(autoDrive.unlockRot());
 
-        mainController.leftMidButton.onTrue(autoDrive.disable());
-        mainController.rightMidButton.onTrue(autoDrive.enable());
+        coController.leftMidButton.onTrue(autoDrive.disable());
+        coController.rightMidButton.onTrue(autoDrive.enable());
 
         // LED Triggers
         limelightTriggers.currentCone.onTrue(LEDS.setPiece(Piece.cone));

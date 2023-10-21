@@ -380,8 +380,8 @@ public class AutoCommands {
                 superstructure.stowScore().withTimeout(1),
                 Commands.waitSeconds(2),
                 superstructure.goToStateParallel(SuperstructureState.untipReverse).withTimeout(2),
-                Commands.waitSeconds(0.5),
-                superstructure.stowScore());
+                Commands.waitSeconds(1),
+                superstructure.goToStateParallel(SuperstructureState.backStow));
     }
 
     private Command getSupestructureSeqeunceConeCubeBalance() {
@@ -549,7 +549,7 @@ public class AutoCommands {
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.45))
-                        .withTimeout(1.5),
+                        .withTimeout(2.2),
                 superstructure.stow().withTimeout(0.5),
                 // Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
@@ -561,10 +561,10 @@ public class AutoCommands {
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.45))
-                        .withTimeout(2),
+                        .withTimeout(2.2),
                 superstructure.stow().withTimeout(1),
                 superstructure.goToStateParallel(SuperstructureState.cubeTwoReversed),
-                // Commands.waitSeconds(0.2),
+                Commands.waitSeconds(0.2),
                 superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore));
     }
 
@@ -810,6 +810,11 @@ public class AutoCommands {
                 drive);
     }
 
+    public Command driveForwardFast() {
+        return Commands.run(
+                () -> drive.drive(new Translation2d(1.8, 0), 0, true, true, false), drive);
+    }
+
     public Command driveForward() {
         return driveForward(() -> 0);
     }
@@ -900,7 +905,7 @@ public class AutoCommands {
         Command drivetrainSeqeuence =
                 Commands.sequence(
                         Commands.waitSeconds(3),
-                        driveForward().until(() -> (drive.getPitch() > 5)),
+                        driveForwardFast().until(() -> (drive.getPitch() > 5)),
                         driveForward().withTimeout(1.2),
                         driveBackwardSlowly().until(() -> (drive.getPitch() > 13)),
                         driveBackwardSlowly().until(() -> (drive.getPitch() < 13)),

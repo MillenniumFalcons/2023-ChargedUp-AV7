@@ -447,7 +447,7 @@ public final class Trajectories {
 
             // Pick up cube 1
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(5.7, 4.55, FieldConstants.kZero);
+                    new Pose2d(5.9, 4.55, FieldConstants.kZero);
 
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             //     private static final Pose2d kSecondPathFinal = new Pose2d(1.80, 4.39,
