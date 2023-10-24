@@ -46,6 +46,11 @@ public class AutoDrive {
         return Commands.runOnce(() -> this.lockY = true);
     }
 
+    public boolean doneRotatingGruond() {
+        return Math.abs((swerve.getHeading() % 360) - 90) < 1
+                || Math.abs((swerve.getHeading() % 360) + 270) < 1;
+    }
+
     public Command unlockY() {
         return Commands.runOnce(() -> this.lockY = false);
     }

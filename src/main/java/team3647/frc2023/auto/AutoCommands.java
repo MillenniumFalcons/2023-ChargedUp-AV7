@@ -363,7 +363,7 @@ public class AutoCommands {
                         .goToStateParallel(SuperstructureState.pushDownStation)
                         .withTimeout(2),
                 Commands.waitSeconds(1),
-                superstructure.stow());
+                superstructure.stowScore());
     }
 
     private Command getSupeStructureSequenceConeTaxiBalance() {
@@ -870,8 +870,8 @@ public class AutoCommands {
                         // Trajectories.Blue.coneCubeBalance.kFirstTrajectory,
                         //                         color))
                         //         .until(() -> (drive.getPitch() < -0.1)),
-                        driveForward().until(() -> (drive.getPitch() < -13)),
-                        driveForward().until(() -> (drive.getPitch() > -13)),
+                        driveForwardSlwoly().until(() -> (drive.getPitch() < -13)),
+                        driveForwardSlwoly().until(() -> (drive.getPitch() > -13)),
                         // rotateAndBalance(SwerveDriveConstants.kAutoSteerHeadingController),
                         lock());
         return Commands.parallel(drivetrainSequence, getSuperstrcutreSequenceConeBalance());

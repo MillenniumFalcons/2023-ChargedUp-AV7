@@ -60,9 +60,12 @@ public class DrivetrainCommands {
 
                     var motionTurnComponent =
                             -turnSpeedFunction.getAsDouble() * maxRotationRadpS * triggerSlow;
-                    motionYComponent = lockY ? supplier.get().dy : motionYComponent;
+                    motionYComponent =
+                            lockY ? supplier.get().dy + 0.1 * motionYComponent : motionYComponent;
                     motionTurnComponent =
-                            lockRotation ? supplier.get().dtheta : motionTurnComponent;
+                            lockRotation
+                                    ? supplier.get().dtheta + 0.1 * motionTurnComponent
+                                    : motionTurnComponent;
                     boolean correct = shouldCorrect.getAsBoolean();
                     Translation2d translation =
                             new Translation2d(motionXComponent, motionYComponent);

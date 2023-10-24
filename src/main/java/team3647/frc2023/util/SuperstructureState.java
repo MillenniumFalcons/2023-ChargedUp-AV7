@@ -131,9 +131,9 @@ public class SuperstructureState {
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
     public static final SuperstructureState doubleStationCone =
-            new SuperstructureState(120, 17700, 103, "double station");
+            new SuperstructureState(119, 18400, 103, "double station");
     public static final SuperstructureState doubleStationConeLying =
-            new SuperstructureState(139, 3000, 51, "double station lying");
+            new SuperstructureState(74, 3700, -58, "double station lying");
     public static final SuperstructureState doubleStationCube =
             new SuperstructureState(120, 16000, 117, "double station");
 

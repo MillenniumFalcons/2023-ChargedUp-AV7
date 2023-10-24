@@ -83,7 +83,7 @@ public class RobotContainer {
         extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
-        runningMode = autoCommands.redConeTaxiBalance;
+        runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
         LimelightHelpers.setPipelineIndex(LimelightConstant.kLimelightCenterHost, 1);
         swerve.setRobotPose(runningMode.getPathplannerPose2d());
     }
@@ -166,7 +166,14 @@ public class RobotContainer {
 
         mainController
                 .rightTrigger
+                .and(level23Cube)
+                .onTrue(
+                        Commands.waitUntil(() -> autoDrive.doneRotatingGruond())
+                                .andThen(superstructure.shootAutomatic()));
+        mainController
+                .rightTrigger
                 .and(superstructure::isBottomF)
+                .and(() -> !level23Cube.getAsBoolean())
                 .onTrue(superstructure.shootAutomatic());
 
         mainController.buttonA.whileTrue(superstructure.intakeForCurrentGamePiece());
@@ -234,13 +241,20 @@ public class RobotContainer {
         // coController.rightMidButton.onTrue(superstructure.enableAutoSteer());
         // coController.leftMidButton.onTrue(superstructure.disableAutoSteer());
 
-        goodForLockIntake.onTrue(autoDrive.lockRot(0));
-        goodForLockIntake.onFalse(autoDrive.unlockRot().withTimeout(0.1));
+        goodForLockIntake
+                .and(() -> superstructure.getWantedStation() == StationType.Double)
+                .onTrue(autoDrive.lockRot(0));
+        goodForLockIntake
+                .and(() -> superstructure.getWantedStation() == StationType.Ground)
+                .onTrue(autoDrive.lockRot(180));
+        goodForLockIntake.onFalse(autoDrive.unlockRot());
         goodForLockScore.onTrue(autoDrive.lockRot(180));
         goodForLockScore.and(() -> autoDrive.isAlmostDone()).onTrue(autoDrive.lockY());
         goodForLockScore.onFalse(autoDrive.unlockRot()).onFalse(autoDrive.unlockY());
         goodForLockCube.onTrue(autoDrive.lockRot(180));
         goodForLockCube.onFalse(autoDrive.unlockRot());
+        level23Cube.onTrue(autoDrive.lockRot(90));
+        level23Cube.onFalse(autoDrive.unlockRot());
 
         coController.leftMidButton.onTrue(autoDrive.disable());
         coController.rightMidButton.onTrue(autoDrive.enable());
@@ -547,6 +561,17 @@ public class RobotContainer {
             new Trigger(limelightTriggers.isAligned)
                     .or(() -> superstructure.getCurrentIntakePiece() == GamePiece.Cube);
 
+    private final Trigger level23Cube =
+            mainController
+                    .rightTrigger
+                    .and(superstructure::isBottomF)
+                    .and(
+                            () ->
+                                    superstructure.isBottomF()
+                                            && (superstructure.getWantedLevel() == Level.Two
+                                                    || superstructure.getWantedLevel()
+                                                            == Level.Three));
+
     private final BooleanSupplier goodForAutosteer =
             globalEnableAutosteer
                     .and(mainController.rightTrigger)
@@ -560,6 +585,7 @@ public class RobotContainer {
     public final Trigger goodForLockScore =
             mainController
                     .rightTrigger
+                    .and(mainController.buttonY)
                     .and(() -> superstructure.getGamePiece() == GamePiece.Cone)
                     .and(() -> !superstructure.isBottomF());
 
