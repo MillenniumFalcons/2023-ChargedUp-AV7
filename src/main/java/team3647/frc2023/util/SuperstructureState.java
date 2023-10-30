@@ -36,6 +36,11 @@ public class SuperstructureState {
                 this.armAngle, this.length + extend, this.wristAngle + degs, this.name);
     }
 
+    public SuperstructureState addAngle(double angle) {
+        return new SuperstructureState(
+                this.armAngle + angle, this.length, this.wristAngle, this.name);
+    }
+
     public SuperstructureState noExtend() {
         return new SuperstructureState(
                 this.armAngle, ExtenderConstants.kMinimumPositionTicks, this.wristAngle, this.name);

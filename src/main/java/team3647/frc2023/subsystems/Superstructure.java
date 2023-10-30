@@ -43,8 +43,8 @@ public class Superstructure {
         if (getWantedStation() == StationType.Ground) {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
-                            ? SuperstructureState.doubleStationConeLying
-                            : SuperstructureState.groundIntakeCube;
+                            ? SuperstructureState.groundIntakeCone
+                            : SuperstructureState.groundIntakeCone;
             this.isGround = true;
         } else {
             wantedIntakeState =
@@ -125,7 +125,7 @@ public class Superstructure {
                         waitForCurrentSpikeDebounce(0.6),
                         Commands.parallel(
                                 goToStateParallel(() -> this.wantedIntakeState),
-                                rollersGroundCube()))
+                                rollersGroundCone()))
                 .finallyDo(
                         interrupted -> {
                             this.currentGamePiece = this.intakeGamePiece;
@@ -160,7 +160,7 @@ public class Superstructure {
                     if (this.currentGamePiece == GamePiece.Cone) {
                         rollers.intakeCone();
                     } else {
-                        rollers.intakeCube();
+                        rollers.intakeCone();
                     }
                 },
                 rollers::end,
@@ -173,7 +173,7 @@ public class Superstructure {
                     if (piece.get() == GamePiece.Cone) {
                         rollers.intakeCone();
                     } else {
-                        rollers.intakeCube();
+                        rollers.intakeCone();
                     }
                 },
                 rollers);
@@ -184,7 +184,7 @@ public class Superstructure {
     }
 
     public Command rollersGroundCube() {
-        return Commands.run(() -> rollers.intakeCubeScaled(drive::getAverageSpeed), rollers);
+        return Commands.run(() -> rollers.intakeConeScaled(drive::getAverageSpeed), rollers);
     }
 
     public Command holdForCurrentGamePiece() {
@@ -311,21 +311,16 @@ public class Superstructure {
     }
 
     public Command scoreAndStow(double secsBetweenOpenAndStow) {
-        return Commands.sequence(
-                score(() -> currentGamePiece).withTimeout(0.3),
-                Commands.waitSeconds(secsBetweenOpenAndStow),
-                stowScore());
+        return stowScore();
     }
 
     public Command scoreAndStowLonger(double secsBetweenOpenAndStow) {
-        return Commands.sequence(
-                score(() -> currentGamePiece).withTimeout(secsBetweenOpenAndStow), stowScore());
+        return stowScore();
     }
 
     public Command scoreAndStowConeReversed(SuperstructureState nextState) {
         return Commands.sequence(
-                rollersCommands.openloop(() -> -0.3).withTimeout(0.2),
-                goToStateParallel(nextState));
+                rollersCommands.openloop(() -> 0.3).withTimeout(0.2), goToStateParallel(nextState));
     }
 
     public Command waitForCubeShooterSpike() {
@@ -395,7 +390,7 @@ public class Superstructure {
     }
 
     public Command scoreAndStowCube(double timeout, SuperstructureState nextState) {
-        return scoreAndStowCube(timeout, -0.6, nextState);
+        return scoreAndStowCube(timeout, 0.6, nextState);
     }
 
     public Command scoreAndStowCube(double timeout, double demand, SuperstructureState nextState) {
@@ -407,7 +402,7 @@ public class Superstructure {
     public Command score(Supplier<GamePiece> piece) {
         return new ConditionalCommand(
                 rollersCommands.outCone(),
-                rollersCommands.outCube(),
+                rollersCommands.outCone(),
                 () -> piece.get() == GamePiece.Cone);
     }
 
@@ -448,14 +443,22 @@ public class Superstructure {
     }
 
     public Command stowScore() {
-        return Commands.sequence(
-                raiseWristScore().until(() -> wrist.angleReached(45, 5)),
-                goToStateParallel(
-                                SuperstructureState.stowScore.addWristExtend(
-                                        45 - SuperstructureState.stowScore.wristAngle, 0))
-                        .until(() -> pivot.angleReached(SuperstructureState.stowScore.armAngle, 1)),
-                Commands.waitSeconds(0.5),
-                goToStateParallel(SuperstructureState.stowScore));
+        if (this.currentGamePiece == GamePiece.Cone
+                && (wantedLevel == Level.Two || wantedLevel == Level.Three)) {
+            return Commands.sequence(
+                    goToStateParallel(
+                            () ->
+                                    finder.getSuperstructureStateByPiece(
+                                                    getWantedLevel(), this.currentGamePiece)
+                                            .addWristExtend(60, 0)),
+                    Commands.parallel(
+                            Commands.run(() -> rollers.stop()).withTimeout(0.5),
+                            goToStateParallel(SuperstructureState.stowScore)));
+        } else {
+            return Commands.sequence(
+                    rollersCommands.openloop(() -> 0.2).withTimeout(0.5),
+                    goToStateParallel(SuperstructureState.stowScore));
+        }
     }
 
     public Command stowAll() {

@@ -186,8 +186,7 @@ public class RobotContainer {
         mainController
                 .rightBumper
                 .and(groundCubeIntake)
-                .whileTrue(superstructure.goToStateParallel(SuperstructureState.pushDownStation))
-                .onFalse(superstructure.stow());
+                .whileTrue(superstructure.intakeGroundCone());
 
         // mainController
         //         .rightBumper
@@ -599,9 +598,7 @@ public class RobotContainer {
 
     public final Trigger goodForLockIntake =
             mainController.rightBumper.and(
-                    () ->
-                            (superstructure.getWantedStation() == StationType.Double
-                                    || superstructure.getWantedIntakePiece() == GamePiece.Cone));
+                    () -> (superstructure.getWantedStation() == StationType.Double));
 
     private final BooleanSupplier groundConeIntake =
             () ->
