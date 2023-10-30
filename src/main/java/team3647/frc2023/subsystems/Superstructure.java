@@ -180,11 +180,11 @@ public class Superstructure {
     }
 
     public Command rollersGroundCone() {
-        return Commands.run(() -> rollers.intakeConeScaled(drive::getAverageSpeed), rollers);
+        return Commands.run(() -> rollers.intakeCone(), rollers);
     }
 
     public Command rollersGroundCube() {
-        return Commands.run(() -> rollers.intakeConeScaled(drive::getAverageSpeed), rollers);
+        return Commands.run(() -> rollers.intakeCone(), rollers);
     }
 
     public Command holdForCurrentGamePiece() {
