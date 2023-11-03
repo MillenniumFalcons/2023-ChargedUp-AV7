@@ -31,6 +31,7 @@ public class Superstructure {
     private boolean isGround = false;
 
     private SuperstructureState wantedIntakeState = SuperstructureState.doubleStationCone;
+    private SuperstructureState wantedStowFromScoreState = SuperstructureState.stowScore;
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
     private double wristAdjust = 0.0;
@@ -449,13 +450,19 @@ public class Superstructure {
 
     public Command stowScore() {
         return Commands.sequence(
+                Commands.runOnce(
+                        () ->
+                                wantedStowFromScoreState =
+                                        isLyingCone()
+                                                ? SuperstructureState.stowAll
+                                                : SuperstructureState.stowScore),
                 raiseWristScore().until(() -> wrist.angleReached(45, 5)),
                 goToStateParallel(
-                                SuperstructureState.stowScore.addWristExtend(
-                                        45 - SuperstructureState.stowScore.wristAngle, 0))
-                        .until(() -> pivot.angleReached(SuperstructureState.stowScore.armAngle, 1)),
+                                wantedStowFromScoreState.addWristExtend(
+                                        45 - wantedStowFromScoreState.wristAngle, 0))
+                        .until(() -> pivot.angleReached(wantedStowFromScoreState.armAngle, 1)),
                 Commands.waitSeconds(0.5),
-                goToStateParallel(SuperstructureState.stowScore));
+                goToStateParallel(wantedStowFromScoreState));
     }
 
     public Command stowAll() {
@@ -552,6 +559,10 @@ public class Superstructure {
 
     public boolean autoSteerEnabled() {
         return this.isAutoSteerEnabled;
+    }
+
+    public boolean isLyingCone() {
+        return this.wantedIntakeState == SuperstructureState.doubleStationConeLying;
     }
 
     public boolean isBottomF() {
