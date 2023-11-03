@@ -133,7 +133,7 @@ public class SuperstructureState {
     public static final SuperstructureState doubleStationCone =
             new SuperstructureState(119, 18400, 103, "double station");
     public static final SuperstructureState doubleStationConeLying =
-            new SuperstructureState(74, 3700, -58, "double station lying");
+            new SuperstructureState(75, 5030, -45, "double station lying");
     public static final SuperstructureState doubleStationCube =
             new SuperstructureState(120, 16000, 117, "double station");
 
