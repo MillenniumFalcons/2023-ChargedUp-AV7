@@ -363,7 +363,7 @@ public class AutoCommands {
                         .goToStateParallel(SuperstructureState.pushDownStation)
                         .withTimeout(2),
                 Commands.waitSeconds(1),
-                superstructure.stowScore());
+                superstructure.stowScore(() -> SuperstructureState.stowScore));
     }
 
     private Command getSupeStructureSequenceConeTaxiBalance() {
@@ -377,7 +377,7 @@ public class AutoCommands {
                         .goToStateParallel(SuperstructureState.pushDownStation)
                         .withTimeout(2),
                 Commands.waitSeconds(1),
-                superstructure.stowScore().withTimeout(1),
+                superstructure.stowScore(() -> SuperstructureState.stowScore).withTimeout(1),
                 Commands.waitSeconds(2),
                 superstructure.goToStateParallel(SuperstructureState.untipReverse).withTimeout(2),
                 Commands.waitSeconds(1),
@@ -395,7 +395,7 @@ public class AutoCommands {
                         .goToStateParallel(SuperstructureState.pushDownStation)
                         .withTimeout(2),
                 Commands.waitSeconds(1),
-                superstructure.stowScore().withTimeout(1),
+                superstructure.stowScore(() -> SuperstructureState.stowScore).withTimeout(1),
                 Commands.waitSeconds(1.5),
                 Commands.deadline(
                                 superstructure.waitForCurrentSpike(7),
@@ -430,7 +430,7 @@ public class AutoCommands {
                                 superstructure.goToStateParallel(
                                         SuperstructureState.longTongueCube),
                                 superstructure.rollersCommands.openloop(() -> 0.45))
-                        .withTimeout(2),
+                        .withTimeout(2.05),
                 superstructure.stow().withTimeout(1),
                 // Commands.waitSeconds(0.2),
                 superstructure.goToStateParallel(SuperstructureState.cubeThreeReversed),
@@ -480,7 +480,7 @@ public class AutoCommands {
                 superstructure.scoreAndStowCube(0.5, -0.4, SuperstructureState.stowScore),
                 superstructure.goToStateParallel(SuperstructureState.pushDownStation),
                 Commands.waitSeconds(1),
-                superstructure.stowScore());
+                superstructure.stowScore(() -> SuperstructureState.stowScore));
     }
 
     private Command getSupestructureSequenceConeCube2PieceBumpNoBumpBalance() {
@@ -504,7 +504,7 @@ public class AutoCommands {
                 // Commands.waitSeconds(0.5),
                 superstructure.goToStateParallel(SuperstructureState.pushDownStation),
                 Commands.waitSeconds(1),
-                superstructure.stowScore());
+                superstructure.stowScore(() -> SuperstructureState.stowScore));
     }
 
     private Command getSupestructureSequenceConeCubeCubeHoldBumpNoBumpBalance() {

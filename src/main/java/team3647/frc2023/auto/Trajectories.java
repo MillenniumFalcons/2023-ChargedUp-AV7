@@ -122,7 +122,7 @@ public final class Trajectories {
             public static final Pose2d kFirstPathInitial =
                     new Pose2d(1.80, 0.5, FieldConstants.kZero);
             private static final Pose2d kFirstPathFinal =
-                    new Pose2d(5.7, 0.98, FieldConstants.kZero);
+                    new Pose2d(5.8, 0.98, FieldConstants.kZero);
             private static final Pose2d kSecondPathInitial = kFirstPathFinal;
             private static final Pose2d kSecondPathFinal =
                     new Pose2d(1.90, 1.1, FieldConstants.kZero);
@@ -130,9 +130,9 @@ public final class Trajectories {
             private static final Pose2d kThirdPathWaypoint1 =
                     new Pose2d(4.1, 0.6, Rotation2d.fromDegrees(30));
             private static final Pose2d kThirdPathWaypoint2 =
-                    new Pose2d(5.80, 0.95, Rotation2d.fromDegrees(45));
+                    new Pose2d(5.9, 0.85, Rotation2d.fromDegrees(45));
             private static final Pose2d kThirdPathFinal =
-                    new Pose2d(6.25, 1.37, Rotation2d.fromDegrees(45));
+                    new Pose2d(6.35, 1.27, Rotation2d.fromDegrees(45));
             private static final Pose2d kFourthPathInitial = kThirdPathFinal;
             //     private static final Pose2d kFourthPathWaypoint1 = kThirdPathWaypoint2;
             //     private static final Pose2d kFourthPathWaypoint2 = kThirdPathWaypoint1;

@@ -80,7 +80,7 @@ public class RobotContainer {
         configureButtonBindings();
         configureSmartDashboardLogging();
         pivot.setEncoder(PivotConstants.kInitialAngle);
-        extender.setEncoder(ExtenderConstants.kMinimumPositionTicks);
+        extender.setEncoder(ExtenderConstants.kStartingPositionTicks);
         wrist.setEncoder(WristConstants.kInitialDegree);
         cubeWrist.setEncoder(CubeWristConstants.kInitialDegree);
         runningMode = autoCommands.redConeCubeCubeBumpSideNoBump;
@@ -213,6 +213,8 @@ public class RobotContainer {
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
         mainController.dPadLeft.onTrue(superstructure.moreExtendOffset());
         mainController.dPadRight.onTrue(superstructure.lessExtendOffset());
+        mainController.leftMidButton.onTrue(superstructure.moreExtendScoreOffset());
+        mainController.rightMidButton.onTrue(superstructure.lessExtendScoreOffset());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));
@@ -389,7 +391,8 @@ public class RobotContainer {
         printer.addBoolean("voltage good", () -> RobotController.getBatteryVoltage() > 12);
         printer.addBoolean("llock y", autoDrive::getLockY);
         printer.addBoolean("lock rot", autoDrive::getLockRot);
-        printer.addDouble("ptich", swerve::getPitch);
+        // printer.addDouble("ptich", swerve::getPitch);
+        printer.addString("stow state", superstructure::getStowState);
         // printer.addBoolean("intkae", () -> goodForLockIntake.getAsBoolean());
         // printer.addBoolean("score", () -> goodForLockScore.getAsBoolean());
         // printer.addBoolean("cube", () -> limelightTriggers.wantedCube.getAsBoolean());

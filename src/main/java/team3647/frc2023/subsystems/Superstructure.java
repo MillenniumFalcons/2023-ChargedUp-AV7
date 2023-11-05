@@ -34,6 +34,7 @@ public class Superstructure {
     private SuperstructureState wantedStowFromScoreState = SuperstructureState.stowScore;
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
+    private double extendAdjustScore = 0.0;
     private double wristAdjust = 0.0;
     private double extendAdjust = 0.0;
     private boolean isBottom = true;
@@ -47,12 +48,16 @@ public class Superstructure {
                             ? SuperstructureState.doubleStationConeLying
                             : SuperstructureState.groundIntakeCube;
             this.isGround = true;
+            if (intakeGamePiece == GamePiece.Cone) {
+                wantedStowFromScoreState = SuperstructureState.doubleStationConeLying;
+            }
         } else {
             wantedIntakeState =
                     intakeGamePiece == GamePiece.Cone
                             ? SuperstructureState.doubleStationCone
                             : SuperstructureState.doubleStationCube;
             this.isGround = false;
+            wantedStowFromScoreState = SuperstructureState.stowScore;
         }
         if (Math.abs(wristAdjust) > 0.01 || Math.abs(extendAdjust) > 10) {
             wantedIntakeState = wantedIntakeState.addWristExtend(wristAdjust, extendAdjust);
@@ -78,7 +83,8 @@ public class Superstructure {
         return goToStateParallel(
                 () ->
                         finder.getSuperstructureStateByPiece(
-                                getWantedLevel(), this.currentGamePiece));
+                                        getWantedLevel(), this.currentGamePiece)
+                                .addWristExtend(0, extendAdjustScore));
     }
 
     public Command armAutomaticNoExtend() {
@@ -315,12 +321,13 @@ public class Superstructure {
         return Commands.sequence(
                 score(() -> currentGamePiece).withTimeout(0.3),
                 Commands.waitSeconds(secsBetweenOpenAndStow),
-                stowScore());
+                stowScore(() -> this.wantedStowFromScoreState));
     }
 
     public Command scoreAndStowLonger(double secsBetweenOpenAndStow) {
         return Commands.sequence(
-                score(() -> currentGamePiece).withTimeout(secsBetweenOpenAndStow), stowScore());
+                score(() -> currentGamePiece).withTimeout(secsBetweenOpenAndStow),
+                stowScore(() -> this.wantedStowFromScoreState));
     }
 
     public Command scoreAndStowConeReversed(SuperstructureState nextState) {
@@ -448,21 +455,18 @@ public class Superstructure {
         return Commands.run((() -> wrist.setAngle(45)), wrist);
     }
 
-    public Command stowScore() {
+    public Command stowScore(Supplier<SuperstructureState> wantedStowState) {
         return Commands.sequence(
-                Commands.runOnce(
-                        () ->
-                                wantedStowFromScoreState =
-                                        isLyingCone()
-                                                ? SuperstructureState.stowAll
-                                                : SuperstructureState.stowScore),
                 raiseWristScore().until(() -> wrist.angleReached(45, 5)),
                 goToStateParallel(
-                                wantedStowFromScoreState.addWristExtend(
-                                        45 - wantedStowFromScoreState.wristAngle, 0))
-                        .until(() -> pivot.angleReached(wantedStowFromScoreState.armAngle, 1)),
+                                () ->
+                                        wantedStowState
+                                                .get()
+                                                .addWristExtend(
+                                                        45 - wantedStowState.get().wristAngle, 0))
+                        .until(() -> pivot.angleReached(wantedStowState.get().armAngle, 1)),
                 Commands.waitSeconds(0.5),
-                goToStateParallel(wantedStowFromScoreState));
+                goToStateParallel(() -> wantedStowState.get()));
     }
 
     public Command stowAll() {
@@ -517,6 +521,22 @@ public class Superstructure {
                 });
     }
 
+    public Command moreExtendScoreOffset() {
+        return Commands.runOnce(
+                () -> {
+                    this.extendAdjustScore += 400;
+                    // System.out.printf("extendadjust: %d\n", this.extendAdjust);
+                });
+    }
+
+    public Command lessExtendScoreOffset() {
+        return Commands.runOnce(
+                () -> {
+                    this.extendAdjustScore -= 400;
+                    // System.out.printf("extendadjust: %d\n", this.extendAdjust);
+                });
+    }
+
     public Command enableAutoSteer() {
         return Commands.runOnce(() -> this.isAutoSteerEnabled = true);
     }
@@ -531,6 +551,10 @@ public class Superstructure {
 
     public void setWantedStation(StationType station) {
         this.wantedStation = station;
+    }
+
+    public String getStowState() {
+        return this.wantedStowFromScoreState.name;
     }
 
     public Level getWantedLevel() {

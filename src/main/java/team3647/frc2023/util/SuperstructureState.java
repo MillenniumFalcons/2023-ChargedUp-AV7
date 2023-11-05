@@ -130,20 +130,22 @@ public class SuperstructureState {
     public static final SuperstructureState groundIntakeCubeLong =
             new SuperstructureState(184, 57500, 43, "ground intake long");
 
+    //     public static final SuperstructureState doubleStationCone =
+    //             new SuperstructureState(119, 18400, 103, "double station");
     public static final SuperstructureState doubleStationCone =
-            new SuperstructureState(119, 18400, 103, "double station");
+            new SuperstructureState(115, 16882, 135, "double station");
     public static final SuperstructureState doubleStationConeLying =
             new SuperstructureState(75, 5030, -45, "double station lying");
     public static final SuperstructureState doubleStationCube =
-            new SuperstructureState(120, 16000, 117, "double station");
+            new SuperstructureState(120, 18000, 117, "double station");
 
     public static final SuperstructureState coneOne =
             new SuperstructureState(
                     123.2, ExtenderConstants.kMinimumPositionTicks, 120, "cone low");
     public static final SuperstructureState coneTwo =
-            new SuperstructureState(138, 16000, 92, "cone mid");
+            new SuperstructureState(139, 17200 + 800, 92, "cone mid");
     public static final SuperstructureState coneThree =
-            new SuperstructureState(138, 48750 + 800, 96.6, "cone high");
+            new SuperstructureState(139, 48750 + 2400, 96.6, "cone high");
 
     public static final SuperstructureState coneThrow =
             new SuperstructureState(30, 16000, -17, "cone throw");

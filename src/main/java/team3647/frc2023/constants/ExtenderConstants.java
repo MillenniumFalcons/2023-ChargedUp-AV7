@@ -42,6 +42,10 @@ public class ExtenderConstants {
                     / GlobalConstants.kFalconTicksPerRotation;
 
     public static final double kMinimumPositionTicks =
+            4000
+                    / GlobalConstants.kFalcon5TicksPerRotation
+                    / GlobalConstants.kFalconTicksPerRotation;
+    public static final double kStartingPositionTicks =
             2200
                     / GlobalConstants.kFalcon5TicksPerRotation
                     / GlobalConstants.kFalconTicksPerRotation;
