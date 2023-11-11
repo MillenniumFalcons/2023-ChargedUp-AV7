@@ -213,8 +213,13 @@ public class RobotContainer {
         mainController.dPadDown.onTrue(superstructure.lowerWristOffset());
         mainController.dPadLeft.onTrue(superstructure.moreExtendOffset());
         mainController.dPadRight.onTrue(superstructure.lessExtendOffset());
-        mainController.leftMidButton.onTrue(superstructure.moreExtendScoreOffset());
-        mainController.rightMidButton.onTrue(superstructure.lessExtendScoreOffset());
+        mainController.leftMidButton.onTrue(
+                Commands.runOnce(
+                        () -> extender.setEncoder(ExtenderConstants.kStartingPositionTicks)));
+        mainController.dPadLeft.onTrue(superstructure.moreExtendScoreOffset());
+        mainController.dPadRight.onTrue(superstructure.lessExtendScoreOffset());
+        coController.dPadUp.onTrue(superstructure.higherWristScoreOffset());
+        coController.dPadDown.onTrue(superstructure.lowerWristScoreOffset());
 
         coController.buttonA.onTrue(superstructure.setWantedLevelCommand(Level.Ground));
         coController.buttonB.onTrue(superstructure.setWantedLevelCommand(Level.Two));

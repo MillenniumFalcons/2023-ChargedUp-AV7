@@ -42,7 +42,7 @@ public class ExtenderConstants {
                     / GlobalConstants.kFalconTicksPerRotation;
 
     public static final double kMinimumPositionTicks =
-            4000
+            2200
                     / GlobalConstants.kFalcon5TicksPerRotation
                     / GlobalConstants.kFalconTicksPerRotation;
     public static final double kStartingPositionTicks =
@@ -78,6 +78,7 @@ public class ExtenderConstants {
     public static final double kDoubleStation = 8600.0;
 
     static {
+        CurrentLimitsConfigs kCurrentLimitConfigs = new CurrentLimitsConfigs();
         Slot0Configs kMasterSlot0 = new Slot0Configs();
         // VoltageConfigs kMasterVoltage = new VoltageConfigs();
         MotionMagicConfigs kMasterMotionMagic = new MotionMagicConfigs();
@@ -91,6 +92,11 @@ public class ExtenderConstants {
         kMasterSlot0.kD = kD;
         // kMasterVoltage.PeakForwardVoltage = nominalVoltage;
         // kMasterVoltage.PeakReverseVoltage = nominalVoltage;
+
+        kCurrentLimitConfigs.SupplyCurrentLimit = 30;
+        kCurrentLimitConfigs.SupplyCurrentLimitEnable = true;
+        kCurrentLimitConfigs.SupplyTimeThreshold = 0.5;
+        kCurrentLimitConfigs.SupplyCurrentThreshold = 60;
         kMasterMotionMagic.MotionMagicAcceleration = 500 * 1.5;
         kMasterMotionMagic.MotionMagicCruiseVelocity = 500 * 1.5;
         kMasterMotorOutput.PeakReverseDutyCycle = -0.7;

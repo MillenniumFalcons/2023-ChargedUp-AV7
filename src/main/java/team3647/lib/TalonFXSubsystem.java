@@ -157,6 +157,13 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         masterConfigurator.apply(masterConfiguration);
     }
 
+    public void enableCurrentLimit() {
+        TalonFXConfigurator masterConfigurator = master.getConfigurator();
+        TalonFXConfiguration masterConfiguration = new TalonFXConfiguration();
+        masterConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+        masterConfigurator.apply(masterConfiguration);
+    }
+
     /** Sets the selected sensor to 0 (default) */
     public void resetEncoder() {
         setEncoder(0);

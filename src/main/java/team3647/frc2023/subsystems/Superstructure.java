@@ -17,6 +17,7 @@ import team3647.frc2023.commands.ExtenderCommands;
 import team3647.frc2023.commands.PivotCommands;
 import team3647.frc2023.commands.RollersCommands;
 import team3647.frc2023.commands.WristCommands;
+import team3647.frc2023.constants.ExtenderConstants;
 import team3647.frc2023.robot.PositionFinder;
 import team3647.frc2023.robot.PositionFinder.GamePiece;
 import team3647.frc2023.robot.PositionFinder.Level;
@@ -35,6 +36,7 @@ public class Superstructure {
     private GamePiece intakeGamePiece = GamePiece.Cone;
     private GamePiece currentGamePiece = GamePiece.Cube;
     private double extendAdjustScore = 0.0;
+    private double wristAdjustScore = 0.0;
     private double wristAdjust = 0.0;
     private double extendAdjust = 0.0;
     private boolean isBottom = true;
@@ -84,7 +86,7 @@ public class Superstructure {
                 () ->
                         finder.getSuperstructureStateByPiece(
                                         getWantedLevel(), this.currentGamePiece)
-                                .addWristExtend(0, extendAdjustScore));
+                                .addWristExtend(wristAdjustScore, extendAdjustScore));
     }
 
     public Command armAutomaticNoExtend() {
@@ -448,7 +450,11 @@ public class Superstructure {
     }
 
     public Command stowIntake() {
-        return goToStateParallel(SuperstructureState.stowIntake);
+        return Commands.sequence(
+                goToStateParallel(SuperstructureState.stowIntake),
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(
+                        () -> extender.setEncoder(ExtenderConstants.kStartingPositionTicks)));
     }
 
     public Command raiseWristScore() {
@@ -466,7 +472,14 @@ public class Superstructure {
                                                         45 - wantedStowState.get().wristAngle, 0))
                         .until(() -> pivot.angleReached(wantedStowState.get().armAngle, 1)),
                 Commands.waitSeconds(0.5),
-                goToStateParallel(() -> wantedStowState.get()));
+                Commands.parallel(goToStateParallel(() -> wantedStowState.get())),
+                Commands.runOnce(
+                        () -> extender.setEncoder(ExtenderConstants.kStartingPositionTicks)));
+    }
+
+    public Command resetExtender() {
+        return Commands.runOnce(
+                () -> extender.setEncoder(ExtenderConstants.kStartingPositionTicks));
     }
 
     public Command stowAll() {
@@ -505,6 +518,14 @@ public class Superstructure {
         return Commands.runOnce(() -> this.wristAdjust -= 2);
     }
 
+    public Command lowerWristScoreOffset() {
+        return Commands.runOnce(() -> this.wristAdjustScore += 2);
+    }
+
+    public Command higherWristScoreOffset() {
+        return Commands.runOnce(() -> this.wristAdjustScore -= 2);
+    }
+
     public Command moreExtendOffset() {
         return Commands.runOnce(
                 () -> {
@@ -524,7 +545,7 @@ public class Superstructure {
     public Command moreExtendScoreOffset() {
         return Commands.runOnce(
                 () -> {
-                    this.extendAdjustScore += 400;
+                    this.extendAdjustScore += 800;
                     // System.out.printf("extendadjust: %d\n", this.extendAdjust);
                 });
     }
@@ -532,7 +553,7 @@ public class Superstructure {
     public Command lessExtendScoreOffset() {
         return Commands.runOnce(
                 () -> {
-                    this.extendAdjustScore -= 400;
+                    this.extendAdjustScore -= 800;
                     // System.out.printf("extendadjust: %d\n", this.extendAdjust);
                 });
     }

@@ -102,6 +102,7 @@ public class Robot extends TimedRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         robotContainer.wrist.setNeutralMode(NeutralModeValue.Brake);
+        // robotContainer.extender.enableCurrentLimit();
 
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
