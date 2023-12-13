@@ -136,10 +136,10 @@ public class SwerveDriveConstants {
     //     public static final double kAbsBackRightEncoderOffsetDeg = 246.88;
 
     // comp bot
-    public static final double kAbsFrontLeftEncoderOffsetDeg = 196.7; // 215.77; //35.595;
-    public static final double kAbsFrontRightEncoderOffsetDeg = 182.3; // 183.51; //182.724;
-    public static final double kAbsBackLeftEncoderOffsetDeg = 348.2; // 347.34; //348.222;
-    public static final double kAbsBackRightEncoderOffsetDeg = 248.1; // 67.23; //247.851;
+    public static final double kAbsFrontLeftEncoderOffsetDeg = 14.8; //196.7; // 215.77; //35.595;
+    public static final double kAbsFrontRightEncoderOffsetDeg = 4.2; //182.3; // 183.51; //182.724;
+    public static final double kAbsBackLeftEncoderOffsetDeg = 64.5;//348.2; // 347.34; //348.222;
+    public static final double kAbsBackRightEncoderOffsetDeg = 142.1; //248.1; // 67.23; //247.851;
 
     // max speed limits that we want
     public static final double kTeleopDriveMaxAccelUnitsPerSec = kDrivePossibleMaxSpeedMPS / 2;

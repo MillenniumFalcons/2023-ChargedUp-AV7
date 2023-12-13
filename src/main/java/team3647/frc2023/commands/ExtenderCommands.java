@@ -11,11 +11,11 @@ import team3647.frc2023.subsystems.Extender;
 public class ExtenderCommands {
 
     public Command openloop(DoubleSupplier demand) {
-        return Commands.run(() -> extender.setOpenloop(demand.getAsDouble()), this.extender);
+        return Commands.run(() -> extender.setOpenloop(demand.getAsDouble()*0.5), this.extender);
     }
 
     public Command openLoopSlow(DoubleSupplier demand) {
-        return Commands.run(() -> extender.setOpenloop(demand.getAsDouble() * 0.5), this.extender);
+        return Commands.run(() -> extender.setOpenloop(demand.getAsDouble() * 0.25), this.extender);
     }
 
     public Command length(DoubleSupplier length) {

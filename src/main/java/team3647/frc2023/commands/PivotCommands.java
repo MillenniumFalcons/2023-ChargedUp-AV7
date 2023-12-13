@@ -11,7 +11,7 @@ import team3647.frc2023.subsystems.Pivot;
 public class PivotCommands {
 
     public Command openloop(DoubleSupplier demand) {
-        return Commands.run(() -> pivot.setOpenloop(0.3 * demand.getAsDouble()), this.pivot);
+        return Commands.run(() -> pivot.setOpenloop(0.15 * demand.getAsDouble()), this.pivot);
     }
 
     public Command setAngle(DoubleSupplier setpoint) {
